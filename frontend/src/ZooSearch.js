@@ -3,13 +3,24 @@ import { Container, Row, Col, Button, ButtonGroup, FormGroup, Label, Input } fro
 import ZooFilters from './ZooFilters';
 /* DATA */
 import collectionsData from './collectionsData.json';
+import settings from './settings.json';
 /* UTIL */
 import {sortedKeys} from './util.js';
 import {ZooInfoButton} from './ZooReusables';
 
 const getCollectionsKeys = (objects) => {
-    if (objects === null) return [];
+    if (objects === null || objects === false) return [];
     else return Object.keys(collectionsData[objects]);
+}
+
+const getQueryJson = (objects, collections, selectedFilters) => {
+    const filters = JSON.parse(selectedFilters);
+    const keys = sortedKeys(filters); 
+    return {
+        objects: objects,
+        collections: collections,
+        filters: keys.map((k) => ({name: k, value: String(filters[k])}))
+    }
 }
 
 export default class ZooSearch extends Component {
@@ -22,6 +33,14 @@ export default class ZooSearch extends Component {
             counter: 0
         };
         this.passParameters = this.passParameters.bind(this);
+        if (this.props.singleObjectsDisplay) {
+            var collKeys = getCollectionsKeys(this.props.singleObjectsDisplay);
+            if (collKeys.length === 1) this.state.collections = collKeys;
+            const queryJSON = getQueryJson(this.props.objects, this.state.collections, this.state.selectedFilters);
+            this.props.postData('/count', queryJSON).then(data => {
+                this.setState({counter: data.value})
+            }).catch(error => console.error(error));
+        }
     }
 
     componentDidUpdate = (pp, ps) => {
@@ -29,14 +48,11 @@ export default class ZooSearch extends Component {
         const objects = this.props.objects
         // ok to just compare strings, the objects are sorted and numeric comparisons standardized
         const objectsChanged = (objects !== ps.objects) && (typeof ps.objects !== 'undefined')
-        if (objectsChanged || JSON.stringify(s.collections) !== JSON.stringify(ps.collections) || s.selectedFilters !== ps.selectedFilters) {
-            const filters = JSON.parse(s.selectedFilters);
-            const keys = sortedKeys(filters); 
-            const queryJSON = {
-                objects: objects,
-                collections: s.collections,
-                filters: keys.map((k) => ({name: k, value: String(filters[k])}))
-            }
+        if (objectsChanged || 
+            JSON.stringify(s.collections) !== JSON.stringify(ps.collections) || 
+            s.selectedFilters !== ps.selectedFilters)
+        {
+            const queryJSON = getQueryJson(objects, s.collections, s.selectedFilters);
             this.props.postData('/count', queryJSON).then(data => {
                 this.setState({counter: data.value})
             }).catch(error => console.error(error));
@@ -89,12 +105,13 @@ export default class ZooSearch extends Component {
                 <Container id="zoo-search-box">
                     <Row>
                         <Col lg="3" md="3" sm="12" className="mx-auto my-4" id="select-type">
-                            <h2 className="section-heading text-white" id="step2">Search</h2>
+                            <h2 className="section-heading text-white" id="step2">{settings.title}</h2>
                             <ZooChooseObjects
                                 objects={this.props.objects}
                                 collections={this.state.collections}
                                 chooseObjects={(o) => this.chooseObjects(o)}
-                                toggleCollection={(c) => this.toggleCollection(c)} />
+                                toggleCollection={(c) => this.toggleCollection(c)}
+                                singleObjectsDisplay = {this.props.singleObjectsDisplay} />
                         </Col>
                         <ZooFilters
                             objects={this.props.objects}
@@ -144,7 +161,9 @@ class ZooChooseObjects extends Component {
         })
         return(
             <React.Fragment>
-                <ButtonGroup id="zoo-choose-objects">{objList}</ButtonGroup>
+                { !this.props.singleObjectsDisplay &&
+                    <ButtonGroup id="zoo-choose-objects">{objList}</ButtonGroup>
+                }
                 <div className="mx-auto my-4">
                     {!(this.props.objects === null) &&
                         <ZooChooseCollections
@@ -173,10 +192,15 @@ class ZooChooseCollections extends Component {
     }
 
     render() {
-        var availableCollectionsKeys = getCollectionsKeys(this.props.objects)
+        var availableCollectionsKeys = getCollectionsKeys(this.props.objects);
+        var singleCollection = false;
+        if (availableCollectionsKeys.length === 1) {
+            singleCollection = collectionsData[this.props.objects][availableCollectionsKeys[0]];
+        }
         if (this.props.objects === null) { return <p className="text-white">Choose a type of objects to start.</p>; }
         if (availableCollectionsKeys.length > 0) {
-            return(
+            if (singleCollection) return <span className="text-white">{singleCollection.name}</span>
+            else return(
                 <FormGroup check>
                     {availableCollectionsKeys.map((key) => {
                         return this.renderCollection(collectionsData[this.props.objects][key]);

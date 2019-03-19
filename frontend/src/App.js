@@ -2,8 +2,14 @@ import React, { Component } from 'react';
 import ZooSearch from './ZooSearch';
 import ZooResults from './ZooResults';
 import { Container, Row, Col } from 'reactstrap';
+import collectionsData from './collectionsData.json';
 
 //import ReactDOM from 'react-dom'
+
+const singleObjectsDisplay = (() => { 
+    var objectsArr = Object.keys(collectionsData);
+    return (objectsArr.length > 1 ? false : objectsArr[0]); 
+})();
 
 export default class ZooApp extends Component {
     
@@ -29,6 +35,7 @@ export default class ZooApp extends Component {
             })
             .then(response => response.json()); // parses response to JSON
         }
+        if (singleObjectsDisplay) this.state.objects = singleObjectsDisplay;
     }
     
     render() {
@@ -39,6 +46,7 @@ export default class ZooApp extends Component {
                     postData={this.postData}
                     passObjects={this.passObjects} 
                     passParameters={this.passParameters}
+                    singleObjectsDisplay={singleObjectsDisplay}
                 />
                 {!(this.state.parameters === null) && 
                     <ZooResults 

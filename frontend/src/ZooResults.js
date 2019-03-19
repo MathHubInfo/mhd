@@ -4,7 +4,7 @@ import ReactTable from 'react-table';
 import ChooseColumns from './ZooColumns';
 /* DATA */
 import objectProperties from './objectProperties.json';
-import defaults from './defaults.json';
+import settings from './settings.json';
 
 const printPolynomial = (arr) => {
     arr.reverse();
@@ -27,9 +27,10 @@ export default class ZooResults extends Component {
         super(props);
         
         this.getColumns = (colNames = []) => {
-            const list = (colNames.length === 0 ? defaults.columns[this.props.objects] : colNames);
+            const list = (colNames.length === 0 ? settings.defaultColumns[this.props.objects] : colNames);
             const colObjects = list.map((columnName) => {
                 var c = objectProperties[this.props.objects][columnName];
+                console.log(columnName)
                 var obj = {
                     Header: c.display,
                     accessor: columnName
@@ -43,7 +44,7 @@ export default class ZooResults extends Component {
         }
         
         this.state = {
-            columnKeys: defaults.columns[this.props.objects],
+            columnKeys: settings.defaultColumns[this.props.objects],
             columns: this.getColumns(),
             data: null,
             pages: null,

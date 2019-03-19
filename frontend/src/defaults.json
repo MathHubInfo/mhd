@@ -1,5 +1,0 @@
-{
-    "columns": {
-        "example": ["ID", "trace", "orthogonal", "eigenvalues", "characteristic"]
-    }
-}
