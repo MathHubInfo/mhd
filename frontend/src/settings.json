@@ -1,6 +1,6 @@
 {
     "title": "Search",
     "defaultColumns": {
-        "tbMatrixS": ["trace", "orthogonal", "eigenvalues"]
+        "tbMatrixS": ["mat", "trace", "orthogonal", "eigenvalues"]
     }
 }

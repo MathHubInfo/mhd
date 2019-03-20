@@ -110,7 +110,7 @@ class SelectedFilter extends Component {
     
     constructor(props) {
         super(props);
-        this.state = { edit: true, value: (this.props.type === "bool" ? true : "") };
+        this.state = { edit: true, value: (this.props.type === "BoolIdent" ? true : "") };
         this.editFilter = this.editFilter.bind(this);
         this.toggleBooleanValue = this.toggleBooleanValue.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
@@ -141,11 +141,11 @@ class SelectedFilter extends Component {
             else actualOperator = operator;
             return actualOperator + value;
         }
-        if (this.props.type === "bool") {
+        if (this.props.type === "BoolIdent") {
             valueValid = (this.state.value === true || this.state.value === false)
             if (valueValid) actualValue = this.state.value;
         }
-        if (this.props.type === "numeric") {
+        if (this.props.type === "IntIdent") {
             const v = this.state.value.replace(/ /g, '');
             const r = /^(=|==|<=|>=|<|>|<>|!=)?(\d+\.?\d*)$/;
             valueValid = r.test(v)
@@ -158,7 +158,7 @@ class SelectedFilter extends Component {
     }
     
     renderEditCondition() {
-        if (this.props.type === "bool") {
+        if (this.props.type === "BoolIdent") {
             return(
                 <ButtonGroup id="zoo-choose-objects" className="zoo-bool-filter btn-group-sm">
                     <Button
