@@ -1,5 +1,16 @@
 import React from 'react';
 
+const chunkArray = (arr, chunkSize) => {
+    var index = 0;
+    var arrayLength = arr.length;
+    var tempArray = [];
+    for (index = 0; index < arrayLength; index += chunkSize) {
+        var chunk = arr.slice(index, index+chunkSize);
+        tempArray.push(chunk);
+    }
+    return tempArray;
+}
+
 export const presenters = {
     
     "BoolIdent": (val) => String(val),
@@ -10,19 +21,18 @@ export const presenters = {
     
     "MatrixAsArray" : (arr) => {
         var dimension = Math.round(Math.sqrt(arr.length));
-        var index = 0;
-        var arrayLength = arr.length;
-        var rows = [];
-        for (index = 0; index < arrayLength; index += dimension) {
-            var chunk = arr.slice(index, index + dimension).map((e, i) => {
+        var chunked = chunkArray(arr, dimension);
+        var rows = chunked.map((r, index) => {
+            var row = r.map((e, i) => {
                 return <td key={index + ":" + i}>{e}</td>;
-            });
-            rows.push(<tr key={index}>{chunk}</tr>);
-        }
+            })
+            return <tr key={index}>{row}</tr>;
+        })
         return <table className="display-matrix">{rows}</table>
     },
     
-    "PolynomialAsSparseArray": (arr) => {
+    "PolynomialAsSparseArray": (encoded) => {
+        var arr = chunkArray(encoded, 2);
         arr.reverse();
         var list = arr.map((a, i) => {
             var c = a[1]
