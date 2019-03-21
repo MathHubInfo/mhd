@@ -102,3 +102,5 @@ button.zoo-sort-order-select { margin-left: 20px; }
     margin-bottom: 0;
     font-variant: small-caps;
 }
+
+.display-matrix td { text-align: right; width: 1rem; }

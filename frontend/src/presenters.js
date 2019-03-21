@@ -10,7 +10,16 @@ export const presenters = {
     
     "MatrixAsArray" : (arr) => {
         var dimension = Math.round(Math.sqrt(arr.length));
-        return String(arr);
+        var index = 0;
+        var arrayLength = arr.length;
+        var rows = [];
+        for (index = 0; index < arrayLength; index += dimension) {
+            var chunk = arr.slice(index, index + dimension).map((e, i) => {
+                return <td key={index + ":" + i}>{e}</td>;
+            });
+            rows.push(<tr key={index}>{chunk}</tr>);
+        }
+        return <table className="display-matrix">{rows}</table>
     },
     
     "PolynomialAsSparseArray": (arr) => {
