@@ -4,7 +4,7 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAngleUp, faAngleDown } from '@fortawesome/free-solid-svg-icons'
 /* DATA */
-import objectProperties from './objectProperties.json';
+import objectProperties from './config/objectProperties.json';
 
 const getItemStyle = (isDragging, draggableStyle) => ({
     userSelect: "none",

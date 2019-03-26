@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Col, Button, ButtonGroup } from 'reactstrap';
 import {ZooInfoButton} from './ZooReusables';
 /* DATA */
-import objectProperties from './objectProperties.json';
+import objectProperties from './config/objectProperties.json';
 
 /* * * * * * * * * * * * * * * * * * * * * * * * *
     Handling filters

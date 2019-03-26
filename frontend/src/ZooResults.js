@@ -5,8 +5,8 @@ import ChooseColumns from './ZooColumns';
 /* presenters */
 import {presenters} from './presenters.js';
 /* DATA */
-import objectProperties from './objectProperties.json';
-import settings from './settings.json';
+import objectProperties from './config/objectProperties.json';
+import settings from './config/settings.json';
 
 export default class ZooResults extends Component {
     

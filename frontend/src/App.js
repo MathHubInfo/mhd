@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import ZooSearch from './ZooSearch';
 import ZooResults from './ZooResults';
 import { Container, Row, Col } from 'reactstrap';
-import collectionsData from './collectionsData.json';
+import collectionsData from './config/collectionsData.json';
 
 //import ReactDOM from 'react-dom'
 

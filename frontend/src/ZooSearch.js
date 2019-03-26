@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { Container, Row, Col, Button, ButtonGroup, FormGroup, Label, Input } from 'reactstrap';
 import ZooFilters from './ZooFilters';
 /* DATA */
-import collectionsData from './collectionsData.json';
-import settings from './settings.json';
+import collectionsData from './config/collectionsData.json';
+import settings from './config/settings.json';
 /* UTIL */
 import {sortedKeys} from './util.js';
 import {ZooInfoButton} from './ZooReusables';
