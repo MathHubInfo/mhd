@@ -1,3 +1,8 @@
 frontend/build/
 frontend/src/config/
 frontend/node_modules/
+
+venv/
+*.pyc
+
+db.sqlite3
