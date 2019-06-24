@@ -1,0 +1,8 @@
+venv/
+*.pyc
+
+db.sqlite3
+
+# Generated stuff
+mdh/migrations
+mdh/generated
