@@ -37,6 +37,11 @@ class Codec(models.Model):
         abstract = True
         unique_together = [['item', 'prop', 'superseeded_by']]
     
+    @classmethod
+    def get_codec_name(cls):
+        """ Gets the name of this codec """
+        return cls.objects.model._meta.db_table
+    
     value = None
 
     item = models.ForeignKey(Item, on_delete=models.CASCADE, help_text="Item this this cell represents")
