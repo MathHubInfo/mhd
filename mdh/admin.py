@@ -21,6 +21,6 @@ class ProvenanceAdmin(admin.ModelAdmin):
 class CodecAdmin(admin.ModelAdmin):
     pass
 
-@admin.register(models.IntegerCodec)
+@admin.register(models.StandardInt)
 class IntegerCodec(CodecAdmin):
     pass
