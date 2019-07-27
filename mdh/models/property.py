@@ -1,14 +1,14 @@
 from django.db import models
 
 from .collection import Collection
+from .utils import ModelWithMetadata
 
-class Property(models.Model):
+
+class Property(ModelWithMetadata):
     """ Information about a specific property """
 
     display_name = models.TextField(help_text="Display Name for this property")
     slug = models.TextField(help_text="Identifier of this Collection")
-
-    metadata = models.TextField(null=True, blank=True, help_text="Metadata for this property")
 
     codec_table = models.SlugField(help_text="Name of the codec table that stores this property ")
 
