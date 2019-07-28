@@ -2,16 +2,43 @@ from django.contrib import admin
 
 from . import models
 
+class PropertyInline(admin.TabularInline):
+    model = models.Property.collection.through
+    extra = 1
+
+class CollectionInline(admin.TabularInline):
+    model = models.Collection.property_set.through
+    extra = 1
+
 @admin.register(models.Collection)
 class CollectionAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['display_name', 'slug', 'prop_size']
 
-@admin.register(models.Item)
-class ItemAdmin(admin.ModelAdmin):
-    pass
+    def prop_size(self, obj):
+        return obj.property_set.count()
+    prop_size.short_description = '# of Properties'
+    prop_size.admin_order_field = 'property'
+
+    inlines = [
+        PropertyInline,
+    ]
 
 @admin.register(models.Property)
 class PropertyAdmin(admin.ModelAdmin):
+    list_display = ['display_name', 'slug', 'collection_size']
+    exclude = ['collection']
+
+    def collection_size(self, obj):
+        return obj.collection.count()
+    collection_size.short_description = '# of Collections'
+    collection_size.admin_order_field = 'collection'
+
+    inlines = [
+        CollectionInline,
+    ]
+
+@admin.register(models.Item)
+class ItemAdmin(admin.ModelAdmin):
     pass
 
 @admin.register(models.Provenance)
