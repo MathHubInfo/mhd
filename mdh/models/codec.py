@@ -25,7 +25,7 @@ class Codec(models.Model):
         name = normalize_codec_name(name)
 
         # And find a codec with that name
-        for c in get_codecs():
+        for c in Codec.find_all_codecs():
             if c.get_codec_name() == name:
                 return c
 
