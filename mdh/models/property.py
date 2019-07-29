@@ -1,9 +1,11 @@
-from django.db import models
+from django.db import models, transaction
 
 from .collection import Collection
 from .utils import ModelWithMetadata
 
+
 class PropertyManager(models.Manager):
+    @transaction.atomic
     def create_property_from_serializer(self,  value, collection, skip_existing=False, logger=None):
         """
             Creates a (collection-associated) property based on the appropriate
@@ -62,7 +64,7 @@ class PropertyManager(models.Manager):
         
         # Else create the property
         prop = self.create(slug=slug, display_name=displayName, codec_table=codec)
-        prop.collection.add(collection)
+        prop.collections.add(collection)
         prop.save()
         logger("Created property {0:s}".format(slug))
         return prop, True
@@ -76,7 +78,7 @@ class Property(ModelWithMetadata):
     objects = PropertyManager()
 
     display_name = models.TextField(help_text="Display Name for this property")
-    slug = models.TextField(help_text="Identifier of this Collection")
+    slug = models.SlugField(help_text="Identifier of this Collection")
 
     codec_table = models.SlugField(help_text="Name of the codec table that stores this property ")
 
@@ -90,7 +92,12 @@ class Property(ModelWithMetadata):
             raise ValueError('Can not find Codec Table {0:r}'.format(self.codec_table))
         return model
     
-    collection = models.ManyToManyField(Collection, help_text="Collection(s) this property occurs in", blank=True)
+    def get_column(self, collection):
+        """ Returns a QuerySet of the appropriate CodecModel that represents this property within the collection """
+
+        return self.codec_model.objects.filter(prop=self, item__collection__contains=collection)
+    
+    collections = models.ManyToManyField(Collection, help_text="Collection(s) this property occurs in", blank=True)
 
     def __str__(self):
         return "Property {0:d} ({1!r})".format(self.pk, self.slug)

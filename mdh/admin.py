@@ -3,7 +3,7 @@ from django.contrib import admin
 from . import models
 
 class PropertyInline(admin.TabularInline):
-    model = models.Property.collection.through
+    model = models.Property.collections.through
     extra = 1
 
 class CollectionInline(admin.TabularInline):
