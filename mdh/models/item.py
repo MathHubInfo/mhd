@@ -50,7 +50,7 @@ class ItemManager(models.Manager):
                 raise ValueError('Cannot insert property {0:s}: Already exists'.format(prop.slug))
             
             # create objects for all the values
-            values = [prop.codec_model(value=value, item=item, prop=prop, provenance=provenance, active=True)
+            values = [prop.codec_model(value=prop.codec_model.populate_value(value), item=item, prop=prop, provenance=provenance, active=True)
                 for (item, value) in zip(items, column)]
             
             # and create them in bulk
@@ -59,12 +59,27 @@ class ItemManager(models.Manager):
             # and log
             logger("Inserted {0:d} value(s) into cells for property {1:s}".format(len(values), prop.slug))
 
-
 class Item(models.Model):
     """ Any Item in Any Collection """
 
     objects = ItemManager()
 
     collections = models.ManyToManyField(Collection, help_text="Collection(s) each item occurs in", blank=True)
+
+    def semantic(self, collection):
+        """
+            Returns a JSON object representing the semantics of this object. 
+            Only works if annoted by a semantic query. 
+        """
+
+        properties = [collection.get_property(p) for p in self.properties.split(",")]
+
+        semantic = {
+            p.slug:
+                p.codec_model.serialize_value(getattr(self, 'property_{}_value'.format(p.slug)))
+                    for p in properties
+        }
+        semantic["_pk"] = self.pk
+        return semantic
 
 __all__ = ["Item"]

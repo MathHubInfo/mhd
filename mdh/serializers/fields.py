@@ -1,7 +1,9 @@
-from .models import Property, Codec, Collection
+import json
+
 from rest_framework import serializers
 
-import json
+from ..models import Codec, Collection, Property
+
 
 class DumbJSONField(serializers.Field):
     def to_representation(self, value):
@@ -24,19 +26,4 @@ class CodecField(serializers.Field):
         
         return data
 
-class PropertySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Property
-        fields = ['displayName', 'slug', 'codec', 'metadata']
-    
-    metadata = DumbJSONField(source='metadatastring')
-    codec = CodecField()
-
-class CollectionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Collection
-        fields = ['displayName', 'slug', 'metadata', 'properties']
-
-    metadata = DumbJSONField(source='metadatastring')
-    properties = PropertySerializer(many=True, source='property_set')
-    
+__all__ = ["DumbJSONField", "CodecField"]

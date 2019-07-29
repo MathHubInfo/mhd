@@ -38,6 +38,16 @@ class Codec(models.Model):
         return normalize_codec_name(cls.objects.model._meta.db_table)
     
     value = None
+    
+    @classmethod
+    def populate_value(cls, value):
+        """ Called by the importer to populate the value """
+        return value
+    
+    @classmethod
+    def serialize_value(cls, value):
+        """ Called by the serializer to serialize the value """
+        return value
 
     item = models.ForeignKey(Item, on_delete=models.CASCADE, help_text="Item this this cell represents")
     prop = models.ForeignKey(Property, on_delete=models.CASCADE, help_text="Property this cell represents")
