@@ -4,7 +4,9 @@ from django.db import models, transaction
 
 from .utils import ModelWithMetadata
 
+
 class CollectionManager(models.Manager):
+    @transaction.atomic
     def create_or_update_from_serializer(self, value, update = False, logger=None):
         """
             Creates or updates a new collection based on the appropriate
@@ -65,39 +67,36 @@ class CollectionManager(models.Manager):
             metadata = json.dumps(cvalue['metadata'])
         else:
             metadata = None
-
-        # In case anything goes back, we want to be able to roll back
-        # Sowe
-        with transaction.atomic():
-            # If we don't have the update flag set, simply create a new object
-            if not update:
-                collection = self.create(
-                    slug=slug, display_name=displayName, metadatastring=metadata
-                )
-                logger("Created collection {0:s}".format(slug))
-                created = True
-            # Else create or update it
+        
+        # If we don't have the update flag set, simply create a new object
+        if not update:
+            collection = self.create(
+                slug=slug, display_name=displayName, metadatastring=metadata
+            )
+            logger("Created collection {0:s}".format(slug))
+            created = True
+        # Else create or update it
+        else:
+            collection, created = self.update_or_create(
+                slug=slug,
+                defaults={
+                    'display_name':displayName, 'metadatastring': metadata
+                }
+            )
+            if created:
+                logger("Created collection {0:s}. ".format(slug))
             else:
-                collection, created = self.update_or_create(
-                    slug=slug,
-                    defaults={
-                        'display_name':displayName, 'metadatastring': metadata
-                    }
-                )
-                if created:
-                    logger("Created collection {0:s}. ".format(slug))
-                else:
-                    logger("Updated collection {0:s}. ".format(slug))
+                logger("Updated collection {0:s}. ".format(slug))
 
-            # Create or update all the properties
-            props = [
-                Property.objects.create_property_from_serializer(p, collection, skip_existing=update, logger=logger)[0]
-                    for p in properties]
+        # Create or update all the properties
+        props = [
+            Property.objects.create_property_from_serializer(p, collection, skip_existing=update, logger=logger)[0]
+                for p in properties]
 
-            # remove all other properties
-            extra = collection.property_set.exclude(pk__in=[p.pk for p in props])
-            logger("Disassociated {0:d} property / properties from collection. ".format(len(extra)))
-            collection.property_set.remove(*extra)
+        # remove all other properties
+        extra = collection.property_set.exclude(pk__in=[p.pk for p in props])
+        logger("Disassociated {0:d} property / properties from collection. ".format(len(extra)))
+        collection.property_set.remove(*extra)
 
         # And return the values
         return collection, created
@@ -109,6 +108,10 @@ class Collection(ModelWithMetadata):
 
     display_name = models.TextField(help_text="Name of this collection")
     slug = models.SlugField(help_text="Identifier of this collection", unique=True)
+
+    def get_property(self, slug):
+        """ Returns a property of the given name """
+        return self.property_set.filter(slug=slug).first()
 
     def __str__(self):
         return "Collection {0!r}".format(self.slug)
