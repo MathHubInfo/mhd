@@ -23,7 +23,7 @@ class Command(BaseCommand):
             raise ValueError('Collection {0:s} does not exist'.format(kwargs['collection']))
         
         # split the fields
-        fields = kwargs['fields'].trim().split(",")
+        fields = kwargs['fields'].strip().split(",")
 
         # open data file
         data = None

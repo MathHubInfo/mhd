@@ -26,12 +26,12 @@ class CollectionAdmin(admin.ModelAdmin):
 @admin.register(models.Property)
 class PropertyAdmin(admin.ModelAdmin):
     list_display = ['display_name', 'slug', 'collection_size']
-    exclude = ['collection']
+    exclude = ['collections']
 
     def collection_size(self, obj):
-        return obj.collection.count()
+        return obj.collections.count()
     collection_size.short_description = '# of Collections'
-    collection_size.admin_order_field = 'collection'
+    collection_size.admin_order_field = 'collections'
 
     inlines = [
         CollectionInline,

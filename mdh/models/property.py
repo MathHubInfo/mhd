@@ -95,7 +95,7 @@ class Property(ModelWithMetadata):
     def get_column(self, collection):
         """ Returns a QuerySet of the appropriate CodecModel that represents this property within the collection """
 
-        return self.codec_model.objects.filter(prop=self, item__collection__contains=collection)
+        return self.codec_model.objects.filter(prop=self, item__collections=collection)
     
     collections = models.ManyToManyField(Collection, help_text="Collection(s) this property occurs in", blank=True)
 
