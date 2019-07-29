@@ -23,7 +23,7 @@ class CollectionManager(models.Manager):
             }
 
             First, a new Collection() object is created and stored in the
-            database with appropriate 'slug', 'display_name' and 
+            database with appropriate 'slug', 'displayName' and 
             'metadata' values. If a collection with the same slug already
             exists, and update is set to False, an Exception is raised. If
             update is set to True, instead of creating a new collection, 
@@ -71,7 +71,7 @@ class CollectionManager(models.Manager):
         # If we don't have the update flag set, simply create a new object
         if not update:
             collection = self.create(
-                slug=slug, display_name=displayName, metadatastring=metadata
+                slug=slug, displayName=displayName, metadatastring=metadata
             )
             logger("Created collection {0:s}".format(slug))
             created = True
@@ -80,7 +80,7 @@ class CollectionManager(models.Manager):
             collection, created = self.update_or_create(
                 slug=slug,
                 defaults={
-                    'display_name':displayName, 'metadatastring': metadata
+                    'displayName':displayName, 'metadatastring': metadata
                 }
             )
             if created:
@@ -106,7 +106,7 @@ class Collection(ModelWithMetadata):
 
     objects = CollectionManager()
 
-    display_name = models.TextField(help_text="Name of this collection")
+    displayName = models.TextField(help_text="Name of this collection")
     slug = models.SlugField(help_text="Identifier of this collection", unique=True)
 
     def get_property(self, slug):

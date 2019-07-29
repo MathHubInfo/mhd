@@ -12,7 +12,7 @@ class CollectionInline(admin.TabularInline):
 
 @admin.register(models.Collection)
 class CollectionAdmin(admin.ModelAdmin):
-    list_display = ['display_name', 'slug', 'prop_size']
+    list_display = ['displayName', 'slug', 'prop_size']
 
     def prop_size(self, obj):
         return obj.property_set.count()
@@ -25,7 +25,7 @@ class CollectionAdmin(admin.ModelAdmin):
 
 @admin.register(models.Property)
 class PropertyAdmin(admin.ModelAdmin):
-    list_display = ['display_name', 'slug', 'collection_size']
+    list_display = ['displayName', 'slug', 'collection_size']
     exclude = ['collections']
 
     def collection_size(self, obj):

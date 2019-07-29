@@ -63,7 +63,7 @@ class PropertyManager(models.Manager):
             return candidate.first(), False
         
         # Else create the property
-        prop = self.create(slug=slug, display_name=displayName, codec_table=codec)
+        prop = self.create(slug=slug, displayName=displayName, codec=codec)
         prop.collections.add(collection)
         prop.save()
         logger("Created property {0:s}".format(slug))
@@ -77,19 +77,19 @@ class Property(ModelWithMetadata):
 
     objects = PropertyManager()
 
-    display_name = models.TextField(help_text="Display Name for this property")
+    displayName = models.TextField(help_text="Display Name for this property")
     slug = models.SlugField(help_text="Identifier of this Collection")
 
-    codec_table = models.SlugField(help_text="Name of the codec table that stores this property ")
+    codec = models.SlugField(help_text="Name of the codec table that stores this property ")
 
     @property
     def codec_model(self):
         """ Returns the Codec Model belonging to this Property or None """
         from .codec import Codec # lazy import
         
-        model = Codec.find_codec(self.codec_table)
+        model = Codec.find_codec(self.codec)
         if model is None:
-            raise ValueError('Can not find Codec Table {0:r}'.format(self.codec_table))
+            raise ValueError('Can not find Codec Table {0:r}'.format(self.codec))
         return model
     
     def get_column(self, collection):
