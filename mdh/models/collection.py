@@ -116,5 +116,4 @@ class Collection(ModelWithMetadata):
     def __str__(self):
         return "Collection {0!r}".format(self.slug)
 
-
 __all__ = ["CollectionManager", "Collection"]

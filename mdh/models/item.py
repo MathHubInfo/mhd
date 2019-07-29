@@ -24,15 +24,16 @@ class ItemManager(models.Manager):
                 raise ValueError('Property {0:s} does not exist on {1:s}'.format(h, collection))
         
         if items is None:
-            # create new items for each property
+            # new items for each property
             items = [Item() for _ in rows]
-            Item.objects.bulk_create(items)
-
-            # add all the items to the given collection
+            
+            # Save and add them to a collection
+            # we can not use bulk_create here, because we need the primary keys to be populated
             for item in items:
+                item.save()
                 item.collections.add(collection)
             
-            logger("Created {0:d} new item(s)", len(items))
+            logger("Created {0:d} new item(s)".format(len(items)))
         elif len(items) != len(rows):
             raise ValueError('Cannot insert: len(items) != len(rows)')
         else:
@@ -45,7 +46,7 @@ class ItemManager(models.Manager):
             column = [r[i] for r in rows]
 
             # Make sure that we do not yet have any values
-            if not prop.get_column(prop).filter(item__in=items).empty():
+            if prop.get_column(collection).filter(item__in=items).exists():
                 raise ValueError('Cannot insert property {0:s}: Already exists'.format(prop.slug))
             
             # create objects for all the values
