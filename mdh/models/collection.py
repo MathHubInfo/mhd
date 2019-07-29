@@ -116,4 +116,20 @@ class Collection(ModelWithMetadata):
     def __str__(self):
         return "Collection {0!r}".format(self.slug)
 
+    def semantic(self, properties = None, attributes = None):
+        """ Returns a queryset of item with the appropriate properties annotated as "prop_{slug}" """
+
+        # if no properties are given use all of them
+        if properties is None:
+            properties = self.property_set.all()
+        
+
+        # add all the property annotations to the queryset
+        queryset = self.item_set.all().annotate(properties=models.Value(",".join(map(lambda p:p.slug, properties)), models.TextField()))
+        for p in properties:
+            queryset = queryset.annotate(**p.get_column_annotations(self, attributes=attributes))
+        
+        # and return the queryset
+        return queryset
+
 __all__ = ["CollectionManager", "Collection"]
