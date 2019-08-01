@@ -1,18 +1,27 @@
 {
     "collection": {
       "displayName": "Demo Collection",
-      "slug": "DemoCollection"
+      "slug": "DemoCollection",
+      "metadata": {
+        "uri": "https://example.com/collections?DemoCollection"
+      }
     },
     "properties": [
       {
         "slug": "trace",
         "displayName": "Trace",
-        "codec": "StandardInt"
+        "codec": "StandardInt",
+        "metadata": {
+          "uri": "https://example.com/collections?DemoCollection?trace"
+        }
       },
       {
         "slug": "orthogonal",
         "displayName": "Orthogonal",
-        "codec": "StandardBool"
+        "codec": "StandardBool",
+        "metadata": {
+          "uri": "https://example.com/collections?DemoCollection?orthogonal"
+        }
       }
     ]
   }
