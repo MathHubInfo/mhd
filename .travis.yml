@@ -1,13 +1,22 @@
-language: node_js
-nodejs:
-  - 12
+sudo: false
+
+matrix:
+  include:
+    - language: node_js
+      nodejs:
+        - 12
+    - language: python
+      python:
+         - "3.7"
 
 before_install:
   - if [ ! -z "$TRAVIS_NODE_VERSION" ]; then cd frontend; fi
 
 install:
-  - yarn install
+  - if [ ! -z "$TRAVIS_NODE_VERSION" ]; then yarn install; fi
+  - if [ ! -z "$TRAVIS_PYTHON_VERSION" ]; then pip install -r requirements.txt; fi
 
-# very simple test: can we build?
 script:
-  - yarn build
+  - if [ ! -z "$TRAVIS_NODE_VERSION" ]; then yarn build; fi
+  - if [ ! -z "$TRAVIS_PYTHON_VERSION" ]; then python manage.py test; fi
+

@@ -6,3 +6,4 @@ from .serializers import CollectionSerializer
 class CollectionViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Collection.objects.all().order_by('-slug')
     serializer_class = CollectionSerializer
+    lookup_field = 'slug'

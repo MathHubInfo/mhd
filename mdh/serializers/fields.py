@@ -7,10 +7,10 @@ from ..models import Codec, Collection, Property
 
 class DumbJSONField(serializers.Field):
     def to_representation(self, value):
-        return json.dumps(value)
+        return json.loads(value)
 
     def to_internal_value(self, data):
-        return json.loads(data)
+        return json.dumps(data)
 
 class CodecField(serializers.Field):
     """ A field representing the name of a codec """

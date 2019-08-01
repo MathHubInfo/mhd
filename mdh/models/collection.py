@@ -13,12 +13,9 @@ class CollectionManager(models.Manager):
             serialization in value. The value is serialized as:
 
             {
-                'collection': {
-                    'displayName': string,
-                    'slug': string,
-                    'metadata': {} # any JSON, optional
-
-                }
+                'displayName': string,
+                'slug': string,
+                'metadata': {}, # any JSON, optional
                 'properties': property[] # property serialization, see the Property model 
             }
 
@@ -51,20 +48,14 @@ class CollectionManager(models.Manager):
         collection = None
         created = False
 
-        if ('collection' not in value) or ('properties' not in value):
-            raise ValueError("Incomplete serialization: 'collection' and 'properties' are required. ")
-        cvalue = value['collection']
-        properties = value['properties']
+        if ('properties' not in value) or ('displayName' not in value) or ('slug' not in value):
+            raise ValueError("Incomplete serialization: 'properties', 'displayName', 'slug' are required. ")
         
-        # performs a very mininmal check that required properties are provided
-        if ('displayName' not in cvalue) or ('slug' not in cvalue):
-            raise ValueError("Incomplete serialization: 'displayName' and 'slug'")
-
-        # read all the collection properties
-        slug = cvalue['slug']
-        displayName = cvalue['displayName']
-        if 'metadata' in cvalue:
-            metadata = json.dumps(cvalue['metadata'])
+        properties = value['properties']
+        slug = value['slug']
+        displayName = value['displayName']
+        if 'metadata' in value:
+            metadata = json.dumps(value['metadata'])
         else:
             metadata = None
         

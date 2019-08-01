@@ -24,9 +24,7 @@ class Command(BaseCommand):
         modes.add_argument('--explain', '-e', action='store_true', help="Instead of returning results, explain the query only")
 
         parser.add_argument('--from', '-f', type=nonnegative, default=0, help="Index to start results at. ")
-        parser.add_argument('--limit', '-l', type=nonnegative, default=10, help="Maximum number of results to return")
-        parser.add_argument
-        
+        parser.add_argument('--limit', '-l', type=nonnegative, default=10, help="Maximum number of results to return")        
 
     def handle(self, *args, **kwargs):
         # find collection

@@ -1,27 +1,25 @@
 {
-    "collection": {
-      "displayName": "Demo Collection",
-      "slug": "DemoCollection",
+  "displayName": "Demo Collection",
+  "slug": "DemoCollection",
+  "metadata": {
+    "uri": "https://example.com/collections?DemoCollection"
+  },
+  "properties": [
+    {
+      "slug": "trace",
+      "displayName": "Trace",
+      "codec": "StandardInt",
       "metadata": {
-        "uri": "https://example.com/collections?DemoCollection"
+        "uri": "https://example.com/collections?DemoCollection?trace"
       }
     },
-    "properties": [
-      {
-        "slug": "trace",
-        "displayName": "Trace",
-        "codec": "StandardInt",
-        "metadata": {
-          "uri": "https://example.com/collections?DemoCollection?trace"
-        }
-      },
-      {
-        "slug": "orthogonal",
-        "displayName": "Orthogonal",
-        "codec": "StandardBool",
-        "metadata": {
-          "uri": "https://example.com/collections?DemoCollection?orthogonal"
-        }
+    {
+      "slug": "orthogonal",
+      "displayName": "Orthogonal",
+      "codec": "StandardBool",
+      "metadata": {
+        "uri": "https://example.com/collections?DemoCollection?orthogonal"
       }
-    ]
-  }
+    }
+  ]
+}
