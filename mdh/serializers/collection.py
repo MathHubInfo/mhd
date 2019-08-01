@@ -18,6 +18,7 @@ class CollectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Collection
         fields = ['displayName', 'slug', 'metadata', 'properties']
+        #lookup_field = 'slug'
 
     metadata = DumbJSONField(source='metadatastring')
     properties = PropertySerializer(many=True, source='property_set')

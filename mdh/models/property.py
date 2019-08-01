@@ -3,6 +3,8 @@ from django.db import models, transaction
 from .collection import Collection
 from .utils import ModelWithMetadata
 
+import json
+
 
 class PropertyManager(models.Manager):
     @transaction.atomic
@@ -63,7 +65,7 @@ class PropertyManager(models.Manager):
             return candidate.first(), False
         
         # Else create the property
-        prop = self.create(slug=slug, displayName=displayName, codec=codec)
+        prop = self.create(slug=slug, displayName=displayName, codec=codec, metadatastring=metadata)
         prop.collections.add(collection)
         prop.save()
         logger("Created property {0:s}".format(slug))

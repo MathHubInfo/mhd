@@ -14,9 +14,17 @@ class Command(BaseCommand):
         parser.add_argument('--collection', '-c', help="Slug of collection to insert data into", required=True)
         parser.add_argument('--fields', '-f', help="Comma-seperated list of property names", required=True)
         parser.add_argument('--provenance', '-p', help=".json file containing provenance to insert", required=True)
+        parser.add_argument('--quiet', '-q', action='store_true', help="Do not produce any output in case of success")
         
 
     def handle(self, *args, **kwargs):
+
+        # create a logger
+        if not kwargs['quiet']:
+            logger = lambda m:sys.stdout.write(m + "\n")
+        else:
+            logger = None
+
         # find collection
         collection = Collection.objects.filter(slug=kwargs['collection']).first()
         if collection is None:
@@ -40,4 +48,4 @@ class Command(BaseCommand):
         provenance.save()
 
         # And create the items
-        Item.objects.insert_into_collection(collection, provenance, fields, data, logger=lambda m:sys.stdout.write(m + "\n"))
+        Item.objects.insert_into_collection(collection, provenance, fields, data, logger=logger)
