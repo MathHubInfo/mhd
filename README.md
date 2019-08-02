@@ -53,6 +53,13 @@ python manage.py runserver
 
 *TODO: Image of layout and explanation*
 
+## Exposed API
+
+- `/schema/collections/` -- List all collections
+    - `/schema/collection/$slug` -- Get a specific collection
+- `/schema/codecs/` -- Lists all codecs
+    - `/schema/codecs/$name` -- Get a specific codec
+
 
 ## Tests
 
