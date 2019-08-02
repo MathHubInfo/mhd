@@ -13,10 +13,12 @@ for more details.
 ## Project Structure and Setup
 
 This repository is a consists of a standard [Django](https://www.djangoproject.com/) project. 
-There are two apps:
+There are four apps:
 
-- `mdh_django`: The main entry point app
-- `mdh`: Main app implementing datasets and collecions
+- `mdh_django`: The main entry point. Contains a `utils/` package used by other apps. 
+- `mdh_schema`: Stores schema of MDH data. Home of the `Collection` and `Property` tables. 
+- `mdh_data`: Stores all concrete MDH data. Home of the `Item` and all `Codec` tables. 
+- `mdh_provenance`: Stores meta-information about MDH data. Home of the `Provenance` tables. 
 
 Currently, MDH depends only on Django and [Django Rest Framework](https://www.django-rest-framework.org/).
 To install the dependencies, first make sure you have a recent enough version of Python installed on your system. 
