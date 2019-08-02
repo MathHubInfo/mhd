@@ -1,7 +1,9 @@
-from rest_framework import serializers, viewsets
+from rest_framework import response, serializers, views, viewsets
 
 from mdh_data.models import Codec
 from mdh_django.utils import DumbJSONField
+
+from django.http import Http404
 
 from .models import Collection, Property
 
@@ -41,4 +43,30 @@ class CollectionViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CollectionSerializer
     lookup_field = 'slug'
 
-__all__ = ["CollectionViewSet"]
+class CodecSerializer(serializers.Serializer):
+    name = serializers.SerializerMethodField()
+    db_type = serializers.SerializerMethodField()
+
+    def get_name(self, obj):
+        return obj.get_codec_name()
+    
+    def get_db_type(self, obj):
+        return obj._meta.get_field('value').get_internal_type()
+
+class CodecViewSet(viewsets.ViewSet):
+    serializer_class = CodecSerializer
+    lookup_field = 'name'
+
+    def list(self, request, *args, **kwargs):
+        serializer = CodecSerializer(instance=Codec.find_all_codecs(), many=True)
+        return response.Response(serializer.data)
+    
+    def retrieve(self, request, name=None):
+        obj = Codec.find_codec(name, normalize=False)
+        if obj is None:
+            raise Http404
+        
+        serializer = CodecSerializer(instance=obj)
+        return response.Response(serializer.data)
+
+__all__ = ["CollectionViewSet", "CodecViewSet"]
