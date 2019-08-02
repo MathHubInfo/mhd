@@ -14,19 +14,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
-from rest_framework import routers
 from django.contrib import admin
 from django.urls import include, path
 
-from mdh.views import CollectionViewSet
+from mdh_schema.router import router as schema_router
 
-router = routers.DefaultRouter()
-router.register(r'collection', CollectionViewSet)
-
-
-# Wire up our API using automatic URL routing.
-# Additionally, we include login URLs for the browsable API.
 urlpatterns = [
-    path('', include(router.urls)),
+    path('schema/', include(schema_router.urls)),
     path('admin/', admin.site.urls),
 ]

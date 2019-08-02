@@ -1,0 +1,2 @@
+from .create_collection import CreateCollectionTest
+from .update_collection import UpdateCollectionTest
