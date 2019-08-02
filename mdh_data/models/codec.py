@@ -32,11 +32,12 @@ class Codec(models.Model):
         return filter(lambda clz: issubclass(clz, Codec), apps.get_models())
     
     @staticmethod
-    def find_codec(name):
+    def find_codec(name, normalize = True):
         """ Finds a Codec By Name """
 
         # Normalize the name
-        name = Codec.normalize_codec_name(name)
+        if normalize:
+            name = Codec.normalize_codec_name(name)
 
         # And find a codec with that name
         for c in Codec.find_all_codecs():

@@ -1,0 +1,10 @@
+[
+    {
+        "name": "standardint",
+        "db_type": "IntegerField"
+    },
+    {
+        "name": "standardbool",
+        "db_type": "BooleanField"
+    }
+]
