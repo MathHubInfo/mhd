@@ -19,7 +19,6 @@ class Codec(models.Model):
     @staticmethod
     def normalize_codec_name(name):
         """ Normalizes the name of a codec """
-        prefix = 'mdh_data_'
 
         if name.startswith(Codec.CODEC_TABLE_PREFIX):
             name = name[len(Codec.CODEC_TABLE_PREFIX):]

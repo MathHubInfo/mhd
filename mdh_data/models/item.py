@@ -92,5 +92,4 @@ class Item(models.Model):
         semantic["_pk"] = self.pk
         return semantic
 
-
 __all__ = ["Item"]

@@ -3,8 +3,10 @@ import sys
 
 from django.core.management.base import BaseCommand
 
-from ...models import Collection, Item
 from mdh_provenance.models import Provenance
+from mdh_schema.models import Collection
+
+from ...models import Item
 
 
 class Command(BaseCommand):
