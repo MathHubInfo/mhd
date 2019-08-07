@@ -26,7 +26,6 @@ class CollectionAdmin(admin.ModelAdmin):
     inlines = [
         PropertyInline,
     ]
-    
 
 
 @admin.register(models.Property)

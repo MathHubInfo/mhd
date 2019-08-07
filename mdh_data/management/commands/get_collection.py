@@ -1,10 +1,8 @@
 import json
-import sys
 
 from django.core.management.base import BaseCommand
 import argparse
-from ...models import Collection, Item
-from mdh_provenance.models import Provenance
+from mdh_schema.models import Collection
 
 
 def nonnegative(value):
@@ -48,8 +46,8 @@ class Command(BaseCommand):
             properties = map(lambda p: collection.get_property(
                 'p'), kwargs['properties'].split(","))
 
-        # Build the queryset
-        qset = collection.semantic()
+        # build te queryset
+        qset = collection.query(offset=kwargs['from'], limit=kwargs['limit'])
 
         if kwargs['sql']:
             print(qset.query)
@@ -60,9 +58,6 @@ class Command(BaseCommand):
             print(qset.explain())
             return
 
-        # print the result
-        frm = kwargs['from']
-        until = kwargs['limit'] + frm
 
-        results = [result.semantic(collection) for result in qset[frm:until]]
+        results = [result.semantic(collection) for result in qset]
         print(json.dumps(results, indent=4))

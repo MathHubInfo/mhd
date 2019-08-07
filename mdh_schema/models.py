@@ -110,22 +110,82 @@ class Collection(ModelWithMetadata):
     def __str__(self):
         return "Collection {0!r}".format(self.slug)
 
-    def semantic(self, properties=None, attributes=None):
-        """ Returns a queryset of item with the appropriate properties annotated as "prop_{slug}" """
+    def query(self, properties=None, limit=None, offset=None):
+        """
+            Builds a query returning items in this collection with
+            annotated properties prop.
+            If properties is None, all collection properties are returned.
+            Limit and Offset can be used for pagination, however using only
+            offset is not supported.
+        """
+
+        # lazy import
+        from mdh_data.models import Item
+
+        # The queries built by this module look as following:
+        #
+        # SELECT I.id as id,
+        #
+        # T_prop1.value as prop1_value, T_prop1.id as prop1_cid,
+        # T_prop2.value as prop2_value, T_prop2.id as prop2_cid
+        #
+        # FROM mdh_data_item as I
+        #
+        # LEFT OUTER JOIN Codec1 as T_prop1
+        # ON I.id == T_prop1.item_id AND T_prop1.active AND T_prop1.prop_id == ${id_of_prop1}
+        #
+        # LEFT OUTER JOIN Codec2 as T_prop2
+        # ON I.id == T_prop2.item_id AND T_prop2.active AND T_prop2.prop_id == ${id_of_prop2};
 
         # if no properties are given use all of them
         if properties is None:
             properties = self.property_set.all()
 
-        # add all the property annotations to the queryset
-        queryset = self.item_set.all().annotate(properties=models.Value(
-            ",".join(map(lambda p: p.slug, properties)), models.TextField()))
-        for p in properties:
-            queryset = queryset.annotate(
-                **p.get_column_annotations(self, attributes=attributes))
+        PROPERTIES = []
+        SELECTS = ["I.id as id", "%s as properties"]
+        JOINS = ["FROM {} as I".format(Item._meta.db_table)]
+        SLICING = []
 
-        # and return the queryset
-        return queryset
+        for prop in properties:
+            # the physical table to look up the values in
+            physical_table = prop.codec_model._meta.db_table
+            physical_prop_id = str(prop.pk)
+
+            # alias for the appropriate property table
+            virtual_table = 'T_{}'.format(prop.slug)
+
+            # alias for the value field
+            value_field = 'property_value_{}'.format(prop.slug)
+            # alias for the cid field
+            cid_field = 'property_cid_{}'.format(prop.slug)
+
+            # The property we just added
+            PROPERTIES.append(prop.slug)
+
+            # The fields we select
+            # TODO: Support derived values here
+            SELECTS.append("{}.value as {}".format(virtual_table, value_field))
+            SELECTS.append("{}.id as {}".format(virtual_table, cid_field))
+
+            # build the JOINs query
+            JOINS.append("LEFT OUTER JOIN {} as {}".format(
+                physical_table, virtual_table))
+
+            # TODO: Additional filters here
+            JOINS.append(
+                "ON I.id == {0:s}.item_id AND {0:s}.active AND {0:s}.prop_id == {1:s}".format(virtual_table, physical_prop_id))
+
+        # and build the slicing clauses
+        if (limit is not None) and (offset is not None):
+            SLICING.append("LIMIT {0:d}".format(limit))
+            SLICING.append("OFFSET {0:d}".format(offset))
+
+        # Build the final query and return it inside a raw
+        SQL = "SELECT {} {} {}".format(
+            ",".join(SELECTS), " ".join(JOINS), " ".join(SLICING))
+
+        # and build the sql
+        return Item.objects.raw(SQL, [','.join(PROPERTIES)])
 
 
 class PropertyManager(models.Manager):

@@ -77,7 +77,7 @@ class Item(models.Model):
     def semantic(self, collection):
         """
             Returns a JSON object representing the semantics of this object.
-            Only works if annoted by a semantic query.
+            Requires query annotation from Item.query(...)
         """
 
         properties = [collection.get_property(
@@ -86,10 +86,10 @@ class Item(models.Model):
         semantic = {
             p.slug:
                 p.codec_model.serialize_value(
-                    getattr(self, 'property_{}_value'.format(p.slug)))
+                    getattr(self, 'property_value_{}'.format(p.slug)))
             for p in properties
         }
-        semantic["_pk"] = self.pk
+        semantic["_id"] = str(self.pk)
         return semantic
 
 __all__ = ["Item"]
