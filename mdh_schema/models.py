@@ -214,7 +214,7 @@ class Property(ModelWithMetadata):
     @property
     def codec_model(self):
         """ Returns the Codec Model belonging to this Property or None """
-        from .codec import Codec  # lazy import
+        from mdh_data.models import Codec
 
         model = Codec.find_codec(self.codec)
         if model is None:
