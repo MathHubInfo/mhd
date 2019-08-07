@@ -2,13 +2,16 @@ from django.contrib import admin
 
 from . import models
 
+
 class PropertyInline(admin.TabularInline):
     model = models.Property.collections.through
     extra = 1
 
+
 class CollectionInline(admin.TabularInline):
     model = models.Collection.property_set.through
     extra = 1
+
 
 @admin.register(models.Collection)
 class CollectionAdmin(admin.ModelAdmin):
@@ -22,6 +25,7 @@ class CollectionAdmin(admin.ModelAdmin):
     inlines = [
         PropertyInline,
     ]
+
 
 @admin.register(models.Property)
 class PropertyAdmin(admin.ModelAdmin):

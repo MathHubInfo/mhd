@@ -61,15 +61,18 @@ python manage.py runserver
     - `/schema/codecs/$name` -- Get a specific codec
 
 
-## Tests
+## Tests & Code Style
 
-Basic tests exist, and are run by Travis CI on every commit. 
+Tests for every important feature exist, and are run by Travis CI on every commit. 
 
 To locally run the tests, use:
 
 ```bash
 python manage.py tests
 ```
+
+One non-feature related test is the CodeStyle test. 
+This enforces [PEP8](https://pep8.readthedocs.io)-compliance except for maximum line length. 
 
 ## License
 

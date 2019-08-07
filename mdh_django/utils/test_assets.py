@@ -2,6 +2,7 @@ import json
 
 from os.path import join, dirname
 
+
 def AssetPath(testfile, *parts):
     """
         Returns the path to a test asset.
@@ -10,6 +11,7 @@ def AssetPath(testfile, *parts):
     """
     return join(dirname(testfile), *parts)
 
+
 def LoadJSONAsset(asset):
     """ LoadAsset loads a test asset """
 
@@ -17,5 +19,6 @@ def LoadJSONAsset(asset):
     with open(asset) as f:
         data = json.load(f)
     return data
+
 
 __all__ = ["AssetPath", "LoadJSONAsset"]
