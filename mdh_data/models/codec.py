@@ -1,3 +1,5 @@
+import uuid
+
 from django.apps import apps
 from django.db import models
 
@@ -63,6 +65,8 @@ class Codec(models.Model):
     def serialize_value(cls, value):
         """ Called by the serializer to serialize the value """
         return value
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     item = models.ForeignKey(
         Item, on_delete=models.CASCADE, help_text="Item this this cell represents")
