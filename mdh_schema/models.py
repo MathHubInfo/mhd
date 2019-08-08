@@ -194,6 +194,13 @@ class Collection(ModelWithMetadata):
         # and build the sql
         return Item.objects.raw(SQL), list(properties)
 
+    def semantic(self, *args, **kwargs):
+        """ Same as running .query() and calling .semantic() on each returned value """
+
+        # make the query
+        qset, props = self.query(*args, **kwargs)
+        return map(lambda o: o.semantic(self, props), qset)
+
 
 class PropertyManager(models.Manager):
     @transaction.atomic

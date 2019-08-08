@@ -53,17 +53,26 @@ class Codec(models.Model):
 
         return Codec.normalize_codec_name(cls.objects.model._meta.db_table)
 
+    # A database field containing the value, overwritten by subclass
     value = None
+    # A DRF serializer field (if any) corresponding to the value object
+    _serializer_field = None
 
     @classmethod
     def populate_value(cls, value):
         """ Called by the importer to populate the value """
-        return value
+        if cls._serializer_field is None:
+            return value
+
+        return cls._serializer_field.to_internal_value(value)
 
     @classmethod
     def serialize_value(cls, value):
         """ Called by the serializer to serialize the value """
-        return value
+        if cls._serializer_field is None:
+            return value
+
+        return cls._serializer_field.to_representation(value)
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
