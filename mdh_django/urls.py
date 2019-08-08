@@ -18,8 +18,10 @@ from django.contrib import admin
 from django.urls import include, path
 
 from mdh_schema.router import router as schema_router
+from mdh_data.views import QueryView
 
 urlpatterns = [
+    path('query/<slug:cid>/', QueryView.as_view()),
     path('schema/', include(schema_router.urls)),
     path('admin/', admin.site.urls),
 ]

@@ -49,12 +49,20 @@ Finally, to run the project:
 python manage.py runserver
 ```
 
+Furthermore, for debugging purposes it is also possible to log all queries to the console.
+To do so, start the server with:
+
+```bash
+MDH_LOG_QUERIES=1 python manage.py runserver
+```
+
 ## Database structure
 
 *TODO: Image of layout and explanation*
 
 ## Exposed API
 
+- `/query/$collection/` -- List items in a given collection
 - `/schema/collections/` -- List all collections
     - `/schema/collection/$slug` -- Get a specific collection
 - `/schema/codecs/` -- Lists all codecs

@@ -1,5 +1,5 @@
 # Items are defined here
-from .item import Item
+from .item import Item, SemanticItemSerializer
 
 # Codec and all the codecs
 from .codec import Codec
