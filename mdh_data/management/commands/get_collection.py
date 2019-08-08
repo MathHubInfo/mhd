@@ -47,7 +47,7 @@ class Command(BaseCommand):
                 'p'), kwargs['properties'].split(","))
 
         # build te queryset
-        qset = collection.query(offset=kwargs['from'], limit=kwargs['limit'])
+        qset, props = collection.query(offset=kwargs['from'], limit=kwargs['limit'])
 
         if kwargs['sql']:
             print(qset.query)
@@ -59,5 +59,5 @@ class Command(BaseCommand):
             return
 
 
-        results = [result.semantic(collection) for result in qset]
+        results = [result.semantic(collection, props) for result in qset]
         print(json.dumps(results, indent=4))

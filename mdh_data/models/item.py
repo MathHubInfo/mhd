@@ -24,7 +24,7 @@ class ItemManager(models.Manager):
         for (p, h) in zip(properties, header):
             if p is None:
                 raise ValueError(
-                    'Property {0:s} does not exist on {1:s}'.format(h, collection))
+                    'Property {0:s} does not exist on {1:s}'.format(h, collection.slug))
 
         if items is None:
             # new items for each property
@@ -74,14 +74,11 @@ class Item(models.Model):
     collections = models.ManyToManyField(
         Collection, help_text="Collection(s) each item occurs in", blank=True)
 
-    def semantic(self, collection):
+    def semantic(self, collection, properties):
         """
             Returns a JSON object representing the semantics of this object.
             Requires query annotation from Item.query(...)
         """
-
-        properties = [collection.get_property(
-            p) for p in self.properties.split(",")]
 
         semantic = {
             p.slug:
@@ -91,5 +88,6 @@ class Item(models.Model):
         }
         semantic["_id"] = str(self.pk)
         return semantic
+
 
 __all__ = ["Item"]

@@ -22,7 +22,7 @@ class PropertyTest(TestCase):
         """ Tests that the property can be used """
 
         # get the trace property
-        trace = Property.objects.get(slug="trace")
+        trace = Property.objects.get(slug="f0")
 
         # checks that the codec_model exists
         self.assertIs(trace.codec_model, StandardInt)

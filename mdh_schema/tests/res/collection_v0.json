@@ -1,24 +1,40 @@
 {
-    "displayName": "Demo Collection",
-    "slug": "DemoCollection",
+    "displayName": "Functions on Z/4Z",
+    "slug": "z4zFunctions",
     "metadata": {
-        "uri": "https://example.com/collections?DemoCollection"
+        "uri": "https://mathhub.com/examples/?Z4ZFunction"
     },
     "properties": [
         {
-            "slug": "trace",
-            "displayName": "Trace",
+            "displayName": "f(0)",
+            "slug": "f0",
             "codec": "StandardInt",
             "metadata": {
-                "uri": "https://example.com/collections?DemoCollection?trace"
+                "uri": "https://mathhub.com/examples/?Z4ZFunction?f0"
             }
         },
         {
-            "slug": "orthogonal",
-            "displayName": "Orthogonal",
+            "displayName": "f(1)",
+            "slug": "f1",
+            "codec": "StandardInt",
+            "metadata": {
+                "uri": "https://mathhub.com/examples/?Z4ZFunction?f1"
+            }
+        },
+        {
+            "displayName": "f(2)",
+            "slug": "f2",
+            "codec": "StandardInt",
+            "metadata": {
+                "uri": "https://mathhub.com/examples/?Z4ZFunction?f2"
+            }
+        },
+        {
+            "displayName": "Invertible",
+            "slug": "invertible",
             "codec": "StandardBool",
             "metadata": {
-                "uri": "https://example.com/collections?DemoCollection?orthogonal"
+                "uri": "https://mathhub.com/examples/?Z4ZFunction?invertible"
             }
         }
     ]

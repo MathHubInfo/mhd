@@ -110,13 +110,15 @@ class Collection(ModelWithMetadata):
     def __str__(self):
         return "Collection {0!r}".format(self.slug)
 
-    def query(self, properties=None, limit=None, offset=None):
+    def query(self, properties=None, limit=None, offset=None, order=True):
         """
             Builds a query returning items in this collection with
             annotated properties prop.
             If properties is None, all collection properties are returned.
             Limit and Offset can be used for pagination, however using only
             offset is not supported.
+            Returns a tuple (query, properties) of the query itself and the list
+            of queried properties
         """
 
         # lazy import
@@ -142,9 +144,9 @@ class Collection(ModelWithMetadata):
             properties = self.property_set.all()
 
         PROPERTIES = []
-        SELECTS = ["I.id as id", "%s as properties"]
+        SELECTS = ["I.id as id"]
         JOINS = ["FROM {} as I".format(Item._meta.db_table)]
-        SLICING = []
+        SUFFIXES = []
 
         for prop in properties:
             # the physical table to look up the values in
@@ -175,17 +177,22 @@ class Collection(ModelWithMetadata):
             JOINS.append(
                 "ON I.id == {0:s}.item_id AND {0:s}.active AND {0:s}.prop_id == {1:s}".format(virtual_table, physical_prop_id))
 
+        # add an order by clause
+        if order:
+            SUFFIXES.append(" ORDER BY id") # TODO: Allow ordering by an abitrary property
+
         # and build the slicing clauses
-        if (limit is not None) and (offset is not None):
-            SLICING.append("LIMIT {0:d}".format(limit))
-            SLICING.append("OFFSET {0:d}".format(offset))
+        if (limit is not None):
+            SUFFIXES.append("LIMIT {0:d}".format(limit))
+            if (offset is not None):
+                SUFFIXES.append("OFFSET {0:d}".format(offset))
 
         # Build the final query and return it inside a raw
         SQL = "SELECT {} {} {}".format(
-            ",".join(SELECTS), " ".join(JOINS), " ".join(SLICING))
+            ",".join(SELECTS), " ".join(JOINS), " ".join(SUFFIXES))
 
         # and build the sql
-        return Item.objects.raw(SQL, [','.join(PROPERTIES)])
+        return Item.objects.raw(SQL), list(properties)
 
 
 class PropertyManager(models.Manager):
