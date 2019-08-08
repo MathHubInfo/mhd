@@ -1,7 +1,6 @@
-import uuid
-
 from django.db import models, transaction
 
+from mdh_django.utils import uuid4
 from mdh_schema.models import Collection
 
 
@@ -69,7 +68,7 @@ class Item(models.Model):
 
     objects = ItemManager()
 
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
 
     collections = models.ManyToManyField(
         Collection, help_text="Collection(s) each item occurs in", blank=True)

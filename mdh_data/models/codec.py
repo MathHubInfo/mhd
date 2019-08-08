@@ -1,10 +1,9 @@
-import uuid
-
 from django.apps import apps
 from django.db import models
 
 from mdh_provenance.models import Provenance
 from mdh_schema.models import Property
+from mdh_django.utils import uuid4
 
 from .item import Item
 
@@ -55,7 +54,10 @@ class Codec(models.Model):
 
     # A database field containing the value, overwritten by subclass
     value = None
+
     # A DRF serializer field (if any) corresponding to the value object
+    # may be omitted iff 'value' can be directly serialized from / to json
+    # (e.g. when using integers)
     _serializer_field = None
 
     @classmethod
@@ -74,7 +76,7 @@ class Codec(models.Model):
 
         return cls._serializer_field.to_representation(value)
 
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
 
     item = models.ForeignKey(
         Item, on_delete=models.CASCADE, help_text="Item this this cell represents")
