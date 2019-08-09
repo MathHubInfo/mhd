@@ -33,6 +33,19 @@ class CodecManager(models.Manager):
         return tuple(filter(lambda clz: issubclass(clz, Codec), apps.get_models()))
 
     @staticmethod
+    def collect_operators(codecs=None):
+        """ Returns a tuple of operators supported by the given codecs """
+
+        if codecs is None:
+            codecs = CodecManager.find_all_codecs()
+
+        ops = set()
+        for codec in codecs:
+            ops.extend(codec.get_supported_codecs)
+
+        return tuple(ops)
+
+    @staticmethod
     @lru_cache(maxsize=None)
     def find_codec(name, normalize=True):
         """ Finds a Codec By Name """
@@ -86,6 +99,39 @@ class Codec(models.Model):
             return value
 
         return cls._serializer_field.to_representation(value)
+
+    # A list of supported operators
+    operators = None
+    @classmethod
+    @memoized_method(maxsize=None)
+    def get_supported_operators(cls):
+        """ Returns a tuple of operators supported by this class """
+
+        if cls.operators is None:
+            return tuple()
+
+        return tuple(cls.operators)
+
+    # below are the operator methods, which implement operating on this codec
+    # they are called with a database column name, an operator (from get_supported_operators())
+    # and literal value (a string, a boolean, a number, or a list of those)
+    # they should be implemented by the codec subclass and should return a pair of
+    # (SQL, params) where params is a list of params as used by Manager.raw()
+
+    @classmethod
+    def operate_left(cls, literal, operator, db_column):
+        """ Implements literal <operator> db_column """
+        raise NotImplementedError
+
+    @classmethod
+    def operate_right(cls, db_column, operator, literal):
+        """ Implements db_column <operator> literal """
+        raise NotImplementedError
+
+    @classmethod
+    def operator_both(cls, db_column1, operator, db_column2):
+        """ Implements db_column1 <operator> db_column2 """
+        raise NotImplementedError
 
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
 

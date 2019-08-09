@@ -110,6 +110,15 @@ class Collection(ModelWithMetadata):
     def __str__(self):
         return "Collection {0!r}".format(self.slug)
 
+    @property
+    def codecs(self):
+        """ An iterator for the codecs of this collection """
+        codecs = set()
+        for prop in self.property_set:
+            codecs.add(prop.codec_model)
+        return codecs
+
+
     def query(self, properties=None, limit=None, offset=None, order=True):
         """
             Builds a query returning items in this collection with
