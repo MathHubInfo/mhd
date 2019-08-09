@@ -2,7 +2,7 @@ import os
 import os.path
 import unittest
 
-import pep8
+import pycodestyle
 
 ignore_patterns = (
     'venv', '.git', '__pycache__', 'migrations')
@@ -22,7 +22,7 @@ class Pep8ComplianceTest(unittest.TestCase):
         return False
 
     def test_pep8_compliance(self):
-        style = pep8.StyleGuide(quiet=False, ignore="E501")
+        style = pycodestyle.StyleGuide(quiet=False, ignore="E501")
         errors = 0
         for root, _, files in os.walk(ROOT):
             if self._ignore(root):
