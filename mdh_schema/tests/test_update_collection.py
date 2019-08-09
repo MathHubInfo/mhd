@@ -1,23 +1,23 @@
+from .collectionv0 import CollectionV0Test
 from django.core.management import call_command
 from django.test import TestCase
 from rest_framework.test import APIClient
 
 from mdh_django.utils import LoadJSONAsset, AssetPath
 
-INITIAL_COLLECTION_PATH = AssetPath(__file__, "res", "collection_v0.json")
-
 DEMO_COLLECTION_PATH = AssetPath(__file__, "res", "collection_v1.json")
 DEMO_COLLECTION_ASSET = LoadJSONAsset(DEMO_COLLECTION_PATH)
 
 
-class UpdateCollectionTest(TestCase):
+class UpdateCollectionTest(CollectionV0Test, TestCase):
 
     def setUp(self):
         """ Creates the demo collection using the upsert command """
 
-        # create and update the collection
-        call_command('upsert_collection', INITIAL_COLLECTION_PATH,
-                     update=False, quiet=True)
+        # create the collection
+        super().setUp()
+
+        # update the collection
         call_command('upsert_collection', DEMO_COLLECTION_PATH,
                      update=True, quiet=True)
 

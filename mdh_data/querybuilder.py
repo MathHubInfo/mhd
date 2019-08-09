@@ -3,7 +3,7 @@ from PreJsPy import PreJsPy
 from .models import CodecManager
 
 
-class QueryParser(object):
+class QueryBuilder(object):
     def __call__(self, query, properties):
         """ Parses a query for a given collection """
 
@@ -19,16 +19,14 @@ class QueryParser(object):
         # create a new parser
         parser = PreJsPy()
 
-        # binary operators
-
         # built-ins
         bin_ops = {
             '||': 1, '&&': 1,
         }
 
-        # collect the custom operators
+        # collect the custom operators with a higher precendence (binding power)
         for op in CodecManager.collect_operators(map(lambda p: p.codec_model, properties)):
-            bin_ops[op] = 1
+            bin_ops[op] = 2
 
         parser.setBinaryOperators(bin_ops)
 
@@ -55,32 +53,32 @@ class QueryParser(object):
         self._raise_error_for_type(tp)
 
     def _process_logical_or_operator(self, tree, properties):
-        left = self._get_lop_type(tree['left'])
-        right = self._get_lop_type(tree['right'])
+        left = self._get_lli_type(tree['left'])
+        right = self._get_lli_type(tree['right'])
 
         if left == 'literal' and right == 'identifier':
             return self._process_left(tree, properties)
-        elif left == 'identifier' and right == 'literal'
-            return self._operate_right(tree, properties)
+        elif left == 'identifier' and right == 'literal':
+            return self._process_right(tree, properties)
         elif left == 'identifier' and right == 'identifier':
-            return self._operator_both(tree, properties)
+            return self._process_both(tree, properties)
         elif left == 'literal' and right == 'literal':
             raise ValueError(
                 'Binary operations with only literals is not supported. ')
-        elif left == 'operator' and right == 'operator':
+        elif left == 'logical' and right == 'logical':
             return self._process_operator(tree, properties)
         else:
             raise ValueError(
                 'Comparing logical expressions with a literal is not supported. ')
 
-    def _get_lop_type(self, tree):
+    def _get_lli_type(self, tree):
         """ Checks if an expression is potentially a logical operator or a literal """
 
         tp = tree['type']
         if tp in ['Literal', 'ArrayExpression']:
             return 'literal'
-        elif tp in ['BinaryExpression']:
-            return 'operator'
+        elif tp in ['BinaryExpression', 'UnaryExpression']:
+            return 'logical'
         elif tp == 'Identifier':
             return 'identifier'
 
@@ -88,30 +86,35 @@ class QueryParser(object):
 
     def _process_left(self, tree, properties):
         op = tree['operator']
-        lit = self._process_literal(tree['left'])
-        prop, codec, column = self._resolve_codec(tree['right']['value'], op)
-        return codec.operate_left(lit, op, column))
+
+        prop, codec, column = self._resolve_codec(tree['right']['name'], op, properties)
+        lit = codec.populate_value(self._process_literal(tree['left']))
+        if not codec.is_valid_operand(lit):
+            raise ValueError('{} is not a valid operand for codec {}'.format(lit, codec.get_codec_name()))
+        return codec.operate_left(lit, op, column)
 
     def _process_right(self, tree, properties):
         op=tree['operator']
-        prop, codec, column=self._resolve_codec(tree['left']['value'], op)
-        lit=self._process_literal(tree['right'])
-        return codec.operate_right(column, op, lit))
+        prop, codec, column=self._resolve_codec(tree['left']['name'], op, properties)
+        lit = codec.populate_value(self._process_literal(tree['right']))
+        if not codec.is_valid_operand(lit):
+            raise ValueError('{} is not a valid operand for codec {}'.format(lit, codec.get_codec_name()))
+        return codec.operate_right(column, op, lit)
 
     def _process_both(self, tree, properties):
         op=tree['operator']
 
-        lvalue=tree['left']['value']
-        rvalue=tree['right']['value']
+        lvalue=tree['left']['name']
+        rvalue=tree['right']['name']
 
-        propL, codecL, columnL=self._resolve_codec(lvalue, op)
-        propR, codecR, columnR=self._resolve_codec(rvalue, op)
+        propL, codecL, columnL=self._resolve_codec(lvalue, op, properties)
+        propR, codecR, columnR=self._resolve_codec(rvalue, op, properties)
 
         if codecL is not codecR:
             raise ValueError(
                 "Cannot compare properties {} and {}: Distinct codecs are not supported. ".format(lvalue, rvalue))
 
-        return codec.operate_operator_both(propL, op, propR)
+        return codecL.operate_both(columnL, op, columnR)
 
     def _resolve_codec(self, slug, op, properties):
         """ Returns a triple (property, codec, column) for a given identifier """
@@ -126,7 +129,7 @@ class QueryParser(object):
             raise ValueError("Unknown property {}".format(slug))
 
         codec=prop.codec_model
-        if not op in codec.get_supported_operators():
+        if not op in codec.operators:
             raise ValueError("Codec {} does not support operator {}".format(
                 codec.get_codec_name(), op))
 
@@ -155,7 +158,7 @@ class QueryParser(object):
 
         # prefix a not in sql syntax
         sql, params=self._process_logical(tree['argument'], properties)
-        return 'NOT ({})'.format(sql), params
+        return 'NOT({})'.format(sql), params
 
     def _process_operator(self, tree, properties):
         """ Processes a binary logical operator """
@@ -168,7 +171,7 @@ class QueryParser(object):
         leftsql, leftparams=self._process_logical(tree['left'], properties)
         rightsql, rightparams=self._process_logical(tree['right'], properties)
 
-        return '({}) {} ({})'.format(leftsql, rightsql), leftparams + rightparams
+        return '({}) {} ({})'.format(leftsql, op, rightsql), leftparams + rightparams
 
     def _raise_error_for_type(self, tp):
         """ Raises a type-specific error message for tp """

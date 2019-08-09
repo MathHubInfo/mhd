@@ -1,4 +1,3 @@
-from django.core.management import call_command
 from django.test import TestCase
 from rest_framework.test import APIClient
 
@@ -7,16 +6,9 @@ from mdh_django.utils import LoadJSONAsset, AssetPath
 DEMO_COLLECTION_PATH = AssetPath(__file__, "res", "collection_v0.json")
 DEMO_COLLECTION_ASSET = LoadJSONAsset(DEMO_COLLECTION_PATH)
 
+from .collectionv0 import CollectionV0Test
 
-class CreateCollectionTest(TestCase):
-
-    def setUp(self):
-        """ Creates the demo collection using the upsert command """
-
-        # create the collection
-        call_command('upsert_collection', DEMO_COLLECTION_PATH,
-                     update=False, quiet=True)
-
+class CreateCollectionTest(CollectionV0Test, TestCase):
     def test_api_all_collections(self):
         """ Checks that the demo collection is the only item in the list of collections """
 

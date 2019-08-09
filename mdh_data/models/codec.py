@@ -34,16 +34,16 @@ class CodecManager(models.Manager):
 
     @staticmethod
     def collect_operators(codecs=None):
-        """ Returns a tuple of operators supported by the given codecs """
+        """ Returns a set containing all know operators """
 
         if codecs is None:
             codecs = CodecManager.find_all_codecs()
 
         ops = set()
         for codec in codecs:
-            ops.extend(codec.get_supported_codecs)
+            ops.update(codec.operators)
 
-        return tuple(ops)
+        return ops
 
     @staticmethod
     @lru_cache(maxsize=None)
@@ -101,37 +101,47 @@ class Codec(models.Model):
         return cls._serializer_field.to_representation(value)
 
     # A list of supported operators
-    operators = None
+    operators = ()
+
+    # if not None, the query builder will enforce that the operand is of this class
+    # using the method is_valid_operand below
+    operator_type = None
     @classmethod
-    @memoized_method(maxsize=None)
-    def get_supported_operators(cls):
-        """ Returns a tuple of operators supported by this class """
+    def is_valid_operand(cls, literal):
+        """ Checks if the provided literal is a valid argument to operator (left || right) on """
+        if cls.operator_type is None:
+            return True
+        return isinstance(literal, cls.operator_type)
 
-        if cls.operators is None:
-            return tuple()
-
-        return tuple(cls.operators)
-
-    # below are the operator methods, which implement operating on this codec
-    # they are called with a database column name, an operator (from get_supported_operators())
-    # and literal value (a string, a boolean, a number, or a list of those)
-    # they should be implemented by the codec subclass and should return a pair of
-    # (SQL, params) where params is a list of params as used by Manager.raw()
+    # Next, the implementation of operating on codec values. There are three supported
+    # kind of operations, operating with a literal (constant) on the left, the right and
+    # comparing two different properties of the same codec.
+    # These are implemented by the functions operate_left, operate_right, operate_both
+    # below. The functions return a pair of (sql_string, args) as would be passed to
+    # a .raw() query.
+    #
+    # By default, operators map directly to sql operators.
+    # Note that the implementation is sql-injection safe, as only operators set in
+    # the 'operators' property are passed to this function and column names are not
+    # user controlled.
 
     @classmethod
     def operate_left(cls, literal, operator, db_column):
         """ Implements literal <operator> db_column """
-        raise NotImplementedError
+
+        return "%s {} {}".format(operator, db_column), [cls.serialize_value(literal)]
 
     @classmethod
     def operate_right(cls, db_column, operator, literal):
         """ Implements db_column <operator> literal """
-        raise NotImplementedError
+
+        return "{} {} %s".format(db_column, operator), [cls.serialize_value(literal)]
 
     @classmethod
-    def operator_both(cls, db_column1, operator, db_column2):
+    def operate_both(cls, db_column1, operator, db_column2):
         """ Implements db_column1 <operator> db_column2 """
-        raise NotImplementedError
+
+        return "{} {} {}".format(db_column1, operator, db_column2), []
 
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
 

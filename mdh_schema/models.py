@@ -114,7 +114,7 @@ class Collection(ModelWithMetadata):
     def codecs(self):
         """ An iterator for the codecs of this collection """
         codecs = set()
-        for prop in self.property_set:
+        for prop in self.property_set.all():
             codecs.add(prop.codec_model)
         return codecs
 

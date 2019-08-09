@@ -11,7 +11,7 @@ CODEC_SI_PATH = AssetPath(__file__, "res", "codec_standardint.json")
 CODEC_SI_ASSET = LoadJSONAsset(CODEC_SI_PATH)
 
 
-class CollectionAPITest(TestCase):
+class CodecAPITest(TestCase):
 
     def test_api_all_collections(self):
         """ Checks that the demo collection is the only item in the list of collections """
