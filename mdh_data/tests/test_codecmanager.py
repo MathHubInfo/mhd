@@ -50,10 +50,10 @@ class CodecManagerTest(TestCase):
         """ Checks that the collect_operators function works as expected """
 
         self.assertSetEqual(CodecManager.collect_operators(
-            [StandardBool]), set(["==", "!="]), "Test that collecting only StandardBool operators works as expected")
+            [StandardBool]), set(["=", "!="]), "Test that collecting only StandardBool operators works as expected")
 
         self.assertSetEqual(CodecManager.collect_operators([StandardInt, StandardBool]),
-                            set(['==', '<', '<=', '>', '>=', '!=']),
+                            set(['=', '<', '<=', '>', '>=', '!=']),
                             "Test that collecting int and bool operators works as expected")
 
     def test_is_valid_operand(self):

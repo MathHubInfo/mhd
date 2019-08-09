@@ -43,11 +43,11 @@ class QueryBuilderTest(Z4ZTest, TestCase):
         self.assertListEqual(q5args, [1, 2])
 
         # logical not
-        q6sql, q6args = qb("!(f1 == 1)", self.properties)
-        self.assertEqual(q6sql, 'NOT(T_f1.value == %s)')
+        q6sql, q6args = qb("!(f1 = 1)", self.properties)
+        self.assertEqual(q6sql, 'NOT(T_f1.value = %s)')
         self.assertListEqual(q6args, [1])
 
         # big combination
-        q7sql, q7args = qb("!(!(f1 == 1) || f2 == 0)", self.properties)
-        self.assertEqual(q7sql, 'NOT((NOT(T_f1.value == %s)) OR (T_f2.value == %s))')
+        q7sql, q7args = qb("!(!(f1 = 1) || f2 = 0)", self.properties)
+        self.assertEqual(q7sql, 'NOT((NOT(T_f1.value = %s)) OR (T_f2.value = %s))')
         self.assertListEqual(q7args, [1, 0])

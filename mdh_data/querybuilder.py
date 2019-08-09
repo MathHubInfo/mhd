@@ -11,7 +11,7 @@ class QueryBuilder(object):
         try:
             result = parser.parse(query)
         except Exception as e:
-            raise ValueError('Error while parsing query: {}'.format(e))
+            raise QueryBuilderError('Error while parsing query: {}'.format(e))
 
         return self._process_logical(result, properties)
 
@@ -63,12 +63,12 @@ class QueryBuilder(object):
         elif left == 'identifier' and right == 'identifier':
             return self._process_both(tree, properties)
         elif left == 'literal' and right == 'literal':
-            raise ValueError(
+            raise QueryBuilderError(
                 'Binary operations with only literals is not supported. ')
         elif left == 'logical' and right == 'logical':
             return self._process_operator(tree, properties)
         else:
-            raise ValueError(
+            raise QueryBuilderError(
                 'Comparing logical expressions with a literal is not supported. ')
 
     def _get_lli_type(self, tree):
@@ -90,7 +90,7 @@ class QueryBuilder(object):
         prop, codec, column = self._resolve_codec(tree['right']['name'], op, properties)
         lit = codec.populate_value(self._process_literal(tree['left']))
         if not codec.is_valid_operand(lit):
-            raise ValueError('{} is not a valid operand for codec {}'.format(lit, codec.get_codec_name()))
+            raise QueryBuilderError('{} is not a valid operand for codec {}'.format(lit, codec.get_codec_name()))
         return codec.operate_left(lit, op, column)
 
     def _process_right(self, tree, properties):
@@ -98,7 +98,7 @@ class QueryBuilder(object):
         prop, codec, column=self._resolve_codec(tree['left']['name'], op, properties)
         lit = codec.populate_value(self._process_literal(tree['right']))
         if not codec.is_valid_operand(lit):
-            raise ValueError('{} is not a valid operand for codec {}'.format(lit, codec.get_codec_name()))
+            raise QueryBuilderError('{} is not a valid operand for codec {}'.format(lit, codec.get_codec_name()))
         return codec.operate_right(column, op, lit)
 
     def _process_both(self, tree, properties):
@@ -111,7 +111,7 @@ class QueryBuilder(object):
         propR, codecR, columnR=self._resolve_codec(rvalue, op, properties)
 
         if codecL is not codecR:
-            raise ValueError(
+            raise QueryBuilderError(
                 "Cannot compare properties {} and {}: Distinct codecs are not supported. ".format(lvalue, rvalue))
 
         return codecL.operate_both(columnL, op, columnR)
@@ -126,11 +126,11 @@ class QueryBuilder(object):
                 prop=p
                 break
         if prop == None:
-            raise ValueError("Unknown property {}".format(slug))
+            raise QueryBuilderError("Unknown property {}".format(slug))
 
         codec=prop.codec_model
         if not op in codec.operators:
-            raise ValueError("Codec {} does not support operator {}".format(
+            raise QueryBuilderError("Codec {} does not support operator {}".format(
                 codec.get_codec_name(), op))
 
 
@@ -154,7 +154,7 @@ class QueryBuilder(object):
         """ Processes a unary logical operator """
         op=tree['operator']
         if op != '!':
-            raise ValueError('Unknown unary operator {} found'.format(op))
+            raise QueryBuilderError('Unknown unary operator {} found'.format(op))
 
         # prefix a not in sql syntax
         sql, params=self._process_logical(tree['argument'], properties)
@@ -165,7 +165,7 @@ class QueryBuilder(object):
 
         op=({'&&': 'AND', '||': 'OR'}).get(tree['operator'])
         if op is None:
-            raise ValueError(
+            raise QueryBuilderError(
                 'Unknown binary operator {} found'.format(tree['operator']))
 
         leftsql, leftparams=self._process_logical(tree['left'], properties)
@@ -176,25 +176,28 @@ class QueryBuilder(object):
     def _raise_error_for_type(self, tp):
         """ Raises a type-specific error message for tp """
         if tp == 'Compound':
-            raise ValueError(
+            raise QueryBuilderError(
                 'Unexpected Compound: Multiple whitespace-seperated operations are not supported. ')
         elif tp == 'Identifier':
-            raise ValueError(
+            raise QueryBuilderError(
                 'Unexpected Identifier: Identifiers must be used in boolean expression. ')
         elif tp == 'MemberExpression':
-            raise ValueError(
+            raise QueryBuilderError(
                 'Unexpected MemberExpression: Property members are not supported. ')
         elif tp == 'Literal':
-            raise ValueError(
+            raise QueryBuilderError(
                 'Unexpected Literal: Property members are not supported. ')
         elif tp == 'CallExpression':
-            raise ValueError(
+            raise QueryBuilderError(
                 'Unexpected CallExpression: Function calls are not supported. ')
         elif tp == 'ConditionalExpression':
-            raise ValueError(
+            raise QueryBuilderError(
                 'Unexpected ConditionalExpression: Tertiary operator is not supported. ')
         elif tp == 'ArrayExpression':
-            raise ValueError(
+            raise QueryBuilderError(
                 'Unexpected ArrayExpression: Array is not supported. ')
         else:
-            raise ValueError('Unknown Expression Type: Something went wrong. ')
+            raise QueryBuilderError('Unknown Expression Type: Something went wrong. ')
+
+class QueryBuilderError(Exception):
+    pass

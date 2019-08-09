@@ -11,7 +11,7 @@ class StandardInt(Codec):
     value = models.IntegerField()
     _serializer_field = serializers.IntegerField()
 
-    operators = ('==', '<', '<=', '>', '>=', '!=')
+    operators = ('=', '<', '<=', '>', '>=', '!=')
     @classmethod
     def is_valid_operand(cls, literal):
         """ Checks that the argument is a valid operand """

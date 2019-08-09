@@ -62,11 +62,60 @@ MDH_LOG_QUERIES=1 python manage.py runserver
 
 ## Exposed API
 
-- `/query/$collection/` -- List items in a given collection
+- `/query/$collection/` -- List items in a given collection (see details below)
 - `/schema/collections/` -- List all collections
     - `/schema/collection/$slug` -- Get a specific collection
 - `/schema/codecs/` -- Lists all codecs
     - `/schema/codecs/$name` -- Get a specific codec
+
+### Main Querying Syntax
+
+To Query an item, the `/query/$collection/` API can be used. 
+In addition to the collection slug in the URL, it takes the following GET parameters:
+
+- `page`: A 1-based page ID. Defaults to 1. 
+- `per_page`: Number of entries per page, at most `100`. Defaults to `50`. 
+- `properties`: A comma-separated list of properties of the given collection to return. Defaults to all properties. 
+- `filter`: An additional filter DSL (as specified below).
+
+The filter DSL allows comparing the value of any property to either a literal, or a second property of the same codec. 
+For example:
+
+- `prop1 = 5`: Matches all items where `prop1` has the value `5`
+- `5 < prop2`: Matches all items where `5` is less than the value of `prop2`
+- `prop1 < prop2`: Matches all items where `prop1` is less than the value `prop2`
+
+The exact operators and literals supported vary by codecs. 
+Furthermore, it is not possible to compare property values of different codecs. 
+
+These simple filters can be combined using `&&`, `||` and `!`. For example:
+
+- `prop1 = 5 && prop2 = 17`: Matches all items where `prop1` has the value `5` and `prop2` has the value 17
+- `!(prop1 = 5) && prop2 = 17`: Matches all items where it is not the case that `prop1` has the value `5` and `prop2` has the value 17
+
+Formally, the Filter DSL looks as follows (with the exception of brackets):
+```
+% A top-level query returning a logical expression
+LOGICAL = UNARY | BINARY | FILTER
+% A unary operation, only '!' (logical not)
+UNARY = '!' LOGICAL
+
+% A binary operation, '&&' (AND) and '||' (OR) supported 
+BINARY = LOGICAL BINOP LOGICAL
+BINOP = '&&' | '||'
+
+% A semantic filter 
+FILTER = FILTER_LEFT | FILTER_RIGHT | FILTER_BOTH
+FILTER_LEFT = LITERAL PROPERTY_OPERATOR PROPERTY_IDENTIFIER
+FILTER_RIGHT = PROPERTY_IDENTIFIER PROPERTY_OPERATOR LITERAL
+FILTER_BOTH = PROPERTY_IDENTIFIER PROPERTY_OPERATOR PROPERTY_IDENTIFIER
+
+PROPERTY_OPERATOR = any known property operator
+PROPERTY_IDENTIFIER = any known property slug
+LITERAL = a literal, e.g true, false, a number, a string, or a list of other literals
+```
+
+In addition round brackets can be used for grouping. 
 
 
 ## Tests & Code Style

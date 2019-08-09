@@ -8,5 +8,5 @@ class StandardBool(Codec):
 
     value = models.BooleanField()
 
-    operators = ('==', '!=')
+    operators = ('=', '!=')
     operator_type = bool

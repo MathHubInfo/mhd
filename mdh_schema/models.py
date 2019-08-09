@@ -118,8 +118,7 @@ class Collection(ModelWithMetadata):
             codecs.add(prop.codec_model)
         return codecs
 
-
-    def query(self, properties=None, limit=None, offset=None, order=True):
+    def query(self, properties=None, filter=None, limit=None, offset=None, order=True):
         """
             Builds a query returning items in this collection with
             annotated properties prop.
@@ -132,6 +131,7 @@ class Collection(ModelWithMetadata):
 
         # lazy import
         from mdh_data.models import Item
+        from mdh_data.querybuilder import QueryBuilder
 
         # The queries built by this module look as following:
         #
@@ -182,14 +182,13 @@ class Collection(ModelWithMetadata):
             JOINS.append("LEFT OUTER JOIN {} as {}".format(
                 physical_table, virtual_table))
 
-            # TODO: Additional filters here
             JOINS.append(
                 "ON I.id == {0:s}.item_id AND {0:s}.active AND {0:s}.prop_id == {1:s}".format(virtual_table, physical_prop_id))
 
         # add an order by clause
         if order:
             # TODO: Allow ordering by an abitrary property
-            SUFFIXES.append(" ORDER BY id")
+            SUFFIXES.append("ORDER BY I.id")
 
         # and build the slicing clauses
         if (limit is not None):
@@ -197,12 +196,25 @@ class Collection(ModelWithMetadata):
             if (offset is not None):
                 SUFFIXES.append("OFFSET {0:d}".format(offset))
 
-        # Build the final query and return it inside a raw
-        SQL = "SELECT {} {} {}".format(
-            ",".join(SELECTS), " ".join(JOINS), " ".join(SUFFIXES))
+        # join the appropriate string
+        SQL_SELECTS = ",".join(SELECTS)
+        SQL_JOINS = " ".join(JOINS)
+        SQL_SUFFIXES = " ".join(SUFFIXES)
+
+        # if we have a filter, we need to build it using the querybuilder
+        if filter is not None:
+            qb = QueryBuilder()
+            SQL_FILTER, SQL_ARGS = qb(filter, properties)
+            SQL = "SELECT {} {} WHERE {} {}".format(
+                SQL_SELECTS, SQL_JOINS, SQL_FILTER, SQL_SUFFIXES)
+        else:
+            # Build the final query and return it inside a raw
+            SQL = "SELECT {} {} {}".format(
+                SQL_SELECTS, SQL_JOINS, SQL_SUFFIXES)
+            SQL_ARGS = []
 
         # and build the sql
-        return Item.objects.raw(SQL), list(properties)
+        return Item.objects.raw(SQL, tuple(SQL_ARGS)), list(properties)
 
     def semantic(self, *args, **kwargs):
         """ Same as running .query() and calling .semantic() on each returned value """
