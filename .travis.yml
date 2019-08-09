@@ -15,8 +15,9 @@ before_install:
 install:
   - if [ ! -z "$TRAVIS_NODE_VERSION" ]; then yarn install; fi
   - if [ ! -z "$TRAVIS_PYTHON_VERSION" ]; then pip install -r requirements.txt; fi
+  - if [ ! -z "$TRAVIS_PYTHON_VERSION" ]; then pip install -r requirements-dev.txt; fi
 
 script:
   - if [ ! -z "$TRAVIS_NODE_VERSION" ]; then yarn build; fi
-  - if [ ! -z "$TRAVIS_PYTHON_VERSION" ]; then python manage.py test; fi
+  - if [ ! -z "$TRAVIS_PYTHON_VERSION" ]; then pytest; fi
 

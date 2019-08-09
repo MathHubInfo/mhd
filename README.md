@@ -73,10 +73,16 @@ MDH_LOG_QUERIES=1 python manage.py runserver
 
 Tests for every important feature exist, and are run by Travis CI on every commit. 
 
-To locally run the tests, use:
+To be able to run the tests, you first need to install the development dependencies:
+
+```
+pip install -r requirements-dev.txt
+```
+
+Then you can run the tests with:
 
 ```bash
-python manage.py tests
+pytest
 ```
 
 One non-feature related test is the CodeStyle test. 
