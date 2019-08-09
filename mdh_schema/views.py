@@ -1,6 +1,6 @@
-from rest_framework import response, serializers, views, viewsets
+from rest_framework import response, serializers, viewsets
 
-from mdh_data.models import Codec
+from mdh_data.models import CodecManager
 from mdh_django.utils import DumbJSONField
 
 from django.http import Http404
@@ -12,14 +12,14 @@ class CodecField(serializers.Field):
     """ A field representing the name of a codec """
 
     def to_representation(self, value):
-        if Codec.find_codec(value) is None:
+        if CodecManager.find_codec(value) is None:
             raise serializers.ValidationError(
                 'Codec {0:s} does not exist'.format(value))
 
         return value
 
     def to_internal_value(self, data):
-        if Codec.find_codec(data) is None:
+        if CodecManager.find_codec(data) is None:
             raise serializers.ValidationError(
                 'Codec {0:s} does not exist'.format(data))
 
@@ -67,11 +67,11 @@ class CodecViewSet(viewsets.ViewSet):
 
     def list(self, request, *args, **kwargs):
         serializer = CodecSerializer(
-            instance=Codec.find_all_codecs(), many=True)
+            instance=CodecManager.find_all_codecs(), many=True)
         return response.Response(serializer.data)
 
     def retrieve(self, request, name=None):
-        obj = Codec.find_codec(name, normalize=False)
+        obj = CodecManager.find_codec(name, normalize=False)
         if obj is None:
             raise Http404
 

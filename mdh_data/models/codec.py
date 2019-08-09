@@ -3,9 +3,50 @@ from django.db import models
 
 from mdh_provenance.models import Provenance
 from mdh_schema.models import Property
-from mdh_django.utils import uuid4
+from mdh_django.utils import uuid4, memoized_method
 
 from .item import Item
+
+from functools import lru_cache
+
+
+class CodecManager(models.Manager):
+
+    CODEC_TABLE_PREFIX = 'mdh_data_'
+    @staticmethod
+    def normalize_codec_name(name):
+        """ Normalizes the name of a codec """
+
+        if name.startswith(CodecManager.CODEC_TABLE_PREFIX):
+            name = name[len(CodecManager.CODEC_TABLE_PREFIX):]
+
+        # turn the name into lower case
+        return name.lower()
+
+    @staticmethod
+    @lru_cache(maxsize=None)
+    def find_all_codecs():
+        """ Returns a tuple of all known codecs """
+
+        # we return a tuple here, because those are not mutable
+        # and can hence be safely returned by lru_cache()
+        return tuple(filter(lambda clz: issubclass(clz, Codec), apps.get_models()))
+
+    @staticmethod
+    @lru_cache(maxsize=None)
+    def find_codec(name, normalize=True):
+        """ Finds a Codec By Name """
+
+        # Normalize the name
+        if normalize:
+            name = CodecManager.normalize_codec_name(name)
+
+        # And find a codec with that name
+        for c in CodecManager.find_all_codecs():
+            if c.get_codec_name() == name:
+                return c
+
+        return None
 
 
 class Codec(models.Model):
@@ -14,43 +55,13 @@ class Codec(models.Model):
         abstract = True
         unique_together = [['item', 'prop', 'superseeded_by']]
 
-    CODEC_TABLE_PREFIX = 'mdh_data_'
-    @staticmethod
-    def normalize_codec_name(name):
-        """ Normalizes the name of a codec """
-
-        if name.startswith(Codec.CODEC_TABLE_PREFIX):
-            name = name[len(Codec.CODEC_TABLE_PREFIX):]
-
-        # turn the name into lower case
-        return name.lower()
-
-    @staticmethod
-    def find_all_codecs():
-        """ Returns a list of all Codec Models """
-
-        return filter(lambda clz: issubclass(clz, Codec), apps.get_models())
-
-    @staticmethod
-    def find_codec(name, normalize=True):
-        """ Finds a Codec By Name """
-
-        # Normalize the name
-        if normalize:
-            name = Codec.normalize_codec_name(name)
-
-        # And find a codec with that name
-        for c in Codec.find_all_codecs():
-            if c.get_codec_name() == name:
-                return c
-
-        return None
+    objects = CodecManager()
 
     @classmethod
+    @memoized_method(maxsize=None)
     def get_codec_name(cls):
         """ Gets the name of this codec """
-
-        return Codec.normalize_codec_name(cls.objects.model._meta.db_table)
+        return CodecManager.normalize_codec_name(cls.objects.model._meta.db_table)
 
     # A database field containing the value, overwritten by subclass
     value = None
@@ -91,4 +102,4 @@ class Codec(models.Model):
                                        null=True, blank=True, help_text="Cell this value is superseeded by")
 
 
-__all__ = ["Codec"]
+__all__ = ["Codec", "CodecManager"]

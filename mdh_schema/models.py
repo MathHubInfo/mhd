@@ -179,7 +179,8 @@ class Collection(ModelWithMetadata):
 
         # add an order by clause
         if order:
-            SUFFIXES.append(" ORDER BY id") # TODO: Allow ordering by an abitrary property
+            # TODO: Allow ordering by an abitrary property
+            SUFFIXES.append(" ORDER BY id")
 
         # and build the slicing clauses
         if (limit is not None):
@@ -235,7 +236,7 @@ class PropertyManager(models.Manager):
             def logger(x): return None
 
         # lazy import
-        from mdh_data.models import Codec
+        from mdh_data.models import CodecManager
 
         # performs a very mininmal check that required properties are provided
         if ('displayName' not in value) or ('slug' not in value) or ('codec' not in value):
@@ -252,7 +253,7 @@ class PropertyManager(models.Manager):
         codec = value['codec']
 
         # Make sure that the codec exists
-        if Codec.find_codec(codec) is None:
+        if CodecManager.find_codec(codec) is None:
             raise ValueError('Unknown codec {0:s}'.format(codec))
 
         # Check if the property already exists
@@ -288,9 +289,9 @@ class Property(ModelWithMetadata):
     @property
     def codec_model(self):
         """ Returns the Codec Model belonging to this Property or None """
-        from mdh_data.models import Codec
+        from mdh_data.models import CodecManager
 
-        model = Codec.find_codec(self.codec)
+        model = CodecManager.find_codec(self.codec)
         if model is None:
             raise ValueError(
                 'Can not find Codec Table {0:r}'.format(self.codec))

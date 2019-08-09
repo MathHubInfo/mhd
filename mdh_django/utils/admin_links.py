@@ -1,10 +1,13 @@
-from django.utils.html import format_html
+import functools
+
 from django.urls import reverse
+from django.utils.html import format_html
 
 
 def AdminLink(original):
     """ Decorator that makes a Django admin ForeignKey clickable """
 
+    @functools.wraps(original)
     def wrapper(self, obj):
         o = original(self, obj)
         if o is None:
