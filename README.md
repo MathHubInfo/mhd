@@ -152,7 +152,7 @@ Here is an example of a query URL:
 
 ```
 http://localhost:8000/query/z4zFunctions/?properties=f1,f2&filter=f1%3Df2%26%26f2%3C1
-'''
+```
 
 ## License
 
