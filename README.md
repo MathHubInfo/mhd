@@ -137,6 +137,23 @@ pytest
 One non-feature related test is the CodeStyle test. 
 This enforces [PEP8](https://pep8.readthedocs.io)-compliance except for maximum line length. 
 
+
+## Examples
+
+### Z4Z Functions
+
+After setting up the project (see Project Structure and Setup), run the following two commands (to create the collection and to insert data).
+
+```bash
+python manage.py upsert_collection mdh_data/tests/res/z4z_collection.json
+python manage.py insert_data mdh_data/tests/res/z4z_data.json -c "z4zFunctions" -f "f0,f1,f2,invertible" -p mdh_data/tests/res/z4z_provenance.json
+```
+Here is an example of a query URL:
+
+```
+http://localhost:8000/query/z4zFunctions/?properties=f1,f2&filter=f1%3Df2%26%26f2%3C1
+'''
+
 ## License
 
 This program is free software: you can redistribute it and/or modify
