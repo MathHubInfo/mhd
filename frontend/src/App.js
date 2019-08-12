@@ -39,14 +39,13 @@ export default class ZooApp extends Component {
                 if (i > 0) getParameters += "&";
                 getParameters += getParArr[i];
             }
-            console.log(this.props.api + path + slug + getParameters)
-
+            console.log("fetching", this.props.api + path + slug + getParameters)
             fetch(this.props.api + path + slug + getParameters, {
                 method: "GET",
                 headers: { "Content-Type": "application/json; charset=utf-8" } 
             })
             .then(response => {
-                console.log(response);
+                console.log("response block")
                 return response.json();
             }) // parses response to JSON
             .then(data => callback(data));

@@ -19,8 +19,7 @@ export default class ZooResults extends Component {
         
         this.fetchData = () => {
             const setResults = (newData) => { 
-                console.log("results")
-                console.log(newData)
+                console.log("results callback")
                 var newState = {data: newData.results};
                 this.setState(newState);
             }

@@ -24,9 +24,9 @@ export default class ZooSearch extends Component {
         };
         this.passParameters = this.passParameters.bind(this);
         this.fetchData = () => {
+            console.log("search fetchData")
             const getCounter = (newData) => {
-                console.log("callback in search")
-                console.log(newData)
+                console.log("search callback")
                 var newState = {counter: newData.count};
                 this.setState(newState);
             }
