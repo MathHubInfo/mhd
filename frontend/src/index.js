@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import ZooApp from './App';
 import * as serviceWorker from './serviceWorker';
 
-const api = process.env.REACT_APP_ZOOAPI || (window.location.hostname === "localhost" ? "http://localhost:8080" : "https://api.discretezoo.xyz");
+const api = process.env.REACT_APP_ZOOAPI || (window.location.hostname === "localhost" ? "http://localhost:8000" : "https://api.discretezoo.xyz");
 
 ReactDOM.render(<ZooApp api={api} />, document.getElementById('zooapp'));
 

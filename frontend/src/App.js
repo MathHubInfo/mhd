@@ -2,63 +2,77 @@ import React, { Component } from 'react';
 import ZooSearch from './ZooSearch';
 import ZooResults from './ZooResults';
 import { Container, Row, Col } from 'reactstrap';
-import collectionsData from './config/collectionsData.json';
-
-//import ReactDOM from 'react-dom'
-
-const singleObjectsDisplay = (() => { 
-    var objectsArr = Object.keys(collectionsData);
-    return (objectsArr.length > 1 ? false : objectsArr[0]); 
-})();
+import {getFilterObject} from './util.js';
+/* UTIL */
+import {getQueryURI} from './util.js';
 
 export default class ZooApp extends Component {
     
     constructor(props) {
         super(props);
         this.state = {
-            objects: null,
-            parameters: null,
+            collection: null,
+            filters: "[]",
             counter: null
         };
-        this.passObjects = (objects) => { this.setState({objects: objects}); }
         this.passParameters = (obj) => { this.setState(obj); }
-        this.postData = (route = ``, data = {}) => {
-            return fetch(this.props.api + route, {
-                method: "POST",
-    //                mode: "cors", // no-cors, cors, *same-origin
-    //                cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-    //                credentials: "same-origin", // include, *same-origin, omit
-                headers: { "Content-Type": "application/json; charset=utf-8" },
-    //                redirect: "follow", // manual, *follow, error
-    //                referrer: "no-referrer", // no-referrer, *client
-                body: JSON.stringify(data), // body data type must match "Content-Type" header
-            })
-            .then(response => response.json()); // parses response to JSON
+        const setCollection = (info) => {
+            info.propertyDictionary = {};
+            for (var i = 0; i < info.properties.length; i++) {
+                var p = info.properties[i]
+                info.propertyDictionary[p.slug] = getFilterObject(p);
+            }
+            this.setState({collection: info})
         }
-        if (singleObjectsDisplay) this.state.objects = singleObjectsDisplay;
+
+        this.fetchData = (callback, path, filters = "[]") => {
+            var maybeCollection = /\/([a-zA-Z0-9-_]+)/g.exec(window.location.pathname)
+            var slug = ((!maybeCollection || maybeCollection.length !== 2) ? "" : maybeCollection[1]);
+            
+            var getParArr = [];
+            if (filters !== "[]") getParArr.push("filter=" + getQueryURI(filters))
+//            getParArr.push("filter=f0%3C0")
+            getParArr.push("format=json")
+            
+            var getParameters = "?";
+            for (var i = 0; i < getParArr.length; i++) {
+                if (i > 0) getParameters += "&";
+                getParameters += getParArr[i];
+            }
+            console.log(this.props.api + path + slug + getParameters)
+
+            fetch(this.props.api + path + slug + getParameters, {
+                method: "GET",
+                headers: { "Content-Type": "application/json; charset=utf-8" } 
+            })
+            .then(response => {
+                console.log(response);
+                return response.json();
+            }) // parses response to JSON
+            .then(data => callback(data));
+        }
+        this.fetchData(setCollection, "/schema/collections/");
     }
     
     render() {
-        return(
-            <React.Fragment>
-                <ZooSearch 
-                    objects={this.state.objects}
-                    postData={this.postData}
-                    passObjects={this.passObjects} 
-                    passParameters={this.passParameters}
-                    singleObjectsDisplay={singleObjectsDisplay}
-                />
-                {!(this.state.parameters === null) && 
-                    <ZooResults 
-                        objects={this.state.objects}
-                        parameters={this.state.parameters}
-                        counter={this.state.counter}
-                        postData={this.postData}
+        if (this.state.colection !== null) {
+            return(
+                <React.Fragment>
+                    <ZooSearch 
+                        fetchData={this.fetchData}
+                        collection={this.state.collection}
+                        passParameters={this.passParameters}
                     />
-                }
-                <ZooFooter />
-            </React.Fragment>
-        );
+                    <ZooResults
+                        fetchData={this.fetchData}
+                        collection={this.state.collection}
+                        parameters={this.state.parameters}
+                    />
+                    <ZooFooter />
+                </React.Fragment>
+            );
+        }
+        else return null;
     }
 
 }

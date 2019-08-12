@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { Col, Button, ButtonGroup } from 'reactstrap';
 import {ZooInfoButton} from './ZooReusables';
-/* DATA */
-import objectProperties from './config/objectProperties.json';
+import {getFilterObject} from './util.js';
 
 /* * * * * * * * * * * * * * * * * * * * * * * * *
     Handling filters
@@ -11,36 +10,30 @@ import objectProperties from './config/objectProperties.json';
     true/false: boolean values (default = true)
     /^(=|==|<=|>=|<|>|<>|!=)(\d+\.?\d*)$/
  * * * * * * * * * * * * * * * * * * * * * * * * */
-class ZooFilters extends Component {
-
+export default class ZooFilters extends Component {
+    
     constructor(props) {
         super(props);
-        this.addFilter = this.addFilter.bind(this);
+        this.state = { selected: [] };
+        this.availableFilters = props.properties.map((p) => getFilterObject(p));
+        this.updateFilters = this.updateFilters.bind(this);
     }
     
-    getCurrentFilters() { return JSON.parse(this.props.filters); }
-    updateFilters(filtersObject) { this.props.callback(JSON.stringify(filtersObject)); }
-    
-    addFilter(name) {
-        const filters = this.getCurrentFilters();
-        filters[name] = null;
-        const newState = {};
-        Object.keys(filters).sort().forEach(function(key) {
-          newState[key] = filters[key];
-        });
-        this.updateFilters(newState);
-    }
-    
-    removeFilter(name) {
-        var newState = this.getCurrentFilters();
-        delete newState[name];
-        this.updateFilters(newState);
-    }
-    
-    updateFilterValue(name, value) {
-        var newState = this.getCurrentFilters();
-        newState[name] = value;
-        this.updateFilters(newState);
+    updateFilters(par) {
+        var newSelected = this.state.selected.slice(0)
+        if (par.action === "add") {
+            newSelected.push({slug: par.slug, value: null});
+        }
+        else { // remove or update
+            var newFilter = { slug: newSelected[par.i].slug }
+            newSelected.splice(par.i, 1);
+            if (par.action === "update") {
+                newFilter.value = par.value;
+                newSelected.push(newFilter);
+            }
+        }
+        this.setState({selected: newSelected});
+        if (par.action !== "add") this.props.callback(JSON.stringify(newSelected)); 
     }
     
     renderAvailable(filters) {
@@ -49,9 +42,10 @@ class ZooFilters extends Component {
                 <div className="zoo-filter-box">
                     <ul className="fa-ul">
                         {filters.map((f) => 
-                            <li key={f} onClick={this.addFilter.bind(this, f)}>
+                            <li key={f.slug}
+                                onClick={() => this.updateFilters({action: "add", slug: f.slug})}>
                                 <span className="fa-li"><i className="fas fa-plus"></i></span>
-                                {f.replace(/_/g, ' ')} <ZooInfoButton value="filter" />
+                                {f.display} <ZooInfoButton value="filter" />
                             </li>
                         )}
                     </ul>
@@ -60,19 +54,19 @@ class ZooFilters extends Component {
         );
     }
     
-    renderSelected(filters) {
+    renderSelected(filters, filterDictionary) {
         return(
             <div className="zoo-search-filter">
                 <div className="zoo-filter-box">
                     {filters.length === 0 && <p className="text-center my-3">Select filters</p>}
                     <ul className="fa-ul">
-                        {filters.map((f) => (
-                            <SelectedFilter key={f.name}
-                                name={f.name}
+                        {filters.map((f, index) => (
+                            <SelectedFilter key={index}
+                                info={filterDictionary[f.slug]}
                                 value={f.value}
-                                type={objectProperties[this.props.objects][f.name].type}
-                                onDoneEditing={(v) => this.updateFilterValue(f.name, v)}
-                                onRemoveFilter={() => this.removeFilter(f.name)}/>
+//                                type={collection.columns[f.name].type}
+                                onDoneEditing={(v) => this.updateFilters({action: "update", i: index, value: v})}
+                                onRemoveFilter={() => this.updateFilters({action: "remove", i: index})}/>
                         ))}
                     </ul>
                 </div>
@@ -81,24 +75,13 @@ class ZooFilters extends Component {
     }
     
     render() {
-        const display = !(this.props.objects === null)
-        var selected = [];
-        var available = [];
-        if (display) {
-            const current = this.getCurrentFilters(); 
-            const currentKeys = Object.keys(current);
-            selected = currentKeys.map((k) => ({name: k, value: current[k]}));
-            available = Object.keys(objectProperties[this.props.objects]).filter((f) => {
-                return objectProperties[this.props.objects][f].isFilter && currentKeys.indexOf(f) < 0;
-            })
-        }
         return(
             <React.Fragment>
                 <Col id="zoo-selected-filters" md="5" sm="7" className="mx-auto my-4">
-                    {display && this.renderSelected(selected)}
+                    {this.renderSelected(this.state.selected, this.props.collection.propertyDictionary)}
                 </Col>
                 <Col id="zoo-choose-filters" md="4" sm="5" className="mx-auto my-4">
-                    {display && this.renderAvailable(available)}
+                    {this.renderAvailable(this.availableFilters)}
                 </Col>
             </React.Fragment>
         );
@@ -110,7 +93,7 @@ class SelectedFilter extends Component {
     
     constructor(props) {
         super(props);
-        this.state = { edit: true, value: (this.props.type === "BoolIdent" ? true : "") };
+        this.state = { edit: true, value: (this.props.info.type === "StandardBool" ? true : "") };
         this.editFilter = this.editFilter.bind(this);
         this.toggleBooleanValue = this.toggleBooleanValue.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
@@ -141,11 +124,11 @@ class SelectedFilter extends Component {
             else actualOperator = operator;
             return actualOperator + value;
         }
-        if (this.props.type === "BoolIdent") {
+        if (this.props.info.type === "StandardBool") {
             valueValid = (this.state.value === true || this.state.value === false)
             if (valueValid) actualValue = this.state.value;
         }
-        if (this.props.type === "IntIdent") {
+        if (this.props.info.type === "StandardInt") {
             const v = this.state.value.replace(/ /g, '');
             const r = /^(=|==|<=|>=|<|>|<>|!=)?(\d+\.?\d*)$/;
             valueValid = r.test(v)
@@ -158,7 +141,7 @@ class SelectedFilter extends Component {
     }
     
     renderEditCondition() {
-        if (this.props.type === "BoolIdent") {
+        if (this.props.info.type === "StandardBool") {
             return(
                 <ButtonGroup id="zoo-choose-objects" className="zoo-bool-filter btn-group-sm">
                     <Button
@@ -183,7 +166,7 @@ class SelectedFilter extends Component {
         return(
             <li key={this.props.name} className={(this.state.edit ? "edit" : "")}>
                 { (this.state.value === false && (!this.state.edit)) && <i>not </i> }
-                {this.props.name.replace(/_/g, ' ')} <ZooInfoButton value="filter" />
+                {this.props.info.display} <ZooInfoButton value="filter" />
                 { !this.state.edit && <i className="zoo-numeric-condition-display">{this.state.value} </i> }
                 { this.state.edit && this.renderEditCondition() }
                 <span className="text-muted small">
@@ -195,5 +178,3 @@ class SelectedFilter extends Component {
         );
     }
 }
-
-export default ZooFilters;

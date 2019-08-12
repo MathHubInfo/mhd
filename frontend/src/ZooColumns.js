@@ -3,8 +3,6 @@ import { Button} from 'reactstrap';
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAngleUp, faAngleDown } from '@fortawesome/free-solid-svg-icons'
-/* DATA */
-import objectProperties from './config/objectProperties.json';
 
 const getItemStyle = (isDragging, draggableStyle) => ({
     userSelect: "none",
@@ -32,9 +30,9 @@ export default class ChooseColumns extends Component {
         this.reset = this.reset.bind(this);
         this.toggleExpanded = this.toggleExpanded.bind(this);
         this.getAvailable = () => {
-            return Object.keys(objectProperties[this.props.objects]).filter((k) => {
-                return this.state.selected.indexOf(k) < 0;
-            })
+//            return Object.keys(collection.columns).filter((k) => {
+//                return this.state.selected.indexOf(k) < 0;
+//            })
         }
     }
 
