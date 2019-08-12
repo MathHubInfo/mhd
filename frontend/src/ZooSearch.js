@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Container, Row, Col, Button } from 'reactstrap';
 import ZooFilters from './ZooFilters';
-import settings from './config/settings.json';
+import { title } from './config'
 /* UTIL */
 import {getQueryURI, sortedKeys} from './util.js';
 import {ZooInfoButton} from './ZooReusables';
@@ -65,7 +65,7 @@ export default class ZooSearch extends Component {
                     { !(this.props.collection === null) &&
                     <Row>
                         <Col lg="3" md="3" sm="12" className="mx-auto my-4" id="select-type">
-                            <h2 className="section-heading text-white" id="step2">{settings.title}</h2>                 
+                            <h2 className="section-heading text-white" id="step2">{title}</h2>                 
                             <p>{this.props.collection.displayName}</p>
                             <p>Matches found: <i>{this.state.counter}</i></p>
                             <div className="buttons">
