@@ -1,42 +1,86 @@
-import React, { Component } from 'react';
+import React, { Component, ChangeEvent } from 'react';
 import { Col, Button, ButtonGroup } from 'reactstrap';
-import {ZooInfoButton} from './ZooReusables';
-import {getFilterObject} from './util.js';
+import { ParsedMDHCollection, MDHFilterSchema, MDHFilter } from "../../client/derived";
+
+interface MDHFilterSelectorProps {
+    /** the current collection */
+    collection: ParsedMDHCollection;
+
+    /** callback when filters are applied  */
+    onFilterUpdate: (filters: MDHFilter[]) => void;
+}
+
+interface MDHFilterSelectorState {
+    selected: TFilter[];
+}
+
+interface TFilter {
+    value: TFilterValue;
+    slug: string;
+}
+
 
 /* * * * * * * * * * * * * * * * * * * * * * * * *
-    Handling filters
+    Filter values
     - - - - - - - - - - - - - - - -
     null: filter selected, no valid value
     true/false: boolean values (default = true)
     /^(=|==|<=|>=|<|>|<>|!=)(\d+\.?\d*)$/
  * * * * * * * * * * * * * * * * * * * * * * * * */
-export default class ZooFilters extends Component {
-    
-    constructor(props) {
-        super(props);
-        this.state = { selected: [] };
-        this.availableFilters = props.properties.map((p) => getFilterObject(p));
-        this.updateFilters = this.updateFilters.bind(this);
+type TFilterValue = string | boolean | null;
+
+type TFilterAction = {
+    action: "add",
+    slug: string;
+} | {
+    action: "remove",
+    i: number;
+} | {
+    action: "update",
+    i: number,
+    value: TFilterValue,
+}
+
+/**
+ * Allows the user to select and edit filters. 
+ * Notifies the parent via onFilterUpdate every time any change occurs. 
+ */
+ export default class MDHFilterSelector extends Component<MDHFilterSelectorProps, MDHFilterSelectorState> {
+
+    state: MDHFilterSelectorState = {
+        selected: [],
     }
+
+    availableFilters: MDHFilterSchema[] = this.props.collection.propertyArray;
     
-    updateFilters(par) {
-        var newSelected = this.state.selected.slice(0)
+    /** updates the state of filters */
+    updateFilters = (par: TFilterAction) => {
+        // fetch a copy of the new filters
+        const newSelected = this.state.selected.slice(0);
+        
         if (par.action === "add") {
+            // add a new element at the end
             newSelected.push({slug: par.slug, value: null});
-        }
-        else { // remove or update
-            var newFilter = { slug: newSelected[par.i].slug }
+        } else {
+            // create a new filter with the old slug, then remove the old one
+            const newFilter: TFilter = { slug: newSelected[par.i].slug, value: null }
             newSelected.splice(par.i, 1);
+
+            // if we had an update, insert the one with the new value
+            // TODO: Why is this added at the end (via .push)
             if (par.action === "update") {
                 newFilter.value = par.value;
                 newSelected.push(newFilter);
             }
         }
+        
+        // update the state and notify the parent
         this.setState({selected: newSelected});
-        if (par.action !== "add") this.props.callback(JSON.stringify(newSelected)); 
+        this.props.onFilterUpdate(newSelected);
     }
     
-    renderAvailable(filters) {
+    /** renders the available filters */
+    renderAvailable(filters: MDHFilterSchema[]) {
         return(
             <div className="zoo-search-filter">
                 <div className="zoo-filter-box">
@@ -54,7 +98,8 @@ export default class ZooFilters extends Component {
         );
     }
     
-    renderSelected(filters, filterDictionary) {
+    /** renders the selected filters */
+    renderSelected(filters: TFilter[], filterDictionary: ParsedMDHCollection["propertyDictionary"]) {
         return(
             <div className="zoo-search-filter">
                 <div className="zoo-filter-box">
@@ -88,48 +133,69 @@ export default class ZooFilters extends Component {
     }
 }
 
+interface TSelectedFilterProps {
+    /** the text of the selected filter */
+    info: MDHFilterSchema;
 
-class SelectedFilter extends Component {
-    
-    constructor(props) {
-        super(props);
-        this.state = { edit: true, value: (this.props.info.type === "StandardBool" ? true : "") };
-        this.editFilter = this.editFilter.bind(this);
-        this.toggleBooleanValue = this.toggleBooleanValue.bind(this);
-        this.handleInputChange = this.handleInputChange.bind(this);
-        this.validateAndUpdate = this.validateAndUpdate.bind(this);
+    /** the value of the selected filter */
+    value: TFilterValue;
+
+    /** callback when a value has been updated */
+    onDoneEditing: (value: TFilterValue) => void;
+
+    /** called when a filter is removed */
+    onRemoveFilter: () => void;
+}
+
+interface TSelectedFilterState {
+    /** are we in edit mode? */
+    edit: boolean;
+
+    /** the value of a filter */
+    value: string | boolean;
+}
+
+
+class SelectedFilter extends Component<TSelectedFilterProps, TSelectedFilterState> {
+
+    state: TSelectedFilterState = {
+        edit: true,
+        value: (this.props.info.type === "StandardBool" ? true : ""),
     }
     
-    editFilter() {
+    editFilter = () => {
         this.setState({ edit: true });
     }
     
-    toggleBooleanValue(newValue) {
+    toggleBooleanValue = (newValue: boolean) => {
         const previousValue = this.state.value;
-        if (newValue === previousValue) { return; }
+        if (newValue === previousValue) return;
+
         this.setState({ value: newValue });
     }
     
-    handleInputChange(e) {
+    handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
         this.setState({ value: e.target.value });
     }
     
-    validateAndUpdate() {
-        var valueValid = false;
-        var actualValue = null;
-        function standardizer(match, operator, value, offset, string) {
-            var actualOperator = null
+    validateAndUpdate = () => {
+        let valueValid = false;
+        let actualValue = null;
+        
+        function standardizer(match: string, operator: string, value: string, offset: number) {
+            let actualOperator = null;
             if (typeof operator === 'undefined' || operator === "=" || operator === "==") actualOperator = "=";
             else if (operator === "<>" || operator === "!=") actualOperator = "!=";
             else actualOperator = operator;
             return actualOperator + value;
         }
+
         if (this.props.info.type === "StandardBool") {
             valueValid = (this.state.value === true || this.state.value === false)
             if (valueValid) actualValue = this.state.value;
         }
         if (this.props.info.type === "StandardInt") {
-            const v = this.state.value.replace(/ /g, '');
+            const v = (this.state.value as string).replace(/ /g, '');
             const r = /^(=|==|<=|>=|<|>|<>|!=)?(\d+\.?\d*)$/;
             valueValid = r.test(v)
             if (valueValid) actualValue = v.replace(r, standardizer);
@@ -140,9 +206,9 @@ class SelectedFilter extends Component {
         }
     }
     
-    renderEditCondition() {
+    renderEditCondition = () => {
         if (this.props.info.type === "StandardBool") {
-            return(
+            return (
                 <ButtonGroup id="zoo-choose-objects" className="zoo-bool-filter btn-group-sm">
                     <Button
                         className={(this.state.value ? "focus" : "")}
@@ -156,15 +222,15 @@ class SelectedFilter extends Component {
         else {
             return (
                 <input className="zoo-numeric-filter" type="text"
-                    onChange={this.handleInputChange.bind(this)}
-                    value={this.state.value} />
+                    onChange={this.handleInputChange}
+                    value={(this.state.value || "").toString()} />
             );
         }
     }
     
     render() {
         return(
-            <li key={this.props.name} className={(this.state.edit ? "edit" : "")}>
+            <li className={(this.state.edit ? "edit" : "")}>
                 { (this.state.value === false && (!this.state.edit)) && <i>not </i> }
                 {this.props.info.display} <ZooInfoButton value="filter" />
                 { !this.state.edit && <i className="zoo-numeric-condition-display">{this.state.value} </i> }
@@ -177,4 +243,15 @@ class SelectedFilter extends Component {
             </li>
         );
     }
+}
+
+/**
+ * A simple informational button
+ */
+export function ZooInfoButton(props: {value: string}) {
+    return(
+        <a href="#!" className={"info-" + props.value}>
+            <i className="far fa-question-circle" data-fa-transform="shrink-4 up-3"></i>
+        </a>
+    );
 }

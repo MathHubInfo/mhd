@@ -15,6 +15,6 @@ ADD yarn.lock /app/yarn.lock
 RUN yarn
 
 EXPOSE 8080
-ENV REACT_APP_ZOOAPI=""
+ENV REACT_APP_MDHAPI=""
 VOLUME /app/src/config
 CMD [ "/bin/bash", "entrypoint.sh" ]
