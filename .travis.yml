@@ -1,0 +1,11 @@
+language: node_js
+
+before_install:
+  - if [ ! -z "$TRAVIS_NODE_VERSION" ]; then cd frontend; fi
+
+install:
+  - yarn install
+
+# very simple test: can we build?
+script:
+  - yarn build
