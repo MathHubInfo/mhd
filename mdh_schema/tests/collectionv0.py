@@ -1,6 +1,6 @@
 from django.core.management import call_command
 
-from mdh_django.utils import AssetPath
+from mdh.utils import AssetPath
 from mdh_schema.models import Collection
 
 DEMO_COLLECTION_PATH = AssetPath(__file__, "res", "collection_v0.json")

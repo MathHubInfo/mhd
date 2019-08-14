@@ -1,7 +1,7 @@
 from rest_framework import response, serializers, viewsets
 
 from mdh_data.models import CodecManager
-from mdh_django.utils import DumbJSONField
+from mdh.utils import DumbJSONField
 
 from django.http import Http404
 

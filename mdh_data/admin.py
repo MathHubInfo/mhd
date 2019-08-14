@@ -1,5 +1,5 @@
 from django.contrib import admin
-from mdh_django.utils import AdminLink
+from mdh.utils import AdminLink
 
 
 from . import models

@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from .models import SemanticItemSerializer
 from mdh_schema.models import Collection
-from mdh_django.utils import DefaultRawPaginator
+from mdh.utils import DefaultRawPaginator
 from rest_framework import exceptions
 
 from .querybuilder import QueryBuilderError

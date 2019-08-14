@@ -3,8 +3,8 @@ from unittest import mock
 
 from django.core.management import call_command
 
-from mdh_django.utils import AssetPath
-from mdh_django.utils.uuid import uuid4_mock
+from mdh.utils import AssetPath
+from mdh.utils.uuid import uuid4_mock
 
 from mdh_schema.models import Collection
 

@@ -3,7 +3,7 @@ from django.db import models
 
 from mdh_provenance.models import Provenance
 from mdh_schema.models import Property
-from mdh_django.utils import uuid4, memoized_method
+from mdh.utils import uuid4, memoized_method
 
 from .item import Item
 

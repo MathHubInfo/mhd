@@ -3,7 +3,7 @@ from django.core.management import call_command
 from django.test import TestCase
 from rest_framework.test import APIClient
 
-from mdh_django.utils import LoadJSONAsset, AssetPath
+from mdh.utils import LoadJSONAsset, AssetPath
 
 DEMO_COLLECTION_PATH = AssetPath(__file__, "res", "collection_v1.json")
 DEMO_COLLECTION_ASSET = LoadJSONAsset(DEMO_COLLECTION_PATH)

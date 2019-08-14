@@ -1,6 +1,6 @@
 from django.db import models
 
-from mdh_django.utils import ModelWithMetadata
+from mdh.utils import ModelWithMetadata
 
 
 class Provenance(ModelWithMetadata):

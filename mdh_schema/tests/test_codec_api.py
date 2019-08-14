@@ -2,7 +2,7 @@ from django.test import TestCase
 from rest_framework.test import APIClient
 import json
 
-from mdh_django.utils import LoadJSONAsset, AssetPath
+from mdh.utils import LoadJSONAsset, AssetPath
 
 CODEC_LIST_PATH = AssetPath(__file__, "res", "codec_list.json")
 CODEC_LIST_ASSET = LoadJSONAsset(CODEC_LIST_PATH)

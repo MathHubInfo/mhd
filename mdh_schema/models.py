@@ -2,7 +2,7 @@ import json
 
 from django.db import models, transaction
 
-from mdh_django.utils import ModelWithMetadata
+from mdh.utils import ModelWithMetadata
 
 
 class CollectionManager(models.Manager):

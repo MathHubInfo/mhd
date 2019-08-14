@@ -3,7 +3,7 @@ from collections import OrderedDict
 from django.db import models, transaction
 from rest_framework import serializers
 
-from mdh_django.utils import uuid4
+from mdh.utils import uuid4
 from mdh_schema.models import Collection
 
 
