@@ -12,7 +12,6 @@ export default function MDHFooter() {
                     <Col lg="4" className="my-5 text-white">
                     </Col>
                     <Col lg="4" className="my-5 text-white">
-                        
                     </Col>
                 </Row>
             </Container>

@@ -1,9 +1,9 @@
 import React from 'react';
-import { MDHProperty } from "./client/rest";
+import { TMDHProperty } from "./client/rest";
 import { Column, CellInfo } from "react-table";
 
 /** builds a column renderer for the given property */
-export function makePresenter(property: MDHProperty): Column<{}> {
+export function makePresenter(property: TMDHProperty): Column<{}> {
     const presenterImpl = presenters.hasOwnProperty(property.codec) ?
         presenters[property.codec] : presenters[""];
     return {

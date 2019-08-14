@@ -15,6 +15,9 @@ interface MDHFilterEditorProps {
 
     /** callback when filters are applied  */
     onFilterApply: (filters: MDHFilter[]) => void;
+
+    /** timeout under which to not show the loading indicator */
+    results_loading_delay: number;
 }
 
 interface MDHFilterStateProps {
@@ -48,7 +51,7 @@ export default class MDHFilterEditor extends React.Component<MDHFilterEditorProp
     }
 
     render() {
-        const { collection, client } = this.props;
+        const { collection, client, results_loading_delay } = this.props;
         const { applied } = this.state;
 
         return (
@@ -58,7 +61,12 @@ export default class MDHFilterEditor extends React.Component<MDHFilterEditorProp
                         <Col lg="3" md="3" sm="12" className="mx-auto my-4" id="select-type">
                             <h2 className="section-heading text-white" id="step2">{title}</h2>                 
                             <p>{collection.displayName}</p>
-                            <MDHCounterDisplay collection={collection} client={client} filters={this.state.filters} />
+                            <MDHCounterDisplay
+                                collection={collection}
+                                client={client}
+                                filters={this.state.filters}
+                                results_loading_delay={results_loading_delay}
+                            />
                             <div className="buttons">
                                 <Button onClick={this.applyFilters} disabled={applied}>Display results</Button>
                             </div>

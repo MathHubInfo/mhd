@@ -12,6 +12,9 @@ interface MDHCounterDisplayProps {
 
     /** current filters */
     filters: MDHFilter[];
+
+    /** timeout under which to not show the loading indicator */
+    results_loading_delay: number;
 }
 
 interface MDHCounterDisplayState {
@@ -25,14 +28,12 @@ interface MDHCounterDisplayState {
     last_update: number;
 }
 
-const COUNTER_MIN_LOADING_TIMEOUT = 100;
-
 /**
  * Displays and updates a counter of the current v
  */
 export default class MDHCounterDisplay extends React.Component<MDHCounterDisplayProps, MDHCounterDisplayState> {
     state: MDHCounterDisplayState = {
-        loading: true,
+        loading: false,
         count: NaN,
         last_update: 0,
     }
@@ -49,13 +50,13 @@ export default class MDHCounterDisplay extends React.Component<MDHCounterDisplay
         
         // we want to set loading to true, to display a loading indicator
         // however, to avoid flashing this indicator when loading is quick
-        // we only display this after {COUNTER_MIN_LOADING_TIMEOUT} ms. 
+        // we only display this after {results_loading_delay} ms. 
         setTimeout(() => {
             this.setState(({ last_update }: MDHCounterDisplayState) => {
                 if (last_update >= time) return null; // an update was applied
                 return { loading: true };
             });
-        }, COUNTER_MIN_LOADING_TIMEOUT);
+        }, this.props.results_loading_delay);
 
 
         // update the counter using the APIClient
@@ -107,7 +108,7 @@ export default class MDHCounterDisplay extends React.Component<MDHCounterDisplay
         if(loading) return <p>Matches found: <i>Loading...</i></p>;
 
         // when something went wrong, display an error
-        if (isNaN(count)) return <p>Matches found: <i>Error</i></p>
+        if (isNaN(count)) return <p>Matches found: <i></i></p>
 
         // else return the actual count
         return <p>Matches found: <i>{count}</i></p>;

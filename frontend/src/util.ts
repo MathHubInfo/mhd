@@ -1,4 +1,4 @@
-import { MDHProperty } from "./client/rest";
+import { TMDHProperty } from "./client/rest";
 import { MDHFilterSchema } from "./client/derived";
 
 /**
@@ -31,7 +31,7 @@ export function getQueryURI(par?: string | null): string {
     return encodeURIComponent(accumulator);
 }
 
-export function getFilterObject(o: MDHProperty): MDHFilterSchema {
+export function getFilterObject(o: TMDHProperty): MDHFilterSchema {
     return {
         isFilter: ["StandardBool", "StandardInt"].indexOf(o.codec) > -1, // TODO: move into codec utils file
         display: o.displayName,

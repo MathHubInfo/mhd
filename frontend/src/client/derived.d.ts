@@ -1,9 +1,9 @@
-import {MDHCollection} from './rest';
+import {TMDHCollection} from './rest';
 
 /**
  * A parsed collection with all derived information needed by any component anywhere
  */
-export interface ParsedMDHCollection extends MDHCollection {
+export interface ParsedMDHCollection extends TMDHCollection {
     /** a map from slug to slug-schema */
     propertyDictionary: {[slug: string]: MDHFilterSchema}
 

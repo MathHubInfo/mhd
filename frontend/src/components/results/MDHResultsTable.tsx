@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import ReactTable, { Column } from 'react-table';
 import { MDHBackendClient } from "../../client";
 import { MDHFilter, ParsedMDHCollection } from "../../client/derived";
-import { DRFPagedResponse, MDHItem } from "../../client/rest";
+import { TDRFPagedResponse, TMDHItem } from "../../client/rest";
 
 interface MDHResultsTableProps {
     /** backend client */
@@ -35,7 +35,7 @@ interface MDHResultsTableState {
     columns: Column<{}>[]
 
     /** the stored MDH data */
-    data: MDHItem<{}>[];
+    data: TMDHItem<{}>[];
 
     /** the total number of pages, or -1 if unknown */
     total_pages: number;
@@ -101,7 +101,7 @@ export default class MDHResultsTable extends Component<MDHResultsTableProps, MDH
         const time = new Date().getTime();
 
         // fetch the results with appropriate errors
-        let results: DRFPagedResponse<MDHItem<{}>> = {count: 0, next: null, previous: null, num_pages: -1, results: []};
+        let results: TDRFPagedResponse<TMDHItem<{}>> = {count: 0, next: null, previous: null, num_pages: -1, results: []};
         try {
             results = await this.props.client.fetchItems(this.props.collection.slug, this.props.columns, this.props.filters, this.state.page, this.state.page_size)
         } catch (e) {

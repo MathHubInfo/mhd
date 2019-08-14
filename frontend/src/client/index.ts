@@ -1,5 +1,5 @@
 import { ParsedMDHCollection, MDHFilterSchema, MDHFilter } from "./derived";
-import { MDHCollection, MDHProperty, DRFPagedResponse, MDHItem } from "./rest";
+import { TMDHCollection, TMDHProperty, TDRFPagedResponse, TMDHItem } from "./rest";
 import { makePresenter } from "../presenters";
 
 export class MDHBackendClient {
@@ -26,7 +26,7 @@ export class MDHBackendClient {
         });
 
         // reject if things failed
-        if (!res.ok) throw new Error(`Request to ${res.url} failed. `);
+        if (!res.ok) throw new ResponseError(res);
 
         // and return the json
         return res.json();
@@ -34,12 +34,20 @@ export class MDHBackendClient {
 
     /** Fetches information about a collection with the given name or rejects */
     async fetchCollection(name: string): Promise<ParsedMDHCollection> {
-        const collection = await this.fetchJSON<MDHCollection>(`/schema/collections/${name}`);
+        const collection = await this.fetchJSON<TMDHCollection>(`/schema/collections/${name}`);
         return MDHBackendClient.parseCollection(collection);
     }
 
+    /** Fetches a list of all collections */
+    async fetchCollections(page = 1, per_page = 20): Promise<TDRFPagedResponse<TMDHCollection>> {
+        return this.fetchJSON(`/schema/collections/`, {
+            page: page.toString(),
+            per_page: per_page.toString()
+        });
+    }
+
     /** parses a collection and prepares appropriate derived values */
-    private static parseCollection(collection: MDHCollection): ParsedMDHCollection {
+    private static parseCollection(collection: TMDHCollection): ParsedMDHCollection {
         const propertyArray = collection.properties.map(MDHBackendClient.getFilterSchema);
         const propertyNames = collection.properties.map(p => p.slug);
 
@@ -53,7 +61,7 @@ export class MDHBackendClient {
     }
 
     /** given a property, return a description of the filter */
-    private static getFilterSchema(prop: MDHProperty): MDHFilterSchema {
+    private static getFilterSchema(prop: TMDHProperty): MDHFilterSchema {
         return {
             isFilter: ["StandardBool", "StandardInt"].indexOf(prop.codec) > -1, // TODO: move into codec utils file
             display: prop.displayName,
@@ -63,7 +71,7 @@ export class MDHBackendClient {
     }
 
     /** Fetches information about a set of collection items */
-    async fetchItems<T extends {}>(collection: string, properties: string[], filters: MDHFilter[], page_number = 1, per_page = 100): Promise<DRFPagedResponse<MDHItem<T>>> {
+    async fetchItems<T extends {}>(collection: string, properties: string[], filters: MDHFilter[], page_number = 1, per_page = 100): Promise<TDRFPagedResponse<TMDHItem<T>>> {
         // Build the filter params
         const params = {
             filter: MDHBackendClient.buildFilter(filters),
@@ -73,7 +81,7 @@ export class MDHBackendClient {
         };
 
         // fetch the results
-        return this.fetchJSON<DRFPagedResponse<MDHItem<T>>>(`/query/${collection}`, params);
+        return this.fetchJSON<TDRFPagedResponse<TMDHItem<T>>>(`/query/${collection}`, params);
     }
 
     /** hashes the parameters to the fetchItems function */
@@ -96,7 +104,7 @@ export class MDHBackendClient {
             per_page: '1',
         };
 
-        const response = await this.fetchJSON<DRFPagedResponse<MDHItem<{}>>>(`/query/${collection}`, params);
+        const response = await this.fetchJSON<TDRFPagedResponse<TMDHItem<{}>>>(`/query/${collection}`, params);
         return response.count;
     }
 
@@ -113,4 +121,15 @@ export class MDHBackendClient {
     static buildFilter(filters: MDHFilter[]): string {
         return filters.filter(f => f.value !== null).map(f => `(${f.slug}${f.value})`).join("&&")
     }
+}
+
+/** Indicates an error while fetching a request */
+export class ResponseError implements Error {
+    constructor(readonly response: Response) {}
+
+    readonly name = 'ResponseError';
+    readonly message = `Request to ${this.response.url} failed. `
+
+    /** indicates if the response returned the not found status */
+    readonly isNotFound = this.response.status === 404;
 }

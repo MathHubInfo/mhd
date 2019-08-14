@@ -1,17 +1,17 @@
 /** @file contains types directly returned from the REST API */
 
 /** a MathDataHub Collection */
-export interface MDHCollection {
+export interface TMDHCollection {
     slug: string;
     displayName: string;
 
     metadata?: any;
     
-    properties: MDHProperty[];
+    properties: TMDHProperty[];
 }
 
 /** a MathDataHub Property */
-export interface MDHProperty {
+export interface TMDHProperty {
     slug: string;
     displayName: string;
 
@@ -21,10 +21,10 @@ export interface MDHProperty {
 }
 
 /** an item in a collection */
-export type MDHItem<P extends {}> = P & {"_id": string};
+export type TMDHItem<P extends {}> = P & {"_id": string};
 
 /** a paged Django Rest Framework Response */
-export interface DRFPagedResponse<T> {
+export interface TDRFPagedResponse<T> {
     /** the total number of results */
     count: number;
     
