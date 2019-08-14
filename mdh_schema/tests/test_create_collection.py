@@ -17,6 +17,7 @@ class CreateCollectionTest(CollectionV0Test, TestCase):
             "count": 1,
             "next": None,
             "previous": None,
+            "num_pages": 1,
             "results": [DEMO_COLLECTION_ASSET]
         }
 
