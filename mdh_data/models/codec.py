@@ -89,6 +89,9 @@ class Codec(models.Model):
         """ Called by the importer to populate the value """
         if cls._serializer_field is None:
             return value
+        
+        if value is None:
+            return None
 
         return cls._serializer_field.to_internal_value(value)
 
@@ -97,6 +100,9 @@ class Codec(models.Model):
         """ Called by the serializer to serialize the value """
         if cls._serializer_field is None:
             return value
+        
+        if value is None:
+            return None
 
         return cls._serializer_field.to_representation(value)
 
