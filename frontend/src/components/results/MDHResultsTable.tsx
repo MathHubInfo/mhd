@@ -115,7 +115,7 @@ export default class MDHResultsTable extends Component<MDHResultsTableProps, MDH
             if (lastUpdate > time) return null; // newer update was already applied
 
             // pick the appropriate columns
-            const columns = this.props.columns.map(c => this.props.collection.propertyColumns[c]);
+            const columns = this.props.columns.map(c => this.props.collection.columnMap.get(c)!);
 
             return {
                 last_update: time,

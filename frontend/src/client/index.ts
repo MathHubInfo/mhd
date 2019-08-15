@@ -1,6 +1,8 @@
-import { ParsedMDHCollection, MDHFilterSchema, MDHFilter } from "./derived";
+import { ParsedMDHCollection, MDHFilter } from "./derived";
 import { TMDHCollection, TMDHProperty, TDRFPagedResponse, TMDHItem } from "./rest";
 import CodecManager from "../codecs";
+import Codec from "../codecs/codec";
+import { Column } from "react-table";
 
 export class MDHBackendClient {
     /**
@@ -51,34 +53,24 @@ export class MDHBackendClient {
 
     /** parses a collection and prepares appropriate derived values */
     private parseCollection(collection: TMDHCollection): ParsedMDHCollection {
-        const propertyArray = collection.properties.map(MDHBackendClient.getFilterSchema);
-        const propertyNames = collection.properties.map(p => p.slug);
 
-        const propertyDictionary: ParsedMDHCollection["propertyDictionary"] = {};
-        propertyArray.forEach(p => { propertyDictionary[p.slug] = p; })
+        const propMap = new Map<string, TMDHProperty>();
+        const codecMap = new Map<string, Codec>();
+        const propertyColumns = new Map<string, Column<{}>>();
 
-        const propertyCodecs: ParsedMDHCollection["propertyCodecs"] = {};
-        const propertyColumns: ParsedMDHCollection["propertyColumns"] = {};
-        collection.properties.forEach(p => {
+        const propertyNames = collection.properties.map(p => {
             const { slug, codec } = p;
-            
-            const c = this.manager.getWithFallback(codec);
-            propertyCodecs[slug] = c;
-            propertyColumns[slug] = c.makeReactTableColumn(p); 
-            
-        })
-        
-        return { propertyArray, propertyDictionary, propertyNames, propertyCodecs, propertyColumns,  ...collection };
-    }
 
-    /** given a property, return a description of the filter */
-    private static getFilterSchema(prop: TMDHProperty): MDHFilterSchema {
-        return {
-            isFilter: ["StandardBool", "StandardInt"].indexOf(prop.codec) > -1, // TODO: move into codec utils file
-            display: prop.displayName,
-            slug: prop.slug,
-            type: prop.codec
-        }
+            propMap.set(slug, p);
+
+            const c = this.manager.getWithFallback(codec);
+            codecMap.set(slug, c);
+            propertyColumns.set(slug, c.makeReactTableColumn(p));
+
+            return p.slug;
+        });
+
+        return { propMap, propertyNames, codecMap, columnMap: propertyColumns,  ...collection };
     }
 
     /** Fetches information about a set of collection items */

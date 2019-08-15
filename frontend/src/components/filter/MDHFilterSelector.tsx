@@ -1,7 +1,8 @@
 import React from 'react';
 import { Col } from 'reactstrap';
-import { MDHFilter, MDHFilterSchema, ParsedMDHCollection } from "../../client/derived";
+import { MDHFilter, ParsedMDHCollection } from "../../client/derived";
 import Codec, { TValidationResult } from "../../codecs/codec";
+import { TMDHProperty } from "../../client/rest";
 
 interface MDHFilterSelectorProps {
     /** the current collection */
@@ -52,7 +53,7 @@ type TFilterAction = {
         selected: [],
     }
 
-    availableFilters: MDHFilterSchema[] = this.props.collection.propertyArray;
+    availableFilters = this.props.collection.properties;
     
     /** updates the state of filters */
     updateFilters = (par: TFilterAction) => {
@@ -81,16 +82,17 @@ type TFilterAction = {
     }
     
     /** renders the available filters */
-    renderAvailable(filters: MDHFilterSchema[]) {
+    renderAvailable() {
+        const { collection: { properties } } = this.props;
         return(
             <div className="zoo-search-filter">
                 <div className="zoo-filter-box">
                     <ul className="fa-ul">
-                        {filters.map((f) => 
-                            <li key={f.slug}
-                                onClick={() => this.updateFilters({action: "add", slug: f.slug})}>
+                        {properties.map((p) => 
+                            <li key={p.slug}
+                                onClick={() => this.updateFilters({action: "add", slug: p.slug})}>
                                 <span className="fa-li"><i className="fas fa-plus"></i></span>
-                                {f.display} <ZooInfoButton value="filter" />
+                                {p.displayName} <ZooInfoButton value="filter" />
                             </li>
                         )}
                     </ul>
@@ -102,7 +104,7 @@ type TFilterAction = {
     /** renders the selected filters */
     renderSelected() {
         const { selected } = this.state;
-        const { collection: { propertyDictionary, propertyCodecs } } = this.props;
+        const { collection: { propMap, codecMap } } = this.props;
 
         return(
             <div className="zoo-search-filter">
@@ -111,8 +113,8 @@ type TFilterAction = {
                     <ul className="fa-ul">
                         {selected.map(({ slug, value }, index) => (
                             <SelectedFilter key={index}
-                                info={propertyDictionary[slug]}
-                                codec={propertyCodecs[slug]}
+                                property={propMap.get(slug)!}
+                                codec={codecMap.get(slug)!}
                                 value={value}
                                 onApplyFilter={(v) => this.updateFilters({action: "update", i: index, value: v})}
                                 onRemoveFilter={() => this.updateFilters({action: "remove", i: index})}/>
@@ -130,7 +132,7 @@ type TFilterAction = {
                     {this.renderSelected()}
                 </Col>
                 <Col id="zoo-choose-filters" md="4" sm="5" className="mx-auto my-4">
-                    {this.renderAvailable(this.availableFilters)}
+                    {this.renderAvailable()}
                 </Col>
             </React.Fragment>
         );
@@ -139,7 +141,7 @@ type TFilterAction = {
 
 interface TSelectedFilterProps<T> {
     /** the schema of this filter */
-    info: MDHFilterSchema;
+    property: TMDHProperty;
 
     /** the values of this codec */
     codec: Codec<any, T>,
@@ -223,7 +225,7 @@ class SelectedFilter<T = any> extends React.Component<TSelectedFilterProps<T>, T
         const { edit, internalValue, valid } = this.state;
         const { onRemoveFilter } = this.props;
 
-        const { info, codec: { filterViewerComponent: FilterViewerComponent, filterEditorComponent: FilterEditorComponent } } = this.props;
+        const { property: { displayName }, codec: { filterViewerComponent: FilterViewerComponent, filterEditorComponent: FilterEditorComponent } } = this.props;
 
         return(
             <li className={(edit ? "edit" : "")}>
@@ -231,14 +233,14 @@ class SelectedFilter<T = any> extends React.Component<TSelectedFilterProps<T>, T
                     edit ?
                         <FilterEditorComponent value={internalValue} valid={valid} onChange={this.handleValueUpdate} onApply={this.handleApply}>
                             <>
-                                { info.display }
+                                { displayName }
                                 <ZooInfoButton value="filter" />
                             </>
                         </FilterEditorComponent>
                         :
                         <FilterViewerComponent value={internalValue}>
                             <>
-                                { info.display }
+                                { displayName }
                                 <ZooInfoButton value="filter" />
                             </>
                         </FilterViewerComponent>

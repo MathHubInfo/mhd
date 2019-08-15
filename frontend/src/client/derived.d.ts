@@ -1,4 +1,4 @@
-import {TMDHCollection} from './rest';
+import {TMDHCollection, TMDHProperty} from './rest';
 import Codec from "../codecs/codec";
 
 /**
@@ -6,36 +6,16 @@ import Codec from "../codecs/codec";
  */
 export interface ParsedMDHCollection extends TMDHCollection {
     /** a map from slug to slug-schema */
-    propertyDictionary: {[slug: string]: MDHFilterSchema}
-
-    /** a list of schema instances */
-    propertyArray: MDHFilterSchema[]
+    propMap: Map<string, TMDHProperty>
 
     /* the names of all properties */
     propertyNames: string[]
 
     /** list of the instantiated codecs for this renderer */
-    propertyCodecs: {[slug: string]: Codec<any, any>}
+    codecMap: Map<string, Codec<any, any>>
 
     /** columns of this property */
-    propertyColumns: {[slug: string]: Column<any>}
-}
-
-/**
- * General description of a filter
- */
-export interface MDHFilterSchema {
-    /** is this a known filter */
-    isFilter: boolean;
-
-    /** what to display the filter as */
-    display: string;
-    
-    /** slug (id) of this filter */
-    slug: string;
-
-    /** type of this filter */
-    type: string;
+    columnMap: Map<string, Column<any>>
 }
 
 /** a single instantiated filter */
