@@ -1,6 +1,5 @@
 import React, { ChangeEvent, KeyboardEvent, CSSProperties } from 'react';
 import Codec, { TFilterViewerProps, TFilterEditorProps, TValidationResult, TCellProps } from '../codec';
-import { Input } from "reactstrap";
 
 export default class StandardInt extends Codec<number, string> {
     readonly slug: string = "StandardInt";
