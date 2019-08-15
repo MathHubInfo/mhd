@@ -1,10 +1,13 @@
 import { ParsedMDHCollection, MDHFilterSchema, MDHFilter } from "./derived";
 import { TMDHCollection, TMDHProperty, TDRFPagedResponse, TMDHItem } from "./rest";
-import { makePresenter } from "../presenters";
+import CodecManager from "../codecs";
 
 export class MDHBackendClient {
-    /** @param base_url the Base URL for all API requests */
-    constructor(public base_url: string) { }
+    /**
+     * @param base_url the Base URL for all API requests
+     * @param manager interface to all known codecs
+     */
+    constructor(public base_url: string, public manager: CodecManager) { }
 
     /**
      * Fetches json data from the api given the url and provided parameters. 
@@ -35,7 +38,7 @@ export class MDHBackendClient {
     /** Fetches information about a collection with the given name or rejects */
     async fetchCollection(name: string): Promise<ParsedMDHCollection> {
         const collection = await this.fetchJSON<TMDHCollection>(`/schema/collections/${name}`);
-        return MDHBackendClient.parseCollection(collection);
+        return this.parseCollection(collection);
     }
 
     /** Fetches a list of all collections */
@@ -47,17 +50,25 @@ export class MDHBackendClient {
     }
 
     /** parses a collection and prepares appropriate derived values */
-    private static parseCollection(collection: TMDHCollection): ParsedMDHCollection {
+    private parseCollection(collection: TMDHCollection): ParsedMDHCollection {
         const propertyArray = collection.properties.map(MDHBackendClient.getFilterSchema);
         const propertyNames = collection.properties.map(p => p.slug);
 
         const propertyDictionary: ParsedMDHCollection["propertyDictionary"] = {};
         propertyArray.forEach(p => { propertyDictionary[p.slug] = p; })
 
-        const propertyRenderers: ParsedMDHCollection["propertyRenderers"] = {};
-        collection.properties.forEach(p => { propertyRenderers[p.slug] = makePresenter(p); })
+        const propertyCodecs: ParsedMDHCollection["propertyCodecs"] = {};
+        const propertyColumns: ParsedMDHCollection["propertyColumns"] = {};
+        collection.properties.forEach(p => {
+            const { slug, codec } = p;
+            
+            const c = this.manager.getWithFallback(codec);
+            propertyCodecs[slug] = c;
+            propertyColumns[slug] = c.makeReactTableColumn(p); 
+            
+        })
         
-        return { propertyDictionary, propertyArray, propertyRenderers, propertyNames, ...collection };
+        return { propertyArray, propertyDictionary, propertyNames, propertyCodecs, propertyColumns,  ...collection };
     }
 
     /** given a property, return a description of the filter */

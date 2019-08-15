@@ -1,4 +1,5 @@
 import {TMDHCollection} from './rest';
+import Codec from "../codecs/codec";
 
 /**
  * A parsed collection with all derived information needed by any component anywhere
@@ -13,8 +14,11 @@ export interface ParsedMDHCollection extends TMDHCollection {
     /* the names of all properties */
     propertyNames: string[]
 
-    /** a list of renderers for this collection */
-    propertyRenderers: {[slug: string]:Column<{}>}
+    /** list of the instantiated codecs for this renderer */
+    propertyCodecs: {[slug: string]: Codec<any, any>}
+
+    /** columns of this property */
+    propertyColumns: {[slug: string]: Column<any>}
 }
 
 /**

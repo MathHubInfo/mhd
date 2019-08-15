@@ -6,6 +6,8 @@ import MDHCollection404 from './components/MDHCollection404';
 import MDHFooter from "./components/MDHFooter";
 import MDHHomePage from "./components/home/MDHHomepage";
 
+import CodecManager from "./codecs/";
+
 
 interface AppProps {
     /** the base api URL */
@@ -36,7 +38,7 @@ interface AppState {
  * Entrypoint component that instantiates an API Client and fetches initial collection information
  */
 export default class App extends React.Component<AppProps, AppState> {
-    private client = new MDHBackendClient(this.props.api || '/api');
+    private client = new MDHBackendClient(this.props.api || '/api', CodecManager.getInstance());
 
     state: AppState = {
         initing: true
@@ -48,7 +50,6 @@ export default class App extends React.Component<AppProps, AppState> {
             const collection = await this.client.fetchCollection(name);
             this.setState({ collection, initing: false });
         } catch (e) {
-            console.log(e);
             if ((e instanceof ResponseError) && e.isNotFound) {
                 this.setState({ notFound: name, initing: false });
             } else {

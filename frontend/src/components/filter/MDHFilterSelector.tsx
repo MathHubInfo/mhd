@@ -1,6 +1,7 @@
-import React, { Component, ChangeEvent } from 'react';
-import { Col, Button, ButtonGroup } from 'reactstrap';
-import { ParsedMDHCollection, MDHFilterSchema, MDHFilter } from "../../client/derived";
+import React from 'react';
+import { Col } from 'reactstrap';
+import { MDHFilter, MDHFilterSchema, ParsedMDHCollection } from "../../client/derived";
+import Codec, { TValidationResult } from "../../codecs/codec";
 
 interface MDHFilterSelectorProps {
     /** the current collection */
@@ -27,7 +28,7 @@ interface TFilter {
     true/false: boolean values (default = true)
     /^(=|==|<=|>=|<|>|<>|!=)(\d+\.?\d*)$/
  * * * * * * * * * * * * * * * * * * * * * * * * */
-type TFilterValue = string | boolean | null;
+type TFilterValue = string | null;
 
 type TFilterAction = {
     action: "add",
@@ -45,7 +46,7 @@ type TFilterAction = {
  * Allows the user to select and edit filters. 
  * Notifies the parent via onFilterUpdate every time any change occurs. 
  */
- export default class MDHFilterSelector extends Component<MDHFilterSelectorProps, MDHFilterSelectorState> {
+ export default class MDHFilterSelector extends React.Component<MDHFilterSelectorProps, MDHFilterSelectorState> {
 
     state: MDHFilterSelectorState = {
         selected: [],
@@ -99,18 +100,21 @@ type TFilterAction = {
     }
     
     /** renders the selected filters */
-    renderSelected(filters: TFilter[], filterDictionary: ParsedMDHCollection["propertyDictionary"]) {
+    renderSelected() {
+        const { selected } = this.state;
+        const { collection: { propertyDictionary, propertyCodecs } } = this.props;
+
         return(
             <div className="zoo-search-filter">
                 <div className="zoo-filter-box">
-                    {filters.length === 0 && <p className="text-center my-3">Select filters</p>}
+                    {selected.length === 0 && <p className="text-center my-3">Select filters</p>}
                     <ul className="fa-ul">
-                        {filters.map((f, index) => (
+                        {selected.map(({ slug, value }, index) => (
                             <SelectedFilter key={index}
-                                info={filterDictionary[f.slug]}
-                                value={f.value}
-//                                type={collection.columns[f.name].type}
-                                onDoneEditing={(v) => this.updateFilters({action: "update", i: index, value: v})}
+                                info={propertyDictionary[slug]}
+                                codec={propertyCodecs[slug]}
+                                value={value}
+                                onApplyFilter={(v) => this.updateFilters({action: "update", i: index, value: v})}
                                 onRemoveFilter={() => this.updateFilters({action: "remove", i: index})}/>
                         ))}
                     </ul>
@@ -123,7 +127,7 @@ type TFilterAction = {
         return(
             <React.Fragment>
                 <Col id="zoo-selected-filters" md="5" sm="7" className="mx-auto my-4">
-                    {this.renderSelected(this.state.selected, this.props.collection.propertyDictionary)}
+                    {this.renderSelected()}
                 </Col>
                 <Col id="zoo-choose-filters" md="4" sm="5" className="mx-auto my-4">
                     {this.renderAvailable(this.availableFilters)}
@@ -133,193 +137,119 @@ type TFilterAction = {
     }
 }
 
-interface TSelectedFilterProps {
-    /** the text of the selected filter */
+interface TSelectedFilterProps<T> {
+    /** the schema of this filter */
     info: MDHFilterSchema;
+
+    /** the values of this codec */
+    codec: Codec<any, T>,
 
     /** the value of the selected filter */
     value: TFilterValue;
 
     /** callback when a value has been updated */
-    onDoneEditing: (value: TFilterValue) => void;
+    onApplyFilter: (value: TFilterValue) => void;
 
     /** called when a filter is removed */
     onRemoveFilter: () => void;
 }
 
-interface TSelectedFilterState {
+interface TSelectedFilterState<T> {
     /** are we in edit mode? */
     edit: boolean;
 
+    /** indicates if the current value is valid or not. */
+    valid?: boolean;
+
     /** the value of a filter */
-    value: string;
+    internalValue: T;
 }
 
 
-class SelectedFilter extends Component<TSelectedFilterProps, TSelectedFilterState> {
+class SelectedFilter<T = any> extends React.Component<TSelectedFilterProps<T>, TSelectedFilterState<T>> {
 
-    state: TSelectedFilterState = {
+    state: TSelectedFilterState<T> = {
         edit: true,
-        value: '',
+        internalValue: this.props.codec.defaultFilterValue(),
     }
     
     editFilter = () => {
-        this.setState({ edit: true });
+        this.setState({ edit: true, valid: true });
     }
     
-    onUpdateValue = (value: string) => {
-        this.setState({ value });
-    }
-    
-    validateAndUpdate = () => {
-        let valueValid = false;
-        let actualValue = null;
-        
-        function standardizer(match: string, operator: string, value: string, offset: number) {
-            let actualOperator: string = '';
-            if (typeof operator === 'undefined' || operator === "=" || operator === "==") actualOperator = "=";
-            else if (operator === "<>" || operator === "!=") actualOperator = "!=";
-            else actualOperator = operator;
-            return actualOperator + value;
+    handleValueUpdate = (internalValue: T, surpressValidation?: boolean) => {
+        // if we want to surpress validation
+        if ( surpressValidation ) {
+            this.setState({ internalValue, valid: undefined });
+            return;
         }
 
-        if (this.props.info.type === "StandardBool") {
-            valueValid = (this.state.value === "true" || this.state.value === "false" )
-            if (valueValid) actualValue = this.state.value;
+        const { valid } = this.validateValue(internalValue);
+        this.setState({ internalValue, valid });
+    }
+
+    /**
+     * Validates the internal value of this result
+     */
+    validateValue = (internalValue: T): TValidationResult => {
+        const { codec, value: lastValue } = this.props;
+        
+        // validate using the codec
+        try {
+            return codec.cleanFilterValue(internalValue, lastValue || undefined )
+        } catch(e) {
+            return { valid: false, message: (e || "").toString()};
         }
-        if (this.props.info.type === "StandardInt") {
-            const v = (this.state.value as string).replace(/ /g, '');
-            const r = /^(=|==|<=|>=|<|>|<>|!=)?(\d+\.?\d*)$/;
-            valueValid = r.test(v)
-            if (valueValid) actualValue = v.replace(r, standardizer);
-        }
-        if (valueValid) {
-            this.setState({ edit: false });
-            this.props.onDoneEditing(actualValue);
+    }
+    
+    /**
+     * Validates and applies the current internal value (iff it is valid)
+     */
+    handleApply = () => {
+        const validationResult = this.validateValue(this.state.internalValue)
+        
+        // when valid update the parent
+        if (validationResult.valid) {
+            this.setState({ valid: true, edit: false });
+            this.props.onApplyFilter(validationResult.value);
+
+        // else mark as invalid
+        } else {
+            this.setState({ valid: false });
         }
     }
     
     render() {
+        const { edit, internalValue, valid } = this.state;
+        const { onRemoveFilter } = this.props;
 
-        const { edit, value } = this.state;
-        const { info } = this.props;
+        const { info, codec: { filterViewerComponent: FilterViewerComponent, filterEditorComponent: FilterEditorComponent } } = this.props;
 
         return(
             <li className={(edit ? "edit" : "")}>
                 {
                     edit ?
-                        <EditFilterValue info={info} value={value} onChange={this.onUpdateValue}>
-                            { info.display } <ZooInfoButton value="filter" />
-                        </EditFilterValue>
+                        <FilterEditorComponent value={internalValue} valid={valid} onChange={this.handleValueUpdate} onApply={this.handleApply}>
+                            <>
+                                { info.display }
+                                <ZooInfoButton value="filter" />
+                            </>
+                        </FilterEditorComponent>
                         :
-                        <SelectedFilterValue info={info} value={value}>
-                            { info.display } <ZooInfoButton value="filter" />
-                        </SelectedFilterValue>
+                        <FilterViewerComponent value={internalValue}>
+                            <>
+                                { info.display }
+                                <ZooInfoButton value="filter" />
+                            </>
+                        </FilterViewerComponent>
                 }
                 
                 <span className="text-muted small">
-                    <span className="remove-button" onClick={this.props.onRemoveFilter}><i className="fas fa-minus"></i></span>
-                    <span className="done-button" onClick={this.validateAndUpdate}><i className="fas fa-check"></i></span>
+                    <span className="remove-button" onClick={onRemoveFilter}><i className="fas fa-minus"></i></span>
+                    <span className="done-button" onClick={this.handleApply}><i className="fas fa-check"></i></span>
                     <span className="edit-button" onClick={this.editFilter}><i className="fas fa-pen"></i></span>
                 </span>
             </li>
-        );
-    }
-}
-
-interface SelectedFilterValueProps {
-    /** info about the filter */
-    info: MDHFilterSchema;
-
-    /** the (validated) value of this filter */
-    value: string;
-
-    /** children representing the info about this element */
-    children: React.ReactNode | React.ReactNode[];
-}
-
-/** renders a selected filter value */
-class SelectedFilterValue extends React.Component<SelectedFilterValueProps> {
-    render() {
-    
-        const { info: { type }, value, children } = this.props;
-
-        return (
-            <>
-                {
-                    type === "StandardBool" && value === "false" && 
-                    <i>not </i>
-                }
-                { children }
-                {
-                    type !== "StandardBool" &&
-                    <i className="zoo-numeric-condition-display">{ value } </i>
-                }
-            </>
-        );
-    }
-}
-
-interface EditFilterValueProps {
-    /** info about the filter */
-    info: MDHFilterSchema;
-
-    /** the (possibly invalid) value of this filter */
-    value: string;
-
-    /** will be called with a new value when changed */
-    onChange: (value: string) => void
-
-    /** children representing the info about this element */
-    children: React.ReactNode | React.ReactNode[];
-}
-
-/** A component that allows to edit a value */
-class EditFilterValue extends React.Component<EditFilterValueProps> {
-
-    setValueTrue = () => {
-        this.props.onChange("true");
-    }
-
-    setValueFalse = () => {
-        this.props.onChange("false");
-    }
-
-    handleValueChange = (event: ChangeEvent<HTMLInputElement>) => {
-        this.props.onChange(event.target.value);
-    }
-
-    renderActual() {
-        const { info: { type }, value } = this.props;
-
-        if (type === "StandardBool") {
-            return (
-                <ButtonGroup id="zoo-choose-objects" className="zoo-bool-filter btn-group-sm">
-                    <Button
-                        disabled={value==="true"}
-                        onClick={this.setValueTrue}>True</Button>
-                    <Button
-                        disabled={value==="false"}
-                        onClick={this.setValueFalse}>False</Button>
-                </ButtonGroup>
-            );
-        }
-        else {
-            return (
-                <input className="zoo-numeric-filter" type="text"
-                    onChange={this.handleValueChange}
-                    value={value} />
-            );
-        }
-        
-    }
-
-    render() {
-        return (
-            <>
-                { this.props.children }
-                { this.renderActual() }
-            </>
         );
     }
 }

@@ -3,8 +3,8 @@ import { Button, Col, Container, Row } from 'reactstrap';
 import { MDHBackendClient } from "../../client";
 import { MDHFilter, ParsedMDHCollection } from "../../client/derived";
 import { title } from '../../config';
-import MDHFilterSelector from './MDHFilterSelector';
 import MDHCounterDisplay from '../results/MDHCounterDisplay';
+import MDHFilterSelector from './MDHFilterSelector';
 
 interface MDHFilterEditorProps {
     /** the backend  */
