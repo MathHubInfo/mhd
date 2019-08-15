@@ -9,7 +9,7 @@ import MDHHomePage from "./components/home/MDHHomepage";
 
 interface AppProps {
     /** the base api URL */
-    api: string;
+    api?: string;
 
     /** timeout under which to not show the loading indicator */
     results_loading_delay: number;
@@ -36,7 +36,7 @@ interface AppState {
  * Entrypoint component that instantiates an API Client and fetches initial collection information
  */
 export default class App extends React.Component<AppProps, AppState> {
-    private client = new MDHBackendClient(this.props.api);
+    private client = new MDHBackendClient(this.props.api || '/api');
 
     state: AppState = {
         initing: true

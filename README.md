@@ -68,11 +68,11 @@ MDH_LOG_QUERIES=1 python manage.py runserver
 
 The Django code exposes the following api structure:
 
-- `/query/$collection/` -- List items in a given collection (see details below)
-- `/schema/collections/` -- List all collections
-    - `/schema/collection/$slug` -- Get a specific collection
-- `/schema/codecs/` -- Lists all codecs
-    - `/schema/codecs/$name` -- Get a specific codec
+- `/api/query/$collection/` -- List items in a given collection (see details below)
+- `/api/schema/collections/` -- List all collections
+    - `/api/schema/collection/$slug` -- Get a specific collection
+- `/api/schema/codecs/` -- Lists all codecs
+    - `/api/schema/codecs/$name` -- Get a specific codec
 
 ### Main Querying Syntax
 
@@ -159,7 +159,7 @@ python manage.py insert_data mdh_data/tests/res/z4z_data.json -c "z4zFunctions" 
 Here is an example of a query URL:
 
 ```
-http://localhost:8000/query/z4zFunctions/?properties=f1,f2&filter=f1%3Df2%26%26f2%3C1
+http://localhost:8000/api/query/z4zFunctions/?properties=f1,f2&filter=f1%3Df2%26%26f2%3C1
 ```
 
 ## Deployment

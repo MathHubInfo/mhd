@@ -24,7 +24,7 @@ class UpdateCollectionTest(CollectionV0Test, TestCase):
     def test_api_all_collections(self):
         """ Checks that the demo collection was correctly updated in the list of collections """
 
-        response = APIClient().get('/schema/collections/')
+        response = APIClient().get('/api/schema/collections/')
         expected_response = {
             "count": 1,
             "next": None,
@@ -39,7 +39,7 @@ class UpdateCollectionTest(CollectionV0Test, TestCase):
     def test_api_exact_collection(self):
         """ Checks that the demo collection can be correctly found by slug """
 
-        response = APIClient().get('/schema/collections/z4zFunctions/')
+        response = APIClient().get('/api/schema/collections/z4zFunctions/')
         expected_response = DEMO_COLLECTION_ASSET
 
         self.assertEqual(response.status_code, 200)

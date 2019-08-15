@@ -16,7 +16,7 @@ class CodecAPITest(TestCase):
     def test_api_all_collections(self):
         """ Checks that the demo collection is the only item in the list of collections """
 
-        response = APIClient().get('/schema/codecs/')
+        response = APIClient().get('/api/schema/codecs/')
 
         # we got an http 200
         self.assertEqual(response.status_code, 200)
@@ -35,7 +35,7 @@ class CodecAPITest(TestCase):
     def test_api_exact_collection(self):
         """ Checks that the demo collection can be found by slug """
 
-        response = APIClient().get('/schema/codecs/standardint/')
+        response = APIClient().get('/api/schema/codecs/standardint/')
 
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content, CODEC_SI_ASSET)

@@ -137,7 +137,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
-STATIC_URL = '/static/'
+# we only have static files for the admin site
+STATIC_URL = '/admin/static/'
 
 
 # If we have the MDH_LOG_QUERIES variable enabled
