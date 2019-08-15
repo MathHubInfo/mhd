@@ -1,9 +1,11 @@
+from django.conf import settings
+from django.http import Http404, HttpResponse
+from django.views import View
 from rest_framework import response, serializers, viewsets
 
-from mdh_data.models import CodecManager
 from mdh.utils import DumbJSONField
-
-from django.http import Http404
+from mdh_data.models import CodecManager
+from mdh_schema.models import Collection
 
 from .models import Collection, Property
 
@@ -79,4 +81,23 @@ class CodecViewSet(viewsets.ViewSet):
         return response.Response(serializer.data)
 
 
-__all__ = ["CollectionViewSet", "CodecViewSet"]
+class FrontendProxyView(View):
+    def get(self, request, cid=None):
+        if cid is None or Collection.objects.filter(slug=cid).exists():
+            url = '/frontend/'
+        else:
+            url = '/frontend/404/'
+
+        res = HttpResponse()
+        res['X-Accel-Redirect'] = url
+
+        # in debugging mode, print a message to show what is expected to happen
+        if settings.DEBUG:
+            res['Content-Type'] = 'text/html'
+            status = 200 if url == '/frontend/' else 404
+            res.write('X-Accel-Redirect {}<br/>(In production nginx will replace this by index.html with code {})'.format(url, status))
+
+        return res
+
+
+__all__ = ["CollectionViewSet", "CodecViewSet", "FrontendProxyView"]

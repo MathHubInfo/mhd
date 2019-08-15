@@ -18,10 +18,13 @@ from django.contrib import admin
 from django.urls import include, path
 
 from mdh_schema.router import router as schema_router
+from mdh_schema.views import FrontendProxyView
 from mdh_data.views import QueryView
 
 urlpatterns = [
     path('api/query/<slug:cid>/', QueryView.as_view()),
     path('api/schema/', include(schema_router.urls)),
     path('admin/', admin.site.urls),
+    path('<slug:cid>/', FrontendProxyView.as_view()),
+    path('', FrontendProxyView.as_view())
 ]

@@ -126,8 +126,6 @@ In addition round brackets can be used for grouping.
 
 ## Tests & Code Style
 
-### Backend
-
 For the backend, tests for every important feature exist, and are run by Travis CI on every commit. 
 
 To be able to run the tests, you first need to install the development dependencies:
@@ -164,7 +162,7 @@ http://localhost:8000/api/query/z4zFunctions/?properties=f1,f2&filter=f1%3Df2%26
 
 ## Deployment
 
-To be done. 
+TBD
 
 ## License
 

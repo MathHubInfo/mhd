@@ -135,7 +135,7 @@ export default class MDHHomePage extends React.Component<MDHHomePageProps, MDHHo
                     <ListGroup>
                         {collections.map(c => (
                             <ListGroupItem key={c.slug}>
-                                <a href={`/${c.slug}`}>
+                                <a href={`/${c.slug}/`}>
                                     {c.displayName}
                                 </a>
                             </ListGroupItem>
