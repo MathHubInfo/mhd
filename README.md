@@ -1,18 +1,21 @@
 # MathDataHub Django
 
-[![Build Status](https://travis-ci.org/MathHubInfo/mdh_django.svg?branch=master)](https://travis-ci.org/MathHubInfo/mdh_django)
-
-This repository contains the MathDataHub (Django-powered) backend Implementation. 
-__This code and in particular the documentation are still a work-in-progress__
-__Warning: The data models are not yet stable, and migrations might be overwritten, do not rely on this for safe storage yet__
+[![Build Status](https://travis-ci.org/MathHubInfo/mdh_django.svg?branch=master)](https://travis-ci.org/MathHubInfo/mdh_django). 
 
 MathDataHub is a system to provide universal infrastructure for Mathematical Data. 
 See the paper [Towards a Unified Mathematical Data Infrastructure: Database and Interface Generation](https://kwarc.info/people/mkohlhase/papers/cicm19-MDH.pdf)
 for more details. 
 
+This repository contains the MathDataHub Implementation consisting of a [Django](https://www.djangoproject.com/)-powered backend and [create-react-app](https://github.com/facebook/create-react-app)-powered frontend. 
+
+This README contains backend information, the frontend can be found in the `frontend/` sub-folder. 
+See [frontend/README.md] for more details. 
+
+__This code and in particular the documentation are still a work-in-progress__
+
 ## Project Structure and Setup
 
-This repository is a consists of a standard [Django](https://www.djangoproject.com/) project. 
+The top-level structure of this repository consists of a standard [Django](https://www.djangoproject.com/) project. 
 There are four apps:
 
 - `mdh`: The main entry point. Contains a `utils/` package used by other apps. 
@@ -56,11 +59,14 @@ To do so, start the server with:
 MDH_LOG_QUERIES=1 python manage.py runserver
 ```
 
+
 ## Database structure
 
 *TODO: Image of layout and explanation*
 
 ## Exposed API
+
+The Django code exposes the following api structure:
 
 - `/query/$collection/` -- List items in a given collection (see details below)
 - `/schema/collections/` -- List all collections
@@ -120,7 +126,9 @@ In addition round brackets can be used for grouping.
 
 ## Tests & Code Style
 
-Tests for every important feature exist, and are run by Travis CI on every commit. 
+### Backend
+
+For the backend, tests for every important feature exist, and are run by Travis CI on every commit. 
 
 To be able to run the tests, you first need to install the development dependencies:
 
@@ -138,7 +146,7 @@ One non-feature related test is the CodeStyle test.
 This enforces [PEP8](https://pep8.readthedocs.io)-compliance except for maximum line length. 
 
 
-## Examples
+## Data Examples
 
 ### Z4Z Functions
 
@@ -153,6 +161,10 @@ Here is an example of a query URL:
 ```
 http://localhost:8000/query/z4zFunctions/?properties=f1,f2&filter=f1%3Df2%26%26f2%3C1
 ```
+
+## Deployment
+
+To be done. 
 
 ## License
 
