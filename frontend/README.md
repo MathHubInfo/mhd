@@ -1,6 +1,6 @@
 # MDH Frontend
 
-Website fronted code, a standard [create-react-app](https://github.com/facebook/create-react-app) setup. 
+Website frontend code, a standard [create-react-app](https://github.com/facebook/create-react-app) setup. 
 
 ## Installation
 
@@ -11,18 +11,36 @@ To install dependencies, clone this repository and then run
 yarn install
 ```
 
-## Running
+## Structure
 
-The frontend expects to be served on the same server as the backend api. 
-In particular, it needs the following urls to be available:
-- `/api/` (all API requests)
-- `/admin/` (if desired, allow access to the admin page + static resources)
-To achieve this during development, [proxy requests in development](https://create-react-app.dev/docs/proxying-api-requests-in-development). 
+The frontend reacts to the following routes:
 
-Hence [first start the backend](../README.md) on `http://localhost:8000` and then run:
+- `/`: an overview page of all existing collections
+- `/$collection/`: a search page for the given collection if it exists, an error page otherwise
+
+If furthermore expects the backend routes to be available:
+
+- `/api/`: for all api requests
+- `/admin/`: if admin login is enabled
+
+This implies that frontend and backend are served under the same url. 
+
+## Development
+
+We [proxy requests in development](https://create-react-app.dev/docs/proxying-api-requests-in-development) to achieve this strucuture.
+In particular, we configure a proxy on the url `/api/` and `/admin/` in [src/setupProxy.js](./src/setupProxy.js).
+
+Thus to start a complete development environment (with support for auto-reloading) we first start the backend on localhost:8000. 
+This can be achieve by something like `python manage.py runserver` (see [Backend README](../README.md#Development) for details). 
+
+In parallel, we can then start the react development server with:
 
 ```
 yarn start
 ```
 
-which will start the development server on port 3000.
+By default, this server listens on localhost:3000. 
+
+## Deployment
+
+See [Backend Deployment](../README.md#Deployment). 

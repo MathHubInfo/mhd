@@ -9,11 +9,11 @@ for more details.
 This repository contains the MathDataHub Implementation consisting of a [Django](https://www.djangoproject.com/)-powered backend and [create-react-app](https://github.com/facebook/create-react-app)-powered frontend. 
 
 This README contains backend information, the frontend can be found in the `frontend/` sub-folder. 
-See [frontend/README.md] for more details. 
+See [frontend/README.md](frontend/README.md) for more details. 
 
 __This code and in particular the documentation are still a work-in-progress__
 
-## Project Structure and Setup
+## Code Structure
 
 The top-level structure of this repository consists of a standard [Django](https://www.djangoproject.com/) project. 
 There are four apps:
@@ -32,6 +32,8 @@ python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
+
+## Development
 
 By default, MathDataHub uses an `sqlite` database. 
 To get started, you can run the initial migrations:
@@ -59,20 +61,22 @@ To do so, start the server with:
 MDH_LOG_QUERIES=1 python manage.py runserver
 ```
 
-
 ## Database structure
 
 *TODO: Image of layout and explanation*
 
-## Exposed API
+## URL Structure
 
-The Django code exposes the following api structure:
+This Code Exposes the following urls:
 
 - `/api/query/$collection/` -- List items in a given collection (see details below)
 - `/api/schema/collections/` -- List all collections
     - `/api/schema/collection/$slug` -- Get a specific collection
 - `/api/schema/codecs/` -- Lists all codecs
     - `/api/schema/codecs/$name` -- Get a specific codec
+- `/admin/` -- Admin interface
+    - `/admin/static/` -- staticfiles used for the admin interface
+- `/` and `/$collection/` -- Matches frontend routes and returns appropriate headers for nginx (see below). 
 
 ### Main Querying Syntax
 
@@ -162,7 +166,29 @@ http://localhost:8000/api/query/z4zFunctions/?properties=f1,f2&filter=f1%3Df2%26
 
 ## Deployment
 
-TBD
+Deployment only makes sense in conjunction with the frontend. 
+To achieve the url structure expected by the frontend, we need to serve the backend and frontend on the same domain. 
+
+To achieve this we
+- generate a static build of the frontend repository; 
+- collect all the static files needed by the backend; and
+- start the Django app using [gunicorn](https://gunicorn.org/).
+
+We then use [NGINX](https://www.nginx.com/) to delegate appropriatly. 
+
+The nginx config used to achieve this can be found in [docker/mdh.conf](docker/mdh.conf). 
+In addition to the procedure described here, it also uses an [X-Accel-Redirect](https://www.nginx.com/resources/wiki/start/topics/examples/x-accel/) returned by the backend to detect if the `/$collection/` url implemented by the frontend should return an HTTP Status of 404 or not. 
+
+
+This repository contains a `Dockerfile` to enable deployment using [Docker](https://www.docker.com/). 
+It listens on port 80 and uses an sqlite database stored in a volume mounted at `/data/`.
+A [DockerHub](https://hub.docker.com/) automated build is available under [mathhub/mdh](https://hub.docker.com/r/mathhub/mdh) and can be run with a command like the following:
+
+
+```
+   docker run -e DJANGO_SECRET_KEY=totally_secret_key_here -p 8000:80 -v data:/data/ mathhub/mdh
+```
+
 
 ## License
 
