@@ -1,4 +1,4 @@
-import React, { ChangeEvent, KeyboardEvent } from 'react';
+import React, { ChangeEvent, KeyboardEvent, CSSProperties } from 'react';
 import Codec, { TFilterViewerProps, TFilterEditorProps, TValidationResult, TCellProps } from '../codec';
 import { Input } from "reactstrap";
 
@@ -70,15 +70,29 @@ class StandardIntFilterEditor extends React.Component<TFilterEditorProps<string>
     }
 
     render() {
-        const { value, valid } = this.props;
+        const { value, children, valid } = this.props;
+
+        // TODO: Use classes for this
+        const style: CSSProperties = {};
+        if (valid === true) {
+            style.border = '1px solid green';
+            style.backgroundColor = '#28a745';
+        } else if (valid === false) {
+            style.border = '1px solid red';
+            style.backgroundColor = '#dc3545';
+        }
+
         return (
-            <Input
-                className="zoo-numeric-filter" type="text"
-                onChange={this.handleValueChange}
-                onKeyPress={this.handleKeyPress}
-                value={value}
-                valid={valid}
-            />
+            <>
+                { children }
+                <input
+                    type="text"
+                    onChange={this.handleValueChange}
+                    onKeyPress={this.handleKeyPress}
+                    value={value}
+                    style={style}
+                />
+            </>
         );
     }
 }

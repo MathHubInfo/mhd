@@ -48,17 +48,20 @@ class StandardBoolFilterEditor extends React.Component<TFilterEditorProps<boolea
     }
     
     render() {
-        const { value } = this.props;
+        const { value, children } = this.props;
 
         return (
-            <ButtonGroup id="zoo-choose-objects" className="zoo-bool-filter btn-group-sm">
-                <Button
-                    disabled={value}
-                    onClick={this.setValueTrue}>True</Button>
-                <Button
-                    disabled={!value}
-                    onClick={this.setValueFalse}>False</Button>
-            </ButtonGroup>
+            <>
+                { children }
+                <ButtonGroup id="zoo-choose-objects" className="zoo-bool-filter btn-group-sm">
+                    <Button
+                        disabled={value}
+                        onClick={this.setValueTrue}>True</Button>
+                    <Button
+                        disabled={!value}
+                        onClick={this.setValueFalse}>False</Button>
+                </ButtonGroup>
+            </>
         )
     }
 }

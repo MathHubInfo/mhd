@@ -227,6 +227,10 @@ class SelectedFilter<T = any> extends React.Component<TSelectedFilterProps<T>, T
             this.setState({ valid: false });
         }
     }
+
+    componentDidMount() {
+        this.handleValueUpdate(this.state.internalValue, false);
+    }
     
     render() {
         const { edit, internalValue, valid } = this.state;
