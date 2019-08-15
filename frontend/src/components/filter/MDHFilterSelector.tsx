@@ -13,11 +13,18 @@ interface MDHFilterSelectorProps {
 }
 
 interface MDHFilterSelectorState {
+    /** currently selected filters */
     selected: TFilter[];
 }
 
 interface TFilter {
+    /** value of this filter */
     value: TFilterValue;
+    
+    /** unique id of this filter */
+    uid: number;
+
+    /** slug belonging to the property of this filter */
     slug: string;
 }
 
@@ -48,41 +55,41 @@ type TFilterAction = {
  * Notifies the parent via onFilterUpdate every time any change occurs. 
  */
  export default class MDHFilterSelector extends React.Component<MDHFilterSelectorProps, MDHFilterSelectorState> {
-
     state: MDHFilterSelectorState = {
         selected: [],
     }
 
-    availableFilters = this.props.collection.properties;
+    // number used for filter state
+    private number = 0;
     
     /** updates the state of filters */
-    updateFilters = (par: TFilterAction) => {
+    private readonly handleFilterAction = (par: TFilterAction) => {
         // fetch a copy of the new filters
-        const newSelected = this.state.selected.slice(0);
-        
-        if (par.action === "add") {
-            // add a new element at the end
-            newSelected.push({slug: par.slug, value: null});
-        } else {
-            // create a new filter with the old slug, then remove the old one
-            const newFilter: TFilter = { slug: newSelected[par.i].slug, value: null }
-            newSelected.splice(par.i, 1);
+        const selected = this.state.selected.slice();
 
-            // if we had an update, insert the one with the new value
-            // TODO: Why is this added at the end (via .push)
-            if (par.action === "update") {
-                newFilter.value = par.value;
-                newSelected.push(newFilter);
-            }
-        }
+        // add a new element
+        if (par.action === "add") {
+            this.number++;
+            selected.push({slug: par.slug, uid: this.number, value: null});
         
+        // update the value of an existing element
+        } else if(par.action === "update") {
+            selected[par.i].value = par.value;
+        
+        // remove an element
+        } else {
+            selected.splice(par.i, 1);
+        }
+
         // update the state and notify the parent
-        this.setState({selected: newSelected});
-        this.props.onFilterUpdate(newSelected);
+        this.setState({selected: selected});
+        this.props.onFilterUpdate(selected);
     }
+
+
     
     /** renders the available filters */
-    renderAvailable() {
+    private renderAvailable() {
         const { collection: { properties } } = this.props;
         return(
             <div className="zoo-search-filter">
@@ -90,7 +97,7 @@ type TFilterAction = {
                     <ul className="fa-ul">
                         {properties.map((p) => 
                             <li key={p.slug}
-                                onClick={() => this.updateFilters({action: "add", slug: p.slug})}>
+                                onClick={() => this.handleFilterAction({action: "add", slug: p.slug})}>
                                 <span className="fa-li"><i className="fas fa-plus"></i></span>
                                 {p.displayName} <ZooInfoButton value="filter" />
                             </li>
@@ -102,7 +109,7 @@ type TFilterAction = {
     }
     
     /** renders the selected filters */
-    renderSelected() {
+    private renderSelected() {
         const { selected } = this.state;
         const { collection: { propMap, codecMap } } = this.props;
 
@@ -111,13 +118,13 @@ type TFilterAction = {
                 <div className="zoo-filter-box">
                     {selected.length === 0 && <p className="text-center my-3">Select filters</p>}
                     <ul className="fa-ul">
-                        {selected.map(({ slug, value }, index) => (
-                            <SelectedFilter key={index}
+                        {selected.map(({ slug, value, uid }, index) => (
+                            <SelectedFilter key={uid}
                                 property={propMap.get(slug)!}
                                 codec={codecMap.get(slug)!}
                                 value={value}
-                                onApplyFilter={(v) => this.updateFilters({action: "update", i: index, value: v})}
-                                onRemoveFilter={() => this.updateFilters({action: "remove", i: index})}/>
+                                onApplyFilter={(v) => this.handleFilterAction({action: "update", i: index, value: v})}
+                                onRemoveFilter={() => this.handleFilterAction({action: "remove", i: index})}/>
                         ))}
                     </ul>
                 </div>
@@ -126,15 +133,15 @@ type TFilterAction = {
     }
     
     render() {
-        return(
-            <React.Fragment>
+        return (
+            <>
                 <Col id="zoo-selected-filters" md="5" sm="7" className="mx-auto my-4">
                     {this.renderSelected()}
                 </Col>
                 <Col id="zoo-choose-filters" md="4" sm="5" className="mx-auto my-4">
                     {this.renderAvailable()}
                 </Col>
-            </React.Fragment>
+            </>
         );
     }
 }
