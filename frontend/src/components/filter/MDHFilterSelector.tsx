@@ -152,7 +152,7 @@ interface TSelectedFilterState {
     edit: boolean;
 
     /** the value of a filter */
-    value: string | boolean;
+    value: string;
 }
 
 
@@ -160,22 +160,15 @@ class SelectedFilter extends Component<TSelectedFilterProps, TSelectedFilterStat
 
     state: TSelectedFilterState = {
         edit: true,
-        value: (this.props.info.type === "StandardBool" ? true : ""),
+        value: '',
     }
     
     editFilter = () => {
         this.setState({ edit: true });
     }
     
-    toggleBooleanValue = (newValue: boolean) => {
-        const previousValue = this.state.value;
-        if (newValue === previousValue) return;
-
-        this.setState({ value: newValue });
-    }
-    
-    handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-        this.setState({ value: e.target.value });
+    onUpdateValue = (value: string) => {
+        this.setState({ value });
     }
     
     validateAndUpdate = () => {
@@ -183,7 +176,7 @@ class SelectedFilter extends Component<TSelectedFilterProps, TSelectedFilterStat
         let actualValue = null;
         
         function standardizer(match: string, operator: string, value: string, offset: number) {
-            let actualOperator = null;
+            let actualOperator: string = '';
             if (typeof operator === 'undefined' || operator === "=" || operator === "==") actualOperator = "=";
             else if (operator === "<>" || operator === "!=") actualOperator = "!=";
             else actualOperator = operator;
@@ -191,7 +184,7 @@ class SelectedFilter extends Component<TSelectedFilterProps, TSelectedFilterStat
         }
 
         if (this.props.info.type === "StandardBool") {
-            valueValid = (this.state.value === true || this.state.value === false)
+            valueValid = (this.state.value === "true" || this.state.value === "false" )
             if (valueValid) actualValue = this.state.value;
         }
         if (this.props.info.type === "StandardInt") {
@@ -206,41 +199,127 @@ class SelectedFilter extends Component<TSelectedFilterProps, TSelectedFilterStat
         }
     }
     
-    renderEditCondition = () => {
-        if (this.props.info.type === "StandardBool") {
+    render() {
+
+        const { edit, value } = this.state;
+        const { info } = this.props;
+
+        return(
+            <li className={(edit ? "edit" : "")}>
+                {
+                    edit ?
+                        <EditFilterValue info={info} value={value} onChange={this.onUpdateValue}>
+                            { info.display } <ZooInfoButton value="filter" />
+                        </EditFilterValue>
+                        :
+                        <SelectedFilterValue info={info} value={value}>
+                            { info.display } <ZooInfoButton value="filter" />
+                        </SelectedFilterValue>
+                }
+                
+                <span className="text-muted small">
+                    <span className="remove-button" onClick={this.props.onRemoveFilter}><i className="fas fa-minus"></i></span>
+                    <span className="done-button" onClick={this.validateAndUpdate}><i className="fas fa-check"></i></span>
+                    <span className="edit-button" onClick={this.editFilter}><i className="fas fa-pen"></i></span>
+                </span>
+            </li>
+        );
+    }
+}
+
+interface SelectedFilterValueProps {
+    /** info about the filter */
+    info: MDHFilterSchema;
+
+    /** the (validated) value of this filter */
+    value: string;
+
+    /** children representing the info about this element */
+    children: React.ReactNode | React.ReactNode[];
+}
+
+/** renders a selected filter value */
+class SelectedFilterValue extends React.Component<SelectedFilterValueProps> {
+    render() {
+    
+        const { info: { type }, value, children } = this.props;
+
+        return (
+            <>
+                {
+                    type === "StandardBool" && value === "false" && 
+                    <i>not </i>
+                }
+                { children }
+                {
+                    type !== "StandardBool" &&
+                    <i className="zoo-numeric-condition-display">{ value } </i>
+                }
+            </>
+        );
+    }
+}
+
+interface EditFilterValueProps {
+    /** info about the filter */
+    info: MDHFilterSchema;
+
+    /** the (possibly invalid) value of this filter */
+    value: string;
+
+    /** will be called with a new value when changed */
+    onChange: (value: string) => void
+
+    /** children representing the info about this element */
+    children: React.ReactNode | React.ReactNode[];
+}
+
+/** A component that allows to edit a value */
+class EditFilterValue extends React.Component<EditFilterValueProps> {
+
+    setValueTrue = () => {
+        this.props.onChange("true");
+    }
+
+    setValueFalse = () => {
+        this.props.onChange("false");
+    }
+
+    handleValueChange = (event: ChangeEvent<HTMLInputElement>) => {
+        this.props.onChange(event.target.value);
+    }
+
+    renderActual() {
+        const { info: { type }, value } = this.props;
+
+        if (type === "StandardBool") {
             return (
                 <ButtonGroup id="zoo-choose-objects" className="zoo-bool-filter btn-group-sm">
                     <Button
-                        className={(this.state.value ? "focus" : "")}
-                        onClick={this.toggleBooleanValue.bind(this, true)}>True</Button>
+                        disabled={value==="true"}
+                        onClick={this.setValueTrue}>True</Button>
                     <Button
-                        className={(!this.state.value ? "focus" : "")}
-                        onClick={this.toggleBooleanValue.bind(this, false)}>False</Button>
+                        disabled={value==="false"}
+                        onClick={this.setValueFalse}>False</Button>
                 </ButtonGroup>
             );
         }
         else {
             return (
                 <input className="zoo-numeric-filter" type="text"
-                    onChange={this.handleInputChange}
-                    value={(this.state.value || "").toString()} />
+                    onChange={this.handleValueChange}
+                    value={value} />
             );
         }
+        
     }
-    
+
     render() {
-        return(
-            <li className={(this.state.edit ? "edit" : "")}>
-                { (this.state.value === false && (!this.state.edit)) && <i>not </i> }
-                {this.props.info.display} <ZooInfoButton value="filter" />
-                { !this.state.edit && <i className="zoo-numeric-condition-display">{this.state.value} </i> }
-                { this.state.edit && this.renderEditCondition() }
-                <span className="text-muted small">
-                    <span className="remove-button" onClick={this.props.onRemoveFilter}><i className="fas fa-minus"></i></span>
-                    <span className="done-button" onClick={this.validateAndUpdate.bind(this)}><i className="fas fa-check"></i></span>
-                    <span className="edit-button" onClick={this.editFilter.bind(this)}><i className="fas fa-pen"></i></span>
-                </span>
-            </li>
+        return (
+            <>
+                { this.props.children }
+                { this.renderActual() }
+            </>
         );
     }
 }
