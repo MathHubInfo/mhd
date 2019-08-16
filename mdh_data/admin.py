@@ -16,7 +16,7 @@ class ItemAdmin(admin.ModelAdmin):
     list_filter = ['collections']
 
 
-@admin.register(models.StandardBool, models.StandardInt)
+@admin.register(models.StandardBool, models.StandardInt, models.StandardJSON)
 class CodecAdmin(admin.ModelAdmin):
 
     @AdminLink
