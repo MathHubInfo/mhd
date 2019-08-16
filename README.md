@@ -131,6 +131,7 @@ In addition round brackets can be used for grouping.
 ## Tests & Code Style
 
 For the backend, tests for every important feature exist, and are run by Travis CI on every commit. 
+Note that tests are run both on `sqlite` and `postgres`.
 
 To be able to run the tests, you first need to install the development dependencies:
 

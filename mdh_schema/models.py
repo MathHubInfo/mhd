@@ -143,10 +143,10 @@ class Collection(ModelWithMetadata):
         # FROM mdh_data_item as I
         #
         # LEFT OUTER JOIN Codec1 as T_prop1
-        # ON I.id == T_prop1.item_id AND T_prop1.active AND T_prop1.prop_id == ${id_of_prop1}
+        # ON I.id = T_prop1.item_id AND T_prop1.active AND T_prop1.prop_id = ${id_of_prop1}
         #
         # LEFT OUTER JOIN Codec2 as T_prop2
-        # ON I.id == T_prop2.item_id AND T_prop2.active AND T_prop2.prop_id == ${id_of_prop2};
+        # ON I.id = T_prop2.item_id AND T_prop2.active AND T_prop2.prop_id = ${id_of_prop2};
 
         # if no properties are given use all of them
         if properties is None:
@@ -183,7 +183,7 @@ class Collection(ModelWithMetadata):
                 physical_table, virtual_table))
 
             JOINS.append(
-                "ON I.id == {0:s}.item_id AND {0:s}.active AND {0:s}.prop_id == {1:s}".format(virtual_table, physical_prop_id))
+                "ON I.id = {0:s}.item_id AND {0:s}.active AND {0:s}.prop_id = {1:s}".format(virtual_table, physical_prop_id))
 
         # add an order by clause
         if order:

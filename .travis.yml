@@ -2,12 +2,26 @@ sudo: false
 
 matrix:
   include:
+    # Frontend build test
     - language: node_js
       nodejs:
         - 12
+    
+    # Python with sqlite
     - language: python
+      env:
+        - DATABASE=sqlite
       python:
          - "3.7"
+    
+    # Python with Postgres
+    - language: python
+      env:
+        - DATABASE=postgres
+      services:
+        - postgresql
+      python:
+        - "3.7"
 
 before_install:
   - if [ ! -z "$TRAVIS_NODE_VERSION" ]; then cd frontend; fi
