@@ -1,17 +1,17 @@
 import React from 'react';
 import { Container, Row, Col } from 'reactstrap';
 
-/** A Footer for the Zoo Website */
+/** Footer for the entire website */
 export default function MDHFooter() {
     return(
-        <footer className="bg-dark">
+        <footer className="bg-dark text-white">
             <Container>
                 <Row>
-                    <Col lg="4" className="my-5 text-white">
+                    <Col lg="4" className="my-5">
                     </Col>
-                    <Col lg="4" className="my-5 text-white">
+                    <Col lg="4" className="my-5">
                     </Col>
-                    <Col lg="4" className="my-5 text-white">
+                    <Col lg="4" className="my-5">
                     </Col>
                 </Row>
             </Container>

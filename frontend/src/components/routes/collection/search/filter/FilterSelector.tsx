@@ -105,7 +105,7 @@ type TFilterAction = {
                             <li key={p.slug}
                                 onClick={() => this.handleFilterAction({action: "add", slug: p.slug})}>
                                 <span className="fa-li"><i className="fas fa-plus"></i></span>
-                                {p.displayName} <ZooInfoButton value="filter" />
+                                {p.displayName} <InfoButton value="filter" />
                             </li>
                         )}
                     </ul>
@@ -251,14 +251,14 @@ class SelectedFilter<T = any> extends React.Component<TSelectedFilterProps<T>, T
                         <FilterEditorComponent value={internalValue} valid={valid} onChange={this.handleValueUpdate} onApply={this.handleApply}>
                             <>
                                 { displayName }
-                                <ZooInfoButton value="filter" />
+                                <InfoButton value="filter" />
                             </>
                         </FilterEditorComponent>
                         :
                         <FilterViewerComponent value={internalValue}>
                             <>
                                 { displayName }
-                                <ZooInfoButton value="filter" />
+                                <InfoButton value="filter" />
                             </>
                         </FilterViewerComponent>
                 }
@@ -276,7 +276,7 @@ class SelectedFilter<T = any> extends React.Component<TSelectedFilterProps<T>, T
 /**
  * A simple informational button
  */
-export function ZooInfoButton(props: {value: string}) {
+export function InfoButton(props: {value: string}) {
     return(
         <a href="#!">
             <i className="far fa-question-circle" data-fa-transform="shrink-4 up-3"></i>
