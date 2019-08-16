@@ -1,5 +1,7 @@
 import React from 'react';
-import { Container, Row, Col, Button } from "reactstrap";
+import { Button } from "reactstrap";
+import MDHMain from "../../../common/MDHMain";
+import { Link } from "react-router-dom";
 
 interface MDHCollectionNotFoundProps {
     /** name of the collection that could not be found */
@@ -10,21 +12,10 @@ interface MDHCollectionNotFoundProps {
 export default class MDHCollectionNotFound extends React.Component<MDHCollectionNotFoundProps> {
     render() {
         const { name } = this.props;
-        return (
-            <section className="bg-primary">
-                <Container>
-                    <Row>
-                        <Col>
-                            <h2 className="section-heading text-white">Not Found</h2>                 
-                            <p>Collection with slug <b>{name}</b> does not exist. </p>
-                            <div className="buttons">
-                                <a href="/"><Button>Back to Home</Button></a>
-                            </div>
-                            <p></p>
-                        </Col>
-                    </Row>
-                </Container>
-            </section>
-        );
+
+        const leftHead = <p>Collection with slug <b>{name}</b> does not exist. </p>;
+        const buttons = <Link to='/'><Button>Back to Home</Button></Link>;
+
+        return <MDHMain title="Not Found" leftHead={leftHead} buttons={buttons} />;
     }
 }

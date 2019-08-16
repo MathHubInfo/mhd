@@ -36,13 +36,11 @@ export default class App extends React.Component<AppProps> {
         return (
             <>
                 <MDHHeader />
-
-                <main>
-                    <Switch>
-                        <Route exact path={'/'} component={this.homeComponent}></Route>
-                        <Route path='/:collection' component={this.collectionComponent}></Route>
-                    </Switch>
-                </main>
+                
+                <Switch>
+                    <Route exact path={'/'} component={this.homeComponent}></Route>
+                    <Route path='/:collection' component={this.collectionComponent}></Route>
+                </Switch>
 
                 <MDHFooter />
             </>

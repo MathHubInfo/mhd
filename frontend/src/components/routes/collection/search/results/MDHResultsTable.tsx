@@ -3,6 +3,7 @@ import ReactTable, { Column } from 'react-table';
 import { MDHBackendClient } from "../../../../../client";
 import { MDHFilter, ParsedMDHCollection } from "../../../../../client/derived";
 import { TDRFPagedResponse, TMDHItem } from "../../../../../client/rest";
+import { Row, Col } from "reactstrap";
 
 interface MDHResultsTableProps {
     /** backend client */
@@ -166,20 +167,24 @@ export default class MDHResultsTable extends Component<MDHResultsTableProps, MDH
 
     render() {
         return (
-            <ReactTable manual
-                filterable={false}
-                sortable={false}
+            <Row>
+                <Col>
+                    <ReactTable manual
+                        filterable={false}
+                        sortable={false}
 
-                loading={this.state.loading}
-                page={this.state.page - 1}
-                pageSize={this.state.page_size}
+                        loading={this.state.loading}
+                        page={this.state.page - 1}
+                        pageSize={this.state.page_size}
 
-                data={this.state.data}
-                columns={this.state.columns}
-                pages={this.state.total_pages}
+                        data={this.state.data}
+                        columns={this.state.columns}
+                        pages={this.state.total_pages}
 
-                onFetchData={this.handleTableStateUpdate}
-            />
+                        onFetchData={this.handleTableStateUpdate}
+                    />
+                </Col>
+            </Row>
         );
     }
 }

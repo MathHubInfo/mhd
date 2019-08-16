@@ -1,9 +1,9 @@
 import React from 'react';
-import { Container, Row, Col, Button, ListGroup, ListGroupItem } from "reactstrap";
-
-import { TMDHCollection, TDRFPagedResponse } from "../../../client/rest"
-import { MDHBackendClient } from "../../../client";
 import { Link } from "react-router-dom";
+import { Button, ListGroup, ListGroupItem } from "reactstrap";
+import { MDHBackendClient } from "../../../client";
+import { TDRFPagedResponse, TMDHCollection } from "../../../client/rest";
+import MDHMain, { MDHLoading } from "../../common/MDHMain";
 
 interface MDHHomePageProps {
     /** client to fetch more data */
@@ -118,57 +118,41 @@ export default class MDHHomePage extends React.Component<MDHHomePageProps, MDHHo
         this.scheduleDataFetch();
     }
 
-    renderContent(): React.ReactNode {
+    render() {
+
         const {loading, collections, page, total_pages} = this.state;
 
+        // general info / description   
+        const leftHead = <p>
+            MathDataHub is a system to provide universal infrastructure for Mathematical Data. 
+            Select a collection to get started browsing. 
+        </p>;
+
         // when loading, render a loading indicator
-        // TODO: show an actual indicator once the theme is fixed
-        if (loading) return "Loading";
+        if (loading) return <MDHLoading leftHead={leftHead} />;
+
 
         const shouldNextPage = (page + 1 <= total_pages);
         const shouldPrevPage = (page - 1 >= 1);
 
+        const rightHead = <>
+            <p />
+            <ListGroup>
+                {collections.map(c => (
+                    <ListGroupItem key={c.slug}>
+                        <Link to={`/${c.slug}/`}>
+                            {c.displayName}
+                        </Link>
+                    </ListGroupItem>
+                ))}
+            </ListGroup>
+        </>;
 
-        return (
-            <Container>
-                <p></p>
-                <div>
-                    <ListGroup>
-                        {collections.map(c => (
-                            <ListGroupItem key={c.slug}>
-                                <Link to={`/${c.slug}/`}>
-                                    {c.displayName}
-                                </Link>
-                            </ListGroupItem>
-                        ))}
-                    </ListGroup>
-                </div>
-                <div className="buttons">
-                    {shouldPrevPage && <Button onClick={this.prevPage}>Previous</Button>}
-                    {shouldNextPage && <Button onClick={this.nextPage}>Next</Button>}
-                </div>
-            </Container>
-        );
-    }
-
-    render() {
-        return (
-            <section className="bg-primary">
-                <Container>
-                    <Row>
-                        <Col sm="12" md="4">
-                            <h1 className="section-heading text-white">MathDataHub</h1>                 
-                            <p>
-                                MathDataHub is a system to provide universal infrastructure for Mathematical Data. 
-                                Select a collection to get started browsing. 
-                            </p>
-                        </Col>
-                        <Col sm="12" md="8">
-                            {this.renderContent()}
-                        </Col>
-                    </Row>
-                </Container>
-            </section>
-        );
+        const buttons = <>
+            {shouldPrevPage && <Button onClick={this.prevPage}>Previous</Button>}
+            {shouldNextPage && <Button onClick={this.nextPage}>Next</Button>}
+        </>;
+        
+        return <MDHMain title="MathDataHub" leftHead={leftHead} buttons={buttons} rightHead={rightHead} />;
     }
 }

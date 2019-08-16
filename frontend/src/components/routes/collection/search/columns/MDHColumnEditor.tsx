@@ -1,10 +1,10 @@
+import { faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { Component, CSSProperties } from 'react';
-import { Button} from 'reactstrap';
-import { DragDropContext, Droppable, Draggable, DropResult, NotDraggingStyle, DraggingStyle } from "react-beautiful-dnd";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faAngleUp, faAngleDown } from '@fortawesome/free-solid-svg-icons'
-
+import { DragDropContext, Draggable, DraggingStyle, Droppable, DropResult, NotDraggingStyle } from "react-beautiful-dnd";
+import { Button, Card, CardText, Col, Collapse, Row } from 'reactstrap';
 import { ParsedMDHCollection } from '../../../../../client/derived';
+
 
 interface MDHColumnEditorProps {
     /** the current collection */
@@ -103,23 +103,35 @@ export default class MDHColumnEditor extends Component<MDHColumnEditorProps, MDH
         const { expanded, selected, applied } = this.state;
         const available = this.getAvailable();
         return (
-            <div className="settings">
-                <p><Button color="link" onClick={this.toggleExpansionState}>
-                    <FontAwesomeIcon icon={expanded ? faAngleUp : faAngleDown} />
-                    <span>Choose columns</span>
-                </Button></p>
-                {this.state.expanded &&
-                    <React.Fragment>
-                        <DragDropContext onDragEnd={this.handleDragEnd}>
-                            <DroppableArea id="selected" caption="Selected columns" items={selected} />
-                            <DroppableArea id="available" caption="Available columns" items={available} />
-                        </DragDropContext>
-                        <Button color="secondary" size="sm" className="ml-3" onClick={this.resetToLastSelected}>Cancel</Button>
-                        <Button color="secondary" size="sm" className="ml-3" onClick={this.resetToDefaults}>Defaults</Button>
-                        <Button color="primary" size="sm" className="ml-3" onClick={this.applyColumns} disabled={applied}>Apply</Button>
-                    </React.Fragment>
-                }
-            </div>
+            <Row>
+                <Col>
+                    <Button color="link" onClick={this.toggleExpansionState}>
+                        <FontAwesomeIcon icon={expanded ? faAngleUp : faAngleDown} />
+                        <span>Choose columns</span>
+                    </Button>
+                    <Collapse isOpen={expanded}>
+                        <Card body>
+                            <CardText>
+                                <DragDropContext onDragEnd={this.handleDragEnd}>
+                                    <DroppableArea id="selected" caption="Selected columns" items={selected} />
+                                    <DroppableArea id="available" caption="Available columns" items={available} />
+                                </DragDropContext>
+                            </CardText>
+                            
+                            <CardText>
+                                <Button color="secondary" onClick={this.resetToLastSelected}>Cancel</Button>
+                                &nbsp;
+                                <Button color="secondary" onClick={this.resetToDefaults}>Defaults</Button>
+                                &nbsp;
+                                <Button color="primary" onClick={this.applyColumns} disabled={applied}>Apply</Button>
+                            </CardText>
+                            
+
+                            
+                        </Card>
+                    </Collapse>
+                </Col>
+            </Row>
         );
     }
 }

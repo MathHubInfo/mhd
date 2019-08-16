@@ -2,7 +2,8 @@ import React from 'react';
 import { ParsedMDHCollection } from "../../../client/derived";
 import { MDHBackendClient, ResponseError } from "../../../client";
 import MDHCollectionNotFound from "./notfound";
-import MDHCollectionSearch from "../search/MDHCollectionSearch";
+import MDHCollectionSearch from "./search/";
+import MDHMain, { MDHLoading } from "../../common/MDHMain";
 
 interface MDHCollectionProps {
     /** client being used by the backend */
@@ -34,7 +35,9 @@ interface MDHCollectionState {
  * Loads collection data and either loads the Search page or the not found page
  */
 export default class MDHCollection extends React.Component<MDHCollectionProps, MDHCollectionState> {
-    state: MDHCollectionState = {}
+    state: MDHCollectionState = {
+        loading: true,
+    }
 
     async componentDidMount() {
         // we want to set loading to true, to display a loading indicator
@@ -74,11 +77,11 @@ export default class MDHCollection extends React.Component<MDHCollectionProps, M
         const { loading, collection, not_found: notFound, failed } = this.state;
         const { collection: collectionName, client, results_loading_delay } = this.props;
         
-        // TODO; Render loading indicator
-        if (loading) return `Loading...`;
+        // Render a loading indicator when loading
+        if (loading) return <MDHLoading />;
 
         // when something went wrong, render an error
-        if (failed) return `Something went wrong: ${failed}`;
+        if (failed) return <MDHMain title="Error" leftHead={`Something went wrong: ${failed}`} />;
 
         // when the collection wasn't found, render the 404 page
         if (notFound !== undefined) return <MDHCollectionNotFound name={collectionName} />;

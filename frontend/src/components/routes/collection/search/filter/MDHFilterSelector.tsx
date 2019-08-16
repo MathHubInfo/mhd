@@ -140,10 +140,10 @@ type TFilterAction = {
     render() {
         return (
             <>
-                <Col id="zoo-selected-filters" md="5" sm="7" className="mx-auto my-4">
+                <Col id="zoo-selected-filters" md="6" sm="12" className="mx-auto my-4">
                     {this.renderSelected()}
                 </Col>
-                <Col id="zoo-choose-filters" md="4" sm="5" className="mx-auto my-4">
+                <Col id="zoo-choose-filters" md="6" sm="12" className="mx-auto my-4">
                     {this.renderAvailable()}
                 </Col>
             </>

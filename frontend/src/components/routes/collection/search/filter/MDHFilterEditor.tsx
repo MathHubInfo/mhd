@@ -1,8 +1,8 @@
 import React from 'react';
-import { Button, Col, Container, Row } from 'reactstrap';
+import { Button, Row } from 'reactstrap';
 import { MDHBackendClient } from "../../../../../client";
 import { MDHFilter, ParsedMDHCollection } from "../../../../../client/derived";
-import { title } from '../../../../../config';
+import { MDHMainHead } from "../../../../common/MDHMain";
 import MDHCounterDisplay from '../results/MDHCounterDisplay';
 import MDHFilterSelector from './MDHFilterSelector';
 
@@ -54,29 +54,24 @@ export default class MDHFilterEditor extends React.Component<MDHFilterEditorProp
         const { collection, client, results_loading_delay } = this.props;
         const { applied, filters } = this.state;
 
-        return (
-            <section className="bg-primary" id="search">
-                <Container id="zoo-search-box">
-                    <Row>
-                        <Col lg="3" md="3" sm="12" className="mx-auto my-4" id="select-type">
-                            <h2 className="section-heading text-white" id="step2">{title}</h2>                 
-                            <p>{collection.displayName}</p>
-                            <MDHCounterDisplay
-                                collection={collection}
-                                client={client}
-                                filters={filters}
-                                results_loading_delay={results_loading_delay}
-                            />
-                            <div className="buttons">
-                                <Button onClick={this.applyFilters} disabled={applied}>Display results</Button>
-                            </div>
-                        </Col>
-                        <MDHFilterSelector
-                            collection={this.props.collection}
-                            onFilterUpdate={this.setFilters} />
-                    </Row>
-                </Container>
-            </section>
-        );
+        const leftHead = <>
+            <p>{collection.displayName}</p>
+            <MDHCounterDisplay
+                collection={collection}
+                client={client}
+                filters={filters}
+                results_loading_delay={results_loading_delay}
+            />
+        </>;
+
+        const buttons = <Button onClick={this.applyFilters} disabled={applied}>Display results</Button>;
+
+        const rightHead = <Row>
+            <MDHFilterSelector
+                collection={this.props.collection}
+                onFilterUpdate={this.setFilters} />
+        </Row>;
+
+        return <MDHMainHead title={"MathDataHub"} leftHead={leftHead} buttons={buttons} rightHead={rightHead} />;
     }
 }

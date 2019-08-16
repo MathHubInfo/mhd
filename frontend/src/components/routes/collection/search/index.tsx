@@ -1,10 +1,10 @@
 import React from 'react';
+import { Container } from "reactstrap";
 import { MDHBackendClient } from "../../../../client";
-import { ParsedMDHCollection, MDHFilter } from '../../../../client/derived';
-import MDHResultsDisplay from './results/MDHResultsTable';
-import MDHFilterEditor from './filter/MDHFilterEditor';
+import { MDHFilter, ParsedMDHCollection } from '../../../../client/derived';
 import MDHColumnEditor from './columns/MDHColumnEditor';
-import { Container, Row, Col } from "reactstrap";
+import MDHFilterEditor from './filter/MDHFilterEditor';
+import MDHResultsDisplay from './results/MDHResultsTable';
 
 
 interface MDHCollectionSearchProps {
@@ -49,43 +49,35 @@ export default class MDHCollectionSearch extends React.Component<MDHCollectionSe
         const { client, collection, results_loading_delay } = this.props;
 
         return (
-            <React.Fragment>
+            <main>
                 <MDHFilterEditor
                     client={client}
                     collection={collection}
                     onFilterApply={this.setFilters}
                     results_loading_delay={results_loading_delay}
                 />
-                <section id="results">
+                <section>
                     <Container>
-                        <Row>
-                            <Col lg="12">
-                                <div>
-                                    {
-                                        (filters !== null) && 
-                                        <MDHColumnEditor
-                                            collection={collection}
-                                            onColumnsApply={this.setColumns}
-                                        />
-                                    }
-                                </div>
-                                <div className="table-responsive">
-                                    {
-                                        (filters !== null) && (columns !== null) &&
-                                            <MDHResultsDisplay
-                                                client={client}
-                                                collection={collection}
-                                                filters={filters}
-                                                columns={columns}
-                                                results_loading_delay={results_loading_delay}
-                                            />
-                                    }
-                                </div>
-                            </Col>
-                        </Row>
+                        {
+                            (filters !== null) && 
+                            <MDHColumnEditor
+                                collection={collection}
+                                onColumnsApply={this.setColumns}
+                            />
+                        }
+                        {
+                            (filters !== null) && (columns !== null) &&
+                                <MDHResultsDisplay
+                                    client={client}
+                                    collection={collection}
+                                    filters={filters}
+                                    columns={columns}
+                                    results_loading_delay={results_loading_delay}
+                                />
+                        }
                     </Container>
                 </section>
-            </React.Fragment>
+            </main>
         );
     }
 
