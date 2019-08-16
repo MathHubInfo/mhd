@@ -33,5 +33,5 @@ install:
 
 script:
   - if [ ! -z "$TRAVIS_NODE_VERSION" ]; then yarn build; fi
-  - if [ ! -z "$TRAVIS_PYTHON_VERSION" ]; then pytest; fi
+  - if [ ! -z "$TRAVIS_PYTHON_VERSION" ]; then pytest -v; fi
 
