@@ -1,8 +1,8 @@
 import React from 'react';
 import { Button, Col, Container, Row } from 'reactstrap';
-import { MDHBackendClient } from "../../client";
-import { MDHFilter, ParsedMDHCollection } from "../../client/derived";
-import { title } from '../../config';
+import { MDHBackendClient } from "../../../../../client";
+import { MDHFilter, ParsedMDHCollection } from "../../../../../client/derived";
+import { title } from '../../../../../config';
 import MDHCounterDisplay from '../results/MDHCounterDisplay';
 import MDHFilterSelector from './MDHFilterSelector';
 

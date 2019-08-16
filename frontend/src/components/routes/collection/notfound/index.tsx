@@ -1,13 +1,13 @@
 import React from 'react';
 import { Container, Row, Col, Button } from "reactstrap";
 
-interface MDHCollection404Props {
+interface MDHCollectionNotFoundProps {
     /** name of the collection that could not be found */
     name: string;
 }
 
 /** Renders a collection that is not found */
-export default class MDHCollection404 extends React.Component<MDHCollection404Props> {
+export default class MDHCollectionNotFound extends React.Component<MDHCollectionNotFoundProps> {
     render() {
         const { name } = this.props;
         return (

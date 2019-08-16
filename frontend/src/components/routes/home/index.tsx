@@ -1,8 +1,9 @@
 import React from 'react';
 import { Container, Row, Col, Button, ListGroup, ListGroupItem } from "reactstrap";
 
-import { TMDHCollection, TDRFPagedResponse } from "../../client/rest"
-import { MDHBackendClient } from "../../client";
+import { TMDHCollection, TDRFPagedResponse } from "../../../client/rest"
+import { MDHBackendClient } from "../../../client";
+import { Link } from "react-router-dom";
 
 interface MDHHomePageProps {
     /** client to fetch more data */
@@ -135,9 +136,9 @@ export default class MDHHomePage extends React.Component<MDHHomePageProps, MDHHo
                     <ListGroup>
                         {collections.map(c => (
                             <ListGroupItem key={c.slug}>
-                                <a href={`/${c.slug}/`}>
+                                <Link to={`/${c.slug}/`}>
                                     {c.displayName}
-                                </a>
+                                </Link>
                             </ListGroupItem>
                         ))}
                     </ListGroup>

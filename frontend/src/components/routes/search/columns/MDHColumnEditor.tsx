@@ -4,7 +4,7 @@ import { DragDropContext, Droppable, Draggable, DropResult, NotDraggingStyle, Dr
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAngleUp, faAngleDown } from '@fortawesome/free-solid-svg-icons'
 
-import { ParsedMDHCollection } from '../../client/derived';
+import { ParsedMDHCollection } from '../../../../client/derived';
 
 interface MDHColumnEditorProps {
     /** the current collection */

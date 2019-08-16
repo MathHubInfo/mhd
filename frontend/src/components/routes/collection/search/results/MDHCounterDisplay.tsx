@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { MDHBackendClient } from '../../client';
-import { ParsedMDHCollection, MDHFilter } from '../../client/derived';
+import { MDHBackendClient } from '../../../../../client';
+import { ParsedMDHCollection, MDHFilter } from '../../../../../client/derived';
 
 interface MDHCounterDisplayProps {
     /** the backend  */

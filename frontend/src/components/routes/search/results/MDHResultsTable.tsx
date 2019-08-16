@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import ReactTable, { Column } from 'react-table';
-import { MDHBackendClient } from "../../client";
-import { MDHFilter, ParsedMDHCollection } from "../../client/derived";
-import { TDRFPagedResponse, TMDHItem } from "../../client/rest";
+import { MDHBackendClient } from "../../../../client";
+import { MDHFilter, ParsedMDHCollection } from "../../../../client/derived";
+import { TDRFPagedResponse, TMDHItem } from "../../../../client/rest";
 
 interface MDHResultsTableProps {
     /** backend client */

@@ -1,13 +1,13 @@
 import React from 'react';
-import { MDHBackendClient } from "../client";
-import { ParsedMDHCollection, MDHFilter } from '../client/derived';
+import { MDHBackendClient } from "../../../../client";
+import { ParsedMDHCollection, MDHFilter } from '../../../../client/derived';
 import MDHResultsDisplay from './results/MDHResultsTable';
 import MDHFilterEditor from './filter/MDHFilterEditor';
 import MDHColumnEditor from './columns/MDHColumnEditor';
 import { Container, Row, Col } from "reactstrap";
 
 
-interface MDHCollectionProps {
+interface MDHCollectionSearchProps {
     /** client to talk to the server */
     client: MDHBackendClient;
 
@@ -18,7 +18,7 @@ interface MDHCollectionProps {
     results_loading_delay: number;
 }
 
-interface MDHCollectionState {
+interface MDHCollectionSearchState {
     /** the set of applied filters */
     filters: MDHFilter[] | null;
 
@@ -28,9 +28,9 @@ interface MDHCollectionState {
 /**
  * Display the search interface for a single collection
  */
-export default class MDHCollection extends React.Component<MDHCollectionProps, MDHCollectionState> {
+export default class MDHCollectionSearch extends React.Component<MDHCollectionSearchProps, MDHCollectionSearchState> {
 
-    state: MDHCollectionState = {
+    state: MDHCollectionSearchState = {
         filters: null,
         columns: null,
     };

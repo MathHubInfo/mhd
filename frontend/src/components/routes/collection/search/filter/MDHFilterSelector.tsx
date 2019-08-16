@@ -1,8 +1,8 @@
 import React from 'react';
 import { Col } from 'reactstrap';
-import { MDHFilter, ParsedMDHCollection } from "../../client/derived";
-import Codec, { TValidationResult } from "../../codecs/codec";
-import { TMDHProperty } from "../../client/rest";
+import { MDHFilter, ParsedMDHCollection } from "../../../../../client/derived";
+import Codec, { TValidationResult } from "../../../../../codecs/codec";
+import { TMDHProperty } from "../../../../../client/rest";
 
 interface MDHFilterSelectorProps {
     /** the current collection */
