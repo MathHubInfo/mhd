@@ -86,14 +86,14 @@ export default class MDHCounterDisplay extends React.Component<MDHCounterDisplay
         this.scheduleCountUpdate();
     }
 
-    componentDidUpdate(prevProps: MDHCounterDisplayProps) {
+    componentDidUpdate(prevProps: MDHCounterDisplayProps, prevState: MDHCounterDisplayState) {
         // compute old hash
-        const {filters: prevFilter, collection: prevCollection} = prevProps;
-        const oldHash = MDHBackendClient.hashFetchItemCount(prevCollection.slug, prevFilter);
+        const {filters: prevFilter, collection: { slug: prevSlug }} = prevProps;
+        const oldHash = MDHBackendClient.hashFetchItemCount(prevSlug, prevFilter);
 
         // compute new hash
-        const { filters: newFilter, collection: newCollection } = this.props;
-        const newHash = MDHBackendClient.hashFetchItemCount(newCollection.slug, newFilter);
+        const { filters: newFilter, collection: { slug: newSlug } } = this.props;
+        const newHash = MDHBackendClient.hashFetchItemCount(newSlug, newFilter);
 
         // if we have different hashes, we need to re-count
         if (oldHash !== newHash) {

@@ -74,7 +74,12 @@ type TFilterAction = {
         
         // update the value of an existing element
         } else if(par.action === "update") {
-            selected[par.i].value = par.value;
+            // we have to create a new value here
+            // to ensure that the state is not mutated
+            selected[par.i] = {
+                ...selected[par.i],
+                value: par.value,
+            };
         
         // remove an element
         } else {
@@ -82,7 +87,7 @@ type TFilterAction = {
         }
 
         // update the state and notify the parent
-        this.setState({selected: selected});
+        this.setState({ selected });
         this.props.onFilterUpdate(selected);
     }
 

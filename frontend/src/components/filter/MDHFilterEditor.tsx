@@ -41,7 +41,7 @@ export default class MDHFilterEditor extends React.Component<MDHFilterEditorProp
 
     /** stores a new list of filters in state */
     setFilters = async (filters: MDHFilter[]) => {
-        this.setState({ filters, applied: false })
+        this.setState({ filters: filters, applied: false })
     }
 
     /* Applies the filters and passes them to the parent */
@@ -52,7 +52,7 @@ export default class MDHFilterEditor extends React.Component<MDHFilterEditorProp
 
     render() {
         const { collection, client, results_loading_delay } = this.props;
-        const { applied } = this.state;
+        const { applied, filters } = this.state;
 
         return (
             <section className="bg-primary" id="search">
@@ -64,7 +64,7 @@ export default class MDHFilterEditor extends React.Component<MDHFilterEditorProp
                             <MDHCounterDisplay
                                 collection={collection}
                                 client={client}
-                                filters={this.state.filters}
+                                filters={filters}
                                 results_loading_delay={results_loading_delay}
                             />
                             <div className="buttons">
