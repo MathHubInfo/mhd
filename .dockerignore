@@ -7,3 +7,5 @@ venv/
 
 db.sqlite3
 .pytest_cache
+
+mdh/local_settings.py

@@ -165,3 +165,9 @@ if os.environ.get('MDH_LOG_QUERIES', False):
             }
         }
     }
+
+# try and import local_settings if they exist
+try:
+    from .local_settings import *
+except ImportError:
+    pass
