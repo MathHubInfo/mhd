@@ -9,7 +9,7 @@ require('typeface-cormorant-unicase');
 require('typeface-montserrat');
 
 // load custom styles
-require('./css/mdh.min.css'); // customized bootstrap, TODO: Use scss for this
+require('./css/bootstrapMDH.scss');
 require('react-table/react-table.css');
 
 // load font-awesome
