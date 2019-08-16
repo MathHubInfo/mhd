@@ -1,6 +1,7 @@
 import React from 'react';
 import Codec, { TFilterViewerProps, TFilterEditorProps, TValidationResult, TCellProps } from '../codec';
 import { ButtonGroup, Button } from "reactstrap";
+import styles from './StandardBool.module.css';
 
 export default class StandardBool extends Codec<boolean, boolean> {
     readonly slug: string = "StandardBool";
@@ -53,7 +54,7 @@ class StandardBoolFilterEditor extends React.Component<TFilterEditorProps<boolea
         return (
             <>
                 { children }
-                <ButtonGroup id="zoo-choose-objects" className="zoo-bool-filter btn-group-sm">
+                <ButtonGroup sm className={styles.StandardBoolFilter}>
                     <Button
                         disabled={value}
                         onClick={this.setValueTrue}>True</Button>

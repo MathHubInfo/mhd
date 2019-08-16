@@ -3,8 +3,9 @@ import { Col } from 'reactstrap';
 import { MDHFilter, ParsedMDHCollection } from "../../../../../client/derived";
 import Codec, { TValidationResult } from "../../../../../codecs/codec";
 import { TMDHProperty } from "../../../../../client/rest";
+import styles from './FilterSelector.module.css';
 
-interface MDHFilterSelectorProps {
+interface FilterSelectorProps {
     /** the current collection */
     collection: ParsedMDHCollection;
 
@@ -12,7 +13,7 @@ interface MDHFilterSelectorProps {
     onFilterUpdate: (filters: MDHFilter[]) => void;
 }
 
-interface MDHFilterSelectorState {
+interface FilterSelectorState {
     /** currently selected filters */
     selected: TFilter[];
 }
@@ -54,8 +55,8 @@ type TFilterAction = {
  * Allows the user to select and edit filters. 
  * Notifies the parent via onFilterUpdate every time any change occurs. 
  */
- export default class MDHFilterSelector extends React.Component<MDHFilterSelectorProps, MDHFilterSelectorState> {
-    state: MDHFilterSelectorState = {
+ export default class FilterSelector extends React.Component<FilterSelectorProps, FilterSelectorState> {
+    state: FilterSelectorState = {
         selected: [],
     }
 
@@ -97,8 +98,8 @@ type TFilterAction = {
     private renderAvailable() {
         const { collection: { properties } } = this.props;
         return(
-            <div className="zoo-search-filter">
-                <div className="zoo-filter-box">
+            <div className={styles.searchFilter}>
+                <div className={styles.filterBox}>
                     <ul className="fa-ul">
                         {properties.map((p) => 
                             <li key={p.slug}
@@ -119,8 +120,8 @@ type TFilterAction = {
         const { collection: { propMap, codecMap } } = this.props;
 
         return(
-            <div className="zoo-search-filter">
-                <div className="zoo-filter-box">
+            <div className={styles.searchFilter}>
+                <div className={styles.filterBox}>
                     {selected.length === 0 && <p className="text-center my-3">Select filters</p>}
                     <ul className="fa-ul">
                         {selected.map(({ slug, value, uid }, index) => (
@@ -140,10 +141,10 @@ type TFilterAction = {
     render() {
         return (
             <>
-                <Col id="zoo-selected-filters" md="6" sm="12" className="mx-auto my-4">
+                <Col md="6" sm="12" className={`mx-auto my-4 ${styles.selectedFilters}`}>
                     {this.renderSelected()}
                 </Col>
-                <Col id="zoo-choose-filters" md="6" sm="12" className="mx-auto my-4">
+                <Col md="6" sm="12" className={`mx-auto my-4 ${styles.availableFilters}`}>
                     {this.renderAvailable()}
                 </Col>
             </>
@@ -244,7 +245,7 @@ class SelectedFilter<T = any> extends React.Component<TSelectedFilterProps<T>, T
         const { property: { displayName }, codec: { filterViewerComponent: FilterViewerComponent, filterEditorComponent: FilterEditorComponent } } = this.props;
 
         return(
-            <li className={(edit ? "edit" : "")}>
+            <li className={(edit ? styles.edit : "")}>
                 {
                     edit ?
                         <FilterEditorComponent value={internalValue} valid={valid} onChange={this.handleValueUpdate} onApply={this.handleApply}>
@@ -263,9 +264,9 @@ class SelectedFilter<T = any> extends React.Component<TSelectedFilterProps<T>, T
                 }
                 
                 <span className="text-muted small">
-                    <span className="remove-button" onClick={onRemoveFilter}><i className="fas fa-minus"></i></span>
-                    <span className="done-button" onClick={this.handleApply}><i className="fas fa-check"></i></span>
-                    <span className="edit-button" onClick={this.editFilter}><i className="fas fa-pen"></i></span>
+                    <span className={styles.removeButton} onClick={onRemoveFilter}><i className="fas fa-minus"></i></span>
+                    <span className={styles.doneButton} onClick={this.handleApply}><i className="fas fa-check"></i></span>
+                    <span className={styles.editButton} onClick={this.editFilter}><i className="fas fa-pen"></i></span>
                 </span>
             </li>
         );
@@ -277,7 +278,7 @@ class SelectedFilter<T = any> extends React.Component<TSelectedFilterProps<T>, T
  */
 export function ZooInfoButton(props: {value: string}) {
     return(
-        <a href="#!" className={"info-" + props.value}>
+        <a href="#!">
             <i className="far fa-question-circle" data-fa-transform="shrink-4 up-3"></i>
         </a>
     );

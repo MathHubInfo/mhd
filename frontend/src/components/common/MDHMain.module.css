@@ -1,0 +1,10 @@
+.buttons {
+    margin-bottom: 1rem;
+}
+
+.search input[type=text] {
+	border-top: none;
+	border-left: none;
+	border-right: none;
+	background: none;
+}

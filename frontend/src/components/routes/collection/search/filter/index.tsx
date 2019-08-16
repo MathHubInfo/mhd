@@ -3,10 +3,10 @@ import { Button, Row } from 'reactstrap';
 import { MDHBackendClient } from "../../../../../client";
 import { MDHFilter, ParsedMDHCollection } from "../../../../../client/derived";
 import { MDHMainHead } from "../../../../common/MDHMain";
-import MDHCounterDisplay from '../results/MDHCounterDisplay';
-import MDHFilterSelector from './MDHFilterSelector';
+import CounterDisplay from '../results/CounterDisplay';
+import FilterSelector from './FilterSelector';
 
-interface MDHFilterEditorProps {
+interface FilterEditorProps {
     /** the backend  */
     client: MDHBackendClient;
 
@@ -20,7 +20,7 @@ interface MDHFilterEditorProps {
     results_loading_delay: number;
 }
 
-interface MDHFilterStateProps {
+interface FilterEditorStateProps {
     /** the currently selected filters (maybe not applied yet) */
     filters: MDHFilter[],
 
@@ -32,9 +32,9 @@ interface MDHFilterStateProps {
  * Shows an editor filters, along with a preview for the number of elements found. 
  * Notifies the parent via onFilterApply whenever the user manually applies the filters. 
 */
-export default class MDHFilterEditor extends React.Component<MDHFilterEditorProps, MDHFilterStateProps> {
+export default class FilterEditor extends React.Component<FilterEditorProps, FilterEditorStateProps> {
 
-    state: MDHFilterStateProps = {
+    state: FilterEditorStateProps = {
         filters: [],
         applied: false,
     };
@@ -56,7 +56,7 @@ export default class MDHFilterEditor extends React.Component<MDHFilterEditorProp
 
         const leftHead = <>
             <p>{collection.displayName}</p>
-            <MDHCounterDisplay
+            <CounterDisplay
                 collection={collection}
                 client={client}
                 filters={filters}
@@ -67,7 +67,7 @@ export default class MDHFilterEditor extends React.Component<MDHFilterEditorProp
         const buttons = <Button onClick={this.applyFilters} disabled={applied}>Display results</Button>;
 
         const rightHead = <Row>
-            <MDHFilterSelector
+            <FilterSelector
                 collection={this.props.collection}
                 onFilterUpdate={this.setFilters} />
         </Row>;

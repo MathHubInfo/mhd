@@ -1,5 +1,6 @@
 import React from 'react';
 import { Row, Col, Container } from "reactstrap";
+import styles from './MDHMain.module.css';
 
 interface MDHMainProps {
     /** title of the current page */
@@ -41,13 +42,13 @@ export class MDHMainHead extends React.Component<MDHMainHeadProps> {
         const { title, leftHead, buttons, rightHead } = this.props;
 
         return (
-            <section className="bg-primary" id="search">
-                <Container id="zoo-search-box">
+            <section className={`bg-primary ${styles.search}`}>
+                <Container>
                     <Row>
                         <Col lg="3" sm="12" className="mx-auto my-4">
                             <h2 className="section-heading text-white">{title}</h2>                 
                             { leftHead }
-                            <div className="buttons">{ buttons }</div>
+                            <div className={styles.buttons}>{ buttons }</div>
                         </Col>
                         <Col lg="9" sm="12">
                             { rightHead }

@@ -5,8 +5,9 @@ import { DragDropContext, Draggable, DraggingStyle, Droppable, DropResult, NotDr
 import { Button, Card, CardText, Col, Collapse, Row } from 'reactstrap';
 import { ParsedMDHCollection } from '../../../../../client/derived';
 
+import styles from './ColumnEditor.module.css'; // Import css modules stylesheet as styles
 
-interface MDHColumnEditorProps {
+interface ColumnEditorProps {
     /** the current collection */
     collection: ParsedMDHCollection;
 
@@ -14,7 +15,7 @@ interface MDHColumnEditorProps {
     onColumnsApply: (newColumns: string[]) => void;
 }
 
-interface MDHColumnEditorState {
+interface ColumnEditorState {
     /** is the editor currently expanded */
     expanded: boolean;
 
@@ -33,9 +34,9 @@ interface MDHColumnEditorState {
  * Notifies the caller via onColumnsApply() every time the columns are changed. 
  * Also notifies on mount. 
  */
-export default class MDHColumnEditor extends Component<MDHColumnEditorProps, MDHColumnEditorState> {
+export default class ColumnEditor extends Component<ColumnEditorProps, ColumnEditorState> {
 
-    state: MDHColumnEditorState = {
+    state: ColumnEditorState = {
         expanded: false,
         lastSelected: this.props.collection.propertyNames,
         selected: this.props.collection.propertyNames.slice(),
@@ -154,9 +155,9 @@ class DroppableArea extends Component<DroppableAreaProps> {
             <Droppable droppableId={this.props.id} direction="horizontal">
                 {(provided, snapshot) => (
                     <div>
-                        <p className="droppable-caption">{this.props.caption}</p>
+                        <p className={styles.droppableCaption}>{this.props.caption}</p>
                         <div
-                            className="droppable-area"
+                            className={styles.droppableArea}
                             ref={provided.innerRef}
                             style={getListStyle(snapshot.isDraggingOver)}
                             {...provided.droppableProps}
@@ -198,7 +199,7 @@ class DraggableColumn extends Component<DraggableColumnProps> {
             <Draggable draggableId={this.props.item} index={this.props.index}>
                 {(provided, snapshot) => (
                     <div
-                        className="btn btn-outline-secondary btn-sm draggable-item"
+                        className={`btn btn-outline-secondary btn-sm ${styles.draggableItem}`}
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}

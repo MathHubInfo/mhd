@@ -2,9 +2,9 @@ import React from 'react';
 import { Container } from "reactstrap";
 import { MDHBackendClient } from "../../../../client";
 import { MDHFilter, ParsedMDHCollection } from '../../../../client/derived';
-import MDHColumnEditor from './columns/MDHColumnEditor';
-import MDHFilterEditor from './filter/MDHFilterEditor';
-import MDHResultsDisplay from './results/MDHResultsTable';
+import ColumnEditor from './columns/ColumnEditor';
+import FilterEditor from './filter';
+import ResultsTable from './results/ResultsTable';
 
 
 interface MDHCollectionSearchProps {
@@ -50,7 +50,7 @@ export default class MDHCollectionSearch extends React.Component<MDHCollectionSe
 
         return (
             <main>
-                <MDHFilterEditor
+                <FilterEditor
                     client={client}
                     collection={collection}
                     onFilterApply={this.setFilters}
@@ -60,14 +60,14 @@ export default class MDHCollectionSearch extends React.Component<MDHCollectionSe
                     <Container>
                         {
                             (filters !== null) && 
-                            <MDHColumnEditor
+                            <ColumnEditor
                                 collection={collection}
                                 onColumnsApply={this.setColumns}
                             />
                         }
                         {
                             (filters !== null) && (columns !== null) &&
-                                <MDHResultsDisplay
+                                <ResultsTable
                                     client={client}
                                     collection={collection}
                                     filters={filters}

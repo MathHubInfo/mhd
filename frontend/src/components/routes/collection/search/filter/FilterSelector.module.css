@@ -1,0 +1,84 @@
+/* search filter */
+.searchFilter {
+    border-radius: 0.25rem;
+    background-color: #ffffff;
+}
+
+/* filter box on the rhs */
+.filterBox {
+  display: block;
+  height: 200px;
+  overflow: auto;
+}
+.filterBox :global(.fa-ul) {
+  margin-left: 0px;
+}
+.filterBox li :global(.fa-li) {
+  left: 0;
+  top: 0.6em;
+}
+.filterBox li :global(.fa-li) {
+  visibility: hidden;
+}
+.filterBox li:hover :global(.fa-li) {
+  visibility: visible;
+}
+.filterBox :global(.fa-ul) li {
+  color: #19717f;
+  padding: 0.5em 2em;
+  border-bottom: 1px solid #ccc;
+}
+.filterBox :global(.fa-ul) li:last-child {
+  border-bottom: 0px;
+}
+.filterBox :global(.small) {
+  font-size: 0.7em;
+  position: absolute;
+  right: 1.5em;
+  top: 1.2em;
+}
+.filterBox :global(.fa-ul) li:nth-child(odd) {
+  background-color: rgba(25, 113, 127, 0.05);
+}
+
+/* available filters*/
+.availableFilters .filterBox :global(.fa-ul) li:hover {
+  background-color: rgba(23, 159, 82, 0.1);
+}
+
+/* selected filters */
+.selectedFilters .filterBox :global(.fa-ul) li:hover {
+  background-color: rgba(223, 135, 33, 0.1);
+}
+.selectedFilters .filterBox li.edit {
+  background-color: rgba(172, 48, 15, 0.05);
+}
+
+.selectedFilters .filterBox :global(.fa-ul) li {
+  padding-left: 1em;
+}
+.selectedFilters .filterBox input {
+  margin-left: 0.3em;
+  width: 100px;
+  font-family: Montserrat, sans-serif;
+  background-color: #ffffff;
+}
+
+.selectedFilters .filterBox li .doneButton,
+.selectedFilters .filterBox li .removeButton {
+  display: none;
+  margin-left: 1em;
+}
+.selectedFilters .filterBox li .editButton {
+  display: block;
+}
+.selectedFilters .filterBox li.edit .doneButton,
+.selectedFilters .filterBox li.edit .removeButton {
+  display: inline;
+}
+.selectedFilters .filterBox li.edit .editButton {
+  display: none;
+}
+.selectedFilters .filterBox li p {
+  margin: 0;
+}

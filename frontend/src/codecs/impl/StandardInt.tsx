@@ -1,5 +1,6 @@
 import React, { ChangeEvent, KeyboardEvent, CSSProperties } from 'react';
 import Codec, { TFilterViewerProps, TFilterEditorProps, TValidationResult, TCellProps } from '../codec';
+import styles from './StandardInt.module.css';
 
 export default class StandardInt extends Codec<number, string> {
     readonly slug: string = "StandardInt";
@@ -52,7 +53,7 @@ class StandardIntFilterViewer extends React.Component<TFilterViewerProps<string>
         const { value, children } = this.props;
         return <>
             { children }
-            <i className="zoo-numeric-condition-display">{ value } </i>
+            <i className={styles.StandardIntDisplay}>{ value } </i>
         </>;
     }
 }

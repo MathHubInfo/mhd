@@ -9710,6 +9710,21 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
+typeface-cormorant-garamond@^0.0.72:
+  version "0.0.72"
+  resolved "https://registry.yarnpkg.com/typeface-cormorant-garamond/-/typeface-cormorant-garamond-0.0.72.tgz#86e1564b87f2d89599ae27cf0b762bae95c99798"
+  integrity sha512-SOImWwsy5h0Vtj8oWMY2KjEnalkA86I7c98UMXplZQ9cTKoq4kfojc/R2B55kzJGhg0uEz0GcbDtFcyQzxTOqg==
+
+typeface-cormorant-unicase@^0.0.71:
+  version "0.0.71"
+  resolved "https://registry.yarnpkg.com/typeface-cormorant-unicase/-/typeface-cormorant-unicase-0.0.71.tgz#388ea4e5e68c4db811fd08a4f2adbf22f443f103"
+  integrity sha512-ue/TidnlTKfcfQkrMxv8X0tIanIQTmq7lc3Sd0uQHF9neL9wnx0ubLkRLmdfNKrgGQxY6LaiV75r7EPDrEe0AQ==
+
+typeface-montserrat@^0.0.75:
+  version "0.0.75"
+  resolved "https://registry.yarnpkg.com/typeface-montserrat/-/typeface-montserrat-0.0.75.tgz#b796d9c767ab8ed1343271985beb1e44b382b7b3"
+  integrity sha512-8ski20t3hdwu2T85pVfjK4jsDbwW8yWzd+LAKxYEmu+JVLVlB7G2yfmdKZz06pUwYCLVFvHvup+NYYulHDpE+w==
+
 typescript@^3.5.3:
   version "3.5.3"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.5.3.tgz#c830f657f93f1ea846819e929092f5fe5983e977"

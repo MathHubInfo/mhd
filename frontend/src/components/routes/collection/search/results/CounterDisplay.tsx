@@ -3,7 +3,7 @@ import React from 'react';
 import { MDHBackendClient } from '../../../../../client';
 import { ParsedMDHCollection, MDHFilter } from '../../../../../client/derived';
 
-interface MDHCounterDisplayProps {
+interface CounterDisplayProps {
     /** the backend  */
     client: MDHBackendClient;
 
@@ -17,7 +17,7 @@ interface MDHCounterDisplayProps {
     results_loading_delay: number;
 }
 
-interface MDHCounterDisplayState {
+interface CounterDisplayState {
     /** boolean indicating if the component is currently loading data */
     loading: boolean;
 
@@ -31,8 +31,8 @@ interface MDHCounterDisplayState {
 /**
  * Displays and updates a counter of the current v
  */
-export default class MDHCounterDisplay extends React.Component<MDHCounterDisplayProps, MDHCounterDisplayState> {
-    state: MDHCounterDisplayState = {
+export default class CounterDisplay extends React.Component<CounterDisplayProps, CounterDisplayState> {
+    state: CounterDisplayState = {
         loading: false,
         count: NaN,
         last_update: 0,
@@ -52,7 +52,7 @@ export default class MDHCounterDisplay extends React.Component<MDHCounterDisplay
         // however, to avoid flashing this indicator when loading is quick
         // we only display this after {results_loading_delay} ms. 
         setTimeout(() => {
-            this.setState(({ last_update }: MDHCounterDisplayState) => {
+            this.setState(({ last_update }: CounterDisplayState) => {
                 if (last_update >= time) return null; // an update was applied
                 return { loading: true };
             });
@@ -71,7 +71,7 @@ export default class MDHCounterDisplay extends React.Component<MDHCounterDisplay
         // for introducing a dummy delay of 2 seconds, uncomment the following line
         // await new Promise((resolve) => setTimeout(resolve, 2000));
 
-        this.setState(({ last_update }: MDHCounterDisplayState) => {
+        this.setState(({ last_update }: CounterDisplayState) => {
             if (last_update > time) return null; // newer update was already applied
 
             return {
@@ -86,7 +86,7 @@ export default class MDHCounterDisplay extends React.Component<MDHCounterDisplay
         this.scheduleCountUpdate();
     }
 
-    componentDidUpdate(prevProps: MDHCounterDisplayProps, prevState: MDHCounterDisplayState) {
+    componentDidUpdate(prevProps: CounterDisplayProps, prevState: CounterDisplayState) {
         // compute old hash
         const {filters: prevFilter, collection: { slug: prevSlug }} = prevProps;
         const oldHash = MDHBackendClient.hashFetchItemCount(prevSlug, prevFilter);

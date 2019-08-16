@@ -5,7 +5,7 @@ import { MDHFilter, ParsedMDHCollection } from "../../../../../client/derived";
 import { TDRFPagedResponse, TMDHItem } from "../../../../../client/rest";
 import { Row, Col } from "reactstrap";
 
-interface MDHResultsTableProps {
+interface ResultsTableProps {
     /** backend client */
     client: MDHBackendClient;
 
@@ -22,7 +22,7 @@ interface MDHResultsTableProps {
     results_loading_delay: number;
 }
 
-interface MDHResultsTableState {
+interface ResultsTableState {
     /** the current page being requested */
     page: number;
 
@@ -52,9 +52,9 @@ interface MDHResultsTableState {
  * Component that displays results based on a filter input and order input. 
  * Maintains internal state for page size
  */
-export default class MDHResultsTable extends Component<MDHResultsTableProps, MDHResultsTableState> {
+export default class ResultsTable extends Component<ResultsTableProps, ResultsTableState> {
 
-    state: MDHResultsTableState = {
+    state: ResultsTableState = {
         loading: true,
 
         data: [],
@@ -84,7 +84,7 @@ export default class MDHResultsTable extends Component<MDHResultsTableProps, MDH
         // we want to set loading to true, to display a loading indicator
         // however, to avoid flashing this indicator when loading is quick
         setTimeout(() => {
-            this.setState(({ last_update: lastUpdate }: MDHResultsTableState) => {
+            this.setState(({ last_update: lastUpdate }: ResultsTableState) => {
                 if (lastUpdate >= time) return null; // an update was applied
 
                 return {loading: true};
@@ -112,7 +112,7 @@ export default class MDHResultsTable extends Component<MDHResultsTableProps, MDH
         // for introducing a dummy delay of 2 seconds, uncomment the following line
         // await new Promise((resolve) => setTimeout(resolve, 2000));
 
-        this.setState(({ last_update: lastUpdate }: MDHResultsTableState) => {
+        this.setState(({ last_update: lastUpdate }: ResultsTableState) => {
             if (lastUpdate > time) return null; // newer update was already applied
 
             // pick the appropriate columns
@@ -129,18 +129,18 @@ export default class MDHResultsTable extends Component<MDHResultsTableProps, MDH
     }
 
     /** computes a hash of the properties that influence data fetching */
-    private static computeDataUpdateHash({ filters, collection: { slug }, columns }: MDHResultsTableProps, { page, page_size }: MDHResultsTableState): string {
+    private static computeDataUpdateHash({ filters, collection: { slug }, columns }: ResultsTableProps, { page, page_size }: ResultsTableState): string {
         return MDHBackendClient.hashFetchItems(slug, columns, filters, page, page_size);
     }
 
-    private static computeResetHash({collection: {slug}, filters}: MDHResultsTableProps): string {
+    private static computeResetHash({collection: {slug}, filters}: ResultsTableProps): string {
         return MDHBackendClient.hashFetchItems(slug, [], filters, 1, 1);
     }
     
-    componentDidUpdate(prevProps: MDHResultsTableProps, prevState: MDHResultsTableState) {
+    componentDidUpdate(prevProps: ResultsTableProps, prevState: ResultsTableState) {
         // whenever the state drastically changed (i.e. filters changed)
         // we need to reset the page number and forcibly
-        if (MDHResultsTable.computeResetHash(prevProps) !== MDHResultsTable.computeResetHash(this.props)) {
+        if (ResultsTable.computeResetHash(prevProps) !== ResultsTable.computeResetHash(this.props)) {
             this.setState({
                 loading: true,
                 data: [],
@@ -152,7 +152,7 @@ export default class MDHResultsTable extends Component<MDHResultsTableProps, MDH
         }
 
         // check if any parameters have changed or we forced an update
-        if (this.state.force_update || MDHResultsTable.computeDataUpdateHash(prevProps, prevState) !== MDHResultsTable.computeDataUpdateHash(this.props, this.state)) {
+        if (this.state.force_update || ResultsTable.computeDataUpdateHash(prevProps, prevState) !== ResultsTable.computeDataUpdateHash(this.props, this.state)) {
             // when an update was forced, reset force_update to false
             if (this.state.force_update) {
                 this.setState({force_update: false});
