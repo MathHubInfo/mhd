@@ -8,7 +8,7 @@
         {
             "slug": "mat",
             "displayName": "Matrix",
-            "codec": "MatrixAsList_StandardInt_2",
+            "codec": "MatrixAsList_StandardInt_2_2",
             "metadata": {
                 "uri": "https://mathhub.com/examples/?Jane?mat"
             }

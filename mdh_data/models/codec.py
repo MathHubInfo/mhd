@@ -61,12 +61,11 @@ class CodecManager(models.Manager):
 
         return None
 
-
 class Codec(models.Model):
     """ An abstract class for each codec """
     class Meta:
         abstract = True
-        unique_together = [['item', 'prop', 'superseeded_by']]
+        unique_together = (('item', 'prop', 'superseeded_by'))
 
     objects = CodecManager()
 
@@ -78,6 +77,11 @@ class Codec(models.Model):
 
     # A database field containing the value, overwritten by subclass
     value = None
+
+    @classmethod
+    def get_value_field(cls):
+        """ gets the value field of this model """
+        return cls._meta.get_field('value')
 
     # A DRF serializer field (if any) corresponding to the value object
     # may be omitted iff 'value' can be directly serialized from / to json
@@ -98,7 +102,14 @@ class Codec(models.Model):
     @classmethod
     def serialize_value(cls, value):
         """ Called by the serializer to serialize the value """
+
+        from ..fields.json import DumbJSONField
+
         if cls._serializer_field is None:
+            from django.db import connection
+            valuefield = cls.get_value_field()
+            if hasattr(valuefield, 'from_db_value'):
+                return valuefield.from_db_value(value, None, connection)
             return value
 
         if value is None:

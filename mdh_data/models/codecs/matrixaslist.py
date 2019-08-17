@@ -2,8 +2,18 @@ from django.db import models
 
 from ...fields.ndarray import SmartNDArrayField
 from ..codec import Codec
+from .standardint import StandardInt
 
-class MatrixAsList_StandardInt_2(Codec):
-    """ Codec for 2-dimensional matrices as lists """
 
-    value = SmartNDArrayField(typ=models.IntegerField(), dim=2)
+def MatrixAsListCodec(elementCodec, rows, columns):
+    """ A Codec Operator for Matrices as list """
+    class CodecClass(Codec):
+        class Meta(Codec.Meta):
+            abstract = True
+        value = SmartNDArrayField(typ=elementCodec.get_value_field(), dim=1)
+    return CodecClass
+
+class MatrixAsList_StandardInt_2_2(MatrixAsListCodec(StandardInt, 2, 2)):
+    pass
+
+__all__ = ['MatrixAsList_StandardInt_2_2']
