@@ -1,28 +1,30 @@
-import json
-
+from django.contrib.postgres.fields import JSONField
 from django.test import TestCase
 
 from mdh_tests.models import DumbJSONFieldModel, SmartJSONFieldModel
+from mdh_tests.utils import db
+
+from ..fields.json import DumbJSONField, SmartJSONField
+from .storage import StorageSuite
 
 
-class JSONSuite:
+class SmartJSONTest(TestCase):
+    @db.skipUnlessSqlite
+    def test_sqlite_uses_DumbJSON(self):
+        """ Tests that sqlite uses the DumbJSONField implementation """
+
+        self.assertFalse(SmartJSONField.using_postgres)
+        self.assertTrue(issubclass(SmartJSONField, DumbJSONField))
+
+    @db.skipUnlessPostgres
+    def test_postgres_uses_JSONField(self):
+        """ Tests that postgres uses the JSONField implementation """
+
+        self.assertTrue(SmartJSONField.using_postgres)
+        self.assertTrue(issubclass(SmartJSONField, JSONField))
+
+class JSONSuite(StorageSuite):
     """ A Testsuite that tests storing and loading of JSON data """
-
-    def _store_and_retrieve(self, data):
-        raise NotImplementedError
-
-    def _assert_stores(self, data, message=None):
-        """ Asserts that data can be stored and retrieved"""
-
-        # store and retrieve the data once
-        got_data = self._store_and_retrieve(data)
-
-        # turn both into standardized json
-        js = json.dumps(got_data, sort_keys=True)
-        ejs = json.dumps(data, sort_keys=True)
-
-        # and assert equality
-        return self.assertEqual(js, ejs, message)
 
     def test_store_none(self):
         self._assert_stores(None)
@@ -69,17 +71,10 @@ class JSONSuite:
 class DumbJSONStorageTest(JSONSuite, TestCase):
     """ Tests that the DumbJSONField can store JSON objects properly """
 
-    def _store_and_retrieve(self, data):
-        instance = DumbJSONFieldModel(data=data)
-        instance.save()
-        instance.refresh_from_db()
-        return instance.data
+    storage_model = DumbJSONFieldModel
 
 
 class SmartJSONStoragetest(JSONSuite, TestCase):
     """ Tests that the SmartJSOnField can store JSON objects properly """
-    def _store_and_retrieve(self, data):
-        instance = SmartJSONFieldModel(data=data)
-        instance.save()
-        instance.refresh_from_db()
-        return instance.data
+
+    storage_model = SmartJSONFieldModel
