@@ -2,7 +2,7 @@ import json
 
 from django.test import TestCase
 
-from mdh.utils import AssetPath, LoadJSONAsset
+from mdh_tests.utils import AssetPath, LoadJSONAsset
 
 from .z4z import Z4ZTest
 

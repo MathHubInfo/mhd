@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'corsheaders',
 ]
 
+USE_TEST_APP = True  # set this to true to add the test app to installed apps
+
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -171,3 +173,7 @@ try:
     from .local_settings import *
 except ImportError:
     pass
+
+# when set to true, enable the test app
+if USE_TEST_APP:
+    INSTALLED_APPS.append('mdh_tests')

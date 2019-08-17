@@ -16,12 +16,13 @@ __This code and in particular the documentation are still a work-in-progress__
 ## Code Structure
 
 The top-level structure of this repository consists of a standard [Django](https://www.djangoproject.com/) project. 
-There are four apps:
+There are five apps:
 
 - `mdh`: The main entry point. Contains a `utils/` package used by other apps. 
 - `mdh_schema`: Stores schema of MDH data. Home of the `Collection` and `Property` tables. 
 - `mdh_data`: Stores all concrete MDH data. Home of the `Item` and all `Codec` tables. 
 - `mdh_provenance`: Stores meta-information about MDH data. Home of the `Provenance` tables. 
+- `mdh_test`: Test-only app for specific test models
 
 Currently, MDH depends only on Django and [Django Rest Framework](https://www.django-rest-framework.org/).
 To install the dependencies, first make sure you have a recent enough version of Python installed on your system. 
@@ -60,6 +61,9 @@ To do so, start the server with:
 ```bash
 MDH_LOG_QUERIES=1 python manage.py runserver
 ```
+
+To additionally customize development settings, create a file named `mdh/local_settings.py`. 
+This will be automatically loaded by mdh during configuration time. 
 
 ## Database structure
 
@@ -148,6 +152,8 @@ pytest
 One non-feature related test is the CodeStyle test. 
 This enforces [PEP8](https://pep8.readthedocs.io)-compliance except for maximum line length. 
 
+Additionally, a test-only app exists with specific models only used during testing. 
+To manually enable for local development add `USE_TEST_APP = True` to `mdh/local_settings.py`. 
 
 ## Data Examples
 

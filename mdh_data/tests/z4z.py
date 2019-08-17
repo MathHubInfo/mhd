@@ -3,7 +3,7 @@ from unittest import mock
 
 from django.core.management import call_command
 
-from mdh.utils import AssetPath
+from mdh_tests.utils import AssetPath
 from mdh.utils.uuid import uuid4_mock
 
 from mdh_schema.models import Collection
