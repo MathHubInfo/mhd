@@ -27,9 +27,14 @@ class MatrixAsListCell<T> extends React.Component<TCellProps<MatrixAsList<T>, Ar
     render() {
         const { value, codec } = this.props;
         if (value === null) return null;
+        
 
         // for now
-        return JSON.stringify(codec);
+        return <>
+            Matrix {codec.rows}x{codec.columns}
+            <br />
+            {JSON.stringify(value)}
+        </>;
     }
 }
 

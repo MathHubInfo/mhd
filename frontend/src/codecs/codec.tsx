@@ -1,7 +1,6 @@
 import React from 'react';
-import { Column, CellInfo, Filter } from "react-table";
+import { Column, CellInfo } from "react-table";
 import { TMDHProperty } from "../client/rest";
-import { any } from "prop-types";
 
 type ReactComponent<T> = React.ComponentClass<T> | React.SFC<T>
 
