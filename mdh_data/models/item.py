@@ -59,7 +59,10 @@ class ItemManager(models.Manager):
                       for (item, value) in zip(items, column)]
 
             # and create them in bulk
-            prop.codec_model.objects.bulk_create(values)
+            try:
+                prop.codec_model.objects.bulk_create(values)
+            except Exception as e:
+                raise Exception('Unable to create property {0:s}: {1:s}'.format(prop.slug, str(e)))
 
             # and log
             logger("Inserted {0:d} value(s) into cells for property {1:s}".format(

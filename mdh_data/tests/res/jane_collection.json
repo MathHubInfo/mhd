@@ -1,0 +1,50 @@
+{
+    "displayName": "Jane's Collection",
+    "slug": "jane",
+    "metadata": {
+        "uri": "https://mathhub.com/examples/?Jane"
+    },
+    "properties": [
+        {
+            "slug": "mat",
+            "displayName": "Matrix",
+            "codec": "MatrixAsList_StandardInt_2",
+            "metadata": {
+                "uri": "https://mathhub.com/examples/?Jane?mat"
+            }
+        },
+        {
+            "slug": "trace",
+            "displayName": "Trace",
+            "codec": "StandardInt",
+            "metadata": {
+                "uri": "https://mathhub.com/examples/?Jane?trace"
+            }
+        },
+        {
+            "slug": "orthogonal",
+            "displayName": "Orthogonal",
+            "codec": "StandardBool",
+            "metadata": {
+                "uri": "https://mathhub.com/examples/?Jane?orthogonal"
+            }
+        },
+        {
+            "slug": "eigenvalues",
+            "displayName": "Eigenvalues",
+            "codec": "ListAsArray_StandardInt",
+            "metadata": {
+                "uri": "https://mathhub.com/examples/?Jane?eigenvalues"
+            }
+        },
+        
+        {
+            "slug": "characteristic",
+            "displayName": "Characteristic Polynomial",
+            "codec": "PolynomialAsSparseArray",
+            "metadata": {
+                "uri": "https://mathhub.com/examples/?Jane?characteristic"
+            }
+        }
+    ]
+}
