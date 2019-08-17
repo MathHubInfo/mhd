@@ -17,8 +17,11 @@ ADD requirements.txt /app/
 
 # Add the entrypoint and add configuration
 RUN mkdir -p /var/www/admin/static/ \
-    && pip install -r requirements.txt \
-    && pip install gunicorn==19.7
+    && apk add --no-cache postgresql-libs \
+    && apk add --no-cache --virtual .build-deps gcc musl-dev postgresql-dev \
+    && pip install -r requirements.txt --no-cache-dir \
+    && apk --purge del .build-deps \
+    && pip install gunicorn==19.7 --no-cache-dir
 
 # Install Django App, configure settings and copy over djano app
 ADD manage.py /app/
