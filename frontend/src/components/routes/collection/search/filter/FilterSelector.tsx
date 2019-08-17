@@ -152,12 +152,12 @@ type TFilterAction = {
     }
 }
 
-interface TSelectedFilterProps<T> {
+interface TSelectedFilterProps<S, T> {
     /** the schema of this filter */
     property: TMDHProperty;
 
     /** the values of this codec */
-    codec: Codec<any, T>,
+    codec: Codec<S, T>,
 
     /** the value of the selected filter */
     value: TFilterValue;
@@ -181,7 +181,7 @@ interface TSelectedFilterState<T> {
 }
 
 
-class SelectedFilter<T = any> extends React.Component<TSelectedFilterProps<T>, TSelectedFilterState<T>> {
+class SelectedFilter<S = any, T = any> extends React.Component<TSelectedFilterProps<S, T>, TSelectedFilterState<T>> {
 
     state: TSelectedFilterState<T> = {
         edit: true,
@@ -240,22 +240,20 @@ class SelectedFilter<T = any> extends React.Component<TSelectedFilterProps<T>, T
     
     render() {
         const { edit, internalValue, valid } = this.state;
-        const { onRemoveFilter } = this.props;
-
-        const { property: { displayName }, codec: { filterViewerComponent: FilterViewerComponent, filterEditorComponent: FilterEditorComponent } } = this.props;
+        const { onRemoveFilter, property: { displayName }, codec: { filterViewerComponent: FilterViewerComponent, filterEditorComponent: FilterEditorComponent } } = this.props;
 
         return(
             <li className={(edit ? styles.edit : "")}>
                 {
                     edit ?
-                        <FilterEditorComponent value={internalValue} valid={valid} onChange={this.handleValueUpdate} onApply={this.handleApply}>
+                        <FilterEditorComponent value={internalValue} valid={valid} onChange={this.handleValueUpdate} onApply={this.handleApply} codec={this.props.codec}>
                             <>
                                 { displayName }
                                 <InfoButton value="filter" />
                             </>
                         </FilterEditorComponent>
                         :
-                        <FilterViewerComponent value={internalValue}>
+                        <FilterViewerComponent value={internalValue} codec={this.props.codec}>
                             <>
                                 { displayName }
                                 <InfoButton value="filter" />

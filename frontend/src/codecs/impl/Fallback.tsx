@@ -21,6 +21,11 @@ export default class Fallback extends Codec<any, null> {
 
 class FallbackElement extends React.Component<any> {
     render() {
-        return <Badge color="danger">Unknown Codec</Badge>;
+        const { children } = this.props;
+        
+        return <>
+            { children }
+            <Badge color="danger">Unknown Codec</Badge>
+        </>
     }
 }

@@ -4,9 +4,12 @@ import { TMDHProperty } from "../client/rest";
 
 type ReactComponent<T> = React.ComponentClass<T> | React.SFC<T>
 
-export interface TCellProps<ElementType> {
+export interface TCellProps<ElementType, CodecType extends Codec<ElementType, FilterType>, FilterType = any> {
     /** the value of this cell (if any) */
-    value: ElementType | null
+    value: ElementType | null,
+
+    /** the codec instance used for this cell */
+    codec: CodecType
 }
 
 export type TValidationResult = {
@@ -24,7 +27,10 @@ export type TValidationResult = {
 };
 
 
-export interface TFilterViewerProps<FilterType> {
+export interface TFilterViewerProps<FilterType, CodecType extends Codec<ElementType, FilterType>, ElementType = any> {
+    /** the codec instance used for this viewer */
+    codec: CodecType
+
     /** the current value of the filter */
     value: FilterType;
     
@@ -32,7 +38,10 @@ export interface TFilterViewerProps<FilterType> {
     children: React.ReactChild;
 }
 
-export interface TFilterEditorProps<FilterType> {
+export interface TFilterEditorProps<FilterType, CodecType extends Codec<ElementType, FilterType>, ElementType = any> {
+    /** the codec instance used for this viewer */
+    codec: CodecType
+
     /** the current value of the filter */
     value: FilterType;
 
@@ -62,7 +71,7 @@ export default abstract class Codec<ElementType = any, FilterType = string> {
     /**
      * Component used for rendering cells of this value
      */
-    abstract readonly cellComponent: ReactComponent<TCellProps<ElementType>>;
+    abstract readonly cellComponent: ReactComponent<TCellProps<ElementType, any>>;
 
     /**
      * Makes a React-Table Column for an instatiation of this codec
@@ -71,7 +80,7 @@ export default abstract class Codec<ElementType = any, FilterType = string> {
     makeReactTableColumn(property: TMDHProperty): Column<{}> {
         const Component = this.cellComponent;
         return {
-            Cell: ({original}: CellInfo) => <Component value={original[property.slug]} />,
+            Cell: ({original}: CellInfo) => <Component value={original[property.slug]} codec={this} />,
             Header: property.displayName,
         }
     }
@@ -89,10 +98,10 @@ export default abstract class Codec<ElementType = any, FilterType = string> {
     /**
      * A component that is used for rendering a filter
      */
-    abstract readonly filterViewerComponent: ReactComponent<TFilterViewerProps<FilterType>>;
+    abstract readonly filterViewerComponent: ReactComponent<TFilterViewerProps<FilterType, any>>;
 
     /**
      * A component that is used for rendering the editor
      */
-    abstract readonly filterEditorComponent: ReactComponent<TFilterEditorProps<FilterType>>;
+    abstract readonly filterEditorComponent: ReactComponent<TFilterEditorProps<FilterType, any>>;
 }

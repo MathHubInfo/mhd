@@ -39,7 +39,7 @@ export default class StandardInt extends Codec<number, string> {
     }
 }
 
-class StandardIntCell extends React.Component<TCellProps<number>> {
+class StandardIntCell extends React.Component<TCellProps<number, StandardInt>> {
     render() {
         const { value } = this.props;
         if (value === null) return null;
@@ -48,7 +48,7 @@ class StandardIntCell extends React.Component<TCellProps<number>> {
     }
 }
 
-class StandardIntFilterViewer extends React.Component<TFilterViewerProps<string>> {
+class StandardIntFilterViewer extends React.Component<TFilterViewerProps<string, StandardInt>> {
     render() {
         const { value, children } = this.props;
         return <>
@@ -58,7 +58,7 @@ class StandardIntFilterViewer extends React.Component<TFilterViewerProps<string>
     }
 }
 
-class StandardIntFilterEditor extends React.Component<TFilterEditorProps<string>> {
+class StandardIntFilterEditor extends React.Component<TFilterEditorProps<string, StandardInt>> {
     private handleValueChange = (event: ChangeEvent<HTMLInputElement>) => {
         this.props.onChange(event.target.value);
     }

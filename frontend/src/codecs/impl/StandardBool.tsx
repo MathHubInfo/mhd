@@ -20,7 +20,7 @@ export default class StandardBool extends Codec<boolean, boolean> {
     }
 }
 
-class StandardBoolCell extends React.Component<TCellProps<boolean>> {
+class StandardBoolCell extends React.Component<TCellProps<boolean, StandardBool>> {
     render() {
         const { value } = this.props;
         if (value === null) return null;
@@ -29,7 +29,7 @@ class StandardBoolCell extends React.Component<TCellProps<boolean>> {
     }
 }
 
-class StandardBoolFilterViewer extends React.Component<TFilterViewerProps<boolean>> {
+class StandardBoolFilterViewer extends React.Component<TFilterViewerProps<boolean, StandardBool>> {
     render() {
         const { value, children } = this.props;
         return <>
@@ -39,7 +39,7 @@ class StandardBoolFilterViewer extends React.Component<TFilterViewerProps<boolea
     }
 }
 
-class StandardBoolFilterEditor extends React.Component<TFilterEditorProps<boolean>> {
+class StandardBoolFilterEditor extends React.Component<TFilterEditorProps<boolean, StandardBool>> {
     private setValueTrue = () => {
         this.props.onChange(true);
     }

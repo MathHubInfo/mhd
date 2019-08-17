@@ -2,6 +2,7 @@
 import Codec from "./codec";
 import StandardInt from "./impl/StandardInt";
 import StandardBool from "./impl/StandardBool";
+import MatrixAsList from "./impl/MatrixAsList";
 import Fallback from "./impl/Fallback";
 
 /**
@@ -15,6 +16,7 @@ export default class CodecManager {
     private constructor() {
         this.register(new StandardInt());
         this.register(new StandardBool());
+        this.register(new MatrixAsList(new StandardInt(), 2, 2));
     }
 
     /** registers a codec with this codec manager */
@@ -33,6 +35,9 @@ export default class CodecManager {
     /** gets a component with fallback for when it doesn't exist */
     getWithFallback(name: string): Codec<any, any> {
         const codec = this.codecs.get(name);
+        if (process.env.NODE_ENV !== 'production' && codec === undefined) {
+            console.error(`Codec ${name} is not known`);
+        }
         return codec ? codec : this.fallback;
     }
 
