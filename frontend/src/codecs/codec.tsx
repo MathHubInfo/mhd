@@ -1,10 +1,11 @@
 import React from 'react';
-import { Column, CellInfo } from "react-table";
+import { Column, CellInfo, Filter } from "react-table";
 import { TMDHProperty } from "../client/rest";
+import { any } from "prop-types";
 
 type ReactComponent<T> = React.ComponentClass<T> | React.SFC<T>
 
-export interface TCellProps<ElementType, CodecType extends Codec<ElementType, FilterType>, FilterType = any> {
+export interface TCellProps<CodecType extends Codec<ElementType, FilterType>, ElementType, FilterType> {
     /** the value of this cell (if any) */
     value: ElementType | null,
 
@@ -27,7 +28,7 @@ export type TValidationResult = {
 };
 
 
-export interface TFilterViewerProps<FilterType, CodecType extends Codec<ElementType, FilterType>, ElementType = any> {
+export interface TFilterViewerProps<CodecType extends Codec<ElementType, FilterType>, ElementType, FilterType> {
     /** the codec instance used for this viewer */
     codec: CodecType
 
@@ -38,7 +39,7 @@ export interface TFilterViewerProps<FilterType, CodecType extends Codec<ElementT
     children: React.ReactChild;
 }
 
-export interface TFilterEditorProps<FilterType, CodecType extends Codec<ElementType, FilterType>, ElementType = any> {
+export interface TFilterEditorProps<CodecType extends Codec<ElementType, FilterType>, ElementType, FilterType> {
     /** the codec instance used for this viewer */
     codec: CodecType
 
@@ -65,13 +66,14 @@ export interface TFilterEditorProps<FilterType, CodecType extends Codec<ElementT
  * @tparam FilterType type in which filters of this value are represented
  */
 export default abstract class Codec<ElementType = any, FilterType = string> {
+
     /** the slug of this codec */
     abstract readonly slug: string;
 
     /**
      * Component used for rendering cells of this value
      */
-    abstract readonly cellComponent: ReactComponent<TCellProps<ElementType, any>>;
+    abstract readonly cellComponent: ReactComponent<TCellProps<any, ElementType, FilterType>>;
 
     /**
      * Makes a React-Table Column for an instatiation of this codec
@@ -98,10 +100,10 @@ export default abstract class Codec<ElementType = any, FilterType = string> {
     /**
      * A component that is used for rendering a filter
      */
-    abstract readonly filterViewerComponent: ReactComponent<TFilterViewerProps<FilterType, any>>;
+    abstract readonly filterViewerComponent: ReactComponent<TFilterViewerProps<any, ElementType, FilterType>>;
 
     /**
      * A component that is used for rendering the editor
      */
-    abstract readonly filterEditorComponent: ReactComponent<TFilterEditorProps<FilterType, any>>;
+    abstract readonly filterEditorComponent: ReactComponent<TFilterEditorProps<any, ElementType, FilterType>>;
 }

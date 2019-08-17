@@ -3,9 +3,9 @@ import Codec, { TFilterViewerProps, TFilterEditorProps, TValidationResult, TCell
 import { Badge } from "reactstrap";
 
 export default class MatrixAsList<T> extends Codec<Array<T>, null> {
-    constructor(public elementCodec: Codec<T, any>, public width: number, public height: number) {
+    constructor(public elementCodec: Codec<T, any>, public rows: number, public columns: number) {
         super();
-        this.slug = `MatrixAsList_${elementCodec.slug}_${width}`;
+        this.slug = `MatrixAsList_${elementCodec.slug}_${rows}_${columns}`;
     }
     readonly slug: string;
 
@@ -23,7 +23,7 @@ export default class MatrixAsList<T> extends Codec<Array<T>, null> {
     }
 }
 
-class MatrixAsListCell<T> extends React.Component<TCellProps<Array<T>, MatrixAsList<T>>> {
+class MatrixAsListCell<T> extends React.Component<TCellProps<MatrixAsList<T>, Array<T>, null>> {
     render() {
         const { value, codec } = this.props;
         if (value === null) return null;
@@ -33,7 +33,7 @@ class MatrixAsListCell<T> extends React.Component<TCellProps<Array<T>, MatrixAsL
     }
 }
 
-class MatrixAsListFilterViewer<T> extends React.Component<TFilterViewerProps<null, MatrixAsList<T>>> {
+class MatrixAsListFilterViewer<T> extends React.Component<TFilterViewerProps<MatrixAsList<T>, Array<T>, null>> {
     render() {
         const { children } = this.props;
         return <>
@@ -43,7 +43,7 @@ class MatrixAsListFilterViewer<T> extends React.Component<TFilterViewerProps<nul
     }
 }
 
-class MatrixAsListFilterEditor<T> extends React.Component<TFilterEditorProps<null, MatrixAsList<T>>> {
+class MatrixAsListFilterEditor<T> extends React.Component<TFilterEditorProps<MatrixAsList<T>, Array<T>, null>> {
     render() {
         const { children } = this.props;
 
