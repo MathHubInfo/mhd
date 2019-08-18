@@ -5,6 +5,7 @@ import StandardBool from "./impl/StandardBool";
 import MatrixAsList from "./impl/MatrixAsList";
 import Fallback from "./impl/Fallback";
 import ListAsArray from "./impl/ListAsArray";
+import PolynomialAsSparseArray from "./impl/PolynomialAsSparseArray";
 
 /**
  * Manages all known codecs
@@ -17,6 +18,7 @@ export default class CodecManager {
     private constructor() {
         this.register(new StandardInt());
         this.register(new StandardBool());
+        this.register(new PolynomialAsSparseArray());
         this.register(new MatrixAsList(new StandardInt(), 2, 2));
         this.register(new MatrixAsList(new StandardInt(), 3, 3));
         this.register(new ListAsArray(new StandardInt()));
