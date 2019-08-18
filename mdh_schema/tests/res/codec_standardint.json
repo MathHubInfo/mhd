@@ -1,4 +1,4 @@
 {
-    "name": "standardint",
+    "name": "StandardInt",
     "db_type": "IntegerField"
 }

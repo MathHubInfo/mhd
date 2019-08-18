@@ -28,19 +28,15 @@ class CodecManagerTest(TestCase):
     def test_find_codec(self):
         """ Checks that find_codec behaves as expected """
 
-        # existing codec normalize = True
+        # existing codec
         self.assertEqual(CodecManager.find_codec("StandardInt"), StandardInt,
-                         msg="finds the StandardInt codec by name (normalized)")
-        self.assertEqual(CodecManager.find_codec("mdh_data_StandardInt"), StandardInt,
-                         msg="finds the StandardInt codec by table name (normalized)")
+                         msg="finds the StandardInt codec by name")
 
-        # existing codec normalize = False
-        self.assertEqual(CodecManager.find_codec("standardint", normalize=False),
-                         StandardInt, msg="finds the StandardInt codec by normalized name")
-        self.assertIsNone(CodecManager.find_codec("StandardInt", normalize=False),
-                          msg="does not normalize name when normalize = False")
-        self.assertIsNone(CodecManager.find_codec("mdh_data_StandardInt", normalize=False),
-                          msg="does not normalize name when normalize = False")
+        # not finding existing codec
+        self.assertIsNone(CodecManager.find_codec("mdh_data_standardint"),
+                         msg="does not the StandardInt codec by table name")
+        self.assertIsNone(CodecManager.find_codec("standardint"),
+                        msg="does not the StandardInt codec by normalized name")
 
         # non-existing codec
         self.assertIsNone(CodecManager.find_codec(

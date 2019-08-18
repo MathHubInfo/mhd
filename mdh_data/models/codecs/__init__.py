@@ -4,5 +4,5 @@ from .standardjson import StandardJSON
 from .polynomialassparsearray import PolynomialAsSparseArray
 
 # codec operators
-from .matrixaslist import *
+from . import matrixaslist
 from .listasarray import *

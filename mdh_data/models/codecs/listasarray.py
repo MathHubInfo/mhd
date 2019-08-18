@@ -1,18 +1,15 @@
 from ...fields.ndarray import SmartNDArrayField
-from ..codec import Codec
 from .standardint import StandardInt
+from ..codecoperator import codec_operator
 
-
+@codec_operator
 def ListAsArrayCodec(elementCodec):
-    """ A Codec Operator for Lists as arrays as list """
+    """ A Codec Operator for Matrices as list """
 
-    class CodecClass(Codec):
-        class Meta(Codec.Meta):
-            abstract = True
+    class CodecClass():
         value = SmartNDArrayField(typ=elementCodec.get_value_field(), dim=1)
-    return CodecClass
 
-class ListAsArray_StandardInt(ListAsArrayCodec(StandardInt)):
-    pass
+    return CodecClass, 'ListAsArray_{}'.format(elementCodec.get_codec_name())
 
-__all__ = ['ListAsArray_StandardInt']
+
+ListAsArrayCodec(StandardInt)

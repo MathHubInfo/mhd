@@ -35,7 +35,7 @@ class CodecAPITest(TestCase):
     def test_api_exact_collection(self):
         """ Checks that the demo collection can be found by slug """
 
-        response = APIClient().get('/api/schema/codecs/standardint/')
+        response = APIClient().get('/api/schema/codecs/StandardInt/')
 
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content, CODEC_SI_ASSET)

@@ -12,17 +12,6 @@ from functools import lru_cache
 
 class CodecManager(models.Manager):
 
-    CODEC_TABLE_PREFIX = 'mdh_data_'
-    @staticmethod
-    def normalize_codec_name(name):
-        """ Normalizes the name of a codec """
-
-        if name.startswith(CodecManager.CODEC_TABLE_PREFIX):
-            name = name[len(CodecManager.CODEC_TABLE_PREFIX):]
-
-        # turn the name into lower case
-        return name.lower()
-
     @staticmethod
     @lru_cache(maxsize=None)
     def find_all_codecs():
@@ -47,12 +36,8 @@ class CodecManager(models.Manager):
 
     @staticmethod
     @lru_cache(maxsize=None)
-    def find_codec(name, normalize=True):
+    def find_codec(name):
         """ Finds a Codec By Name """
-
-        # Normalize the name
-        if normalize:
-            name = CodecManager.normalize_codec_name(name)
 
         # And find a codec with that name
         for c in CodecManager.find_all_codecs():
@@ -73,7 +58,7 @@ class Codec(models.Model):
     @memoized_method(maxsize=None)
     def get_codec_name(cls):
         """ Gets the name of this codec """
-        return CodecManager.normalize_codec_name(cls.objects.model._meta.db_table)
+        return cls.__name__
 
     # A database field containing the value, overwritten by subclass
     value = None

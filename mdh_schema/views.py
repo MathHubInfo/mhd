@@ -73,7 +73,7 @@ class CodecViewSet(viewsets.ViewSet):
         return response.Response(serializer.data)
 
     def retrieve(self, request, name=None):
-        obj = CodecManager.find_codec(name, normalize=False)
+        obj = CodecManager.find_codec(name)
         if obj is None:
             raise Http404
 
