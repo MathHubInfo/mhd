@@ -22,6 +22,11 @@ matrix:
         - postgresql
       python:
         - "3.7"
+    
+    # Docker build test
+    - language: minimal
+      services:
+        - docker
 
 before_install:
   - if [ ! -z "$TRAVIS_NODE_VERSION" ]; then cd frontend; fi
@@ -34,4 +39,5 @@ install:
 script:
   - if [ ! -z "$TRAVIS_NODE_VERSION" ]; then yarn build; fi
   - if [ ! -z "$TRAVIS_PYTHON_VERSION" ]; then pytest -v; fi
+  - if [ -z "$TRAVIS_NODE_VERSION" ] && [ -z "$TRAVIS_PYTHON_VERSION" ]; then docker build -t mathhub/mdh .; fi
 
