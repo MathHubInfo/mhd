@@ -133,6 +133,8 @@ class Collection(ModelWithMetadata):
         from mdh_data.models import Item
         from mdh_data.querybuilder import QueryBuilder
 
+        # SELECT I.id FROM
+
         # The queries built by this module look as following:
         #
         # SELECT I.id as id,
@@ -141,6 +143,9 @@ class Collection(ModelWithMetadata):
         # T_prop2.value as prop2_value, T_prop2.id as prop2_cid
         #
         # FROM mdh_data_item as I
+        #
+        # JOIN mdh_data_item_collection as CI
+        # ON I.id = CI.item_id AND CI.collection_id = ${collection_id}
         #
         # LEFT OUTER JOIN Codec1 as T_prop1
         # ON I.id = T_prop1.item_id AND T_prop1.active AND T_prop1.prop_id = ${id_of_prop1}
@@ -154,7 +159,14 @@ class Collection(ModelWithMetadata):
 
         PROPERTIES = []
         SELECTS = ["I.id as id"]
-        JOINS = ["FROM {} as I".format(Item._meta.db_table)]
+        JOINS = [
+            "FROM {} as I".format(Item._meta.db_table),
+
+            "JOIN {} as CI ON I.id = CI.item_id AND CI.collection_id = {}".format(
+                Item.collections.through._meta.db_table,
+                self.pk
+            )
+        ]
         SUFFIXES = []
 
         for prop in properties:
