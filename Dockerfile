@@ -40,7 +40,7 @@ ENV DJANGO_DB_ENGINE "django.db.backends.sqlite3"
 ENV DJANGO_DB_NAME "/data/mdh.db"
 ENV DJANGO_DB_USER ""
 ENV DJANGO_DB_PASSWORD ""
-ENV DJANG_DB_HOST ""
+ENV DJANGO_DB_HOST ""
 ENV DJANGO_DB_PORT ""
 
 # Copy over static files
