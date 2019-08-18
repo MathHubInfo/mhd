@@ -4,6 +4,7 @@ import StandardInt from "./impl/StandardInt";
 import StandardBool from "./impl/StandardBool";
 import MatrixAsList from "./impl/MatrixAsList";
 import Fallback from "./impl/Fallback";
+import ListAsArray from "./impl/ListAsArray";
 
 /**
  * Manages all known codecs
@@ -17,6 +18,8 @@ export default class CodecManager {
         this.register(new StandardInt());
         this.register(new StandardBool());
         this.register(new MatrixAsList(new StandardInt(), 2, 2));
+        this.register(new MatrixAsList(new StandardInt(), 3, 3));
+        this.register(new ListAsArray(new StandardInt()));
     }
 
     /** registers a codec with this codec manager */
