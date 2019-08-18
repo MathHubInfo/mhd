@@ -1,14 +1,19 @@
+from ..querybuilder import QueryBuilder
 from django.test import TestCase
 
-from .z4z import Z4ZTest
+from .collection import insert_testing_data
 
-from ..querybuilder import QueryBuilder
+from mdh_tests.utils import AssetPath
+
+Z4Z_COLLECTION_PATH = AssetPath(__file__, "res", "z4z_collection.json")
+Z4Z_PROVENANCE_PATH = AssetPath(__file__, "res", "z4z_provenance.json")
+Z4Z_DATA_PATH = AssetPath(__file__, "res", "z4z_data.json")
 
 
-class QueryBuilderTest(Z4ZTest, TestCase):
+class QueryBuilderTest(TestCase):
     def setUp(self):
-        super().setUp()
-
+        self.collection = insert_testing_data(
+            Z4Z_COLLECTION_PATH, Z4Z_DATA_PATH, Z4Z_PROVENANCE_PATH, reset=True)
         self.properties = list(self.collection.property_set.all())
 
     def test_build_queries(self):
@@ -49,5 +54,6 @@ class QueryBuilderTest(Z4ZTest, TestCase):
 
         # big combination
         q7sql, q7args = qb("!(!(f1 = 1) || f2 = 0)", self.properties)
-        self.assertEqual(q7sql, 'NOT((NOT(T_f1.value = %s)) OR (T_f2.value = %s))')
+        self.assertEqual(
+            q7sql, 'NOT((NOT(T_f1.value = %s)) OR (T_f2.value = %s))')
         self.assertListEqual(q7args, [1, 0])

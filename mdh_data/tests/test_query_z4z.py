@@ -4,7 +4,11 @@ from django.test import TestCase
 
 from mdh_tests.utils import AssetPath, LoadJSONAsset
 
-from .z4z import Z4ZTest
+from .collection import insert_testing_data
+
+Z4Z_COLLECTION_PATH = AssetPath(__file__, "res", "z4z_collection.json")
+Z4Z_PROVENANCE_PATH = AssetPath(__file__, "res", "z4z_provenance.json")
+Z4Z_DATA_PATH = AssetPath(__file__, "res", "z4z_data.json")
 
 Z4Z_ALL_PATH = AssetPath(__file__, "res", "z4z_query_all.json")
 Z4Z_ALL_ASSET = LoadJSONAsset(Z4Z_ALL_PATH)
@@ -16,21 +20,24 @@ Z4Z_F1_F2_PATH = AssetPath(__file__, "res", "z4z_query_f1_f2.json")
 Z4Z_F1_F2_ASSET = LoadJSONAsset(Z4Z_F1_F2_PATH)
 
 
-class CreateCollectionTest(Z4ZTest, TestCase):
+class CreateCollectionTest(TestCase):
+    def setUp(self):
+        self.collection = insert_testing_data(
+            Z4Z_COLLECTION_PATH, Z4Z_DATA_PATH, Z4Z_PROVENANCE_PATH, reset=True)
     def test_build_query(self):
         """ Checks that queries are built correctly """
 
         self.maxDiff = None
 
+        col_pk = self.collection.pk
         f0_pk = self.collection.get_property('f0').pk
         f1_pk = self.collection.get_property('f1').pk
         f2_pk = self.collection.get_property('f2').pk
         invertible = self.collection.get_property('invertible').pk
 
         GOT_QUERY_ALL_PROPS, _ = self.collection.query()
-        EXPECTED_QUERY_ALL_PROPS = "SELECT I.id as id,T_f0.value as property_value_f0,T_f0.id as property_cid_f0,T_f1.value as property_value_f1,T_f1.id as property_cid_f1,T_f2.value as property_value_f2,T_f2.id as property_cid_f2,T_invertible.value as property_value_invertible,T_invertible.id as property_cid_invertible FROM mdh_data_item as I JOIN mdh_data_item_collections as CI ON I.id = CI.item_id AND CI.collection_id = 1 LEFT OUTER JOIN mdh_data_standardint as T_f0 ON I.id = T_f0.item_id AND T_f0.active AND T_f0.prop_id = {} LEFT OUTER JOIN mdh_data_standardint as T_f1 ON I.id = T_f1.item_id AND T_f1.active AND T_f1.prop_id = {} LEFT OUTER JOIN mdh_data_standardint as T_f2 ON I.id = T_f2.item_id AND T_f2.active AND T_f2.prop_id = {} LEFT OUTER JOIN mdh_data_standardbool as T_invertible ON I.id = T_invertible.item_id AND T_invertible.active AND T_invertible.prop_id = {} ORDER BY I.id"
-        EXPECTED_QUERY_ALL_PROPS = EXPECTED_QUERY_ALL_PROPS.format(f0_pk, f1_pk, f2_pk, invertible)
-        #import pdb; pdb.set_trace()
+        EXPECTED_QUERY_ALL_PROPS = "SELECT I.id as id,T_f0.value as property_value_f0,T_f0.id as property_cid_f0,T_f1.value as property_value_f1,T_f1.id as property_cid_f1,T_f2.value as property_value_f2,T_f2.id as property_cid_f2,T_invertible.value as property_value_invertible,T_invertible.id as property_cid_invertible FROM mdh_data_item as I JOIN mdh_data_item_collections as CI ON I.id = CI.item_id AND CI.collection_id = {} LEFT OUTER JOIN mdh_data_standardint as T_f0 ON I.id = T_f0.item_id AND T_f0.active AND T_f0.prop_id = {} LEFT OUTER JOIN mdh_data_standardint as T_f1 ON I.id = T_f1.item_id AND T_f1.active AND T_f1.prop_id = {} LEFT OUTER JOIN mdh_data_standardint as T_f2 ON I.id = T_f2.item_id AND T_f2.active AND T_f2.prop_id = {} LEFT OUTER JOIN mdh_data_standardbool as T_invertible ON I.id = T_invertible.item_id AND T_invertible.active AND T_invertible.prop_id = {} ORDER BY I.id"
+        EXPECTED_QUERY_ALL_PROPS = EXPECTED_QUERY_ALL_PROPS.format(col_pk, f0_pk, f1_pk, f2_pk, invertible)
         self.assertEqual(GOT_QUERY_ALL_PROPS.query.sql, EXPECTED_QUERY_ALL_PROPS,
                          "check that by default all properties are queried")
         self.assertTupleEqual(GOT_QUERY_ALL_PROPS.query.params, (),
@@ -38,8 +45,8 @@ class CreateCollectionTest(Z4ZTest, TestCase):
 
         GOT_QUERY_F1_LIMIT, _ = self.collection.query(
             properties=[self.collection.get_property("f1")], limit=1, offset=2)
-        EXPECTED_QUERY_F1_LIMIT = "SELECT I.id as id,T_f1.value as property_value_f1,T_f1.id as property_cid_f1 FROM mdh_data_item as I JOIN mdh_data_item_collections as CI ON I.id = CI.item_id AND CI.collection_id = 1 LEFT OUTER JOIN mdh_data_standardint as T_f1 ON I.id = T_f1.item_id AND T_f1.active AND T_f1.prop_id = {} ORDER BY I.id LIMIT 1 OFFSET 2"
-        EXPECTED_QUERY_F1_LIMIT = EXPECTED_QUERY_F1_LIMIT.format(f1_pk)
+        EXPECTED_QUERY_F1_LIMIT = "SELECT I.id as id,T_f1.value as property_value_f1,T_f1.id as property_cid_f1 FROM mdh_data_item as I JOIN mdh_data_item_collections as CI ON I.id = CI.item_id AND CI.collection_id = {} LEFT OUTER JOIN mdh_data_standardint as T_f1 ON I.id = T_f1.item_id AND T_f1.active AND T_f1.prop_id = {} ORDER BY I.id LIMIT 1 OFFSET 2"
+        EXPECTED_QUERY_F1_LIMIT = EXPECTED_QUERY_F1_LIMIT.format(col_pk, f1_pk)
         self.assertEqual(GOT_QUERY_F1_LIMIT.query.sql, EXPECTED_QUERY_F1_LIMIT,
                          "check that a limit query for only 1 property is built as expected")
         self.assertTupleEqual(GOT_QUERY_F1_LIMIT.query.params, (),
@@ -47,8 +54,8 @@ class CreateCollectionTest(Z4ZTest, TestCase):
 
         GOT_QUERY_F1_F2_FILTER, _ = self.collection.query(
             properties=[self.collection.get_property("f1"), self.collection.get_property("f2")], filter="f1 = 0")
-        EXPECTED_QUERY_F1_F2_FILTER = "SELECT I.id as id,T_f1.value as property_value_f1,T_f1.id as property_cid_f1,T_f2.value as property_value_f2,T_f2.id as property_cid_f2 FROM mdh_data_item as I JOIN mdh_data_item_collections as CI ON I.id = CI.item_id AND CI.collection_id = 1 LEFT OUTER JOIN mdh_data_standardint as T_f1 ON I.id = T_f1.item_id AND T_f1.active AND T_f1.prop_id = {} LEFT OUTER JOIN mdh_data_standardint as T_f2 ON I.id = T_f2.item_id AND T_f2.active AND T_f2.prop_id = {} WHERE T_f1.value = %s ORDER BY I.id"
-        EXPECTED_QUERY_F1_F2_FILTER = EXPECTED_QUERY_F1_F2_FILTER.format(f1_pk, f2_pk)
+        EXPECTED_QUERY_F1_F2_FILTER = "SELECT I.id as id,T_f1.value as property_value_f1,T_f1.id as property_cid_f1,T_f2.value as property_value_f2,T_f2.id as property_cid_f2 FROM mdh_data_item as I JOIN mdh_data_item_collections as CI ON I.id = CI.item_id AND CI.collection_id = {} LEFT OUTER JOIN mdh_data_standardint as T_f1 ON I.id = T_f1.item_id AND T_f1.active AND T_f1.prop_id = {} LEFT OUTER JOIN mdh_data_standardint as T_f2 ON I.id = T_f2.item_id AND T_f2.active AND T_f2.prop_id = {} WHERE T_f1.value = %s ORDER BY I.id"
+        EXPECTED_QUERY_F1_F2_FILTER = EXPECTED_QUERY_F1_F2_FILTER.format(col_pk, f1_pk, f2_pk)
         self.assertEqual(GOT_QUERY_F1_F2_FILTER.query.sql, EXPECTED_QUERY_F1_F2_FILTER,
                          "check that an (f1, f2) query with filter is built as expected")
         self.assertTupleEqual(GOT_QUERY_F1_F2_FILTER.query.params, (0,),
