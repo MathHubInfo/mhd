@@ -1,6 +1,8 @@
 import React from 'react';
 import Codec, { TFilterViewerProps, TFilterEditorProps, TValidationResult, TCellProps } from '../codec';
 import { Badge } from "reactstrap";
+import { chunkArray } from '../utils';
+import styles from './MatrixAsList.module.css';
 
 export default class MatrixAsList<T> extends Codec<Array<T>, null> {
     constructor(public elementCodec: Codec<T, any>, public rows: number, public columns: number) {
@@ -28,13 +30,15 @@ class MatrixAsListCell<T> extends React.Component<TCellProps<MatrixAsList<T>, Ar
         const { value, codec } = this.props;
         if (value === null) return null;
         
-
-        // for now
-        return <>
-            Matrix {codec.rows}x{codec.columns}
-            <br />
-            {JSON.stringify(value)}
-        </>;
+        return (
+            <table className={styles.displayMatrix}>{
+                chunkArray(value, codec.columns).map((r, index) =>
+                    <tr key={index}>{
+                        r.map((e, i) => <td key={index + ":" + i}>{e}</td>)
+                    }</tr>
+                )
+            }</table>
+        );
     }
 }
 

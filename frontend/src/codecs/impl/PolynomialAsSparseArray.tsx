@@ -1,6 +1,7 @@
 import React from 'react';
 import Codec, { TFilterViewerProps, TFilterEditorProps, TValidationResult, TCellProps } from '../codec';
 import { Badge } from "reactstrap";
+import { chunkArray } from "../utils";
 
 export default class PolynomialAsSparseArray extends Codec<Array<number>, null> {
     readonly slug: string = "PolynomialAsSparseArray";
@@ -23,8 +24,27 @@ class PolynomialAsSparseArrayCell extends React.Component<TCellProps<PolynomialA
     render() {
         const { value } = this.props;
         if (value === null) return null;
+        
+        
+        return chunkArray(value, 2).reverse().map(
+            (a, i) => {
+                let factor = a[1].toString();
+                var exp = a[0];
 
-        return value.toString();
+                if (factor === '0')
+                    return null;
+                    
+                if (factor === '1')
+                    factor = "";
+                
+                if (a[1] > 0 && i > 0)
+                    factor = "+" + factor;
+
+                if (exp === 0) return <span key={i}>{factor}</span>;
+                if (exp === 1) return <span key={i}>{factor} x</span>;
+                else return <span key={i}>{factor} x<sup>{exp}</sup></span>;
+            }
+        );
     }
 }
 
