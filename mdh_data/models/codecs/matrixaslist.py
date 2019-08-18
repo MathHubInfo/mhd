@@ -14,3 +14,4 @@ def MatrixAsListCodec(elementCodec, rows, columns):
     return CodecClass, 'MatrixAsList_{}_{}_{}'.format(elementCodec.get_codec_name(), rows, columns)
 
 MatrixAsListCodec(StandardInt, 2, 2)
+MatrixAsListCodec(StandardInt, 3, 3)
