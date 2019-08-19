@@ -109,7 +109,7 @@ class DumbJSONFieldSerializer(serializers.Field):
         return json.loads(value)
 
     def to_internal_value(self, data):
-        return json.dumps(data)
+        return data
 
 serializers.ModelSerializer.serializer_field_mapping[DumbJSONField] = DumbJSONFieldSerializer
 
