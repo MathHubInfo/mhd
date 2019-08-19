@@ -179,7 +179,7 @@ class SchemaImporter(object):
 
 class SchemaImportError(Exception):
     def __init__(self, message):
-        super().__init__('Unable to import collection: {}'.format(message))
+        super().__init__('Unable to create collection: {}'.format(message))
 
 class SchemaValidationError(SchemaImportError):
     def __init__(self, message):

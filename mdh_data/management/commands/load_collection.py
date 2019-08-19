@@ -1,6 +1,8 @@
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
 
+from django.db import transaction
+
 import json
 
 
@@ -17,6 +19,7 @@ class Command(BaseCommand):
         parser.add_argument('--quiet', '-q', action='store_true',
                             help="Do not produce any output in case of success")
 
+    @transaction.atomic
     def handle(self, schema, data, provenance, quiet=False, **kwargs):
         call_command('upsert_collection', schema, update=False, quiet=quiet)
 

@@ -3,10 +3,7 @@ import sys
 
 from django.core.management.base import BaseCommand
 
-from mdh_provenance.models import Provenance
-from mdh_schema.models import Collection
-
-from ...models import Item
+from mdh_data.importers import JSONFileImporter
 
 
 class Command(BaseCommand):
@@ -30,32 +27,14 @@ class Command(BaseCommand):
         if not kwargs['quiet']:
             def logger(m): return sys.stdout.write(m + "\n")
         else:
-            logger = None
+            def logger(m): return None
 
-        # find collection
-        collection = Collection.objects.filter(
-            slug=kwargs['collection']).first()
-        if collection is None:
-            raise ValueError(
-                'Collection {0:s} does not exist'.format(kwargs['collection']))
-
-        # split the fields
-        fields = kwargs['fields'].strip().split(",")
-
-        # open data file
-        data = None
-        with open(kwargs['data']) as f:
-            data = json.load(f)
-
-        # open provenance file
-        prov = None
-        with open(kwargs['provenance']) as f:
-            prov = json.load(f)
-
-        # Create a provenance with the given object
-        provenance = Provenance(metadata=prov)
-        provenance.save()
-
-        # And create the items
-        Item.objects.insert_into_collection(
-            collection, provenance, fields, data, logger=logger)
+        importer = JSONFileImporter(
+            kwargs['collection'], kwargs['fields'].strip().split(","),
+            kwargs['data'], kwargs['provenance'],
+            on_chunk_success=lambda chunk, uuids: logger(
+                "Created {0:d} new item(s)".format(len(uuids))),
+            on_property_success=lambda chunk, uuids, prop: logger(
+                "Inserted {0:d} value(s) into cells for property {1:s}".format(len(uuids), prop.slug))
+        )
+        importer(update=False)
