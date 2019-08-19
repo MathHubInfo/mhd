@@ -33,7 +33,6 @@ class UpdateCollectionTest(CollectionV0Test, TestCase):
             "results": [DEMO_COLLECTION_ASSET]
         }
 
-        self.maxDiff = None
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content, expected_response)
 

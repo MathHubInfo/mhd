@@ -81,12 +81,12 @@ class Collection(ModelWithMetadata):
             physical_prop_id = str(prop.pk)
 
             # alias for the appropriate property table
-            virtual_table = 'T_{}'.format(prop.slug)
+            virtual_table = '"T_{}"'.format(prop.slug)
 
             # alias for the value field
-            value_field = 'property_value_{}'.format(prop.slug)
+            value_field = '"property_value_{}"'.format(prop.slug)
             # alias for the cid field
-            cid_field = 'property_cid_{}'.format(prop.slug)
+            cid_field = '"property_cid_{}"'.format(prop.slug)
 
             # The property we just added
             PROPERTIES.append(prop.slug)

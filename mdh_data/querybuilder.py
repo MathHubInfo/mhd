@@ -134,7 +134,7 @@ class QueryBuilder(object):
                 codec.get_codec_name(), op))
 
 
-        return prop, codec, "T_{}.value".format(p.slug)
+        return prop, codec, '"T_{}".value'.format(p.slug)
 
 
 
