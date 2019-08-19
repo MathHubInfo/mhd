@@ -40,8 +40,10 @@ class CollectionSerializer(serializers.ModelSerializer):
         model = Collection
         fields = ['displayName', 'slug', 'metadata', 'properties']
 
-    properties = PropertySerializer(many=True, source='property_set')
-
+    properties = serializers.SerializerMethodField()
+    def get_properties(self, obj):
+        props = obj.property_set.order_by('id')
+        return PropertySerializer(props, many=True, context=self.context).data
 
 class CollectionViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Collection.objects.all().order_by('-slug')

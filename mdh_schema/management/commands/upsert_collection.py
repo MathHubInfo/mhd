@@ -3,7 +3,7 @@ import sys
 
 from django.core.management.base import BaseCommand
 
-from ...models import Collection
+from ...importer import SchemaImporter
 
 
 class Command(BaseCommand):
@@ -25,10 +25,9 @@ class Command(BaseCommand):
             logger = None
 
         # open the file and read json
-        value = None
+        data = None
         with open(kwargs['filename']) as f:
-            value = json.load(f)
+            data = json.load(f)
 
-        # and create the object
-        Collection.objects.create_or_update_from_serializer(
-            value, update=kwargs['update'], logger=logger)
+        importer = SchemaImporter(data, logger = logger)
+        importer(update=kwargs['update'])

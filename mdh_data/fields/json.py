@@ -1,7 +1,9 @@
-from django.db import connection
-from django.db import models
-from django.core.exceptions import ValidationError
 import json
+
+from django import forms
+from django.core.exceptions import ValidationError
+from django.db import connection, models
+from rest_framework import serializers
 
 
 class DumbJSONField(models.TextField):
@@ -103,10 +105,10 @@ class DumbJSONField(models.TextField):
             **kwargs,
         })
 
-from rest_framework import serializers
 class DumbJSONFieldSerializer(serializers.Field):
+    """ Implements a no-op serializer for DumbJSONFields """
     def to_representation(self, value):
-        return json.loads(value)
+        return value
 
     def to_internal_value(self, data):
         return data

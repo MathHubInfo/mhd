@@ -1,5 +1,5 @@
 from django.apps import apps
-from django.db import models
+from django.db import models, connection
 
 from rest_framework import serializers
 
@@ -108,11 +108,16 @@ class Codec(models.Model):
     def serialize_value(cls, value):
         """ Called by the serializer to serialize the value """
 
-        from ..fields.json import DumbJSONField
-
         if value is None:
             return None
 
+        # if the value field has a 'from_db_value' we should call it first
+        # because our value was not yet parsed
+        vfield = cls._meta.get_field('value')
+        if hasattr(vfield, 'from_db_value'):
+            value = vfield.from_db_value(value, None, connection=connection)
+
+        # call the default serializer field with .to_representation
         return cls.get_serializer_field().to_representation(value)
 
     # A list of supported operators

@@ -27,8 +27,12 @@ class CreateCollectionTest(CollectionV0Test, TestCase):
     def test_api_exact_collection(self):
         """ Checks that the demo collection can be found by slug """
 
+        self.maxDiff = None
+
         response = APIClient().get('/api/schema/collections/z4zFunctions/')
         expected_response = DEMO_COLLECTION_ASSET
+
+        print(response.content)
 
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content, expected_response)
