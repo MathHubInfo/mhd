@@ -16,6 +16,8 @@ class Command(BaseCommand):
                             help="When set, update collection instead of provinding a new one. ")
         parser.add_argument('--quiet', '-q', action='store_true',
                             help="Do not produce any output in case of success")
+        parser.add_argument('--simulate', '-s', action='store_true',
+                            help="Only simulate inseration, do not actually store any data")
 
     def handle(self, *args, **kwargs):
         # create a logger
@@ -29,5 +31,5 @@ class Command(BaseCommand):
         with open(kwargs['filename']) as f:
             data = json.load(f)
 
-        importer = SchemaImporter(data, logger = logger)
-        importer(update=kwargs['update'])
+        importer = SchemaImporter(data, logger=logger)
+        importer(update=kwargs['update'], simulate=kwargs['simulate'])

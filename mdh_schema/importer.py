@@ -4,9 +4,11 @@ from django.db import transaction
 from mdh_schema.models import Collection, Property
 from mdh_data.models import CodecManager
 
+
 class SchemaImporter(object):
     """ Represents the process of an import """
-    def __init__(self, data = None, logger = None):
+
+    def __init__(self, data=None, logger=None):
         self.data = data
         self.logger = logger
         self._validate_data(self.data)
@@ -22,14 +24,17 @@ class SchemaImporter(object):
 
         for k in ['slug', 'properties', 'displayName']:
             if k not in data:
-                raise SchemaValidationError('Required key {0:r} is missing from schema. '.format(k))
+                raise SchemaValidationError(
+                    'Required key {0:r} is missing from schema. '.format(k))
 
         if not isinstance(data['slug'], str):
             raise SchemaValidationError('Key \'slug\' is not a string. ')
         if not isinstance(data['displayName'], str):
-            raise SchemaValidationError('Key \'displayName\' is not a string. ')
+            raise SchemaValidationError(
+                'Key \'displayName\' is not a string. ')
         if not isinstance(data['properties'], list):
-            raise SchemaValidationError('Key \'properties\' is not a list of properties. ')
+            raise SchemaValidationError(
+                'Key \'properties\' is not a list of properties. ')
         if 'metadata' in data and not isinstance(data['metadata'], dict):
             raise SchemaValidationError('Key \'metadata\' is not a dict. ')
 
@@ -45,23 +50,46 @@ class SchemaImporter(object):
 
         slug = data['slug']
         if not isinstance(slug, str):
-            raise SchemaValidationError('Found property where slug is not a string. ')
+            raise SchemaValidationError(
+                'Found property where slug is not a string. ')
 
         for k in ['displayName', 'codec']:
             if k not in data:
-                raise SchemaValidationError('Property {0:r} missing key {}. '.format(slug, k))
+                raise SchemaValidationError(
+                    'Property {0:r} missing key {}. '.format(slug, k))
             if not isinstance(data[k], str):
-                raise SchemaValidationError('Property {0:r}, Key {} is not a string. '.format(slug, k))
+                raise SchemaValidationError(
+                    'Property {0:r}, Key {} is not a string. '.format(slug, k))
 
         if 'metadata' in data and not isinstance(data['metadata'], dict):
-            raise SchemaValidationError('Property {0:r}, Key \'metadata\' is not a dict. '.format(slug))
+            raise SchemaValidationError(
+                'Property {0:r}, Key \'metadata\' is not a dict. '.format(slug))
 
         if CodecManager.find_codec(data['codec']) is None:
-            raise SchemaValidationError('Property {0:r} has unknown codec {1:r}'.format(slug, data['codec']))
-
+            raise SchemaValidationError(
+                'Property {0:r} has unknown codec {1:r}'.format(slug, data['codec']))
 
     @transaction.atomic
-    def __call__(self, update = False):
+    def __call__(self, update=False, simulate=False):
+
+        # create a savepoint
+        sid = transaction.savepoint()
+
+        # run the code
+        try:
+            v = self.run(update=update)
+
+        # rollback if the user asked to simulate only
+        finally:
+            if simulate:
+                transaction.savepoint_rollback(sid)
+            else:
+                transaction.savepoint_commit(sid)
+
+        # and return the value
+        return v
+
+    def run(self, update):
         """
             Creates or updates a new collection based on the appropriate
             serialization in value. The value is serialized as:
@@ -105,18 +133,20 @@ class SchemaImporter(object):
         # if we do not want to update
         # check if the collection already exists and raise an error
         if not update and Collection.objects.filter(slug=slug).exists():
-            raise SchemaImportError('Collection {0!r} already exists'.format(slug))
+            raise SchemaImportError(
+                'Collection {0!r} already exists'.format(slug))
 
         # create or update the collection
         collection, created = Collection.objects.update_or_create(slug=slug, defaults={
             'displayName': displayName,
             'metadata': metadata,
         })
-        self._log('[{0!r}] {1!s} collection'.format(slug, 'Created' if created else 'Updated'))
+        self._log('[{0!r}] {1!s} collection'.format(
+            slug, 'Created' if created else 'Updated'))
 
         # Create all the properties (TODO)
         props = [
-            self.__call__property(collection, p, update = update)[0]
+            self.__call__property(collection, p, update=update)[0]
             for p in properties
         ]
 
@@ -128,7 +158,7 @@ class SchemaImporter(object):
         # and return
         return collection, created
 
-    def __call__property(self, collection, prop, update = False):
+    def __call__property(self, collection, prop, update=False):
         """
             Creates a (collection-associated) property based on the appropriate
             serialization in value. The value is serialized as:
@@ -164,22 +194,28 @@ class SchemaImporter(object):
         prop = collection.property_set.filter(slug=slug)
         if prop:
             if not update:
-                raise SchemaImportError('Property {0:s} already exists'.format(slug))
+                raise SchemaImportError(
+                    'Property {0:s} already exists'.format(slug))
 
-            self._log('Did not create property {0:s}, already exists. '.format(slug))
+            self._log(
+                'Did not create property {0:s}, already exists. '.format(slug))
             return prop.first(), False
 
         # Create the property unless it already exists
-        prop = Property.objects.create(slug=slug, displayName=displayName, codec=codec, metadata=metadata)
+        prop = Property.objects.create(
+            slug=slug, displayName=displayName, codec=codec, metadata=metadata)
         prop.collections.add(collection)
         prop.save()
 
-        self._log("[{0!s}] Created property {0:s}".format(str(collection.slug), slug))
+        self._log("[{0!s}] Created property {0:s}".format(
+            str(collection.slug), slug))
         return prop, True
+
 
 class SchemaImportError(Exception):
     def __init__(self, message):
         super().__init__('Unable to create collection: {}'.format(message))
+
 
 class SchemaValidationError(SchemaImportError):
     def __init__(self, message):

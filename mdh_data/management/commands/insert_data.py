@@ -18,6 +18,8 @@ class Command(BaseCommand):
             '--fields', '-f', help="Comma-seperated list of property names", required=True)
         parser.add_argument(
             '--provenance', '-p', help=".json file containing provenance to insert", required=True)
+        parser.add_argument('--simulate', '-s', action='store_true',
+                            help="Only simulate inseration, do not actually store any data")
         parser.add_argument('--quiet', '-q', action='store_true',
                             help="Do not produce any output in case of success")
 
@@ -37,4 +39,4 @@ class Command(BaseCommand):
             on_property_success=lambda chunk, uuids, prop: logger(
                 "Inserted {0:d} value(s) into cells for property {1:s}".format(len(uuids), prop.slug))
         )
-        importer(update=False)
+        importer(update=False, simulate=kwargs['simulate'])

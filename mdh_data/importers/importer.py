@@ -45,7 +45,26 @@ class DataImporter(object):
                     'Property {} is not a part of collection {}'.format(p.slug, self.collection.slug))
 
     @transaction.atomic
-    def __call__(self, update=False):
+    def __call__(self, update = False, simulate = False):
+
+        # create a savepoint
+        sid = transaction.savepoint()
+
+        # run the code
+        try:
+            v = self.run(update = update)
+
+        # rollback if the user asked to simulate only
+        finally:
+            if simulate:
+                transaction.savepoint_rollback(sid)
+            else:
+                transaction.savepoint_commit(sid)
+
+        # and return the value
+        return v
+
+    def run(self, update=False):
         """
             Imports all data available to this DataImporter.
         """
