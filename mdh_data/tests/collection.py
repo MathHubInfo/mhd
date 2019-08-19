@@ -18,16 +18,8 @@ def insert_testing_data(schema_path, data_path, provenance_path, reset=False):
 
     with mock.patch.object(uuid, 'uuid4', uuid4_mock):
         # create the collection
-        call_command('upsert_collection', schema_path,
-                     update=False, quiet=True)
+        call_command('load_collection', schema_path, data_path, provenance_path, quiet=True)
 
-        # get needed info from schema
-        schema_data = LoadJSONAsset(schema_path)
-        collection_name = schema_data['slug']
-        fields = ','.join([p['slug'] for p in schema_data['properties']])
-
-        # insert the data in the collection
-        call_command('insert_data', data_path, collection=collection_name,
-                     fields=fields, provenance=provenance_path, quiet=True)
-
+        # load the collection with the given name
+        collection_name = LoadJSONAsset(schema_path)['slug']
         return Collection.objects.get(slug=collection_name)
