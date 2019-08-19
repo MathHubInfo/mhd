@@ -16,7 +16,6 @@ from django.core.paginator import Page
 from django.core.paginator import Paginator as DefaultPaginator
 from django.db import connections
 from django.db.models.query import RawQuerySet
-from rest_framework import pagination
 
 
 class DatabaseNotSupportedException(Exception):
