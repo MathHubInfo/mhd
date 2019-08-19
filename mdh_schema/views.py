@@ -3,7 +3,6 @@ from django.http import Http404, HttpResponse
 from django.views import View
 from rest_framework import response, serializers, viewsets
 
-from mdh.utils import DumbJSONField
 from mdh_data.models import CodecManager
 from mdh_schema.models import Collection
 
@@ -33,7 +32,6 @@ class PropertySerializer(serializers.ModelSerializer):
         model = Property
         fields = ['displayName', 'slug', 'codec', 'metadata']
 
-    metadata = DumbJSONField(source='metadatastring')
     codec = CodecField()
 
 
@@ -42,7 +40,6 @@ class CollectionSerializer(serializers.ModelSerializer):
         model = Collection
         fields = ['displayName', 'slug', 'metadata', 'properties']
 
-    metadata = DumbJSONField(source='metadatastring')
     properties = PropertySerializer(many=True, source='property_set')
 
 

@@ -1,5 +1,5 @@
-import json
 from django.db import models
+from mdh_data.fields.json import SmartJSONField
 
 
 class ModelWithMetadata(models.Model):
@@ -8,15 +8,5 @@ class ModelWithMetadata(models.Model):
     class Meta:
         abstract = True
 
-    metadatastring = models.TextField(
-        null=True, blank=True, help_text="Metadata associated to this object")
-
-    @property
-    def metadata(self):
-        """ Metadata of this object """
-        return json.loads(self.metadatastring)
-
-    @metadata.setter
-    def metadata(self, value):
-        """ Sets metadata of this object """
-        self.metadatastring = json.dumps(value)
+    metadata = SmartJSONField(null=True, blank=True,
+                              help_text="Metadata associated with this object")

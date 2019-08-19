@@ -31,6 +31,10 @@ class DumbJSONField(models.TextField):
 
         return name, path, args, kwargs
 
+    def get_internal_type(self):
+        return "TextField"
+
+
     ##
     # Save conversions
     ##
@@ -81,12 +85,33 @@ class DumbJSONField(models.TextField):
         return self._load_json(value)
 
     def to_python(self, value):
-        value = super().to_python(value)
         if value is None:
             return None
 
+        if not isinstance(value, str):
+            value = str(value)
+
         return self._load_json(value)
 
+    def formfield(self, **kwargs):
+        # Passing max_length to forms.CharField means that the value's length
+        # will be validated twice. This is considered acceptable since we want
+        # the value in the form field (to pass into widget for example).
+        return super().formfield(**{
+            'max_length': self.max_length,
+            **({} if self.choices else {'widget': forms.Textarea}),
+            **kwargs,
+        })
+
+from rest_framework import serializers
+class DumbJSONFieldSerializer(serializers.Field):
+    def to_representation(self, value):
+        return json.loads(value)
+
+    def to_internal_value(self, data):
+        return json.dumps(data)
+
+serializers.ModelSerializer.serializer_field_mapping[DumbJSONField] = DumbJSONFieldSerializer
 
 if connection.vendor == 'postgresql':
     from django.contrib.postgres.fields import JSONField

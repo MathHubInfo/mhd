@@ -53,7 +53,7 @@ class Command(BaseCommand):
             prov = json.load(f)
 
         # Create a provenance with the given object
-        provenance = Provenance(metadatastring=json.dumps(prov))
+        provenance = Provenance(metadata=prov)
         provenance.save()
 
         # And create the items

@@ -61,7 +61,7 @@ class CollectionManager(models.Manager):
         # If we don't have the update flag set, simply create a new object
         if not update:
             collection = self.create(
-                slug=slug, displayName=displayName, metadatastring=metadata
+                slug=slug, displayName=displayName, metadata=metadata
             )
             logger("Created collection {0:s}".format(slug))
             created = True
@@ -70,7 +70,7 @@ class CollectionManager(models.Manager):
             collection, created = self.update_or_create(
                 slug=slug,
                 defaults={
-                    'displayName': displayName, 'metadatastring': metadata
+                    'displayName': displayName, 'metadata': metadata
                 }
             )
             if created:
@@ -301,7 +301,7 @@ class PropertyManager(models.Manager):
 
         # Else create the property
         prop = self.create(slug=slug, displayName=displayName,
-                           codec=codec, metadatastring=metadata)
+                           codec=codec, metadata=metadata)
         prop.collections.add(collection)
         prop.save()
         logger("Created property {0:s}".format(slug))
