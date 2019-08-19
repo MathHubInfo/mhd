@@ -1,6 +1,8 @@
 from django.apps import apps
 from django.db import models
 
+from rest_framework import serializers
+
 from mdh_provenance.models import Provenance
 from mdh_schema.models import Property
 from mdh.utils import uuid4, memoized_method
@@ -74,15 +76,33 @@ class Codec(models.Model):
     _serializer_field = None
 
     @classmethod
+    def get_serializer_field(cls):
+        """ Gets the serializer field of a class """
+
+        # if the user defined one, return it
+        if cls._serializer_field is not None:
+            return cls._serializer_field
+
+        # Instantiate a new ModelSerializer
+        # so that we can use it to get the default serializer field
+        class DefaultModelSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = cls
+                fields = ['value']
+
+        # build the serializer field, instantiate and return it
+        serializer, args = DefaultModelSerializer().build_standard_field('value', cls._meta.get_field('value'))
+        cls._serializer_field = serializer(**args)
+        return cls._serializer_field
+
+    @classmethod
     def populate_value(cls, value):
         """ Called by the importer to populate the value """
-        if cls._serializer_field is None:
-            return value
 
         if value is None:
             return None
 
-        return cls._serializer_field.to_internal_value(value)
+        return cls.get_serializer_field().to_internal_value(value)
 
     @classmethod
     def serialize_value(cls, value):
@@ -90,17 +110,10 @@ class Codec(models.Model):
 
         from ..fields.json import DumbJSONField
 
-        if cls._serializer_field is None:
-            from django.db import connection
-            valuefield = cls.get_value_field()
-            if hasattr(valuefield, 'from_db_value'):
-                return valuefield.from_db_value(value, None, connection)
-            return value
-
         if value is None:
             return None
 
-        return cls._serializer_field.to_representation(value)
+        return cls.get_serializer_field().to_representation(value)
 
     # A list of supported operators
     operators = ()
