@@ -5,6 +5,7 @@ from django.db import connection
 
 from django.contrib.postgres.fields import ArrayField
 
+
 class DumbNDArrayField(DumbJSONField):
     """ Stores values as an n-dimensional array """
 
@@ -35,7 +36,8 @@ class DumbNDArrayField(DumbJSONField):
 
             if not isinstance(v, list):
                 raise ValidationError(
-                    'expected to find an n-dimensional array')
+                    'expected to find an {}-dimensional array, but found an {}-dimensional array'
+                    .format(self.dim, self.dim - dim))
 
             for vv in v:
                 validate_ndarray(vv, dim - 1)
@@ -48,6 +50,7 @@ class DumbNDArrayField(DumbJSONField):
         kwargs['dim'] = self.dim
         kwargs['typ'] = self.typ
         return name, path, args, kwargs
+
 
 class PostgresNDArrayField(ArrayField):
 
@@ -70,6 +73,7 @@ class PostgresNDArrayField(ArrayField):
         kwargs['dim'] = self.dim
         kwargs['typ'] = self.typ
         return name, path, args[1:], kwargs
+
 
 if connection.vendor == 'postgresql':
     class SmartNDArrayField(PostgresNDArrayField):
