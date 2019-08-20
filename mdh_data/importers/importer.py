@@ -106,13 +106,25 @@ class DataImporter(object):
         # Create each of the property values and populate them from the literal ones
         # in the column
         model = prop.codec_model
+
         values = [
-            model(value=model.populate_value(value), item=item,
-                  prop=prop, provenance=self.provenance)
+            self.instantiate_value(model, item, prop, value)
             for (item, value) in zip(items, column)
         ]
 
-        model.objects.bulk_create(values)
+        model.objects.bulk_create(filter(lambda v: v is not None, values))
+
+    def instantiate_value(self, model, item, prop, value):
+        value = model.populate_value(value)
+        if value is None:
+            return None
+
+        return model(
+            value=value,
+            item=item,
+            prop=prop,
+            provenance=self.provenance
+        )
 
     #
     # Methods to be implemented by subclass

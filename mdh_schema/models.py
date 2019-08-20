@@ -167,19 +167,6 @@ class Property(ModelWithMetadata):
 
         return self.codec_model.objects.filter(prop=self, item__collections=collection)
 
-    def get_column_annotations(self, collection, attributes=None):
-        """ Returns a list of expressions that can be used as an item annotation for this property """
-
-        if attributes is None:
-            attributes = ['value']
-
-        return {
-            'property_{}_{}'.format(self.slug, a):
-                models.Subquery(self.codec_model.objects.filter(
-                    active=True, prop=self, item__pk=models.OuterRef('pk')).values(a))
-            for a in attributes
-        }
-
     collections = models.ManyToManyField(
         Collection, help_text="Collection(s) this property occurs in", blank=True)
 

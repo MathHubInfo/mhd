@@ -5,6 +5,8 @@ from django.db import connection
 
 from django.contrib.postgres.fields import ArrayField
 
+from mdh.utils import check_field_value, get_standard_serializer_field
+
 
 class DumbNDArrayField(DumbJSONField):
     """ Stores values as an n-dimensional array """
@@ -17,6 +19,7 @@ class DumbNDArrayField(DumbJSONField):
             raise ValueError('dimension must be a positive integer')
 
         self.typ = typ
+        self._field = get_standard_serializer_field(typ)
 
     def _validate(self, value):
         """ Checks that the value passed is indeed an n-dimensional array """
@@ -29,9 +32,9 @@ class DumbNDArrayField(DumbJSONField):
 
             if dim == 0:
                 try:
-                    self.typ.get_prep_value(v)
+                    check_field_value(self.typ, self._field, v)
                 except Exception as e:
-                    raise ValidationError(e)
+                    raise ValidationError("Invalid value: {}: {}".format(v, e))
                 return
 
             if not isinstance(v, list):

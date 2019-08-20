@@ -187,8 +187,8 @@ class SchemaImporter(object):
         prop.collections.add(collection)
         prop.save()
 
-        self._log("[{0!s}] Created property {0:s}".format(
-            str(collection.slug), slug))
+        self._log("[{0!s}] Created property {1:s}".format(
+            collection.slug, slug))
         return prop, True
 
 
