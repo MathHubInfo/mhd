@@ -7,18 +7,21 @@ def with_simulate_arg(original):
         when set, wraps the function in an aborted transaction.
     """
     @functools.wraps(original)
-    @transaction.atomic
     def wrapper(*args, simulate = False, **kwargs):
-        sp = transaction.savepoint()
 
+        res = None
         try:
-            res = original(*args, simulate = simulate, **kwargs)
-        finally:
-            if simulate:
-                transaction.savepoint_rollback(sp)
-            else:
-                transaction.savepoint_commit(sp)
+            with transaction.atomic():
+                res = original(*args, simulate = simulate, **kwargs)
+                if simulate:
+                    raise SimulationException()
+
+        except SimulationException:
+            pass
 
         return res
 
     return wrapper
+
+class SimulationException(Exception):
+    pass

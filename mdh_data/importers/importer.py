@@ -83,8 +83,11 @@ class DataImporter(object):
 
         # iterate and create each propesrty
         for (idx, p) in enumerate(self.properties):
-            self._import_chunk_property(chunk, items, p, idx, update=update)
-            self.on_property_success(chunk, uuids, p)
+            try:
+                self._import_chunk_property(chunk, items, p, idx, update=update)
+                self.on_property_success(chunk, uuids, p)
+            except Exception as e:
+                raise ImporterError('Unable to import property {}: {}'.format(p.slug, str(e)))
 
         # return the uuds
         return uuids
@@ -163,10 +166,10 @@ class DataImporter(object):
 
 
 class ImporterError(Exception):
-    def __init__(self):
+    def __init__(self, message):
         super().__init__('Unable to create collection: {}'.format(message))
 
 
 class ImportValidationError(ImporterError):
-    def __init__(self):
+    def __init__(self, messsage):
         super().__init__('Invalid input: {}'.format(message))

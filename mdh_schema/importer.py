@@ -121,7 +121,7 @@ class SchemaImporter(object):
             'displayName': displayName,
             'metadata': metadata,
         })
-        self._log('[{0!r}] {1!s} collection'.format(
+        self._log('[{0!s}] {1!s} collection'.format(
             slug, 'Created' if created else 'Updated'))
 
         # Create all the properties (TODO)

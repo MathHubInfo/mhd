@@ -22,7 +22,7 @@ class Command(BaseCommand):
                             help="Only simulate collection creation, do not actually store any data")
 
     @with_simulate_arg
-    def handle(self, schema, data, provenance, quiet=False, **kwargs):
+    def handle(self, schema, data, provenance, quiet=False, simulate=False, **kwargs):
         call_command('upsert_collection', schema, update=False, quiet=quiet)
 
         # get needed info from schema
