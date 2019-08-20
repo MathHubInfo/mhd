@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
 
-from django.db import transaction
+from mdh.utils import with_simulate_arg
 
 import json
 
@@ -18,8 +18,10 @@ class Command(BaseCommand):
             'provenance', help=".json file containing provenance to insert")
         parser.add_argument('--quiet', '-q', action='store_true',
                             help="Do not produce any output in case of success")
+        parser.add_argument('--simulate', '-s', action="store_true",
+                            help="Only simulate collection creation, do not actually store any data")
 
-    @transaction.atomic
+    @with_simulate_arg
     def handle(self, schema, data, provenance, quiet=False, **kwargs):
         call_command('upsert_collection', schema, update=False, quiet=quiet)
 

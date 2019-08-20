@@ -1,6 +1,6 @@
 from uuid import uuid4
 
-from django.db import transaction
+from mdh.utils import with_simulate_arg
 
 from mdh_data.models import Item
 from mdh_provenance.models import Provenance
@@ -44,27 +44,8 @@ class DataImporter(object):
                 raise ImportValidationError(
                     'Property {} is not a part of collection {}'.format(p.slug, self.collection.slug))
 
-    @transaction.atomic
-    def __call__(self, update = False, simulate = False):
-
-        # create a savepoint
-        sid = transaction.savepoint()
-
-        # run the code
-        try:
-            v = self.run(update = update)
-
-        # rollback if the user asked to simulate only
-        finally:
-            if simulate:
-                transaction.savepoint_rollback(sid)
-            else:
-                transaction.savepoint_commit(sid)
-
-        # and return the value
-        return v
-
-    def run(self, update=False):
+    @with_simulate_arg
+    def __call__(self, update=False, simulate=False):
         """
             Imports all data available to this DataImporter.
         """

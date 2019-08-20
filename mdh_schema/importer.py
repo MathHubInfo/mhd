@@ -1,5 +1,4 @@
-
-from django.db import transaction
+from mdh.utils import with_simulate_arg
 
 from mdh_schema.models import Collection, Property
 from mdh_data.models import CodecManager
@@ -25,7 +24,7 @@ class SchemaImporter(object):
         for k in ['slug', 'properties', 'displayName']:
             if k not in data:
                 raise SchemaValidationError(
-                    'Required key {0:r} is missing from schema. '.format(k))
+                    'Required key {0!r} is missing from schema. '.format(k))
 
         if not isinstance(data['slug'], str):
             raise SchemaValidationError('Key \'slug\' is not a string. ')
@@ -56,40 +55,21 @@ class SchemaImporter(object):
         for k in ['displayName', 'codec']:
             if k not in data:
                 raise SchemaValidationError(
-                    'Property {0:r} missing key {}. '.format(slug, k))
+                    'Property {0!r} missing key {}. '.format(slug, k))
             if not isinstance(data[k], str):
                 raise SchemaValidationError(
-                    'Property {0:r}, Key {} is not a string. '.format(slug, k))
+                    'Property {0!r}, Key {} is not a string. '.format(slug, k))
 
         if 'metadata' in data and not isinstance(data['metadata'], dict):
             raise SchemaValidationError(
-                'Property {0:r}, Key \'metadata\' is not a dict. '.format(slug))
+                'Property {0!r}, Key \'metadata\' is not a dict. '.format(slug))
 
         if CodecManager.find_codec(data['codec']) is None:
             raise SchemaValidationError(
-                'Property {0:r} has unknown codec {1:r}'.format(slug, data['codec']))
+                'Property {0!r} has unknown codec {1!r}'.format(slug, data['codec']))
 
-    @transaction.atomic
+    @with_simulate_arg
     def __call__(self, update=False, simulate=False):
-
-        # create a savepoint
-        sid = transaction.savepoint()
-
-        # run the code
-        try:
-            v = self.run(update=update)
-
-        # rollback if the user asked to simulate only
-        finally:
-            if simulate:
-                transaction.savepoint_rollback(sid)
-            else:
-                transaction.savepoint_commit(sid)
-
-        # and return the value
-        return v
-
-    def run(self, update):
         """
             Creates or updates a new collection based on the appropriate
             serialization in value. The value is serialized as:

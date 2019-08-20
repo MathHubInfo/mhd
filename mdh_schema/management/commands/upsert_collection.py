@@ -17,7 +17,7 @@ class Command(BaseCommand):
         parser.add_argument('--quiet', '-q', action='store_true',
                             help="Do not produce any output in case of success")
         parser.add_argument('--simulate', '-s', action='store_true',
-                            help="Only simulate inseration, do not actually store any data")
+                            help="Only simulate collection creation, do not actually store any data")
 
     def handle(self, *args, **kwargs):
         # create a logger
@@ -33,3 +33,6 @@ class Command(BaseCommand):
 
         importer = SchemaImporter(data, logger=logger)
         importer(update=kwargs['update'], simulate=kwargs['simulate'])
+
+        if kwargs['simulate']:
+            logger('Simulation successful, rolling back changes because --simulate was given. ')
