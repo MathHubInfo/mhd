@@ -1,0 +1,28 @@
+import json
+
+from django.test import TestCase
+
+from mdh_tests.utils import AssetPath, LoadJSONAsset
+
+from .collection import insert_testing_data
+
+from ..models import Item
+from mdh_schema.models import Property
+
+Z4Z_COLLECTION_PATH = AssetPath(__file__, "res", "z4z_collection.json")
+Z4Z_PROVENANCE_PATH = AssetPath(__file__, "res", "z4z_provenance.json")
+Z4Z_DATA_PATH = AssetPath(__file__, "res", "z4z_data.json")
+
+
+class ItemTest(TestCase):
+    def setUp(self):
+        self.collection = insert_testing_data(
+            Z4Z_COLLECTION_PATH, Z4Z_DATA_PATH, Z4Z_PROVENANCE_PATH, reset=True)
+
+    def test_annotate_property(self):
+        """ Tests that we can annotate a property correctly """
+
+        # annotating a single property correctly
+        item = Item.objects.get(id="00000000-0000-4000-a000-000000000000")
+        prop = Property.objects.get(slug="f0")
+        self.assertEqual(item.annotate_property(prop), 0)

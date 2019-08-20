@@ -12,7 +12,6 @@ class QueryViewException(exceptions.APIException):
     default_code = 400
     default_detail = "Incorrect query"
 
-
 class QueryView(generics.ListAPIView):
     pagination_class = DefaultRawPaginator
 
