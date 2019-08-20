@@ -1,8 +1,6 @@
 from django.apps import apps
 from django.db import models, connection
 
-from rest_framework import serializers
-
 from mdh_provenance.models import Provenance
 from mdh_schema.models import Property
 from mdh.utils import uuid4, memoized_method
@@ -10,6 +8,8 @@ from mdh.utils import uuid4, memoized_method
 from .item import Item
 
 from functools import lru_cache
+
+from mdh.utils import get_standard_serializer_field
 
 
 class CodecManager(models.Manager):
@@ -83,16 +83,7 @@ class Codec(models.Model):
         if cls._serializer_field is not None:
             return cls._serializer_field
 
-        # Instantiate a new ModelSerializer
-        # so that we can use it to get the default serializer field
-        class DefaultModelSerializer(serializers.ModelSerializer):
-            class Meta:
-                model = cls
-                fields = ['value']
-
-        # build the serializer field, instantiate and return it
-        serializer, args = DefaultModelSerializer().build_standard_field('value', cls._meta.get_field('value'))
-        cls._serializer_field = serializer(**args)
+        cls._serializer_field = get_standard_serializer_field(cls._meta.get_field('value'))
         return cls._serializer_field
 
     @classmethod
