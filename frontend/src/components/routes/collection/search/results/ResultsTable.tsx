@@ -200,7 +200,7 @@ class ItemLink extends React.Component<{collection: ParsedMDHCollection, uuid: s
     render() {
         const { collection, uuid } = this.props;
         return (
-            <Link to={`/item/${collection.slug}/${uuid}`}>
+            <Link to={`/item/${collection.slug}/${uuid}`} target="_blank">
                 <i className="fa fa-info-circle" data-fa-transform="shrink-4 up-3"></i>
             </Link>
         )
