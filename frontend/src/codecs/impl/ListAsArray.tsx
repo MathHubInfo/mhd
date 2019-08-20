@@ -1,6 +1,5 @@
 import React from 'react';
-import Codec, { TFilterViewerProps, TFilterEditorProps, TValidationResult, TCellProps } from '../codec';
-import { Badge } from "reactstrap";
+import Codec, { TCellProps, TValidationResult } from '../codec';
 
 export default class ListAsArray<T> extends Codec<Array<T>, null> {
     constructor(public elementCodec: Codec<T, any>) {
@@ -11,8 +10,8 @@ export default class ListAsArray<T> extends Codec<Array<T>, null> {
 
     readonly cellComponent = ListAsArrayCell;
 
-    readonly filterViewerComponent = ListAsArrayFilterViewer;
-    readonly filterEditorComponent = ListAsArrayFilterEditor;
+    _filterViewerComponent = null;
+    _filterEditorComponent = null;
 
     defaultFilterValue() {
         return null;
@@ -33,28 +32,5 @@ class ListAsArrayCell<T> extends React.Component<TCellProps<ListAsArray<T>, Arra
         return <>
             {JSON.stringify(value)}
         </>;
-    }
-}
-
-class ListAsArrayFilterViewer<T> extends React.Component<TFilterViewerProps<ListAsArray<T>, Array<T>, null>> {
-    render() {
-        const { children } = this.props;
-        return <>
-            { children }
-            <Badge color="danger">Filters for Lists are not yet supported</Badge>
-        </>;
-    }
-}
-
-class ListAsArrayFilterEditor<T> extends React.Component<TFilterEditorProps<ListAsArray<T>, Array<T>, null>> {
-    render() {
-        const { children } = this.props;
-
-        return (
-            <>
-                { children }
-                <Badge color="danger">Filters for Lists are not yet supported</Badge>
-            </>
-        )
     }
 }

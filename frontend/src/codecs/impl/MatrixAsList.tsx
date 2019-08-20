@@ -1,6 +1,5 @@
 import React from 'react';
-import Codec, { TFilterViewerProps, TFilterEditorProps, TValidationResult, TCellProps } from '../codec';
-import { Badge } from "reactstrap";
+import Codec, { TCellProps, TValidationResult } from '../codec';
 import { chunkArray } from '../utils';
 import styles from './MatrixAsList.module.css';
 
@@ -13,8 +12,8 @@ export default class MatrixAsList<T> extends Codec<Array<T>, null> {
 
     readonly cellComponent = MatrixAsListCell;
 
-    readonly filterViewerComponent = MatrixAsListFilterViewer;
-    readonly filterEditorComponent = MatrixAsListFilterEditor;
+    _filterViewerComponent = null;
+    _filterEditorComponent = null;
 
     defaultFilterValue() {
         return null;
@@ -39,28 +38,5 @@ class MatrixAsListCell<T> extends React.Component<TCellProps<MatrixAsList<T>, Ar
                 )
             }</table>
         );
-    }
-}
-
-class MatrixAsListFilterViewer<T> extends React.Component<TFilterViewerProps<MatrixAsList<T>, Array<T>, null>> {
-    render() {
-        const { children } = this.props;
-        return <>
-            { children }
-            <Badge color="danger">Filters for Matrices are not yet supported</Badge>;
-        </>;
-    }
-}
-
-class MatrixAsListFilterEditor<T> extends React.Component<TFilterEditorProps<MatrixAsList<T>, Array<T>, null>> {
-    render() {
-        const { children } = this.props;
-
-        return (
-            <>
-                { children }
-                <Badge color="danger">Filters for Matrices are not yet supported</Badge>;
-            </>
-        )
     }
 }

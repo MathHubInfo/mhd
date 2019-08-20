@@ -1,6 +1,5 @@
 import React from 'react';
-import Codec, { TFilterViewerProps, TFilterEditorProps, TValidationResult, TCellProps } from '../codec';
-import { Badge } from "reactstrap";
+import Codec, { TCellProps, TValidationResult } from '../codec';
 import { chunkArray } from "../utils";
 
 export default class PolynomialAsSparseArray extends Codec<Array<number>, null> {
@@ -8,8 +7,8 @@ export default class PolynomialAsSparseArray extends Codec<Array<number>, null> 
 
     readonly cellComponent = PolynomialAsSparseArrayCell;
 
-    readonly filterViewerComponent = PolynomialAsSparseArrayFilterViewer;
-    readonly filterEditorComponent = PolynomialAsSparseArrayFilterEditor;
+    _filterViewerComponent = null;
+    _filterEditorComponent = null;
 
     defaultFilterValue() {
         return null;
@@ -45,28 +44,5 @@ class PolynomialAsSparseArrayCell extends React.Component<TCellProps<PolynomialA
                 else return <span key={i}>{factor} x<sup>{exp}</sup></span>;
             }
         );
-    }
-}
-
-class PolynomialAsSparseArrayFilterViewer<T> extends React.Component<TFilterViewerProps<PolynomialAsSparseArray, Array<number>, null>> {
-    render() {
-        const { children } = this.props;
-        return <>
-            { children }
-            <Badge color="danger">Filters for Polynomials are not yet supported</Badge>;
-        </>;
-    }
-}
-
-class PolynomialAsSparseArrayFilterEditor extends React.Component<TFilterEditorProps<PolynomialAsSparseArray, Array<number>, null>> {
-    render() {
-        const { children } = this.props;
-
-        return (
-            <>
-                { children }
-                <Badge color="danger">Filters for Polynomials are not yet supported</Badge>;
-            </>
-        )
     }
 }

@@ -8,8 +8,8 @@ export default class StandardBool extends Codec<boolean, boolean> {
 
     readonly cellComponent = StandardBoolCell;
 
-    readonly filterViewerComponent = StandardBoolFilterViewer;
-    readonly filterEditorComponent = StandardBoolFilterEditor;
+    _filterViewerComponent = StandardBoolFilterViewer;
+    _filterEditorComponent = StandardBoolFilterEditor;
 
     defaultFilterValue() {
         return true;

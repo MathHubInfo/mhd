@@ -240,7 +240,10 @@ class SelectedFilter<S = any, T = any> extends React.Component<TSelectedFilterPr
     
     render() {
         const { edit, internalValue, valid } = this.state;
-        const { onRemoveFilter, property: { displayName }, codec: { filterViewerComponent: FilterViewerComponent, filterEditorComponent: FilterEditorComponent } } = this.props;
+        const { onRemoveFilter, property: { displayName }, codec } = this.props;
+
+        const FilterViewerComponent = codec.filterViewerComponent();
+        const FilterEditorComponent = codec.filterEditorComponent();
 
         return(
             <li className={(edit ? styles.edit : "")}>

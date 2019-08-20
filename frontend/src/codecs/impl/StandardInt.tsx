@@ -7,8 +7,8 @@ export default class StandardInt extends Codec<number, string> {
 
     readonly cellComponent = StandardIntCell;
 
-    readonly filterViewerComponent = StandardIntFilterViewer;
-    readonly filterEditorComponent = StandardIntFilterEditor;
+    readonly _filterViewerComponent = StandardIntFilterViewer;
+    readonly _filterEditorComponent = StandardIntFilterEditor;
 
     defaultFilterValue() {
         return "";

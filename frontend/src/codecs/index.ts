@@ -1,9 +1,9 @@
 
-import Codec from "./codec";
+import Codec, { Fallback } from "./codec";
 import StandardInt from "./impl/StandardInt";
 import StandardBool from "./impl/StandardBool";
+import StandardJSON from "./impl/StandardJSON";
 import MatrixAsList from "./impl/MatrixAsList";
-import Fallback from "./impl/Fallback";
 import ListAsArray from "./impl/ListAsArray";
 import PolynomialAsSparseArray from "./impl/PolynomialAsSparseArray";
 
@@ -13,15 +13,16 @@ import PolynomialAsSparseArray from "./impl/PolynomialAsSparseArray";
 export default class CodecManager {
 
     private static instance: CodecManager;
-    private fallback: Codec<any, any> = new Fallback();
 
     private constructor() {
         this.register(new StandardInt());
         this.register(new StandardBool());
+        this.register(new StandardJSON());
         this.register(new PolynomialAsSparseArray());
         this.register(new MatrixAsList(new StandardInt(), 2, 2));
         this.register(new MatrixAsList(new StandardInt(), 3, 3));
         this.register(new ListAsArray(new StandardInt()));
+        this.register(new ListAsArray(new StandardJSON()));
     }
 
     /** registers a codec with this codec manager */
@@ -30,6 +31,7 @@ export default class CodecManager {
     }
 
     private codecs = new Map<string, Codec<any, any>>();
+    private fallbacks = new Map<string, Fallback>();
 
     /** gets a codec with the given name */
     get(name: string): Codec<any, any> {
@@ -39,11 +41,19 @@ export default class CodecManager {
     }
     /** gets a component with fallback for when it doesn't exist */
     getWithFallback(name: string): Codec<any, any> {
+
+        // if we have a codec, return it
         const codec = this.codecs.get(name);
-        if (process.env.NODE_ENV !== 'production' && codec === undefined) {
-            console.error(`Codec ${name} is not known`);
-        }
-        return codec ? codec : this.fallback;
+        if (codec) return codec;
+
+        // if we have fallback for the given name, return it
+        const fallback = this.fallbacks.get(name);
+        if (fallback) return fallback;
+
+        // else make a new fallback and make that
+        const newFallback = new Fallback(name)
+        this.fallbacks.set(name, newFallback);
+        return newFallback;
     }
 
     /** get or create the singleton instance of thie CodecManager */

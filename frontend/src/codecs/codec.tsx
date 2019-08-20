@@ -1,6 +1,7 @@
 import React from 'react';
 import { Column, CellInfo } from "react-table";
 import { TMDHProperty } from "../client/rest";
+import { Badge } from "reactstrap";
 
 type ReactComponent<T> = React.ComponentClass<T> | React.SFC<T>
 
@@ -99,10 +100,59 @@ export default abstract class Codec<ElementType = any, FilterType = string> {
     /**
      * A component that is used for rendering a filter
      */
-    abstract readonly filterViewerComponent: ReactComponent<TFilterViewerProps<any, ElementType, FilterType>>;
+    protected abstract readonly _filterViewerComponent: ReactComponent<TFilterViewerProps<any, ElementType, FilterType>> | null;
+
+    filterViewerComponent(): ReactComponent<TFilterViewerProps<any, ElementType, FilterType>> {
+        return this._filterViewerComponent || UnsupportedFilter;
+    }
 
     /**
      * A component that is used for rendering the editor
      */
-    abstract readonly filterEditorComponent: ReactComponent<TFilterEditorProps<any, ElementType, FilterType>>;
+    protected abstract readonly _filterEditorComponent: ReactComponent<TFilterEditorProps<any, ElementType, FilterType>> | null;
+
+    filterEditorComponent(): ReactComponent<TFilterEditorProps<any, ElementType, FilterType>> {
+        return this._filterEditorComponent || UnsupportedFilter;
+    }
+}
+
+
+export class Fallback extends Codec<any, null> {
+    constructor(public readonly slug: string) {
+        super();
+    }
+
+    readonly cellComponent = FallbackElement;
+
+    readonly _filterViewerComponent = FallbackElement;
+    readonly _filterEditorComponent = FallbackElement;
+
+    defaultFilterValue() {
+        return null;
+    }
+
+    cleanFilterValue(value: null, lastValue?: string): TValidationResult {
+        return { valid: false, message: 'Unknown codec' };
+    }
+}
+
+class FallbackElement<T> extends React.Component<{codec: Codec<any, any>} & T> {
+    render() {
+        const { children, codec } = this.props;
+        
+        return <>
+            { children }
+            <Badge color="danger">Unknown Codec {codec.slug}</Badge>
+        </>
+    }
+}
+
+class UnsupportedFilter<T> extends React.Component<{codec: Codec<any, null>} & T> {
+    render() {
+        const { children, codec } = this.props;
+        return <>
+            { children }
+            <Badge color="danger">Filters for {codec.slug} is not supported</Badge>;
+        </>;
+    }
 }
