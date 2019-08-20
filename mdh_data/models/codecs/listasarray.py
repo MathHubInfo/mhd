@@ -1,5 +1,6 @@
 from ...fields.ndarray import SmartNDArrayField
 from .standardint import StandardInt
+from .standardjson import StandardJSON
 from ..codecoperator import codec_operator
 
 @codec_operator
@@ -13,3 +14,4 @@ def ListAsArrayCodec(elementCodec):
 
 
 ListAsArrayCodec(StandardInt)
+ListAsArrayCodec(StandardJSON)
