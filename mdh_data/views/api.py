@@ -1,11 +1,12 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import generics
-from .models import SemanticItemSerializer
+from ..models import SemanticItemSerializer
 from mdh_schema.models import Collection
 from mdh.utils import DefaultRawPaginator
 from rest_framework import exceptions
 
-from .querybuilder import QueryBuilderError
+from ..querybuilder import QueryBuilderError
+
 
 class QueryViewException(exceptions.APIException):
     default_code = 400
@@ -35,7 +36,8 @@ class QueryView(generics.ListAPIView):
             for p in properties.split(","):
                 pp = self._collection.get_property(p)
                 if pp is None:
-                    raise QueryViewException(detail="Unknown property {0!r} of collection {1!r}".format(p, self._collection.slug))
+                    raise QueryViewException(
+                        detail="Unknown property {0!r} of collection {1!r}".format(p, self._collection.slug))
                 props.append(pp)
 
             if len(props) == 0:
@@ -46,7 +48,8 @@ class QueryView(generics.ListAPIView):
 
         # store properties and queryset
         try:
-            q, self._properties = self._collection.query(limit=None, offset=None, properties=props, filter=filter)
+            q, self._properties = self._collection.query(
+                limit=None, offset=None, properties=props, filter=filter)
         except QueryBuilderError as qe:
             raise QueryViewException(detail=qe)
 

@@ -1,30 +1,17 @@
-"""mdh URL Configuration
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/2.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
-
 from django.contrib import admin
 from django.urls import include, path
 
 from mdh_schema.router import router as schema_router
-from mdh_schema.views import FrontendProxyView
-from mdh_data.views import QueryView
+from mdh_data.views.frontend import FrontendHomeView, FrontendCollectionView, FrontendItemView
+from mdh_data.views.api import QueryView
 
 urlpatterns = [
     path('api/query/<slug:cid>/', QueryView.as_view()),
     path('api/schema/', include(schema_router.urls)),
     path('admin/', admin.site.urls),
-    path('collection/<slug:cid>/', FrontendProxyView.as_view()),
-    path('', FrontendProxyView.as_view())
+
+    # frontend-served urls, one for nginx
+    path('collection/<slug:cid>/', FrontendCollectionView.as_view()),
+    path('item/<slug:uuid>', FrontendItemView.as_view()),
+    path('', FrontendHomeView.as_view())
 ]
