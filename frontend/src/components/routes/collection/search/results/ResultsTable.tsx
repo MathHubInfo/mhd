@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import ReactTable, { Column } from 'react-table';
+import ReactTable, { Column, CellInfo } from 'react-table';
 import { MDHBackendClient } from "../../../../../client";
 import { MDHFilter, ParsedMDHCollection } from "../../../../../client/derived";
 import { TDRFPagedResponse, TMDHItem } from "../../../../../client/rest";
 import { Row, Col } from "reactstrap";
+import { Link } from "react-router-dom";
 
 interface ResultsTableProps {
     /** backend client */
@@ -117,6 +118,12 @@ export default class ResultsTable extends Component<ResultsTableProps, ResultsTa
 
             // pick the appropriate columns
             const columns = this.props.columns.map(c => this.props.collection.columnMap.get(c)!);
+            columns.unshift({
+                Cell: ({original}: CellInfo) =>
+                    <ItemLink collection={this.props.collection} uuid={original._id}/>,
+                Header: null,
+                width: 50,
+            })
 
             return {
                 last_update: time,
@@ -186,5 +193,16 @@ export default class ResultsTable extends Component<ResultsTableProps, ResultsTa
                 </Col>
             </Row>
         );
+    }
+}
+
+class ItemLink extends React.Component<{collection: ParsedMDHCollection, uuid: string}>{
+    render() {
+        const { collection, uuid } = this.props;
+        return (
+            <Link to={`/item/${collection.slug}/${uuid}`}>
+                <i className="fa fa-info-circle" data-fa-transform="shrink-4 up-3"></i>
+            </Link>
+        )
     }
 }

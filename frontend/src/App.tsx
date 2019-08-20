@@ -6,6 +6,7 @@ import MDHFooter from "./components/common/MDHFooter";
 import MDHHeader from "./components/common/MDHHeader";
 import MDHCollection from "./components/routes/collection";
 import MDHHomePage from "./components/routes/home";
+import MDHItem from "./components/routes/item";
 
 interface AppProps {
     /** the base api URL */
@@ -31,6 +32,12 @@ export default class App extends React.Component<AppProps> {
         const { results_loading_delay } = this.props;
         return <MDHCollection client={this.client} key={collection} collection={collection} results_loading_delay={results_loading_delay} />;
     }
+    private itemComponent = (props: RouteComponentProps<{collection: string, uuid: string}>) => {
+        const { match: {params: { collection, uuid }}} = props;
+        const { results_loading_delay } = this.props;
+        
+        return <MDHItem client={this.client} key={`${collection}/${uuid}`} collection={collection} uuid={uuid} results_loading_delay={results_loading_delay} />;
+    }
 
     render() {
         return (
@@ -39,6 +46,7 @@ export default class App extends React.Component<AppProps> {
                 
                 <Switch>
                     <Route exact path={'/'} component={this.homeComponent}></Route>
+                    <Route path='/item/:collection/:uuid' component={this.itemComponent}></Route>
                     <Route path='/collection/:collection' component={this.collectionComponent}></Route>
                 </Switch>
 

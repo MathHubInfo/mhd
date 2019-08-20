@@ -277,7 +277,7 @@ class SelectedFilter<S = any, T = any> extends React.Component<TSelectedFilterPr
 /**
  * A simple informational button
  */
-export function InfoButton(props: {value: string}) {
+function InfoButton(props: {value: string}) {
     return(
         <a href="#!">
             <i className="far fa-question-circle" data-fa-transform="shrink-4 up-3"></i>

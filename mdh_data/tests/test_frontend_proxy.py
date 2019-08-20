@@ -37,14 +37,14 @@ class FrontendProxyTest(TestCase):
     def test_item_url_exists(self):
         """ Checks that a good collection url is redirected to /frontend/ """
 
-        response = APIClient().get('/collection/z4zFunctions/00000000-0000-4000-a000-000000000000/')
+        response = APIClient().get('/item/z4zFunctions/00000000-0000-4000-a000-000000000000/')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['X-Accel-Redirect'], '/frontend/')
 
     def test_item_url_doesnotexist(self):
         """ Checks that a non-existent collection url is redirected to /frontend/404/ """
 
-        response = APIClient().get('/collection/z4zFunctions/11111111-1111-4000-a000-1111111111111/')
+        response = APIClient().get('/item/z4zFunctions/11111111-1111-4000-a000-1111111111111/')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['X-Accel-Redirect'], '/frontend/404/')
 

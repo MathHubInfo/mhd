@@ -43,6 +43,14 @@ export class MDHBackendClient {
         return this.parseCollection(collection);
     }
 
+    /** Fetches information about a collection and an item within the collection */
+    async fetchCollectionAndItem(name: string, id: string): Promise<[ParsedMDHCollection, TMDHItem<{}>]> {
+        return Promise.all([
+            this.fetchCollection(name),
+            this.fetchJSON<TMDHItem<{}>>(`/item/${name}/${id}/`)
+        ]);
+    }
+
     /** Fetches a list of all collections */
     async fetchCollections(page = 1, per_page = 20): Promise<TDRFPagedResponse<TMDHCollection>> {
         return this.fetchJSON(`/schema/collections/`, {

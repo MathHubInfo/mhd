@@ -13,6 +13,6 @@ urlpatterns = [
 
     # frontend-served urls, one for nginx
     path('collection/<slug:cid>/', FrontendCollectionView.as_view()),
-    path('collection/<slug:cid>/<slug:uuid>/', FrontendItemView.as_view()),
+    path('item/<slug:cid>/<slug:uuid>/', FrontendItemView.as_view()),
     path('', FrontendHomeView.as_view())
 ]

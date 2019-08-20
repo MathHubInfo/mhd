@@ -56,9 +56,9 @@ class Item(models.Model):
 
 
 class SemanticItemSerializer(serializers.Serializer):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, database = True, **kwargs):
         self.collection = kwargs.pop('collection')
-        self.database = kwargs.pop('database')
+        self.database = database
         self.properties = sorted(kwargs.pop('properties'), key=lambda p: p.slug)
 
         super().__init__(*args, **kwargs)
