@@ -39,7 +39,7 @@ export default class App extends React.Component<AppProps> {
                 
                 <Switch>
                     <Route exact path={'/'} component={this.homeComponent}></Route>
-                    <Route path='/:collection' component={this.collectionComponent}></Route>
+                    <Route path='/collection/:collection' component={this.collectionComponent}></Route>
                 </Switch>
 
                 <MDHFooter />

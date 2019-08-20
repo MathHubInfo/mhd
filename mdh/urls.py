@@ -25,6 +25,6 @@ urlpatterns = [
     path('api/query/<slug:cid>/', QueryView.as_view()),
     path('api/schema/', include(schema_router.urls)),
     path('admin/', admin.site.urls),
-    path('<slug:cid>/', FrontendProxyView.as_view()),
+    path('collection/<slug:cid>/', FrontendProxyView.as_view()),
     path('', FrontendProxyView.as_view())
 ]
