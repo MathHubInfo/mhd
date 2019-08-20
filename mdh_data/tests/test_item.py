@@ -13,6 +13,9 @@ Z4Z_COLLECTION_PATH = AssetPath(__file__, "res", "z4z_collection.json")
 Z4Z_PROVENANCE_PATH = AssetPath(__file__, "res", "z4z_provenance.json")
 Z4Z_DATA_PATH = AssetPath(__file__, "res", "z4z_data.json")
 
+Z4Z_ALL_PATH = AssetPath(__file__, "res", "z4z_query_all.json")
+Z4Z_ALL_ASSET = LoadJSONAsset(Z4Z_ALL_PATH)
+
 
 class ItemTest(TestCase):
     def setUp(self):
@@ -25,4 +28,9 @@ class ItemTest(TestCase):
         # annotating a single property correctly
         item = Item.objects.get(id="00000000-0000-4000-a000-000000000000")
         prop = Property.objects.get(slug="f0")
-        self.assertEqual(item.annotate_property(prop), 0)
+        self.assertEqual(item._annotate_property(prop), 0)
+
+    def test_item_api(self):
+        item = Item.objects.get(id="00000000-0000-4000-a000-000000000000")
+        semantic = item.semantic(self.collection)
+        self.assertJSONEqual(json.dumps(semantic), Z4Z_ALL_ASSET[0])

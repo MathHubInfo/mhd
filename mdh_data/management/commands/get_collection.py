@@ -59,5 +59,5 @@ class Command(BaseCommand):
             return
 
 
-        results = [result.semantic(collection, props) for result in qset]
+        results = [result.semantic_result(collection, props) for result in qset]
         print(json.dumps(results, indent=4))

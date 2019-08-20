@@ -88,7 +88,10 @@ class Codec(models.Model):
 
     @classmethod
     def populate_value(cls, value):
-        """ Called by the importer to populate the value """
+        """
+            Called to turn a serialized value (usually from the importer)
+            into a python object to be assigned to a property.
+        """
 
         if value is None:
             return None
@@ -96,8 +99,21 @@ class Codec(models.Model):
         return cls.get_serializer_field().to_internal_value(value)
 
     @classmethod
-    def serialize_value(cls, value):
-        """ Called by the serializer to serialize the value """
+    def populate_db_value(cls, value):
+        """
+            Called to turn a python value of this codec into a raw
+            database object to be used by the annotator.
+        """
+
+        valuefield = cls._meta.get_field('value')
+        return valuefield.get_prep_value(value)
+
+    @classmethod
+    def serialize_value(cls, value, database = True):
+        """
+            Called by the data serializer to turn a database or python
+            value of this codec into a json-serialized value of this codec.
+        """
 
         if value is None:
             return None
@@ -105,7 +121,7 @@ class Codec(models.Model):
         # if the value field has a 'from_db_value' we should call it first
         # because our value was not yet parsed
         vfield = cls._meta.get_field('value')
-        if hasattr(vfield, 'from_db_value'):
+        if database and hasattr(vfield, 'from_db_value'):
             value = vfield.from_db_value(value, None, connection=connection)
 
         # call the default serializer field with .to_representation

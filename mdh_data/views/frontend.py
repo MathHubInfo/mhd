@@ -39,7 +39,9 @@ class FrontendCollectionView(FrontendProxyView):
 
 
 class FrontendItemView(FrontendProxyView):
-    def is_found(self, request, uuid, **kwargs):
+    def is_found(self, request, cid, uuid, **kwargs):
+        if not Collection.objects.filter(slug=cid).exists():
+            return False
         try:
             return Item.objects.filter(id=uuid).exists()
         except:

@@ -139,7 +139,7 @@ class Collection(ModelWithMetadata):
 
         # make the query
         qset, props = self.query(*args, **kwargs)
-        return map(lambda o: o.semantic(self, props), qset)
+        return map(lambda o: o.semantic_result(self, props), qset)
 
 
 class Property(ModelWithMetadata):

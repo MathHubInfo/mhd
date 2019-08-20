@@ -3,7 +3,7 @@ from rest_framework import generics
 from ..models import SemanticItemSerializer
 from mdh_schema.models import Collection
 from mdh.utils import DefaultRawPaginator
-from rest_framework import exceptions
+from rest_framework import exceptions, response
 
 from ..querybuilder import QueryBuilderError
 
@@ -54,3 +54,14 @@ class QueryView(generics.ListAPIView):
 
         # return the queryset
         return q
+
+class ItemView(generics.RetrieveAPIView):
+    def get(self, *args, **kwargs):
+        collection = get_object_or_404(
+            Collection, slug=kwargs['cid'])
+
+        item = get_object_or_404(
+            collection.item_set, id=kwargs['uuid']
+        )
+
+        return response.Response(item.semantic(collection))
