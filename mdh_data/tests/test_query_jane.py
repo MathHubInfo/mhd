@@ -15,9 +15,9 @@ JANE_PROVENANCE_PATH = AssetPath(__file__, "res", "jane_provenance.json")
 JANE_ALL_PATH = AssetPath(__file__, "res", "jane_all.json")
 JANE_ALL_ASSET = LoadJSONAsset(JANE_ALL_PATH)
 
-Z4Z_COLLECTION_PATH = AssetPath(__file__, "res", "z4z_collection.json")
-Z4Z_PROVENANCE_PATH = AssetPath(__file__, "res", "z4z_provenance.json")
-Z4Z_DATA_PATH = AssetPath(__file__, "res", "z4z_data.json")
+Z3Z_COLLECTION_PATH = AssetPath(__file__, "res", "z3z_collection.json")
+Z3Z_PROVENANCE_PATH = AssetPath(__file__, "res", "z3z_provenance.json")
+Z3Z_DATA_PATH = AssetPath(__file__, "res", "z3z_data.json")
 
 class CreateCollectionTest(TestCase):
     def setUp(self):
@@ -28,7 +28,7 @@ class CreateCollectionTest(TestCase):
 
         # insert a second collection to check that querying on two collections works
         # properly
-        insert_testing_data(Z4Z_COLLECTION_PATH, Z4Z_DATA_PATH, Z4Z_PROVENANCE_PATH)
+        insert_testing_data(Z3Z_COLLECTION_PATH, Z3Z_DATA_PATH, Z3Z_PROVENANCE_PATH)
 
     def test_data_exists(self):
 

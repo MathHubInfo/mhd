@@ -6,24 +6,29 @@ from mdh_tests.utils import AssetPath, LoadJSONAsset
 
 from .collection import insert_testing_data
 
-Z4Z_COLLECTION_PATH = AssetPath(__file__, "res", "z4z_collection.json")
-Z4Z_PROVENANCE_PATH = AssetPath(__file__, "res", "z4z_provenance.json")
-Z4Z_DATA_PATH = AssetPath(__file__, "res", "z4z_data.json")
+Z3Z_COLLECTION_PATH = AssetPath(__file__, "res", "z3z_collection.json")
+Z3Z_PROVENANCE_PATH = AssetPath(__file__, "res", "z3z_provenance.json")
+Z3Z_DATA_PATH = AssetPath(__file__, "res", "z3z_data.json")
 
-Z4Z_ALL_PATH = AssetPath(__file__, "res", "z4z_query_all.json")
-Z4Z_ALL_ASSET = LoadJSONAsset(Z4Z_ALL_PATH)
+Z3Z_ALL_PATH = AssetPath(__file__, "res", "z3z_query_all.json")
+Z3Z_ALL_ASSET = LoadJSONAsset(Z3Z_ALL_PATH)
 
-Z4Z_F1_PATH = AssetPath(__file__, "res", "z4z_query_f1.json")
-Z4Z_F1_ASSET = LoadJSONAsset(Z4Z_F1_PATH)
+Z3Z_F1_PATH = AssetPath(__file__, "res", "z3z_query_f1.json")
+Z3Z_F1_ASSET = LoadJSONAsset(Z3Z_F1_PATH)
 
-Z4Z_F1_F2_PATH = AssetPath(__file__, "res", "z4z_query_f1_f2.json")
-Z4Z_F1_F2_ASSET = LoadJSONAsset(Z4Z_F1_F2_PATH)
+Z3Z_F1_F2_PATH = AssetPath(__file__, "res", "z3z_query_f1_f2.json")
+Z3Z_F1_F2_ASSET = LoadJSONAsset(Z3Z_F1_F2_PATH)
 
 
-class CreateCollectionTest(TestCase):
+class Z3ZCollectionTest(TestCase):
+    """
+        Tests that the Z/3Z collection can be inserted into the database.
+        The Z/3Z collection is a set of functions from Z/3Z including several
+        nulls, which checks that the database importer and querying can handle those.
+    """
     def setUp(self):
         self.collection = insert_testing_data(
-            Z4Z_COLLECTION_PATH, Z4Z_DATA_PATH, Z4Z_PROVENANCE_PATH, reset=True)
+            Z3Z_COLLECTION_PATH, Z3Z_DATA_PATH, Z3Z_PROVENANCE_PATH, reset=True)
     def test_build_query(self):
         """ Checks that queries are built correctly """
 
@@ -62,17 +67,17 @@ class CreateCollectionTest(TestCase):
         """ Tests that .semantic() queries return the right values """
 
         GOT_QUERY_ALL = self.collection.semantic()
-        self.assertJSONEqual(json.dumps(list(GOT_QUERY_ALL)), Z4Z_ALL_ASSET,
+        self.assertJSONEqual(json.dumps(list(GOT_QUERY_ALL)), Z3Z_ALL_ASSET,
                              "check that the query for all properties returns all properties")
 
 
         GOT_QUERY_F1_LIMIT = self.collection.semantic(
             properties=[self.collection.get_property("f1")], limit=1, offset=2)
-        self.assertJSONEqual(json.dumps(list(GOT_QUERY_F1_LIMIT)), Z4Z_F1_ASSET,
+        self.assertJSONEqual(json.dumps(list(GOT_QUERY_F1_LIMIT)), Z3Z_F1_ASSET,
                              "check that the query for all a limited f1 returns correct response")
 
 
         GOT_QUERY_F1_F2_FILTER = self.collection.semantic(
             properties=[self.collection.get_property("f1"), self.collection.get_property("f2")], filter="f1 = 0")
-        self.assertJSONEqual(json.dumps(list(GOT_QUERY_F1_F2_FILTER)), Z4Z_F1_F2_ASSET,
+        self.assertJSONEqual(json.dumps(list(GOT_QUERY_F1_F2_FILTER)), Z3Z_F1_F2_ASSET,
                              "check that the query for f1 = 0 returns the right results")

@@ -5,15 +5,15 @@ from .collection import insert_testing_data
 
 from mdh_tests.utils import AssetPath
 
-Z4Z_COLLECTION_PATH = AssetPath(__file__, "res", "z4z_collection.json")
-Z4Z_PROVENANCE_PATH = AssetPath(__file__, "res", "z4z_provenance.json")
-Z4Z_DATA_PATH = AssetPath(__file__, "res", "z4z_data.json")
+Z3Z_COLLECTION_PATH = AssetPath(__file__, "res", "z3z_collection.json")
+Z3Z_PROVENANCE_PATH = AssetPath(__file__, "res", "z3z_provenance.json")
+Z3Z_DATA_PATH = AssetPath(__file__, "res", "z3z_data.json")
 
 
 class QueryBuilderTest(TestCase):
     def setUp(self):
         self.collection = insert_testing_data(
-            Z4Z_COLLECTION_PATH, Z4Z_DATA_PATH, Z4Z_PROVENANCE_PATH, reset=True)
+            Z3Z_COLLECTION_PATH, Z3Z_DATA_PATH, Z3Z_PROVENANCE_PATH, reset=True)
         self.properties = list(self.collection.property_set.all())
 
     def test_build_queries(self):

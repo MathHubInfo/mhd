@@ -172,20 +172,20 @@
         "f0": 2,
         "f1": 2,
         "f2": 0,
-        "invertible": false
+        "invertible": null
     },
     {
         "_id": "00000000-0000-4000-a000-000000000019",
         "f0": 2,
         "f1": 2,
         "f2": 1,
-        "invertible": false
+        "invertible": null
     },
     {
         "_id": "00000000-0000-4000-a000-00000000001a",
         "f0": 2,
         "f1": 2,
         "f2": 2,
-        "invertible": false
+        "invertible": null
     }
 ]

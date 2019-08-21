@@ -157,18 +157,18 @@ To manually enable for local development add `USE_TEST_APP = True` to `mdh/local
 
 ## Data Examples
 
-### Z4Z Functions
+### Z3Z Functions
 
 After setting up the project (see Project Structure and Setup), run the following two commands (to create the collection and to insert data).
 
 ```bash
-python manage.py upsert_collection mdh_data/tests/res/z4z_collection.json
-python manage.py insert_data mdh_data/tests/res/z4z_data.json -c "z4zFunctions" -f "f0,f1,f2,invertible" -p mdh_data/tests/res/z4z_provenance.json
+python manage.py upsert_collection mdh_data/tests/res/z3z_collection.json
+python manage.py insert_data mdh_data/tests/res/z3z_data.json -c "z3zFunctions" -f "f0,f1,f2,invertible" -p mdh_data/tests/res/z3z_provenance.json
 ```
 Here is an example of a query URL:
 
 ```
-http://localhost:8000/api/query/z4zFunctions/?properties=f1,f2&filter=f1%3Df2%26%26f2%3C1
+http://localhost:8000/api/query/z3zFunctions/?properties=f1,f2&filter=f1%3Df2%26%26f2%3C1
 ```
 
 ## Deployment

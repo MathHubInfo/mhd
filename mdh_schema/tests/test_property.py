@@ -1,12 +1,24 @@
+from django.core.management import call_command
 from django.test import TestCase
 
-from mdh_data.models import StandardInt, StandardBool
+from mdh_data.models import StandardBool, StandardInt
+from mdh_tests.utils import AssetPath
+
+from ..models import Collection
 
 from ..models import Property
-from .collectionv0 import CollectionV0Test
+
+Z3Z_V1_PATH = AssetPath(__file__, "res", "collection_v1.json")
 
 
-class PropertyTest(CollectionV0Test, TestCase):
+class PropertyTest(TestCase):
+    def setUp(self):
+        """ Creates the demo collection using the upsert command """
+
+        # create the collection
+        call_command('upsert_collection', Z3Z_V1_PATH,
+                     update=False, quiet=True)
+        self.collection = Collection.objects.get(slug='z3zFunctions')
 
     def test_property_codec(self):
         """ Tests that the property can be used """

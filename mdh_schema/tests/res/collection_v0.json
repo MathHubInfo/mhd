@@ -1,40 +1,32 @@
 {
-    "displayName": "Functions on Z/4Z",
-    "slug": "z4zFunctions",
+    "displayName": "Functions on $\\mathbb{Z}/3\\mathbb{Z}$",
+    "slug": "z3zFunctions",
     "metadata": {
-        "uri": "https://mathhub.com/examples/?Z4ZFunction"
+        "uri": "https://mathhub.com/examples/?Z3ZFunction"
     },
     "properties": [
         {
-            "displayName": "f(0)",
             "slug": "f0",
+            "displayName": "f(0)",
             "codec": "StandardInt",
             "metadata": {
-                "uri": "https://mathhub.com/examples/?Z4ZFunction?f0"
+                "uri": "https://mathhub.com/examples/?Z3ZFunction?f0"
             }
         },
         {
-            "displayName": "f(1)",
             "slug": "f1",
+            "displayName": "f(1)",
             "codec": "StandardInt",
             "metadata": {
-                "uri": "https://mathhub.com/examples/?Z4ZFunction?f1"
+                "uri": "https://mathhub.com/examples/?Z3ZFunction?f1"
             }
         },
         {
-            "displayName": "f(2)",
             "slug": "f2",
+            "displayName": "f(2)",
             "codec": "StandardInt",
             "metadata": {
-                "uri": "https://mathhub.com/examples/?Z4ZFunction?f2"
-            }
-        },
-        {
-            "displayName": "Invertible",
-            "slug": "invertible",
-            "codec": "StandardBool",
-            "metadata": {
-                "uri": "https://mathhub.com/examples/?Z4ZFunction?invertible"
+                "uri": "https://mathhub.com/examples/?Z3ZFunction?f2"
             }
         }
     ]

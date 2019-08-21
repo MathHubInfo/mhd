@@ -15,9 +15,13 @@ AB_PROVENANCE_PATH = AssetPath(__file__, "res", "ab_provenance.json")
 AB_ALL_PATH = AssetPath(__file__, "res", "ab_all.json")
 AB_ALL_ASSET = LoadJSONAsset(AB_ALL_PATH)
 
-class CreateCollectionTest(TestCase):
+class ABCollectionTest(TestCase):
+    """
+        Tests that the demo 'AB' collection can be inserted
+        and queryied from the database.
+        The AB collection is mathematically meaningful.
+    """
     def setUp(self):
-        """ Creates the demo collection using the upsert command """
 
         self.collection = insert_testing_data(
             AB_COLLECTION_PATH, AB_DATA_PATH, AB_PROVENANCE_PATH, reset=True)

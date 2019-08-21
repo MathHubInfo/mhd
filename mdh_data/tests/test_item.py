@@ -9,18 +9,18 @@ from .collection import insert_testing_data
 from ..models import Item
 from mdh_schema.models import Property
 
-Z4Z_COLLECTION_PATH = AssetPath(__file__, "res", "z4z_collection.json")
-Z4Z_PROVENANCE_PATH = AssetPath(__file__, "res", "z4z_provenance.json")
-Z4Z_DATA_PATH = AssetPath(__file__, "res", "z4z_data.json")
+Z3Z_COLLECTION_PATH = AssetPath(__file__, "res", "z3z_collection.json")
+Z3Z_PROVENANCE_PATH = AssetPath(__file__, "res", "z3z_provenance.json")
+Z3Z_DATA_PATH = AssetPath(__file__, "res", "z3z_data.json")
 
-Z4Z_ALL_PATH = AssetPath(__file__, "res", "z4z_query_all.json")
-Z4Z_ALL_ASSET = LoadJSONAsset(Z4Z_ALL_PATH)
+Z3Z_ALL_PATH = AssetPath(__file__, "res", "z3z_query_all.json")
+Z3Z_ALL_ASSET = LoadJSONAsset(Z3Z_ALL_PATH)
 
 
 class ItemTest(TestCase):
     def setUp(self):
         self.collection = insert_testing_data(
-            Z4Z_COLLECTION_PATH, Z4Z_DATA_PATH, Z4Z_PROVENANCE_PATH, reset=True)
+            Z3Z_COLLECTION_PATH, Z3Z_DATA_PATH, Z3Z_PROVENANCE_PATH, reset=True)
 
     def test_annotate_property(self):
         """ Tests that we can annotate a property correctly """
@@ -33,4 +33,4 @@ class ItemTest(TestCase):
     def test_item_api(self):
         item = Item.objects.get(id="00000000-0000-4000-a000-000000000000")
         semantic = item.semantic(self.collection)
-        self.assertJSONEqual(json.dumps(semantic), Z4Z_ALL_ASSET[0])
+        self.assertJSONEqual(json.dumps(semantic), Z3Z_ALL_ASSET[0])

@@ -13,4 +13,4 @@ class CollectionV0Test(object):
         call_command('upsert_collection', DEMO_COLLECTION_PATH,
                      update=False, quiet=True)
 
-        self.collection = Collection.objects.get(slug='z4zFunctions')
+        self.collection = Collection.objects.get(slug='z3zFunctions')
