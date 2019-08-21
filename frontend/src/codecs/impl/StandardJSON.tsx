@@ -9,7 +9,7 @@ export default class StandardJSON extends Codec<any, null> {
     _filterViewerComponent = null;
     _filterEditorComponent = null;
 
-    defaultFilterValue() {
+    parseFilterValue(value: string | null) {
         return null;
     }
 

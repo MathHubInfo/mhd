@@ -8,6 +8,9 @@ import styles from './FilterSelector.module.css';
 interface FilterSelectorProps {
     /** the current collection */
     collection: ParsedMDHCollection;
+    
+    /** the initially set filters */
+    initialFilters: MDHFilter[];
 
     /** callback when filters are applied  */
     onFilterUpdate: (filters: MDHFilter[]) => void;
@@ -18,15 +21,12 @@ interface FilterSelectorState {
     selected: TFilter[];
 }
 
-interface TFilter {
-    /** value of this filter */
-    value: TFilterValue;
-    
+interface TFilter extends MDHFilter {
     /** unique id of this filter */
     uid: number;
 
-    /** slug belonging to the property of this filter */
-    slug: string;
+    /** when set to true, this was an initial filter */
+    initial: boolean;
 }
 
 
@@ -37,7 +37,6 @@ interface TFilter {
     true/false: boolean values (default = true)
     /^(=|==|<=|>=|<|>|<>|!=)(\d+\.?\d*)$/
  * * * * * * * * * * * * * * * * * * * * * * * * */
-type TFilterValue = string | null;
 
 type TFilterAction = {
     action: "add",
@@ -48,7 +47,7 @@ type TFilterAction = {
 } | {
     action: "update",
     i: number,
-    value: TFilterValue,
+    value: TFilter["value"],
 }
 
 /**
@@ -57,7 +56,12 @@ type TFilterAction = {
  */
  export default class FilterSelector extends React.Component<FilterSelectorProps, FilterSelectorState> {
     state: FilterSelectorState = {
-        selected: [],
+        selected: this.props.initialFilters.map(({slug, value}) => ({
+            uid: (this.number++),
+            initial: true,
+            slug,
+            value,
+         })),
     }
 
     // number used for filter state
@@ -71,7 +75,7 @@ type TFilterAction = {
         // add a new element
         if (par.action === "add") {
             this.number++;
-            selected.push({slug: par.slug, uid: this.number, value: null});
+            selected.push({slug: par.slug, uid: this.number, value: null, initial: false});
         
         // update the value of an existing element
         } else if(par.action === "update") {
@@ -124,11 +128,11 @@ type TFilterAction = {
                 <div className={styles.filterBox}>
                     {selected.length === 0 && <p className="text-center my-3">Select filters</p>}
                     <ul className="fa-ul">
-                        {selected.map(({ slug, value, uid }, index) => (
-                            <SelectedFilter key={uid}
-                                property={propMap.get(slug)!}
-                                codec={codecMap.get(slug)!}
-                                value={value}
+                        {selected.map((filter, index) => (
+                            <SelectedFilter key={filter.uid}
+                                property={propMap.get(filter.slug)!}
+                                codec={codecMap.get(filter.slug)!}
+                                filter={filter}
                                 onApplyFilter={(v) => this.handleFilterAction({action: "update", i: index, value: v})}
                                 onRemoveFilter={() => this.handleFilterAction({action: "remove", i: index})}/>
                         ))}
@@ -159,11 +163,11 @@ interface TSelectedFilterProps<S, T> {
     /** the values of this codec */
     codec: Codec<S, T>,
 
-    /** the value of the selected filter */
-    value: TFilterValue;
+    /** the selected filter value */
+    filter: TFilter;
 
     /** callback when a value has been updated */
-    onApplyFilter: (value: TFilterValue) => void;
+    onApplyFilter: (value: TFilter["value"]) => void;
 
     /** called when a filter is removed */
     onRemoveFilter: () => void;
@@ -184,8 +188,8 @@ interface TSelectedFilterState<T> {
 class SelectedFilter<S = any, T = any> extends React.Component<TSelectedFilterProps<S, T>, TSelectedFilterState<T>> {
 
     state: TSelectedFilterState<T> = {
-        edit: true,
-        internalValue: this.props.codec.defaultFilterValue(),
+        edit: !this.props.filter.initial,
+        internalValue: this.props.codec.parseFilterValue(this.props.filter.value)
     }
     
     editFilter = () => {
@@ -207,7 +211,7 @@ class SelectedFilter<S = any, T = any> extends React.Component<TSelectedFilterPr
      * Validates the internal value of this result
      */
     validateValue = (internalValue: T): TValidationResult => {
-        const { codec, value: lastValue } = this.props;
+        const { codec, filter: {value: lastValue}} = this.props;
         
         // validate using the codec
         try {

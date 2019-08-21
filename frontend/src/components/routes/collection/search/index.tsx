@@ -5,9 +5,10 @@ import { MDHFilter, ParsedMDHCollection } from '../../../../client/derived';
 import ColumnEditor from './columns/ColumnEditor';
 import FilterEditor from './filter';
 import ResultsTable from './results/ResultsTable';
+import { encodeState, decodeState } from '../../../../state';
+import { withRouter, RouteComponentProps } from "react-router";
 
-
-interface MDHCollectionSearchProps {
+interface MDHCollectionSearchProps extends RouteComponentProps<{}>{
     /** client to talk to the server */
     client: MDHBackendClient;
 
@@ -20,10 +21,10 @@ interface MDHCollectionSearchProps {
 
 interface MDHCollectionSearchState {
     /** the set of applied filters */
-    filters: MDHFilter[] | null;
+    filters: MDHFilter[];
 
     /** the set of selected columns */
-    columns: string[] | null;
+    columns: string[];
 
     /** the current result page */
     page: number;
@@ -34,14 +35,27 @@ interface MDHCollectionSearchState {
 /**
  * Display the search interface for a single collection
  */
-export default class MDHCollectionSearch extends React.Component<MDHCollectionSearchProps, MDHCollectionSearchState> {
+class MDHCollectionSearch extends React.Component<MDHCollectionSearchProps, MDHCollectionSearchState> {
 
-    state: MDHCollectionSearchState = {
-        filters: null,
-        columns: null,
-        page: 1,
-        page_size: 20,
-    };
+    state: MDHCollectionSearchState = ((): MDHCollectionSearchState => {
+        const s = decodeState(this.props.location.search.substring(1));
+        if(s !== undefined) return s as MDHCollectionSearchState;
+
+        // replace invalid search state to ""
+        this.props.history.replace({search: ''});
+
+        // restore the default state
+        return {
+            filters: [],
+            columns: this.props.collection.propertyNames.slice(),
+            page: 1,
+            page_size: 20,
+        };
+    })();
+
+    private generateURLParams = (state: MDHCollectionSearchState): string => {
+        return encodeState(state);
+    }
 
     /** called when new filters are set in the filter editor */
     private setFilters = (filters: MDHFilter[]) => {
@@ -58,6 +72,14 @@ export default class MDHCollectionSearch extends React.Component<MDHCollectionSe
         this.setState({ page, page_size });
     }
 
+    componentDidUpdate(prevProps: MDHCollectionSearchProps, prevState: MDHCollectionSearchState) {
+        const oldParams = this.generateURLParams(prevState);
+        const newParams = this.generateURLParams(this.state);
+        if (oldParams !== newParams) {
+            this.props.history.replace({search: `?${newParams}`});
+        }
+    }
+
     render() {
         const { filters, columns, page, page_size } = this.state;
         const { client, collection, results_loading_delay } = this.props;
@@ -67,6 +89,7 @@ export default class MDHCollectionSearch extends React.Component<MDHCollectionSe
                 <FilterEditor
                     client={client}
                     collection={collection}
+                    filters={filters}
                     onFilterApply={this.setFilters}
                     results_loading_delay={results_loading_delay}
                 />
@@ -76,6 +99,7 @@ export default class MDHCollectionSearch extends React.Component<MDHCollectionSe
                             (filters !== null) && 
                             <ColumnEditor
                                 collection={collection}
+                                columns={columns}
                                 onColumnsApply={this.setColumns}
                             />
                         }
@@ -99,3 +123,5 @@ export default class MDHCollectionSearch extends React.Component<MDHCollectionSe
     }
 
 }
+
+export default withRouter(MDHCollectionSearch);

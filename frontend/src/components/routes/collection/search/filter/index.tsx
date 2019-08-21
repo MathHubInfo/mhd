@@ -14,6 +14,9 @@ interface FilterEditorProps {
     /** the current collection (if any) */
     collection: ParsedMDHCollection;
 
+    /** the filters currently set */
+    filters: MDHFilter[];
+
     /** callback when filters are applied  */
     onFilterApply: (filters: MDHFilter[]) => void;
 
@@ -31,12 +34,12 @@ interface FilterEditorStateProps {
 
 /**
  * Shows an editor filters, along with a preview for the number of elements found. 
- * Notifies the parent via onFilterApply whenever the user manually applies the filters. 
+ * Notifies the parent via onFilterApply whenever the user manually applies the filters or when the page loads. 
 */
 export default class FilterEditor extends React.Component<FilterEditorProps, FilterEditorStateProps> {
 
     state: FilterEditorStateProps = {
-        filters: [],
+        filters: this.props.filters,
         applied: false,
     };
 
@@ -49,6 +52,10 @@ export default class FilterEditor extends React.Component<FilterEditorProps, Fil
     applyFilters = () => {
         this.props.onFilterApply(this.state.filters);
         this.setState({ applied: true });
+    }
+
+    componentDidMount() {
+        this.applyFilters();
     }
 
     render() {
@@ -76,6 +83,7 @@ export default class FilterEditor extends React.Component<FilterEditorProps, Fil
 
         const rightHead = <Row>
             <FilterSelector
+                initialFilters={this.props.filters}
                 collection={this.props.collection}
                 onFilterUpdate={this.setFilters} />
         </Row>;

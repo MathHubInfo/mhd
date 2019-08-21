@@ -21,5 +21,5 @@ export interface ParsedMDHCollection extends TMDHCollection {
 /** a single instantiated filter */
 export interface MDHFilter {
     slug: string;
-    value: boolean | string | null;
+    value: string | null;
 }

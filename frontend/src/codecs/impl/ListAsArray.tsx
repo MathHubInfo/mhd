@@ -13,7 +13,7 @@ export default class ListAsArray<T> extends Codec<Array<T>, null> {
     _filterViewerComponent = null;
     _filterEditorComponent = null;
 
-    defaultFilterValue() {
+    parseFilterValue(value: string | null) {
         return null;
     }
 

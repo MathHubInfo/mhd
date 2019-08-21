@@ -10,7 +10,8 @@ export default class StandardInt extends Codec<number, string> {
     readonly _filterViewerComponent = StandardIntFilterViewer;
     readonly _filterEditorComponent = StandardIntFilterEditor;
 
-    defaultFilterValue() {
+    parseFilterValue(value: string | null) {
+        if (value !== null && this.regex.test(value)) return value;
         return "";
     }
 

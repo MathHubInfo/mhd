@@ -11,7 +11,9 @@ export default class StandardBool extends Codec<boolean, boolean> {
     _filterViewerComponent = StandardBoolFilterViewer;
     _filterEditorComponent = StandardBoolFilterEditor;
 
-    defaultFilterValue() {
+    parseFilterValue(value: string | null) {
+        if (value === "true") return true;
+        if (value === "false") return false;
         return true;
     }
 

@@ -94,8 +94,11 @@ export default abstract class Codec<ElementType = any, FilterType = string> {
      */
     abstract cleanFilterValue(value: FilterType, lastValue?: string): TValidationResult
 
-    /** gets the default filter value for this type */
-    abstract defaultFilterValue(): FilterType;
+    /**
+     * parses the filter value from a string or returns the default. 
+     * Implementation by sub-class may not assume that the value is valid. 
+     */
+    abstract parseFilterValue(value: string | null): FilterType;
 
     /**
      * A component that is used for rendering a filter
@@ -127,7 +130,7 @@ export class Fallback extends Codec<any, null> {
     readonly _filterViewerComponent = FallbackElement;
     readonly _filterEditorComponent = FallbackElement;
 
-    defaultFilterValue() {
+    parseFilterValue() {
         return null;
     }
 

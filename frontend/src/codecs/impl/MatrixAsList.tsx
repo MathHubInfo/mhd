@@ -1,6 +1,6 @@
 import React from 'react';
 import Codec, { TCellProps, TValidationResult } from '../codec';
-import { chunkArray } from '../utils';
+import { chunkArray } from '../../utils';
 import styles from './MatrixAsList.module.css';
 
 export default class MatrixAsList<T> extends Codec<Array<T>, null> {
@@ -15,7 +15,7 @@ export default class MatrixAsList<T> extends Codec<Array<T>, null> {
     _filterViewerComponent = null;
     _filterEditorComponent = null;
 
-    defaultFilterValue() {
+    parseFilterValue(value: string | null) {
         return null;
     }
 

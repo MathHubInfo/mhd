@@ -1,6 +1,6 @@
 import React from 'react';
 import Codec, { TCellProps, TValidationResult } from '../codec';
-import { chunkArray } from "../utils";
+import { chunkArray } from "../../utils";
 
 export default class PolynomialAsSparseArray extends Codec<Array<number>, null> {
     readonly slug: string = "PolynomialAsSparseArray";
@@ -10,7 +10,7 @@ export default class PolynomialAsSparseArray extends Codec<Array<number>, null> 
     _filterViewerComponent = null;
     _filterEditorComponent = null;
 
-    defaultFilterValue() {
+    parseFilterValue(value: string | null) {
         return null;
     }
 

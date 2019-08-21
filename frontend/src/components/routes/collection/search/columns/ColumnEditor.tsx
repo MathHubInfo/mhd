@@ -11,6 +11,9 @@ interface ColumnEditorProps {
     /** the current collection */
     collection: ParsedMDHCollection;
 
+    /** the initially selected columns */
+    columns: string[];
+
     /** called when the columns are applied by the user */
     onColumnsApply: (newColumns: string[]) => void;
 }
@@ -18,9 +21,6 @@ interface ColumnEditorProps {
 interface ColumnEditorState {
     /** is the editor currently expanded */
     expanded: boolean;
-
-    /** the names of the last selected columns */
-    lastSelected: string[];
 
     /** columns that have been selected */
     selected: string[];
@@ -38,8 +38,7 @@ export default class ColumnEditor extends Component<ColumnEditorProps, ColumnEdi
 
     state: ColumnEditorState = {
         expanded: false,
-        lastSelected: this.props.collection.propertyNames,
-        selected: this.props.collection.propertyNames.slice(),
+        selected: this.props.columns.slice(),
         applied: false
     };
 
@@ -51,7 +50,7 @@ export default class ColumnEditor extends Component<ColumnEditorProps, ColumnEdi
     /** resets the editor to the 'lastSelected' state and collapses it */
     private resetToLastSelected = () => {
         this.setState({
-            selected: this.state.lastSelected.slice(0),
+            selected: this.props.columns.slice(0),
             applied: true,
         })
     }
@@ -67,7 +66,7 @@ export default class ColumnEditor extends Component<ColumnEditorProps, ColumnEdi
     private applyColumns = () => {
         const { selected } = this.state;
         this.props.onColumnsApply(selected);
-        this.setState({ lastSelected: selected, applied: true });
+        this.setState({ applied: true });
     }
 
     /** gets the list of available columns */
@@ -120,7 +119,7 @@ export default class ColumnEditor extends Component<ColumnEditorProps, ColumnEdi
                             </CardText>
                             
                             <CardText>
-                                <Button color="secondary" onClick={this.resetToLastSelected}>Cancel</Button>
+                                <Button color="secondary" onClick={this.resetToLastSelected}>Reset</Button>
                                 &nbsp;
                                 <Button color="secondary" onClick={this.resetToDefaults}>Defaults</Button>
                                 &nbsp;
