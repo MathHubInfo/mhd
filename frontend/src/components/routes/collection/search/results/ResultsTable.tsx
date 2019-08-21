@@ -19,17 +19,20 @@ interface ResultsTableProps {
     /** the selected columns */
     columns: string[];
 
-    /** timeout under which to not show the loading indicator */
-    results_loading_delay: number;
-}
-
-interface ResultsTableState {
-    /** the current page being requested */
+    /** the currently selected page */
     page: number;
 
     /** the current page size */
     page_size: number;
 
+    /** timeout under which to not show the loading indicator */
+    results_loading_delay: number;
+
+    /** called whenever the state is updated in this component */
+    onStateUpdate: (state: {page: number, page_size: number}) => void;
+}
+
+interface ResultsTableState {
     /** set to true whenever it is loading */
     loading: boolean;
 
@@ -51,7 +54,7 @@ interface ResultsTableState {
 
 /**
  * Component that displays results based on a filter input and order input. 
- * Maintains internal state for page size
+ * Notifies the parent whenever the page state is upated. 
  */
 export default class ResultsTable extends Component<ResultsTableProps, ResultsTableState> {
 
@@ -59,8 +62,6 @@ export default class ResultsTable extends Component<ResultsTableProps, ResultsTa
         loading: true,
 
         data: [],
-        page: 1,
-        page_size: 20,
         total_pages: -1, 
 
         columns: [],
@@ -76,12 +77,13 @@ export default class ResultsTable extends Component<ResultsTableProps, ResultsTa
         // store the time of this update
         const time = new Date().getTime();
 
-        // set the newly aquired state params
-        this.setState({
-            page: page + 1,
-            page_size: (pageSize > 100) ? 100 : pageSize,
-        })
 
+        //notify the parent of the new state
+        this.props.onStateUpdate({
+            page: page + 1,
+            page_size: (pageSize > 100) ? 100 : pageSize
+        });
+        
         // we want to set loading to true, to display a loading indicator
         // however, to avoid flashing this indicator when loading is quick
         setTimeout(() => {
@@ -102,10 +104,12 @@ export default class ResultsTable extends Component<ResultsTableProps, ResultsTa
         // we use the current time, which is strictly increasing
         const time = new Date().getTime();
 
+        const { collection: { slug }, columns, filters, page, page_size } = this.props;
+
         // fetch the results with appropriate errors
         let results: TDRFPagedResponse<TMDHItem<{}>> = {count: 0, next: null, previous: null, num_pages: -1, results: []};
         try {
-            results = await this.props.client.fetchItems(this.props.collection.slug, this.props.columns, this.props.filters, this.state.page, this.state.page_size)
+            results = await this.props.client.fetchItems(slug, columns, filters, page, page_size)
         } catch (e) {
             if (process.env.NODE_ENV !== 'production') console.error(e);
         }
@@ -136,7 +140,7 @@ export default class ResultsTable extends Component<ResultsTableProps, ResultsTa
     }
 
     /** computes a hash of the properties that influence data fetching */
-    private static computeDataUpdateHash({ filters, collection: { slug }, columns }: ResultsTableProps, { page, page_size }: ResultsTableState): string {
+    private static computeDataUpdateHash({ filters, collection: { slug }, columns, page, page_size }: ResultsTableProps): string {
         return MDHBackendClient.hashFetchItems(slug, columns, filters, page, page_size);
     }
 
@@ -151,7 +155,6 @@ export default class ResultsTable extends Component<ResultsTableProps, ResultsTa
             this.setState({
                 loading: true,
                 data: [],
-                page: 1,
                 total_pages: -1,
                 force_update: true, // force an update
             });
@@ -159,7 +162,7 @@ export default class ResultsTable extends Component<ResultsTableProps, ResultsTa
         }
 
         // check if any parameters have changed or we forced an update
-        if (this.state.force_update || ResultsTable.computeDataUpdateHash(prevProps, prevState) !== ResultsTable.computeDataUpdateHash(this.props, this.state)) {
+        if (this.state.force_update || ResultsTable.computeDataUpdateHash(prevProps) !== ResultsTable.computeDataUpdateHash(this.props)) {
             // when an update was forced, reset force_update to false
             if (this.state.force_update) {
                 this.setState({force_update: false});
@@ -181,8 +184,8 @@ export default class ResultsTable extends Component<ResultsTableProps, ResultsTa
                         sortable={false}
 
                         loading={this.state.loading}
-                        page={this.state.page - 1}
-                        pageSize={this.state.page_size}
+                        page={this.props.page - 1}
+                        pageSize={this.props.page_size}
 
                         data={this.state.data}
                         columns={this.state.columns}
