@@ -87,6 +87,7 @@ class StandardIntFilterEditor extends React.Component<TFilterEditorProps<Standar
             <>
                 { children }
                 <input
+                    autoFocus
                     type="text"
                     onChange={this.handleValueChange}
                     onKeyPress={this.handleKeyPress}
