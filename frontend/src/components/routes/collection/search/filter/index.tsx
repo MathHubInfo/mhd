@@ -5,6 +5,7 @@ import { MDHFilter, ParsedMDHCollection } from "../../../../../client/derived";
 import { MDHMainHead } from "../../../../common/MDHMain";
 import CounterDisplay from '../results/CounterDisplay';
 import FilterSelector from './FilterSelector';
+import LaTeX from 'react-latex';
 
 interface FilterEditorProps {
     /** the backend  */
@@ -55,7 +56,7 @@ export default class FilterEditor extends React.Component<FilterEditorProps, Fil
         const { applied, filters } = this.state;
 
         const leftHead = <>
-            <p>{collection.description}</p>
+            <p><LaTeX>{collection.description}</LaTeX></p>
             <CounterDisplay
                 collection={collection}
                 client={client}
@@ -79,6 +80,6 @@ export default class FilterEditor extends React.Component<FilterEditorProps, Fil
                 onFilterUpdate={this.setFilters} />
         </Row>;
 
-        return <MDHMainHead title={collection.displayName} leftHead={leftHead} buttons={buttons} rightHead={rightHead} />;
+        return <MDHMainHead title={<LaTeX>{collection.displayName}</LaTeX>} leftHead={leftHead} buttons={buttons} rightHead={rightHead} />;
     }
 }

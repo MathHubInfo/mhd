@@ -4,7 +4,7 @@ import styles from './MDHMain.module.css';
 
 interface MDHMainProps {
     /** title of the current page */
-    title: string;
+    title: React.ReactNode;
 
     /** children in the left head */
     leftHead?: React.ReactNode | React.ReactNode[];

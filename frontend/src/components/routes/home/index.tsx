@@ -4,6 +4,7 @@ import { Button, ListGroup, ListGroupItem } from "reactstrap";
 import { MDHBackendClient } from "../../../client";
 import { TDRFPagedResponse, TMDHCollection } from "../../../client/rest";
 import MDHMain, { MDHLoading } from "../../common/MDHMain";
+import LaTeX from "react-latex";
 
 interface MDHHomePageProps {
     /** client to fetch more data */
@@ -141,7 +142,7 @@ export default class MDHHomePage extends React.Component<MDHHomePageProps, MDHHo
                 {collections.map(c => (
                     <ListGroupItem key={c.slug}>
                         <Link to={`/collection/${c.slug}/`}>
-                            {c.displayName}
+                            <LaTeX>{c.displayName}</LaTeX>
                         </Link>
                     </ListGroupItem>
                 ))}
