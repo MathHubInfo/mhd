@@ -5,6 +5,9 @@ export interface TMDHCollection {
     slug: string;
     displayName: string;
 
+    description: string;
+    url?: string;
+
     metadata?: any;
     
     properties: TMDHProperty[];

@@ -21,16 +21,15 @@ class SchemaImporter(object):
         if not isinstance(data, dict):
             raise SchemaValidationError('Expected schema to be a dict. ')
 
-        for k in ['slug', 'properties', 'displayName']:
+        for k in ['slug', 'properties', 'displayName', 'description']:
             if k not in data:
                 raise SchemaValidationError(
                     'Required key {0!r} is missing from schema. '.format(k))
 
-        if not isinstance(data['slug'], str):
-            raise SchemaValidationError('Key \'slug\' is not a string. ')
-        if not isinstance(data['displayName'], str):
-            raise SchemaValidationError(
-                'Key \'displayName\' is not a string. ')
+        for k in ['slug', 'displayName', 'description', 'url']:
+            if k in data and not isinstance(data[k], str):
+                raise SchemaValidationError('Key {0!r} is not a string. '.format(k))
+
         if not isinstance(data['properties'], list):
             raise SchemaValidationError(
                 'Key \'properties\' is not a list of properties. ')
@@ -77,6 +76,8 @@ class SchemaImporter(object):
             {
                 'displayName': string,
                 'slug': string,
+                'description': string,
+                'url': string,
                 'metadata': {}, # any JSON, optional
                 'properties': property[] # property serialization, see the Property model
             }
@@ -107,6 +108,8 @@ class SchemaImporter(object):
         # read all the data from the existing data
         slug = self.data['slug']
         displayName = self.data['displayName']
+        description = self.data.get('description', None)
+        url = self.data.get('url', None)
         metadata = self.data.get('metadata', None)
         properties = self.data['properties']
 
@@ -119,6 +122,8 @@ class SchemaImporter(object):
         # create or update the collection
         collection, created = Collection.objects.update_or_create(slug=slug, defaults={
             'displayName': displayName,
+            'description': description,
+            'url': url,
             'metadata': metadata,
         })
         self._log('[{0!s}] {1!s} collection'.format(

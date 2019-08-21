@@ -41,7 +41,7 @@ class PropertySerializer(serializers.ModelSerializer):
 class CollectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Collection
-        fields = ['displayName', 'slug', 'metadata', 'properties']
+        fields = ['displayName', 'slug', 'description', 'url', 'metadata', 'properties']
 
     properties = serializers.SerializerMethodField()
 

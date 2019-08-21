@@ -1,6 +1,8 @@
 {
     "displayName": "Functions on $\\mathbb{Z}/3\\mathbb{Z}$",
     "slug": "z3zFunctions",
+    "description": "Functions from $\\mathbb{Z}/3\\mathbb{Z}$ onto itself. ",
+    "url": "https://github.com/MathHubInfo/mdh_django#z3z-functions",
     "metadata": {
         "uri": "https://mathhub.com/examples/?Z3ZFunction"
     },

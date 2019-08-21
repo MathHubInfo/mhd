@@ -4,10 +4,14 @@ from django.db import models
 
 
 class Collection(ModelWithMetadata):
-    """ Collection of Mathmatical Items """
+    """ Collection of Mathematical Items """
+
     displayName = models.TextField(help_text="Name of this collection")
     slug = models.SlugField(
         help_text="Identifier of this collection", unique=True)
+
+    description = models.TextField(help_text="A human-readable description of this collection")
+    url = models.URLField(null=True, blank=True, help_text="URL for more information about this collection")
 
     def get_property(self, slug):
         """ Returns a property of the given name """

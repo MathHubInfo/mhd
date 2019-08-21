@@ -1,6 +1,7 @@
 {
     "displayName": "Additive Bases",
     "slug": "ab",
+    "description": "A collection of additive integer bases. ",
     "properties": [
         {
             "slug": "basis",

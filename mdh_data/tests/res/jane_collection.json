@@ -1,6 +1,7 @@
 {
     "displayName": "Jane's Collection",
     "slug": "jane",
+    "description": "Jane's Demo Collection",
     "metadata": {
         "uri": "https://mathhub.com/examples/?Jane"
     },

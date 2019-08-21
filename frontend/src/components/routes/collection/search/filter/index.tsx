@@ -55,7 +55,7 @@ export default class FilterEditor extends React.Component<FilterEditorProps, Fil
         const { applied, filters } = this.state;
 
         const leftHead = <>
-            <p>{collection.displayName}</p>
+            <p>{collection.description}</p>
             <CounterDisplay
                 collection={collection}
                 client={client}
@@ -64,7 +64,14 @@ export default class FilterEditor extends React.Component<FilterEditorProps, Fil
             />
         </>;
 
-        const buttons = <Button onClick={this.applyFilters} disabled={applied}>Display results</Button>;
+        const buttons = <>
+            <Button onClick={this.applyFilters} disabled={applied}>Display results</Button>
+            { collection.url &&
+                <a href={collection.url} target="_blank" rel="noopener noreferrer">
+                    <Button>More Info</Button>
+                </a>
+                }
+        </>;
 
         const rightHead = <Row>
             <FilterSelector
@@ -72,6 +79,6 @@ export default class FilterEditor extends React.Component<FilterEditorProps, Fil
                 onFilterUpdate={this.setFilters} />
         </Row>;
 
-        return <MDHMainHead title={"MathDataHub"} leftHead={leftHead} buttons={buttons} rightHead={rightHead} />;
+        return <MDHMainHead title={collection.displayName} leftHead={leftHead} buttons={buttons} rightHead={rightHead} />;
     }
 }
