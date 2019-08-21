@@ -51,7 +51,7 @@ class CollectionSerializer(serializers.ModelSerializer):
 
 
 class CollectionViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Collection.objects.all().order_by('-slug')
+    queryset = Collection.objects.all().order_by('displayName')
     serializer_class = CollectionSerializer
     lookup_field = 'slug'
 
