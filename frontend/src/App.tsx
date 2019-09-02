@@ -60,7 +60,7 @@ export default class App extends React.Component<AppProps> {
                 <MDHHeader />
                 
                 <Switch>
-                    <Route exact path={'/'} component={this.homeComponent}></Route>
+                    <Route exact path='/' component={this.homeComponent}></Route>
                     <Route path='/item/:collection/:uuid' component={this.itemComponent}></Route>
                     <Route path='/collection/:collection' component={this.collectionComponent}></Route>
                 </Switch>
