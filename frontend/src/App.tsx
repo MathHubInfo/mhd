@@ -2,11 +2,26 @@ import React from 'react';
 import { Route, RouteComponentProps, Switch } from 'react-router-dom';
 import { MDHBackendClient } from './client';
 import CodecManager from "./codecs/";
+
 import MDHFooter from "./components/common/MDHFooter";
 import MDHHeader from "./components/common/MDHHeader";
-import MDHCollection from "./components/routes/collection";
-import MDHHomePage from "./components/routes/home";
-import MDHItem from "./components/routes/item";
+
+import Loadable from 'react-loadable';
+
+const MDHCollection = Loadable({
+    loader: () => import("./components/routes/collection"),
+    loading: () => null,
+});
+
+const MDHHomePage = Loadable({
+    loader: () => import("./components/routes/home"),
+    loading: () => null,
+});
+
+const MDHItem = Loadable({
+    loader: () => import("./components/routes/item"),
+    loading: () => null,
+});
 
 interface AppProps {
     /** the base api URL */
