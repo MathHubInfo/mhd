@@ -23,6 +23,11 @@ const MDHItem = Loadable({
     loading: () => null,
 });
 
+const Debug = Loadable({
+    loader: () => import("./components/routes/debug"),
+    loading: () => null,
+})
+
 interface AppProps {
     /** the base api URL */
     api?: string;
@@ -63,6 +68,10 @@ export default class App extends React.Component<AppProps> {
                     <Route exact path='/' component={this.homeComponent}></Route>
                     <Route path='/item/:collection/:uuid' component={this.itemComponent}></Route>
                     <Route path='/collection/:collection' component={this.collectionComponent}></Route>
+
+                    {process.env.NODE_ENV !== "production" &&
+                        <Route exact path='/debug/' component={Debug}></Route>
+                    }
                 </Switch>
 
                 <MDHFooter />
