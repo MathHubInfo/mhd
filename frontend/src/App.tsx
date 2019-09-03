@@ -6,27 +6,12 @@ import CodecManager from "./codecs/";
 import MDHFooter from "./components/common/MDHFooter";
 import MDHHeader from "./components/common/MDHHeader";
 
-import Loadable from 'react-loadable';
+import loadable from '@loadable/component'
 
-const MDHCollection = Loadable({
-    loader: () => import("./components/routes/collection"),
-    loading: () => null,
-});
-
-const MDHHomePage = Loadable({
-    loader: () => import("./components/routes/home"),
-    loading: () => null,
-});
-
-const MDHItem = Loadable({
-    loader: () => import("./components/routes/item"),
-    loading: () => null,
-});
-
-const Debug = Loadable({
-    loader: () => import("./components/routes/debug"),
-    loading: () => null,
-})
+const MDHCollection = loadable(() => import("./components/routes/collection"));
+const MDHHomePage = loadable(() => import("./components/routes/home"));
+const MDHItem = loadable(() => import("./components/routes/item"));
+const Debug = loadable(() => import("./components/routes/debug"));
 
 interface AppProps {
     /** the base api URL */
