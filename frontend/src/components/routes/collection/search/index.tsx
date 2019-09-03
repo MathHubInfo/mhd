@@ -7,6 +7,7 @@ import FilterEditor from './filter';
 import ResultsTable from './results/ResultsTable';
 import { encodeState, decodeState } from '../../../../state';
 import { withRouter, RouteComponentProps } from "react-router";
+import { TableState } from "../../../wrappers/table";
 
 interface MDHCollectionSearchProps extends RouteComponentProps<{}>{
     /** client to talk to the server */
@@ -19,18 +20,15 @@ interface MDHCollectionSearchProps extends RouteComponentProps<{}>{
     results_loading_delay: number;
 }
 
-interface MDHCollectionSearchState {
+interface MDHCollectionSearchState extends TableState {
     /** the set of applied filters */
     filters: MDHFilter[];
 
     /** the set of selected columns */
     columns: string[];
 
-    /** the current result page */
-    page: number;
-
-    /** the current selected page size */
-    page_size: number;
+    /** the widths of each of the columns */
+    widths: number[] | undefined;
 }
 /**
  * Display the search interface for a single collection
@@ -48,8 +46,9 @@ class MDHCollectionSearch extends React.Component<MDHCollectionSearchProps, MDHC
         return {
             filters: [],
             columns: this.props.collection.propertyNames.slice(),
-            page: 1,
-            page_size: 20,
+            page: 0,
+            per_page: 20,
+            widths: undefined,
         };
     })();
 
@@ -68,8 +67,8 @@ class MDHCollectionSearch extends React.Component<MDHCollectionSearchProps, MDHC
     }
 
     /** called when the results state is updated */
-    private setResultsState = ({ page, page_size}: {page: number, page_size: number}) => {
-        this.setState({ page, page_size });
+    private setResultsState = ({ page, per_page, widths}: TableState) => {
+        this.setState({ page, per_page, widths });
     }
 
     componentDidUpdate(prevProps: MDHCollectionSearchProps, prevState: MDHCollectionSearchState) {
@@ -81,7 +80,7 @@ class MDHCollectionSearch extends React.Component<MDHCollectionSearchProps, MDHC
     }
 
     render() {
-        const { filters, columns, page, page_size } = this.state;
+        const { filters, columns, page, per_page, widths } = this.state;
         const { client, collection, results_loading_delay } = this.props;
 
         return (
@@ -111,7 +110,8 @@ class MDHCollectionSearch extends React.Component<MDHCollectionSearchProps, MDHC
                                     filters={filters}
                                     columns={columns}
                                     page={page}
-                                    page_size={page_size}
+                                    per_page={per_page}
+                                    widths={widths}
                                     results_loading_delay={results_loading_delay}
                                     onStateUpdate={this.setResultsState}
                                 />

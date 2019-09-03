@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import ReactTable, { Column, CellInfo } from 'react-table';
 import { MDHBackendClient } from "../../../../../client";
 import { MDHFilter, ParsedMDHCollection } from "../../../../../client/derived";
 import { TDRFPagedResponse, TMDHItem } from "../../../../../client/rest";
 import { Row, Col } from "reactstrap";
 import { Link } from "react-router-dom";
+import Table, { TableColumn, TableState } from "../../../../wrappers/table";
 
-interface ResultsTableProps {
+interface ResultsTableProps extends TableState {
     /** backend client */
     client: MDHBackendClient;
 
@@ -19,17 +19,11 @@ interface ResultsTableProps {
     /** the selected columns */
     columns: string[];
 
-    /** the currently selected page */
-    page: number;
-
-    /** the current page size */
-    page_size: number;
-
     /** timeout under which to not show the loading indicator */
     results_loading_delay: number;
 
     /** called whenever the state is updated in this component */
-    onStateUpdate: (state: {page: number, page_size: number}) => void;
+    onStateUpdate: (state: TableState) => void;
 }
 
 interface ResultsTableState {
@@ -37,10 +31,10 @@ interface ResultsTableState {
     loading: boolean;
 
     /** the columns being shown */
-    columns: Column<{}>[]
+    columns: TableColumn<TMDHItem<any>>[]
 
     /** the stored MDH data */
-    data: TMDHItem<{}>[];
+    data: TMDHItem<any>[];
 
     /** the total number of pages, or -1 if unknown */
     total_pages: number;
@@ -71,28 +65,9 @@ export default class ResultsTable extends Component<ResultsTableProps, ResultsTa
     };
 
     /** called whenever the table state is updated */
-    handleTableStateUpdate = (tableState: any) => {
-        const {page, pageSize} = tableState as {page: number, pageSize: number};
-
-        // store the time of this update
-        const time = new Date().getTime();
-
-
+    handleTableStateUpdate = ({page, per_page, widths}: TableState) => {
         //notify the parent of the new state
-        this.props.onStateUpdate({
-            page: page + 1,
-            page_size: (pageSize > 100) ? 100 : pageSize
-        });
-        
-        // we want to set loading to true, to display a loading indicator
-        // however, to avoid flashing this indicator when loading is quick
-        setTimeout(() => {
-            this.setState(({ last_update: lastUpdate }: ResultsTableState) => {
-                if (lastUpdate >= time) return null; // an update was applied
-
-                return {loading: true};
-            });
-        }, this.props.results_loading_delay);
+        this.props.onStateUpdate({ page, per_page, widths });
     }
 
     /**
@@ -104,12 +79,22 @@ export default class ResultsTable extends Component<ResultsTableProps, ResultsTa
         // we use the current time, which is strictly increasing
         const time = new Date().getTime();
 
-        const { collection: { slug }, columns, filters, page, page_size } = this.props;
+        // we want to set loading to true, to display a loading indicator
+        // however, to avoid flashing this indicator when loading is quick
+        setTimeout(() => {
+            this.setState(({ last_update }: ResultsTableState) => {
+                if (last_update >= time) return null; // an update was applied
+
+                return {loading: true};
+            });
+        }, this.props.results_loading_delay);
+
+        const { collection: { slug }, columns, filters, page, per_page } = this.props;
 
         // fetch the results with appropriate errors
         let results: TDRFPagedResponse<TMDHItem<{}>> = {count: 0, next: null, previous: null, num_pages: -1, results: []};
         try {
-            results = await this.props.client.fetchItems(slug, columns, filters, page, page_size)
+            results = await this.props.client.fetchItems(slug, columns, filters, page + 1, per_page)
         } catch (e) {
             if (process.env.NODE_ENV !== 'production') console.error(e);
         }
@@ -117,15 +102,14 @@ export default class ResultsTable extends Component<ResultsTableProps, ResultsTa
         // for introducing a dummy delay of 2 seconds, uncomment the following line
         // await new Promise((resolve) => setTimeout(resolve, 2000));
 
-        this.setState(({ last_update: lastUpdate }: ResultsTableState) => {
-            if (lastUpdate > time) return null; // newer update was already applied
+        this.setState(({ last_update }: ResultsTableState) => {
+            if (last_update > time) return null; // newer update was already applied
 
             // pick the appropriate columns
             const columns = this.props.columns.map(c => this.props.collection.columnMap.get(c)!);
             columns.unshift({
-                Cell: ({original}: CellInfo) =>
-                    <ItemLink collection={this.props.collection} uuid={original._id}/>,
-                Header: null,
+                Cell: ({data}: TMDHItem<any>) => <ItemLink collection={this.props.collection} uuid={data._id}/>,
+                Header: () => "",
                 width: 50,
             })
 
@@ -140,8 +124,8 @@ export default class ResultsTable extends Component<ResultsTableProps, ResultsTa
     }
 
     /** computes a hash of the properties that influence data fetching */
-    private static computeDataUpdateHash({ filters, collection: { slug }, columns, page, page_size }: ResultsTableProps): string {
-        return MDHBackendClient.hashFetchItems(slug, columns, filters, page, page_size);
+    private static computeDataUpdateHash({ filters, collection: { slug }, columns, page, per_page }: ResultsTableProps): string {
+        return MDHBackendClient.hashFetchItems(slug, columns, filters, page, per_page);
     }
 
     private static computeResetHash({collection: {slug}, filters}: ResultsTableProps): string {
@@ -176,23 +160,22 @@ export default class ResultsTable extends Component<ResultsTableProps, ResultsTa
     }
 
     render() {
+        const { total_pages, columns, data, loading } = this.state;
+
         return (
             <Row>
                 <Col>
-                    <ReactTable manual
-                        filterable={false}
-                        sortable={false}
-
-                        loading={this.state.loading}
-                        page={this.props.page - 1}
-                        pageSize={this.props.page_size}
-
-                        data={this.state.data}
-                        columns={this.state.columns}
-                        pages={this.state.total_pages}
-
-                        onFetchData={this.handleTableStateUpdate}
-                    />
+                    {!loading && <Table
+                        total_pages={total_pages}
+                        per_page_selection={[10, 25, 50, 100]}
+                        columns={columns}
+                        data={data}
+                        onStateChange={this.handleTableStateUpdate}
+                        
+                        page={this.props.page}
+                        per_page={this.props.per_page}
+                        widths={this.props.widths}
+                    />}
                 </Col>
             </Row>
         );

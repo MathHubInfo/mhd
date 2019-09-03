@@ -1,0 +1,10 @@
+.grip {
+    width:20px;
+	height:15px;
+	margin-top:-3px;
+	background:black;
+	margin-left:-5px;
+	position:relative;
+	z-index:88;
+	cursor:col-resize;
+}

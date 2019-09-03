@@ -10,9 +10,7 @@ require('typeface-montserrat');
 
 // load custom styles
 require('./css/bootstrapMDH.scss');
-
-require('react-table/react-table.css');
-require('katex/dist/katex.min.css')
+require('katex/dist/katex.min.css');
 
 // load font-awesome
 require('@fortawesome/fontawesome-free/js/all.js');

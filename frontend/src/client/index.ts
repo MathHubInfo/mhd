@@ -2,7 +2,7 @@ import { ParsedMDHCollection, MDHFilter } from "./derived";
 import { TMDHCollection, TMDHProperty, TDRFPagedResponse, TMDHItem } from "./rest";
 import CodecManager from "../codecs";
 import Codec from "../codecs/codec";
-import { Column } from "react-table";
+import { TableColumn } from "../components/wrappers/table";
 
 export class MDHBackendClient {
     /**
@@ -64,7 +64,7 @@ export class MDHBackendClient {
 
         const propMap = new Map<string, TMDHProperty>();
         const codecMap = new Map<string, Codec>();
-        const propertyColumns = new Map<string, Column<{}>>();
+        const propertyColumns = new Map<string, TableColumn<TMDHItem<any>>>();
 
         const propertyNames = collection.properties.map(p => {
             const { slug, codec } = p;
