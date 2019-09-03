@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'mdh_schema',
     'mdh_data',
     'mdh_provenance',
+    'mddl_catalog',
     'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',

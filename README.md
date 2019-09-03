@@ -16,13 +16,14 @@ __This code and in particular the documentation are still a work-in-progress__
 ## Code Structure
 
 The top-level structure of this repository consists of a standard [Django](https://www.djangoproject.com/) project. 
-There are five apps:
+There are six apps:
 
 - `mdh`: The main entry point. Contains a `utils/` package used by other apps. 
 - `mdh_schema`: Stores schema of MDH data. Home of the `Collection` and `Property` tables. 
 - `mdh_data`: Stores all concrete MDH data. Home of the `Item` and all `Codec` tables. 
 - `mdh_provenance`: Stores meta-information about MDH data. Home of the `Provenance` tables. 
 - `mdh_test`: Test-only app for specific test models
+- `mddl_catalog`: Catalog of specific MDDL items, currently only codecs. 
 
 Currently, MDH depends only on Django and [Django Rest Framework](https://www.django-rest-framework.org/).
 To install the dependencies, first make sure you have a recent enough version of Python installed on your system. 
@@ -68,6 +69,30 @@ This will be automatically loaded by mdh during configuration time.
 ## Database structure
 
 *TODO: Image of layout and explanation*
+
+## MDDL Codec Catalog
+
+This project also contains the master list of codecs. 
+This is currently implemented inside the `mddl_catalog` app, but may migrate elsewhere in the future. 
+
+The master list itself is stored inside a fixture, and is intended to be edited with Django Admin. 
+To load data from the fixture, use:
+
+```bash
+# optional: delete all existing models in the database
+python manage.py migrate mddl_catalog zero
+python manage.py migrate
+
+# to load all items from the fixture
+python manage.py loaddata mddl_catalog/fixture.json
+```
+
+To update data in the fixture, use:
+```
+python manage.py dumpdata mddl_catalog.CodecCatalogItem > mddl_catalog/fixture.json
+```
+
+To load data enti
 
 ## URL Structure
 
