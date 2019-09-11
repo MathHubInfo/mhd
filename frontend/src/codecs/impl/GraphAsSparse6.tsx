@@ -26,7 +26,6 @@ class GraphAsSparse6Cell extends React.Component<TCellProps<GraphAsSparse6, stri
         const graph = Sparse6toEdgeList(value);
         if (graph === undefined) return null;
         
-        
         // TODO: Add a proper graph
         return JSON.stringify(graph);
     }
