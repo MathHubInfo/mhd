@@ -5,6 +5,7 @@ import StandardBool from "./impl/StandardBool";
 import StandardJSON from "./impl/StandardJSON";
 import MatrixAsList from "./impl/MatrixAsList";
 import ListAsArray from "./impl/ListAsArray";
+import GraphAsSparse6 from "./impl/GraphAsSparse6";
 import PolynomialAsSparseArray from "./impl/PolynomialAsSparseArray";
 
 /**
@@ -18,6 +19,7 @@ export default class CodecManager {
         this.register(new StandardInt());
         this.register(new StandardBool());
         this.register(new StandardJSON());
+        this.register(new GraphAsSparse6());
         this.register(new PolynomialAsSparseArray());
         this.register(new MatrixAsList(new StandardInt(), 2, 2));
         this.register(new MatrixAsList(new StandardInt(), 3, 3));

@@ -4,7 +4,7 @@ import BitStream from "./BitStream";
  * Parses a Sparse6 encoded graph into an edge list.
  * @returns a list of pairs representing the edges of the graph, or undefined if there was an error in the format
 */
-export default function Sparse6toEdgeList(chars: string): [number, number][] | undefined {
+export default function Sparse6toEdgeList(chars: string): {edges: [number, number][], nodes: number} | undefined {
     if (chars.length === 0 || chars[0] !== ':') {
         return;
     }
@@ -67,5 +67,5 @@ export default function Sparse6toEdgeList(chars: string): [number, number][] | u
             edges.push([newVertex, currentVertex])
         }
     }
-    return edges;
+    return {'edges': edges, 'nodes': n };
 }

@@ -21,7 +21,7 @@ export default class BitStream {
      * @param value Number representing bits to write
      */
     writeBits(bits: number, value: number) {
-		if (bits == 0) { return; }
+		if (bits === 0) { return; }
 		value &= (0xffffffff >>> (32 - bits));
 		let bitsConsumed: number;
 		if (this.bitsPending > 0) {
@@ -29,7 +29,7 @@ export default class BitStream {
 				this.buffer[this.position - 1] |= value << (this.bitsPending - bits);
 				bitsConsumed = bits;
 				this.bitsPending -= bits;
-			} else if (this.bitsPending == bits) {
+			} else if (this.bitsPending === bits) {
 				this.buffer[this.position - 1] |= value;
 				bitsConsumed = bits;
 				this.bitsPending = 0;
@@ -55,8 +55,8 @@ export default class BitStream {
      * @param bitBuffer for internal use only
      */
     readBits(bits: number, bitBuffer?: number): number {
-		if (typeof bitBuffer == "undefined") { bitBuffer = 0; }
-        if (bits == 0) { return bitBuffer; }
+		if (bitBuffer === undefined) { bitBuffer = 0; }
+        if (bits === 0) { return bitBuffer; }
         if (bits > this.bitsRemaining()) { bits = this.bitsRemaining(); }
 		let partial: number;
 		let bitsConsumed: number;
