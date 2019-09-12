@@ -27,7 +27,6 @@ class GraphAsSparse6Cell extends React.Component<TCellProps<GraphAsSparse6, stri
         const graph = Sparse6toEdgeList(value);
         if (graph === undefined) return null;
         
-        // TODO: Add a proper graph
-        return <D3ForceGraph style={{width: 400, height: 400, innerNodeRadius: 1, outerNodeRadius: 5}} graph={graph}/>;
+        return <D3ForceGraph strength={-50} style={{width: 200, height: 200, innerNodeRadius: 1, outerNodeRadius: 5}} graph={graph}/>;
     }
 }

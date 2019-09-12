@@ -35,7 +35,7 @@ interface D3ForceGraphProps {
  */
 export default class D3ForceGraph extends React.Component<D3ForceGraphProps> {
 
-    private static getProps({ graph, strength = -400, style: css = {} }: D3ForceGraphProps): D3GraphInstanceProps {
+    private static getProps({ graph, strength = -100, style: css = {} }: D3ForceGraphProps): D3GraphInstanceProps {
         const {
             width = 100, height = 100,
 
