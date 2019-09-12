@@ -8,7 +8,7 @@ from mdh_provenance.models import Provenance
 class JSONFileImporter(DataImporter):
     """ An importer that loads data from a set of json files """
 
-    def __init__(self, collection_slug, property_names, data_path, provenance_path, on_chunk_success = None, on_property_success = None):
+    def __init__(self, collection_slug, property_names, data_path, provenance_path, on_chunk_success = None, on_property_success = None, batch_size = 100):
         collection = Collection.objects.get(slug=collection_slug)
         properties = [collection.get_property(pn) for pn in property_names]
 
@@ -16,7 +16,7 @@ class JSONFileImporter(DataImporter):
         self.provenance_path = provenance_path
         self.done = False
 
-        super().__init__(collection, properties, on_chunk_success, on_property_success)
+        super().__init__(collection, properties, on_chunk_success, on_property_success, batch_size)
 
     def create_provenance(self):
         """ Creates the provenance model for this importer """

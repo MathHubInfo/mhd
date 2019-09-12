@@ -14,10 +14,11 @@ class DataImporter(object):
         Does not yet support the update property
     """
 
-    def __init__(self, collection, properties, on_chunk_success=None, on_property_success=None):
+    def __init__(self, collection, properties, on_chunk_success=None, on_property_success=None, batch_size=100):
         """ Creates a new data importer for the given collection and properties """
         self.collection = collection
         self.properties = properties
+        self.batch_size = batch_size
 
         if on_chunk_success is None:
             self.on_chunk_success = lambda chunk, uuids: None
@@ -78,7 +79,7 @@ class DataImporter(object):
         items = [Item(id=uuid) for uuid in uuids]
 
         # bulk create the items and the collection they were added to
-        Item.objects.bulk_create(items)
+        Item.objects.bulk_create(items, batch_size=self.batch_size)
         self.collection.item_set.add(*items)
 
         # iterate and create each propesrty
@@ -87,6 +88,7 @@ class DataImporter(object):
                 self._import_chunk_property(chunk, items, p, idx, update=update)
                 self.on_property_success(chunk, uuids, p)
             except Exception as e:
+                raise
                 raise ImporterError('Unable to import property {}: {}'.format(p.slug, str(e)))
 
         # return the uuds
@@ -112,7 +114,7 @@ class DataImporter(object):
             for (item, value) in zip(items, column)
         ]
 
-        model.objects.bulk_create(filter(lambda v: v is not None, values))
+        model.objects.bulk_create(filter(lambda v: v is not None, values), batch_size=self.batch_size)
 
     def instantiate_value(self, model, item, prop, value):
         value = model.populate_value(value)

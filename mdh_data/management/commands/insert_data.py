@@ -22,6 +22,8 @@ class Command(BaseCommand):
                             help="Only simulate inseration, do not actually store any data")
         parser.add_argument('--quiet', '-q', action='store_true',
                             help="Do not produce any output in case of success")
+        parser.add_argument('--batch-size', '-b', type=int, default=100,
+                            help="Batch size for insert queries into the database. ")
 
     def handle(self, *args, **kwargs):
 
@@ -37,6 +39,8 @@ class Command(BaseCommand):
             on_chunk_success=lambda chunk, uuids: logger(
                 "Created {0:d} new item(s)".format(len(uuids))),
             on_property_success=lambda chunk, uuids, prop: logger(
-                "Inserted {0:d} value(s) into cells for property {1:s}".format(len(uuids), prop.slug))
+                "Inserted {0:d} value(s) into cells for property {1:s}".format(len(uuids), prop.slug),
+            ),
+            batch_size=kwargs['batch_size']
         )
         importer(update=False, simulate=kwargs['simulate'])

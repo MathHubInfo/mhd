@@ -20,9 +20,11 @@ class Command(BaseCommand):
                             help="Do not produce any output in case of success")
         parser.add_argument('--simulate', '-s', action="store_true",
                             help="Only simulate collection creation, do not actually store any data")
+        parser.add_argument('--batch-size', '-b', type=int, default=100,
+                            help="Batch size for insert queries into the database. ")
 
     @with_simulate_arg
-    def handle(self, schema, data, provenance, quiet=False, simulate=False, **kwargs):
+    def handle(self, schema, data, provenance, quiet=False, simulate=False, batch_size=None, **kwargs):        
         call_command('upsert_collection', schema, update=False, quiet=quiet)
 
         # get needed info from schema
@@ -33,4 +35,4 @@ class Command(BaseCommand):
 
         # insert the data in the collection
         call_command('insert_data', data,  collection=collection_name,
-                     fields=fields, provenance=provenance, quiet=quiet)
+                     fields=fields, provenance=provenance, quiet=quiet, batch_size=batch_size)
