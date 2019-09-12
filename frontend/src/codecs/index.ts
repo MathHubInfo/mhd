@@ -2,6 +2,7 @@
 import Codec, { Fallback } from "./codec";
 import StandardInt from "./impl/StandardInt";
 import StandardBool from "./impl/StandardBool";
+import StandardString from "./impl/StandardString";
 import StandardJSON from "./impl/StandardJSON";
 import MatrixAsList from "./impl/MatrixAsList";
 import ListAsArray from "./impl/ListAsArray";
@@ -18,6 +19,7 @@ export default class CodecManager {
     private constructor() {
         this.register(new StandardInt());
         this.register(new StandardBool());
+        this.register(new StandardString());
         this.register(new StandardJSON());
         this.register(new GraphAsSparse6());
         this.register(new PolynomialAsSparseArray());
