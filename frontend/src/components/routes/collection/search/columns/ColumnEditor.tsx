@@ -111,14 +111,14 @@ export default class ColumnEditor extends Component<ColumnEditorProps, ColumnEdi
                     </Button>
                     <Collapse isOpen={expanded}>
                         <Card body>
-                            <CardText>
+                            <CardText tag="div">
                                 <DragDropContext onDragEnd={this.handleDragEnd}>
                                     <DroppableArea id="selected" caption="Selected columns" items={selected} />
                                     <DroppableArea id="available" caption="Available columns" items={available} />
                                 </DragDropContext>
                             </CardText>
                             
-                            <CardText>
+                            <CardText tag="div">
                                 <Button color="secondary" onClick={this.resetToLastSelected}>Reset</Button>
                                 &nbsp;
                                 <Button color="secondary" onClick={this.resetToDefaults}>Defaults</Button>
