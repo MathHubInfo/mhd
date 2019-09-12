@@ -1,6 +1,7 @@
 import React from 'react';
 import Codec, { TValidationResult, TCellProps } from '../codec';
 import Sparse6toEdgeList from './utils/Sparse6';
+import D3ForceGraph from "../../components/wrappers/d3graph";
 
 export default class GraphAsSparse6 extends Codec<string, null> {
     readonly slug: string = "GraphAsSparse6";
@@ -27,6 +28,6 @@ class GraphAsSparse6Cell extends React.Component<TCellProps<GraphAsSparse6, stri
         if (graph === undefined) return null;
         
         // TODO: Add a proper graph
-        return JSON.stringify(graph);
+        return <D3ForceGraph style={{width: 400, height: 400, innerNodeRadius: 1, outerNodeRadius: 5}} graph={graph}/>;
     }
 }
