@@ -1,5 +1,5 @@
-import React, { ChangeEvent, KeyboardEvent, CSSProperties } from 'react';
-import Codec, { TFilterViewerProps, TFilterEditorProps, TValidationResult, TCellProps } from '../codec';
+import React from 'react';
+import Codec, { TValidationResult, TCellProps } from '../codec';
 
 export default class StandardString extends Codec<string, null> {
     readonly slug: string = "StandardString";
@@ -13,7 +13,7 @@ export default class StandardString extends Codec<string, null> {
         return null;
     }
 
-    cleanFilterValue(value: string, lastValue?: string): TValidationResult {
+    cleanFilterValue(value: null, lastValue?: string): TValidationResult {
         return { valid: false };
     }
 }
