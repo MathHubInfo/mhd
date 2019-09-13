@@ -19,6 +19,7 @@ export default class GraphAsSparse6 extends Codec<string, null> {
 }
 
 class GraphAsSparse6Cell extends React.Component<TCellProps<GraphAsSparse6, string, null>> {
+    static MAX_RENDER_ORDER = 20;
     render() {
         const { value } = this.props;
         if (value === null) return null;
@@ -27,7 +28,7 @@ class GraphAsSparse6Cell extends React.Component<TCellProps<GraphAsSparse6, stri
         const graph = Sparse6toEdgeList(value);
         if (graph === undefined) return null;
 
-        if(graph.nodes > 20) return `Graph with ${graph.nodes} nodes and ${2 * graph.edges.length} edges`;
+        if(graph.nodes > GraphAsSparse6Cell.MAX_RENDER_ORDER) return `Graph with ${graph.nodes} nodes and ${2 * graph.edges.length} edges`;
         
         return <D3ForceGraph strength={-50} style={{width: 200, height: 200, innerNodeRadius: 1, outerNodeRadius: 5}} graph={graph}/>;
     }
