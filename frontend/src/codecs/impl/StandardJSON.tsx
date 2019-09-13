@@ -3,6 +3,7 @@ import Codec, { TCellProps, TValidationResult } from '../codec';
 
 export default class StandardJSON extends Codec<any, null> {
     readonly slug: string = "StandardJSON";
+    readonly ordered: boolean | '+' | '-' = false;
 
     readonly cellComponent = StandardJSONCell;
 

@@ -4,6 +4,7 @@ import styles from './StandardInt.module.css';
 
 export default class StandardInt extends Codec<number, string> {
     readonly slug: string = "StandardInt";
+    readonly ordered: boolean | '+' | '-' = true;
 
     readonly cellComponent = StandardIntCell;
 

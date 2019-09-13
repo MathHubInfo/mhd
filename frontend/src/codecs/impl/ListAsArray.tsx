@@ -7,6 +7,7 @@ export default class ListAsArray<T> extends Codec<Array<T>, null> {
         this.slug = `ListAsArray_${elementCodec.slug}`;
     }
     readonly slug: string;
+    readonly ordered: boolean | '+' | '-' = false;
 
     readonly cellComponent = ListAsArrayCell;
 

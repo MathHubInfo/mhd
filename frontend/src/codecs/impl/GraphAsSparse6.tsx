@@ -5,6 +5,7 @@ import D3ForceGraph from "../../components/wrappers/d3graph";
 
 export default class GraphAsSparse6 extends Codec<string, null> {
     readonly slug: string = "GraphAsSparse6";
+    readonly ordered: boolean | '+' | '-' = false;
 
     readonly cellComponent = GraphAsSparse6Cell;
 

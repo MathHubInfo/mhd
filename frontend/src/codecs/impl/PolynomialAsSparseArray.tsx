@@ -6,6 +6,7 @@ export default class PolynomialAsSparseArray extends Codec<Array<number>, null> 
     readonly slug: string = "PolynomialAsSparseArray";
 
     readonly cellComponent = PolynomialAsSparseArrayCell;
+    readonly ordered: boolean = false;
 
     _filterViewerComponent = null;
     _filterEditorComponent = null;

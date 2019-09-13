@@ -70,6 +70,9 @@ export default abstract class Codec<ElementType = any, FilterType = string> {
     /** the slug of this codec */
     abstract readonly slug: string;
 
+    /** how can elements of this codec be meaningfully ordered? */
+    abstract readonly ordered: boolean | '+' | '-' ; // true, + => ascending, - => descending, false => not orderable
+
     /**
      * Component used for rendering cells of this value
      */
@@ -125,6 +128,8 @@ export class Fallback extends Codec<any, null> {
     constructor(public readonly slug: string) {
         super();
     }
+
+    readonly ordered: boolean = false;
 
     readonly cellComponent = FallbackElement;
 

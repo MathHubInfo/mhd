@@ -9,6 +9,7 @@ export default class MatrixAsList<T> extends Codec<Array<T>, null> {
         this.slug = `MatrixAsList_${elementCodec.slug}_${rows}_${columns}`;
     }
     readonly slug: string;
+    readonly ordered: boolean | '+' | '-' = false;
 
     readonly cellComponent = MatrixAsListCell;
 

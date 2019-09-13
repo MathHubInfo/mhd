@@ -89,12 +89,12 @@ export default class ResultsTable extends Component<ResultsTableProps, ResultsTa
             });
         }, this.props.results_loading_delay);
 
-        const { collection: { slug }, columns, filters, page, per_page } = this.props;
+        const { collection, columns, filters, page, per_page } = this.props;
 
         // fetch the results with appropriate errors
         let results: TDRFPagedResponse<TMDHItem<{}>> = {count: 0, next: null, previous: null, num_pages: -1, results: []};
         try {
-            results = await this.props.client.fetchItems(slug, columns, filters, page + 1, per_page)
+            results = await this.props.client.fetchItems(collection, columns, filters, page + 1, per_page)
         } catch (e) {
             if (process.env.NODE_ENV !== 'production') console.error(e);
         }
@@ -124,12 +124,12 @@ export default class ResultsTable extends Component<ResultsTableProps, ResultsTa
     }
 
     /** computes a hash of the properties that influence data fetching */
-    private static computeDataUpdateHash({ filters, collection: { slug }, columns, page, per_page }: ResultsTableProps): string {
-        return MDHBackendClient.hashFetchItems(slug, columns, filters, page, per_page);
+    private static computeDataUpdateHash({ filters, collection, columns, page, per_page }: ResultsTableProps): string {
+        return MDHBackendClient.hashFetchItems(collection, columns, filters, page, per_page);
     }
 
-    private static computeResetHash({collection: {slug}, filters}: ResultsTableProps): string {
-        return MDHBackendClient.hashFetchItems(slug, [], filters, 1, 1);
+    private static computeResetHash({collection, filters}: ResultsTableProps): string {
+        return MDHBackendClient.hashFetchItems(collection, [], filters, 1, 1);
     }
     
     componentDidUpdate(prevProps: ResultsTableProps, prevState: ResultsTableState) {

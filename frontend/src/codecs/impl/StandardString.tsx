@@ -3,6 +3,7 @@ import Codec, { TValidationResult, TCellProps } from '../codec';
 
 export default class StandardString extends Codec<string, null> {
     readonly slug: string = "StandardString";
+    readonly ordered: boolean | '+' | '-' = true;
 
     readonly cellComponent = StandardStringCell;
 

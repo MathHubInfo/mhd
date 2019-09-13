@@ -5,6 +5,7 @@ import styles from './StandardBool.module.css';
 
 export default class StandardBool extends Codec<boolean, boolean> {
     readonly slug: string = "StandardBool";
+    readonly ordered: boolean | '+' | '-' = true;
 
     readonly cellComponent = StandardBoolCell;
 

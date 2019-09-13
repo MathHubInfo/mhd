@@ -82,23 +82,24 @@ export class MDHBackendClient {
     }
 
     /** Fetches information about a set of collection items */
-    async fetchItems<T extends {}>(collection: string, properties: string[], filters: MDHFilter[], page_number = 1, per_page = 100): Promise<TDRFPagedResponse<TMDHItem<T>>> {
+    async fetchItems<T extends {}>(collection: ParsedMDHCollection, properties: string[], filters: MDHFilter[], page_number = 1, per_page = 100, order?: string[]): Promise<TDRFPagedResponse<TMDHItem<T>>> {
         // Build the filter params
         const params = {
             filter: MDHBackendClient.buildFilter(filters),
             properties: properties.join(","),
             page: page_number.toString(),
             per_page: per_page.toString(),
+            order: MDHBackendClient.buildSortOrder(collection, properties, order),
         };
 
         // fetch the results
-        return this.fetchJSON<TDRFPagedResponse<TMDHItem<T>>>(`/query/${collection}`, params);
+        return this.fetchJSON<TDRFPagedResponse<TMDHItem<T>>>(`/query/${collection.slug}`, params);
     }
 
     /** hashes the parameters to the fetchItems function */
-    static hashFetchItems(collection: string, properties: string[], filters: MDHFilter[], page_number = 1, per_page = 100): string {
+    static hashFetchItems(collection: ParsedMDHCollection, properties: string[], filters: MDHFilter[], page_number = 1, per_page = 100): string {
         const hash = {
-            collection: collection,
+            collection: collection.slug,
             filters: filters.filter(f => f.value !== null),
             properties: properties,
             page_number: page_number,
@@ -108,21 +109,21 @@ export class MDHBackendClient {
     }
 
     /** Fetches the number of items in a collection */
-    async fetchItemCount(collection: string, filters: MDHFilter[]): Promise<number> {
+    async fetchItemCount(collection: ParsedMDHCollection, filters: MDHFilter[]): Promise<number> {
         // Counts the items in a collection
         const params = {
             filter: MDHBackendClient.buildFilter(filters),
             per_page: '1',
         };
 
-        const response = await this.fetchJSON<TDRFPagedResponse<TMDHItem<{}>>>(`/query/${collection}`, params);
+        const response = await this.fetchJSON<TDRFPagedResponse<TMDHItem<{}>>>(`/query/${collection.slug}`, params);
         return response.count;
     }
 
     /** hashes the parameters to the fetchItemCount function */
-    static hashFetchItemCount(collection: string, filters: MDHFilter[]): string {
+    static hashFetchItemCount(collection: ParsedMDHCollection, filters: MDHFilter[]): string {
         const hash = {
-            collection: collection,
+            collection: collection.slug,
             filters: filters.filter(f => f.value !== null),
         }
         return JSON.stringify(hash);
@@ -131,6 +132,24 @@ export class MDHBackendClient {
     /** give a set of filters, build a filter URL */
     static buildFilter(filters: MDHFilter[]): string {
         return filters.filter(f => f.value !== null).map(f => `(${f.slug}${f.value})`).join("&&")
+    }
+
+    /** builds a sort order string to pass to the backend */
+    static buildSortOrder(collection: ParsedMDHCollection, properties: string[], order: string[] | undefined): string {
+        const propName = (n: string) => (n.startsWith('+') || n.startsWith('-')) ? n.substring(1) : n;
+        
+        // find all the properties that we want to filter by in the appropriate order
+        return (order || collection.propertyNames)
+            .filter(n => properties.includes(propName(n))) // filter by queries properties
+            .filter(n => collection.propMap.has(propName(n))) // filter by known properties
+            .filter(n => collection.codecMap.get(propName(n))!.ordered) // filter by orderable properties
+            .map(n => {
+                if(n.startsWith('+') || n.startsWith('-')) return n;
+                const order = collection.codecMap.get(n)!.ordered;
+                const sign = (order === true || order === '+') ? '+' : '-';
+                return `${sign}${n}`;
+            })
+            .join(',');
     }
 }
 

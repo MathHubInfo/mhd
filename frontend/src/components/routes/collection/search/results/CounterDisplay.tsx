@@ -63,7 +63,7 @@ export default class CounterDisplay extends React.Component<CounterDisplayProps,
         // fallback to 'NaN' when an error occurs, and log the error during development
         let count = NaN;
         try {
-            count = await this.props.client.fetchItemCount(this.props.collection.slug, this.props.filters);
+            count = await this.props.client.fetchItemCount(this.props.collection, this.props.filters);
         } catch (e) {
             if (process.env.NODE_ENV !== 'production') console.error(e);
         }
@@ -88,12 +88,12 @@ export default class CounterDisplay extends React.Component<CounterDisplayProps,
 
     componentDidUpdate(prevProps: CounterDisplayProps, prevState: CounterDisplayState) {
         // compute old hash
-        const {filters: prevFilter, collection: { slug: prevSlug }} = prevProps;
-        const oldHash = MDHBackendClient.hashFetchItemCount(prevSlug, prevFilter);
+        const {filters: prevFilter, collection: prevCollection} = prevProps;
+        const oldHash = MDHBackendClient.hashFetchItemCount(prevCollection, prevFilter);
 
         // compute new hash
-        const { filters: newFilter, collection: { slug: newSlug } } = this.props;
-        const newHash = MDHBackendClient.hashFetchItemCount(newSlug, newFilter);
+        const { filters: newFilter, collection: newCollection } = this.props;
+        const newHash = MDHBackendClient.hashFetchItemCount(newCollection, newFilter);
 
         // if we have different hashes, we need to re-count
         if (oldHash !== newHash) {
