@@ -27,6 +27,8 @@ class Command(BaseCommand):
         modes.add_argument('--explain', '-e', action='store_true',
                            help="Instead of returning results, explain the query only")
 
+        parser.add_argument('--order', '-', type=str,
+                            default=None, help="Order to return results in. ")
         parser.add_argument('--from', '-f', type=nonnegative,
                             default=0, help="Index to start results at. ")
         parser.add_argument('--limit', '-l', type=nonnegative,
@@ -47,7 +49,7 @@ class Command(BaseCommand):
                 'p'), kwargs['properties'].split(","))
 
         # build te queryset
-        qset, props = collection.query(offset=kwargs['from'], limit=kwargs['limit'])
+        qset, props = collection.query(offset=kwargs['from'], limit=kwargs['limit'], order=kwargs['order'])
 
         if kwargs['sql']:
             print(qset.query)

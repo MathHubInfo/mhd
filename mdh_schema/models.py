@@ -10,8 +10,10 @@ class Collection(ModelWithMetadata):
     slug = models.SlugField(
         help_text="Identifier of this collection", unique=True)
 
-    description = models.TextField(help_text="A human-readable description of this collection")
-    url = models.URLField(null=True, blank=True, help_text="URL for more information about this collection")
+    description = models.TextField(
+        help_text="A human-readable description of this collection")
+    url = models.URLField(
+        null=True, blank=True, help_text="URL for more information about this collection")
 
     def get_property(self, slug):
         """ Returns a property of the given name """
@@ -28,7 +30,7 @@ class Collection(ModelWithMetadata):
             codecs.add(prop.codec_model)
         return codecs
 
-    def query(self, properties=None, filter=None, limit=None, offset=None, order=True):
+    def query(self, properties=None, filter=None, limit=None, offset=None, order=None):
         """
             Builds a query returning items in this collection with
             annotated properties prop.
@@ -108,8 +110,33 @@ class Collection(ModelWithMetadata):
                 "ON I.id = {0:s}.item_id AND {0:s}.active AND {0:s}.prop_id = {1:s}".format(virtual_table, physical_prop_id))
 
         # add an order by clause
-        if order:
-            # TODO: Allow ordering by an abitrary property
+        if order is not None and len(order) > 0:
+            def parse_order(oslug):
+                oslug = oslug.strip()
+                if len(oslug) == 0:
+                    raise Exception('Order string received empty property')
+
+                if oslug[0] == '+':
+                    order = 'ASC'
+                    oslug = oslug[1:]
+                elif oslug[0] == '-':
+                    order = 'DESC'
+                    oslug = oslug[1:]
+                else:
+                    order = 'ASC'
+
+                oslug = oslug.strip()
+                if len(oslug) == 0:
+                    raise Exception('Order string received empty property')
+
+                if not oslug in PROPERTIES:
+                    raise Exception('Unknown property {}'.format(oslug))
+
+                return '"property_value_{}" {}'.format(oslug, order)
+            ORDER_PARTS = ', '.join([parse_order(o) for o in order.split(',')])
+            SUFFIXES.append("ORDER BY {}".format(ORDER_PARTS))
+
+        else:
             SUFFIXES.append("ORDER BY I.id")
 
         # and build the slicing clauses

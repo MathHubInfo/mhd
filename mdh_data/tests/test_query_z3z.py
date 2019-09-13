@@ -46,6 +46,14 @@ class Z3ZCollectionTest(TestCase):
         self.assertTupleEqual(GOT_QUERY_ALL_PROPS.query.params, (),
                               "check that by default all properties are queried")
 
+        ORDERED_QUERY_ALL, _ = self.collection.query(order='f1,-f0,+f2')
+        EXPECTED_ORDERED_QUERY_ALL = 'SELECT I.id as id,"T_f0".value as "property_value_f0","T_f0".id as "property_cid_f0","T_f1".value as "property_value_f1","T_f1".id as "property_cid_f1","T_f2".value as "property_value_f2","T_f2".id as "property_cid_f2","T_invertible".value as "property_value_invertible","T_invertible".id as "property_cid_invertible" FROM mdh_data_item as I JOIN mdh_data_item_collections as CI ON I.id = CI.item_id AND CI.collection_id = {} LEFT OUTER JOIN mdh_data_standardint as "T_f0" ON I.id = "T_f0".item_id AND "T_f0".active AND "T_f0".prop_id = {} LEFT OUTER JOIN mdh_data_standardint as "T_f1" ON I.id = "T_f1".item_id AND "T_f1".active AND "T_f1".prop_id = {} LEFT OUTER JOIN mdh_data_standardint as "T_f2" ON I.id = "T_f2".item_id AND "T_f2".active AND "T_f2".prop_id = {} LEFT OUTER JOIN mdh_data_standardbool as "T_invertible" ON I.id = "T_invertible".item_id AND "T_invertible".active AND "T_invertible".prop_id = {} ORDER BY "property_value_f1" ASC, "property_value_f0" DESC, "property_value_f2" ASC'
+        EXPECTED_ORDERED_QUERY_ALL = EXPECTED_ORDERED_QUERY_ALL.format(col_pk, f0_pk, f1_pk, f2_pk, invertible)
+        self.assertEqual(ORDERED_QUERY_ALL.query.sql, EXPECTED_ORDERED_QUERY_ALL,
+                         "check that order queries are generated properly")
+        self.assertTupleEqual(ORDERED_QUERY_ALL.query.params, (),
+                              "check that order queries are generated properly")
+
         GOT_QUERY_F1_LIMIT, _ = self.collection.query(
             properties=[self.collection.get_property("f1")], limit=1, offset=2)
         EXPECTED_QUERY_F1_LIMIT = 'SELECT I.id as id,"T_f1".value as "property_value_f1","T_f1".id as "property_cid_f1" FROM mdh_data_item as I JOIN mdh_data_item_collections as CI ON I.id = CI.item_id AND CI.collection_id = {} LEFT OUTER JOIN mdh_data_standardint as "T_f1" ON I.id = "T_f1".item_id AND "T_f1".active AND "T_f1".prop_id = {} ORDER BY I.id LIMIT 1 OFFSET 2'

@@ -44,11 +44,13 @@ class QueryView(generics.ListAPIView):
 
         # read the filter
         filter = self.request.query_params.get('filter', None)
+        order = self.request.query_params.get('order', None)
 
         # store properties and queryset
         try:
             q, self._properties = self._collection.query(
-                limit=None, offset=None, properties=props, filter=filter)
+                limit=None, offset=None, properties=props, filter=filter, order=order,
+            )
         except QueryBuilderError as qe:
             raise QueryViewException(detail=qe)
 

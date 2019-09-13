@@ -24,7 +24,7 @@ class Command(BaseCommand):
                             help="Batch size for insert queries into the database. ")
 
     @with_simulate_arg
-    def handle(self, schema, data, provenance, quiet=False, simulate=False, batch_size=None, **kwargs):        
+    def handle(self, schema, data, provenance, quiet=False, simulate=False, batch_size=None, **kwargs):
         call_command('upsert_collection', schema, update=False, quiet=quiet)
 
         # get needed info from schema
