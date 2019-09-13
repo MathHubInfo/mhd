@@ -25,13 +25,15 @@ export default class ListAsArray<T> extends Codec<Array<T>, null> {
 
 class ListAsArrayCell<T> extends React.Component<TCellProps<ListAsArray<T>, Array<T>, null>> {
     render() {
-        const { value } = this.props;
+        const { codec, value } = this.props;
         if (value === null) return null;
-        
 
-        // TODO: for now
-        return <>
-            {JSON.stringify(value)}
+        // TODO: @kbercic fix rendering of this
+        const Cell = codec.elementCodec.cellComponent;
+        
+        return <>[
+            {value.map((x, i) => <><Cell key={i} codec={codec.elementCodec} value={x}/>, </>)}
+        ]
         </>;
     }
 }
