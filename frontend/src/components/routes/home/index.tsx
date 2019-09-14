@@ -125,7 +125,7 @@ export default class MDHHomePage extends React.Component<MDHHomePageProps, MDHHo
 
         // general info / description   
         const leftHead = <p>
-            MathDataHub is a system to provide universal infrastructure for Mathematical Data. 
+            MathHub Data is a system to provide universal infrastructure for Mathematical Data. 
             Select a collection to get started browsing. 
         </p>;
 
@@ -154,6 +154,6 @@ export default class MDHHomePage extends React.Component<MDHHomePageProps, MDHHo
             {shouldNextPage && <Button onClick={this.nextPage}>Next</Button>}
         </>;
         
-        return <MDHMain title="MathDataHub" leftHead={leftHead} buttons={buttons} rightHead={rightHead} />;
+        return <MDHMain title="Pick a dataset" leftHead={leftHead} buttons={buttons} rightHead={rightHead} />;
     }
 }

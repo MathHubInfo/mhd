@@ -28,11 +28,12 @@ class ListAsArrayCell<T> extends React.Component<TCellProps<ListAsArray<T>, Arra
         const { codec, value } = this.props;
         if (value === null) return null;
 
-        // TODO: @kbercic fix rendering of this
         const Cell = codec.elementCodec.cellComponent;
+        // TODO: hack
+        const separator = (i: number) => (i < value.length-1 ? ", " : "")
         
         return <>[
-            {value.map((x, i) => <><Cell key={i} codec={codec.elementCodec} value={x}/>, </>)}
+            {value.map((x, i) => <><Cell key={i} codec={codec.elementCodec} value={x}/>{separator(i)}</>)}
         ]
         </>;
     }

@@ -19,16 +19,16 @@ export default class MDHHeader extends React.Component<{}, MDHHeaderState> {
         const { isOpen } = this.state;
         return (
             <Navbar color="light" light expand="md">
-                <NavbarBrand href="/">MathDataHub</NavbarBrand>
+                <NavbarBrand href="/">MathHub Data</NavbarBrand>
                 <NavbarToggler onClick={this.toggle} />
                 <Collapse isOpen={isOpen} navbar>
                     <Nav className="ml-auto" navbar>
                         <NavItem>
-                            <NavLink tag={RouterNavLink} exact to="/">Home</NavLink>
+                        <NavLink href="https://github.com/MathHubInfo/Documentation/tree/master/data" className={"item-link"}>About</NavLink>
                         </NavItem>
                         <NavItem>
                             <NavLink href="https://github.com/MathHubInfo/mdh_django" className={"item-link"}>
-                                <i className="fab fa-github" data-fa-transform="grow-8"></i>
+                                <i className="fab fa-github"></i> GitHub
                             </NavLink>
                         </NavItem>
                     </Nav>

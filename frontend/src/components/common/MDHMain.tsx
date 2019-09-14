@@ -42,11 +42,11 @@ export class MDHMainHead extends React.Component<MDHMainHeadProps> {
         const { title, leftHead, buttons, rightHead } = this.props;
 
         return (
-            <section className={`bg-primary ${styles.search}`}>
+            <section className={`${styles.search}`}>
                 <Container>
                     <Row>
                         <Col lg="3" sm="12" className="mx-auto my-4">
-                            <h2 className="section-heading text-white">{title}</h2>                 
+                            <h2 className="section-heading">{title}</h2>                 
                             { leftHead }
                             <div className={styles.buttons}>{ buttons }</div>
                         </Col>
