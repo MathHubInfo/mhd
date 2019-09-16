@@ -24,7 +24,7 @@ export default class MDHHeader extends React.Component<{}, MDHHeaderState> {
                 <Collapse isOpen={isOpen} navbar>
                     <Nav className="ml-auto" navbar>
                         <NavItem>
-                        <NavLink href="https://github.com/MathHubInfo/Documentation/tree/master/data" className={"item-link"}>About</NavLink>
+                        <NavLink href="https://docs.mathhub.info/" className={"item-link"}>About</NavLink>
                         </NavItem>
                         <NavItem>
                             <NavLink href="https://github.com/MathHubInfo/mdh_django" className={"item-link"}>

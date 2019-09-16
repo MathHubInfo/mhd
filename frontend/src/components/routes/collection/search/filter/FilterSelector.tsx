@@ -126,7 +126,7 @@ type TFilterAction = {
         return(
             <div className={styles.searchFilter}>
                 <div className={styles.filterBox}>
-                    {selected.length === 0 && <p className="text-center my-3">Select filters</p>}
+                    {selected.length === 0 && <p className="text-center my-3">Select filters from the list on the left</p>}
                     <ul className="fa-ul">
                         {selected.map((filter, index) => (
                             <SelectedFilter key={filter.uid}
@@ -145,11 +145,11 @@ type TFilterAction = {
     render() {
         return (
             <>
-                <Col md="6" sm="12" className={`mx-auto my-4 ${styles.selectedFilters}`}>
-                    {this.renderSelected()}
-                </Col>
                 <Col md="6" sm="12" className={`mx-auto my-4 ${styles.availableFilters}`}>
                     {this.renderAvailable()}
+                </Col>
+                <Col md="6" sm="12" className={`mx-auto my-4 ${styles.selectedFilters}`}>
+                    {this.renderSelected()}
                 </Col>
             </>
         );
