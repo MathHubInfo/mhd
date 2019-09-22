@@ -1,6 +1,5 @@
 import React from 'react';
 import { Navbar, NavbarBrand, NavbarToggler, Collapse, Nav, NavItem, NavLink } from "reactstrap";
-import { NavLink as RouterNavLink } from "react-router-dom";
 
 interface MDHHeaderState {
     isOpen: boolean;
