@@ -63,22 +63,25 @@ export class MDHBackendClient {
     private parseCollection(collection: TMDHCollection): ParsedMDHCollection {
 
         const propMap = new Map<string, TMDHProperty>();
+        const nameMap = new Map<string, string>();
         const codecMap = new Map<string, Codec>();
-        const propertyColumns = new Map<string, TableColumn<TMDHItem<any>>>();
+        const columnMap = new Map<string, TableColumn<TMDHItem<any>>>();
 
-        const propertyNames = collection.properties.map(p => {
+        const propertySlugs = collection.properties.map(p => {
             const { slug, codec } = p;
 
             propMap.set(slug, p);
+            nameMap.set(slug, p.displayName);
 
             const c = this.manager.getWithFallback(codec);
             codecMap.set(slug, c);
-            propertyColumns.set(slug, c.makeReactTableColumn(p));
+            
+            columnMap.set(slug, c.makeReactTableColumn(p));
 
             return p.slug;
         });
 
-        return { propMap, propertyNames, codecMap, columnMap: propertyColumns,  ...collection };
+        return { propMap, nameMap, propertySlugs, codecMap, columnMap,  ...collection };
     }
 
     /** Fetches information about a set of collection items */
@@ -139,7 +142,7 @@ export class MDHBackendClient {
         const propName = (n: string) => (n.startsWith('+') || n.startsWith('-')) ? n.substring(1) : n;
         
         // find all the properties that we want to filter by in the appropriate order
-        return (order || collection.propertyNames)
+        return (order || collection.propertySlugs)
             .filter(n => properties.includes(propName(n))) // filter by queries properties
             .filter(n => collection.propMap.has(propName(n))) // filter by known properties
             .filter(n => collection.codecMap.get(propName(n))!.ordered) // filter by orderable properties

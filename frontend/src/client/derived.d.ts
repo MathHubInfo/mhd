@@ -8,8 +8,11 @@ export interface ParsedMDHCollection extends TMDHCollection {
     /** a map from slug to slug-schema */
     propMap: Map<string, TMDHProperty>
 
-    /* the names of all properties */
-    propertyNames: string[]
+    /** a map from slug to names */
+    nameMap: Map<string, string>
+
+    /* the slugs of all properties */
+    propertySlugs: string[]
 
     /** list of the instantiated codecs for this renderer */
     codecMap: Map<string, Codec<any, any>>
