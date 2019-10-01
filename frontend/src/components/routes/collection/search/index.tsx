@@ -45,7 +45,7 @@ class MDHCollectionSearch extends React.Component<MDHCollectionSearchProps, MDHC
         // restore the default state
         return {
             filters: [],
-            columns: this.props.collection.propertyNames.slice(),
+            columns: this.props.collection.propertySlugs.slice(),
             page: 0,
             per_page: 20,
             widths: undefined,

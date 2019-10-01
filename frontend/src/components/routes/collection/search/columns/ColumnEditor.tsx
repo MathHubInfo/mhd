@@ -57,7 +57,7 @@ export default class ColumnEditor extends Component<ColumnEditorProps, ColumnEdi
 
     private resetToDefaults = () => {
         this.setState({
-            selected: this.props.collection.propertyNames.slice(),
+            selected: this.props.collection.propertySlugs.slice(),
             applied: false,
         })
     }
@@ -71,7 +71,13 @@ export default class ColumnEditor extends Component<ColumnEditorProps, ColumnEdi
 
     /** gets the list of available columns */
     private getAvailable = () => {
-        return this.props.collection.propertyNames.filter(n => !this.state.selected.includes(n));
+        return this.props.collection.propertySlugs.filter(n => !this.state.selected.includes(n));
+    }
+
+    /** gets a name of property slugs based on display names */
+    private getPropertyNamesFromSlugs = (slugs: string[]): string[] => {
+        const { collection } = this.props;
+        return slugs.map(s => collection.nameMap.get(s)!);
     }
 
     /** handles dragging ending */
@@ -101,7 +107,12 @@ export default class ColumnEditor extends Component<ColumnEditorProps, ColumnEdi
 
     render() {
         const { expanded, selected, applied } = this.state;
+
+        const selectedNames = this.getPropertyNamesFromSlugs(selected);
+
         const available = this.getAvailable();
+        const availableNames = this.getPropertyNamesFromSlugs(available);
+
         return (
             <Row>
                 <Col>
@@ -113,8 +124,8 @@ export default class ColumnEditor extends Component<ColumnEditorProps, ColumnEdi
                         <Card body>
                             <CardText tag="div">
                                 <DragDropContext onDragEnd={this.handleDragEnd}>
-                                    <DroppableArea id="selected" caption="Selected columns" items={selected} />
-                                    <DroppableArea id="available" caption="Available columns" items={available} />
+                                    <DroppableArea id="selected" caption="Selected columns" items={selected} names={selectedNames} />
+                                    <DroppableArea id="available" caption="Available columns" items={available} names={availableNames} />
                                 </DragDropContext>
                             </CardText>
                             
@@ -145,6 +156,9 @@ interface DroppableAreaProps {
 
     /** items contained in the area */
     items: string[];
+
+    /** names of the items contained in the area */
+    names: (string | undefined)[]
 }
 
 /** Represents an area where items can be dragged and dropped to */
@@ -162,7 +176,7 @@ class DroppableArea extends Component<DroppableAreaProps> {
                             {...provided.droppableProps}
                         >
                             {this.props.items.map((item, index) => (
-                                <DraggableColumn key={item} index={index} item={item} />
+                                <DraggableColumn key={item} index={index} item={item} name={this.props.names[index]} />
                             ))}
                             {provided.placeholder}
                         </div>
@@ -185,8 +199,11 @@ interface DraggableColumnProps {
     /** the index of the column */
     index: number;
     
-    /** item this column represents */
+    /** item this column represents, used for all ids */
     item: string;
+
+    /** when provided, use this as name for content */
+    name?: string;
 }
 
 /**
@@ -194,8 +211,10 @@ interface DraggableColumnProps {
  */
 class DraggableColumn extends Component<DraggableColumnProps> {
     render() {
+        const { item, name, index } = this.props;
+
         return(
-            <Draggable draggableId={this.props.item} index={this.props.index}>
+            <Draggable draggableId={item} index={index}>
                 {(provided, snapshot) => (
                     <div
                         className={`btn btn-outline-secondary btn-sm ${styles.draggableItem}`}
@@ -207,7 +226,7 @@ class DraggableColumn extends Component<DraggableColumnProps> {
                             provided.draggableProps.style!
                         )}
                     >
-                        {this.props.item}
+                        {name || item}
                     </div>
                 )}
             </Draggable>
