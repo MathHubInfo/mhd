@@ -1,7 +1,7 @@
 import React, { ChangeEvent } from 'react';
 import style from './table.module.css';
 
-import ColumnResizer, { ColumnResizerOptions } from 'column-resizer';
+import ColumnResizer, { ColumnResizerOptions } from './column-resizer';
 import { Button, InputGroup, InputGroupAddon, Input } from "reactstrap";
 
 interface TableProps<D> extends TableState {
