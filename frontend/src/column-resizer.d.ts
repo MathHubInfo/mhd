@@ -26,5 +26,6 @@ declare module 'column-resizer' {
         constructor(tb: HTMLTableElement, options: Partial<ColumnResizerOptions>);
         tb: HTMLTableElement & {columns: HTMLTableHeaderCellElement[]}
         reset(options: Partial<ColumnResizerOptions>): ColumnResizerOptions
+        createStyle(element: HTMLElement, css: string): void
     } 
 }
