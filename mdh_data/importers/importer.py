@@ -14,7 +14,7 @@ class DataImporter(object):
         Does not yet support the update property
     """
 
-    def __init__(self, collection, properties, on_chunk_success=None, on_property_success=None, batch_size=100):
+    def __init__(self, collection, properties, on_chunk_success=None, on_property_success=None, on_log=None, batch_size=100):
         """ Creates a new data importer for the given collection and properties """
         self.collection = collection
         self.properties = properties
@@ -29,6 +29,11 @@ class DataImporter(object):
             self.on_property_success = lambda chunk, uuids, property: None
         else:
             self.on_property_success = on_property_success
+
+        if on_log is None:
+            self.on_log = lambda msg: None
+        else:
+            self.on_log = on_log
 
         self._validate_params()
 
@@ -88,7 +93,6 @@ class DataImporter(object):
                 self._import_chunk_property(chunk, items, p, idx, update=update)
                 self.on_property_success(chunk, uuids, p)
             except Exception as e:
-                raise
                 raise ImporterError('Unable to import property {}: {}'.format(p.slug, str(e)))
 
         # return the uuds
@@ -120,6 +124,7 @@ class DataImporter(object):
         value = model.populate_value(value)
         if value is None:
             return None
+
 
         return model(
             value=value,

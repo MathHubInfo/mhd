@@ -11,8 +11,6 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            'data', help=".json file containing 2-dimensional value array")
-        parser.add_argument(
             '--collection', '-c', help="Slug of collection to insert data into", required=True)
         parser.add_argument(
             '--fields', '-f', help="Comma-seperated list of property names", required=True)
@@ -24,6 +22,8 @@ class Command(BaseCommand):
                             help="Do not produce any output in case of success")
         parser.add_argument('--batch-size', '-b', type=int, default=100,
                             help="Batch size for insert queries into the database. ")
+        parser.add_argument(
+            'data', nargs='+', help=".json file containing 2-dimensional value array")
 
     def handle(self, *args, **kwargs):
 
@@ -41,6 +41,7 @@ class Command(BaseCommand):
             on_property_success=lambda chunk, uuids, prop: logger(
                 "Inserted {0:d} value(s) into cells for property {1:s}".format(len(uuids), prop.slug),
             ),
+            on_log=logger,
             batch_size=kwargs['batch_size']
         )
         importer(update=False, simulate=kwargs['simulate'])

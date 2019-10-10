@@ -13,9 +13,10 @@ class Command(BaseCommand):
         parser.add_argument(
             'schema', help='.json file containing collection schema')
         parser.add_argument(
-            'data', help=".json file containing 2-dimensional value array")
+            'data', nargs='+', help=".json file containing 2-dimensional value array")
         parser.add_argument(
             'provenance', help=".json file containing provenance to insert")
+
         parser.add_argument('--quiet', '-q', action='store_true',
                             help="Do not produce any output in case of success")
         parser.add_argument('--simulate', '-s', action="store_true",
@@ -34,5 +35,5 @@ class Command(BaseCommand):
         fields = ','.join([p['slug'] for p in schema_data['properties']])
 
         # insert the data in the collection
-        call_command('insert_data', data,  collection=collection_name,
+        call_command('insert_data', *data,  collection=collection_name,
                      fields=fields, provenance=provenance, quiet=quiet, batch_size=batch_size)
