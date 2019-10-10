@@ -8,7 +8,7 @@ def ListAsArrayCodec(elementCodec):
     """ A Codec Operator for Matrices as list """
 
     class CodecClass():
-        value = SmartNDArrayField(typ=elementCodec.get_value_field(), dim=1)
+        value = SmartNDArrayField(typ=elementCodec.get_value_field(), dim=1, null=True, blank=True)
 
     return CodecClass, 'ListAsArray_{}'.format(elementCodec.get_codec_name())
 
