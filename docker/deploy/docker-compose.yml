@@ -1,0 +1,28 @@
+version: '3.7'
+
+services:
+  mdh:
+    image: mathhub/mdh
+    ports:
+      - 8080:80
+    environment:
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+      DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS}
+      DJANGO_DB_ENGINE: "django.db.backends.postgresql"
+      DJANGO_DB_NAME: ${POSTGRES_DB}
+      DJANGO_DB_USER: ${POSTGRES_USER}
+      DJANGO_DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DJANGO_DB_HOST: postgres
+      DJANGO_DB_PORT: 5432
+    depends_on:
+      - postgres
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - "postgres:/var/lib/postgresql/data"
+
+volumes:
+  postgres:
