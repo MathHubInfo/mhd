@@ -11,10 +11,11 @@ from mdh.utils import check_field_value, get_standard_serializer_field
 class DumbNDArrayField(DumbJSONField):
     """ Stores values as an n-dimensional array """
 
-    def __init__(self, *args, typ=None, dim=1, **kwargs):
+    def __init__(self, *args, typ=None, dim=1, size=None, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.dim = int(dim)
+        self.size = size # ignored, but this might be set by some migrations
         if self.dim < 0:
             raise ValueError('dimension must be a positive integer')
 
@@ -52,6 +53,7 @@ class DumbNDArrayField(DumbJSONField):
         name, path, args, kwargs = super().deconstruct()
         kwargs['dim'] = self.dim
         kwargs['typ'] = self.typ
+        kwargs['size'] = self.size
         return name, path, args, kwargs
 
 
