@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.views import View
 
 from ..models import Item
@@ -9,17 +9,16 @@ from mdh_schema.models import Collection
 
 class FrontendProxyView(View):
     def get(self, request, *args, **kwargs):
-        found = self.is_found(request, *args, **kwargs)
+        if not self.is_found(request, *args, **kwargs):
+            raise Http404
 
         res = HttpResponse()
-        res['X-Accel-Redirect'] = '/frontend/' if found else '/frontend/404/'
+        res['X-Sendfile'] = '/index.html'
 
         # in debugging mode, print a message to show what is expected to happen
         if settings.DEBUG:
             res['Content-Type'] = 'text/html'
-            status = 200 if found else 404
-            res.write('X-Accel-Redirect {}<br/>(In production nginx will replace this by index.html with code {})'.format(
-                res['X-Accel-Redirect'], status))
+            res.write('X-Sendfile /index.html<br/>(In production this will be replaced with index.html')
 
         return res
 

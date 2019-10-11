@@ -11,7 +11,7 @@ urlpatterns = [
     path('api/schema/', include(schema_router.urls)),
     path('admin/', admin.site.urls),
 
-    # frontend-served urls, one for nginx
+    # frontend-served urls, caught by uwsgi in production
     path('collection/<slug:cid>/', FrontendCollectionView.as_view()),
     path('item/<slug:cid>/<slug:uuid>/', FrontendItemView.as_view()),
     path('', FrontendHomeView.as_view())

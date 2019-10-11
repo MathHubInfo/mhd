@@ -7,21 +7,17 @@ RUN yarn && yarn build
 # Stage 2: Build the backend + add the frontend to it
 FROM python:3.7-alpine
 
-# Install nginx and configuration
-RUN apk add --no-cache nginx \
-    && mkdir -p /run/nginx/
-
 # Add requirements and install dependencies
 WORKDIR /app/
 ADD requirements.txt /app/
+ADD requirements-prod.txt /app/
 
 # Add the entrypoint and add configuration
 RUN mkdir -p /var/www/admin/static/ \
-    && apk add --no-cache postgresql-libs \
-    && apk add --no-cache --virtual .build-deps gcc musl-dev postgresql-dev \
-    && pip install -r requirements.txt --no-cache-dir \
-    && apk --purge del .build-deps \
-    && pip install gunicorn==19.7 --no-cache-dir
+    && apk add --no-cache postgresql-libs pcre-dev mailcap \
+    && apk add --no-cache --virtual .build-deps gcc musl-dev postgresql-dev linux-headers python3-dev \
+    && pip install -r requirements.txt -r requirements-prod.txt --no-cache-dir \
+    && apk --purge del .build-deps
 
 # Install Django App, configure settings and copy over djano app
 ADD manage.py /app/
@@ -48,12 +44,13 @@ ENV DJANGO_DB_PORT ""
 RUN DJANGO_SECRET_KEY=setup python manage.py collectstatic --noinput
 COPY --from=frontend /app/frontend/build /var/www/frontend/build
 
-# Add nginx and entrypoint
-ADD docker/mdh.conf /etc/nginx/mdh.conf
+# Add uwsgi config and entrypoint
 ADD docker/entrypoint.sh /entrypoint.sh
+ADD docker/uwsgi.ini /uwsgi.ini
 
 # Volume and ports
 VOLUME /data/
 EXPOSE 80
 
 ENTRYPOINT ["/entrypoint.sh"]
+CMD ["uwsgi", "--ini", "/uwsgi.ini"]

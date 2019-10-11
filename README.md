@@ -105,7 +105,7 @@ This Code Exposes the following urls:
     - `/api/schema/codecs/$name` -- Get a specific codec
 - `/admin/` -- Admin interface
     - `/admin/static/` -- staticfiles used for the admin interface
-- `/` and `/$collection/` -- Matches frontend routes and returns appropriate headers for nginx (see below). 
+- `/`, `/collection/$collection/` and `/item/$collection/$uuid` -- Matches frontend routes and returns appropriate `X-Sendfile` when the object exists (see below)
 
 ### Main Querying Syntax
 
@@ -204,12 +204,15 @@ To achieve the url structure expected by the frontend, we need to serve the back
 To achieve this we
 - generate a static build of the frontend repository; 
 - collect all the static files needed by the backend; and
-- start the Django app using [gunicorn](https://gunicorn.org/).
+- start the Django app using [uwsgi](http://projects.unbit.it/uwsgi).
 
-We then use [NGINX](https://www.nginx.com/) to delegate appropriatly. 
+The uwsgi config used to achieve this can be found in [docker/uwsgi.ini](docker/uwsgi.ini). 
+For every request it then switches appropriately between:
+- sending a static file (this is in two seperate locations, one for the frontend build and one for the backend)
+- directly forwarding the API response from the backend
+- checking if the object referenced by the url exists, and if so return `index.html` and else a 404 error page.
 
-The nginx config used to achieve this can be found in [docker/mdh.conf](docker/mdh.conf). 
-In addition to the procedure described here, it also uses an [X-Accel-Redirect](https://www.nginx.com/resources/wiki/start/topics/examples/x-accel/) returned by the backend to detect if the `/$collection/` url implemented by the frontend should return an HTTP Status of 404 or not. 
+To achieve the latter, uwsgi intercepts the [X-Sendfile](https://www.nginx.com/resources/wiki/start/topics/examples/x-accel/) returned by the backend to detect if the appropriate object exists or not. 
 
 
 This repository contains a `Dockerfile` to enable deployment using [Docker](https://www.docker.com/). 
