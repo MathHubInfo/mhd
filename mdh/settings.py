@@ -31,7 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'mdh_schema',
+    'mhd_schema',
     'mdh_data',
     'mdh_provenance',
     'mddl_catalog',

@@ -2,7 +2,7 @@ import json
 
 from django.core.management.base import BaseCommand
 import argparse
-from mdh_schema.models import Collection
+from mhd_schema.models import Collection
 
 
 def nonnegative(value):

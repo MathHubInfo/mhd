@@ -4,7 +4,7 @@ from collections import deque
 
 from .importer import DataImporter, ImporterError
 
-from mdh_schema.models import Collection
+from mhd_schema.models import Collection
 from mdh_provenance.models import Provenance
 
 class JSONFileImporter(DataImporter):

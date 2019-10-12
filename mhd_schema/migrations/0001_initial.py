@@ -31,7 +31,7 @@ class Migration(migrations.Migration):
                 ('displayName', models.TextField(help_text='Display Name for this property')),
                 ('slug', models.SlugField(help_text='Identifier of this Collection')),
                 ('codec', models.SlugField(help_text='Name of the codec table that stores this property ')),
-                ('collections', models.ManyToManyField(blank=True, help_text='Collection(s) this property occurs in', to='mdh_schema.Collection')),
+                ('collections', models.ManyToManyField(blank=True, help_text='Collection(s) this property occurs in', to='mhd_schema.Collection')),
             ],
             options={
                 'abstract': False,

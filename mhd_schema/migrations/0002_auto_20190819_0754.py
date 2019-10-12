@@ -7,7 +7,7 @@ import mdh_data.fields.json
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('mdh_schema', '0001_initial'),
+        ('mhd_schema', '0001_initial'),
     ]
 
     operations = [

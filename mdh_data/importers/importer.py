@@ -4,7 +4,7 @@ from mdh.utils import with_simulate_arg
 
 from mdh_data.models import Item
 from mdh_provenance.models import Provenance
-from mdh_schema.models import Collection, Property
+from mhd_schema.models import Collection, Property
 
 
 class DataImporter(object):

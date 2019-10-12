@@ -19,7 +19,7 @@ The top-level structure of this repository consists of a standard [Django](https
 There are six apps:
 
 - `mdh`: The main entry point. Contains a `utils/` package used by other apps. 
-- `mdh_schema`: Stores schema of MDH data. Home of the `Collection` and `Property` tables. 
+- `mhd_schema`: Stores schema of MDH data. Home of the `Collection` and `Property` tables. 
 - `mdh_data`: Stores all concrete MDH data. Home of the `Item` and all `Codec` tables. 
 - `mdh_provenance`: Stores meta-information about MDH data. Home of the `Provenance` tables. 
 - `mdh_test`: Test-only app for specific test models

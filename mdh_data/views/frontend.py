@@ -4,7 +4,7 @@ from django.views import View
 
 from ..models import Item
 
-from mdh_schema.models import Collection
+from mhd_schema.models import Collection
 
 
 class FrontendProxyView(View):

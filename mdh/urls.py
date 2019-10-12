@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import include, path
 
-from mdh_schema.router import router as schema_router
+from mhd_schema.router import router as schema_router
 from mdh_data.views.frontend import FrontendHomeView, FrontendCollectionView, FrontendItemView
 from mdh_data.views.api import QueryView, ItemView
 

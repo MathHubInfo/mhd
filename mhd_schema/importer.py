@@ -1,6 +1,6 @@
 from mdh.utils import with_simulate_arg
 
-from mdh_schema.models import Collection, Property
+from mhd_schema.models import Collection, Property
 from mdh_data.models import CodecManager
 
 

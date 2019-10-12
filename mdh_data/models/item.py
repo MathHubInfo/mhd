@@ -4,7 +4,7 @@ from django.db import models
 from rest_framework import serializers
 
 from mdh.utils import uuid4
-from mdh_schema.models import Collection
+from mhd_schema.models import Collection
 
 class Item(models.Model):
     """ Any Item in Any Collection """

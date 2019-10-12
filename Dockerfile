@@ -24,7 +24,7 @@ ADD manage.py /app/
 ADD mdh/ /app/mdh/
 ADD mdh_data/ /app/mdh_data/
 ADD mdh_provenance/ /app/mdh_provenance/
-ADD mdh_schema/ /app/mdh_schema/
+ADD mhd_schema/ /app/mhd_schema/
 ADD mhd_tests/ /app/mhd_tests/
 ADD mddl_catalog/ /app/mddl_catalog/
 
