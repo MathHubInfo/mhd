@@ -21,7 +21,7 @@ There are six apps:
 - `mdh`: The main entry point. Contains a `utils/` package used by other apps. 
 - `mhd_schema`: Stores schema of MDH data. Home of the `Collection` and `Property` tables. 
 - `mdh_data`: Stores all concrete MDH data. Home of the `Item` and all `Codec` tables. 
-- `mdh_provenance`: Stores meta-information about MDH data. Home of the `Provenance` tables. 
+- `mhd_provenance`: Stores meta-information about MDH data. Home of the `Provenance` tables. 
 - `mdh_test`: Test-only app for specific test models
 - `mddl_catalog`: Catalog of specific MDDL items, currently only codecs. 
 

@@ -3,7 +3,7 @@ from uuid import uuid4
 from mdh.utils import with_simulate_arg
 
 from mdh_data.models import Item
-from mdh_provenance.models import Provenance
+from mhd_provenance.models import Provenance
 from mhd_schema.models import Collection, Property
 
 

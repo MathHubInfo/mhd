@@ -33,7 +33,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'mhd_schema',
     'mdh_data',
-    'mdh_provenance',
+    'mhd_provenance',
     'mddl_catalog',
     'rest_framework',
     'django.contrib.admin',

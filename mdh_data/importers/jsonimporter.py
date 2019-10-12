@@ -5,7 +5,7 @@ from collections import deque
 from .importer import DataImporter, ImporterError
 
 from mhd_schema.models import Collection
-from mdh_provenance.models import Provenance
+from mhd_provenance.models import Provenance
 
 class JSONFileImporter(DataImporter):
     """ An importer that loads data from a set of json files """

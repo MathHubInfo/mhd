@@ -1,7 +1,7 @@
 from django.apps import apps
 from django.db import models, connection
 
-from mdh_provenance.models import Provenance
+from mhd_provenance.models import Provenance
 from mhd_schema.models import Property
 from mdh.utils import uuid4, memoized_method
 

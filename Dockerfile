@@ -23,7 +23,7 @@ RUN mkdir -p /var/www/admin/static/ \
 ADD manage.py /app/
 ADD mdh/ /app/mdh/
 ADD mdh_data/ /app/mdh_data/
-ADD mdh_provenance/ /app/mdh_provenance/
+ADD mhd_provenance/ /app/mhd_provenance/
 ADD mhd_schema/ /app/mhd_schema/
 ADD mhd_tests/ /app/mhd_tests/
 ADD mddl_catalog/ /app/mddl_catalog/

@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('metadatastring', models.TextField(blank=True, help_text='Metadata associated to this object', null=True)),
                 ('time', models.DateTimeField(auto_now_add=True, help_text='Time at which this provenance was created')),
-                ('predecessor', models.ForeignKey(blank=True, help_text='Previous provenance', null=True, on_delete=django.db.models.deletion.SET_NULL, to='mdh_provenance.Provenance')),
+                ('predecessor', models.ForeignKey(blank=True, help_text='Previous provenance', null=True, on_delete=django.db.models.deletion.SET_NULL, to='mhd_provenance.Provenance')),
             ],
             options={
                 'abstract': False,
