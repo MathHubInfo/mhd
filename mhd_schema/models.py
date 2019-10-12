@@ -42,8 +42,8 @@ class Collection(ModelWithMetadata):
         """
 
         # lazy import
-        from mdh_data.models import Item
-        from mdh_data.querybuilder import QueryBuilder
+        from mhd_data.models import Item
+        from mhd_data.querybuilder import QueryBuilder
 
         # SELECT I.id FROM
 
@@ -54,9 +54,9 @@ class Collection(ModelWithMetadata):
         # T_prop1.value as prop1_value, T_prop1.id as prop1_cid,
         # T_prop2.value as prop2_value, T_prop2.id as prop2_cid
         #
-        # FROM mdh_data_item as I
+        # FROM mhd_data_item as I
         #
-        # JOIN mdh_data_item_collection as CI
+        # JOIN mhd_data_item_collection as CI
         # ON I.id = CI.item_id AND CI.collection_id = ${collection_id}
         #
         # LEFT OUTER JOIN Codec1 as T_prop1
@@ -185,7 +185,7 @@ class Property(ModelWithMetadata):
     @property
     def codec_model(self):
         """ Returns the Codec Model belonging to this Property or None """
-        from mdh_data.models import CodecManager
+        from mhd_data.models import CodecManager
 
         model = CodecManager.find_codec(self.codec)
         if model is None:

@@ -1,6 +1,6 @@
 from django.db import models
-from mdh_data.fields.json import DumbJSONField, SmartJSONField
-from mdh_data.fields.ndarray import DumbNDArrayField, SmartNDArrayField
+from mhd_data.fields.json import DumbJSONField, SmartJSONField
+from mhd_data.fields.ndarray import DumbNDArrayField, SmartNDArrayField
 
 
 class DumbJSONFieldModel(models.Model):

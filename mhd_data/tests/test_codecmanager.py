@@ -33,7 +33,7 @@ class CodecManagerTest(TestCase):
                          msg="finds the StandardInt codec by name")
 
         # not finding existing codec
-        self.assertIsNone(CodecManager.find_codec("mdh_data_standardint"),
+        self.assertIsNone(CodecManager.find_codec("mhd_data_standardint"),
                          msg="does not the StandardInt codec by table name")
         self.assertIsNone(CodecManager.find_codec("standardint"),
                         msg="does not the StandardInt codec by normalized name")

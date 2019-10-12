@@ -3,7 +3,7 @@ import sys
 
 from django.core.management.base import BaseCommand
 
-from mdh_data.importers import JSONFileImporter
+from mhd_data.importers import JSONFileImporter
 
 
 class Command(BaseCommand):

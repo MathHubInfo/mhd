@@ -3,7 +3,7 @@
 from django.db import migrations, models
 import django.db.models.deletion
 import mdh.utils.uuid
-import mdh_data.fields.ndarray
+import mhd_data.fields.ndarray
 
 
 class Migration(migrations.Migration):
@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
     dependencies = [
         ('mhd_provenance', '0001_initial'),
         ('mhd_schema', '0001_initial'),
-        ('mdh_data', '0004_standardjson'),
+        ('mhd_data', '0004_standardjson'),
     ]
 
     operations = [
@@ -20,11 +20,11 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.UUIDField(default=mdh.utils.uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('active', models.BooleanField(default=True, help_text='Is this item active')),
-                ('value', mdh_data.fields.ndarray.SmartNDArrayField(dim=1, typ=models.IntegerField())),
-                ('item', models.ForeignKey(help_text='Item this this cell represents', on_delete=django.db.models.deletion.CASCADE, to='mdh_data.Item')),
+                ('value', mhd_data.fields.ndarray.SmartNDArrayField(dim=1, typ=models.IntegerField())),
+                ('item', models.ForeignKey(help_text='Item this this cell represents', on_delete=django.db.models.deletion.CASCADE, to='mhd_data.Item')),
                 ('prop', models.ForeignKey(help_text='Property this cell represents', on_delete=django.db.models.deletion.CASCADE, to='mhd_schema.Property')),
                 ('provenance', models.ForeignKey(help_text='Provenance of this cell', on_delete=django.db.models.deletion.CASCADE, to='mhd_provenance.Provenance')),
-                ('superseeded_by', models.ForeignKey(blank=True, help_text='Cell this value is superseeded by', null=True, on_delete=django.db.models.deletion.SET_NULL, to='mdh_data.PolynomialAsSparseArray')),
+                ('superseeded_by', models.ForeignKey(blank=True, help_text='Cell this value is superseeded by', null=True, on_delete=django.db.models.deletion.SET_NULL, to='mhd_data.PolynomialAsSparseArray')),
             ],
             options={
                 'abstract': False,
@@ -36,11 +36,11 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.UUIDField(default=mdh.utils.uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('active', models.BooleanField(default=True, help_text='Is this item active')),
-                ('value', mdh_data.fields.ndarray.SmartNDArrayField(dim=1, typ=models.IntegerField())),
-                ('item', models.ForeignKey(help_text='Item this this cell represents', on_delete=django.db.models.deletion.CASCADE, to='mdh_data.Item')),
+                ('value', mhd_data.fields.ndarray.SmartNDArrayField(dim=1, typ=models.IntegerField())),
+                ('item', models.ForeignKey(help_text='Item this this cell represents', on_delete=django.db.models.deletion.CASCADE, to='mhd_data.Item')),
                 ('prop', models.ForeignKey(help_text='Property this cell represents', on_delete=django.db.models.deletion.CASCADE, to='mhd_schema.Property')),
                 ('provenance', models.ForeignKey(help_text='Provenance of this cell', on_delete=django.db.models.deletion.CASCADE, to='mhd_provenance.Provenance')),
-                ('superseeded_by', models.ForeignKey(blank=True, help_text='Cell this value is superseeded by', null=True, on_delete=django.db.models.deletion.SET_NULL, to='mdh_data.MatrixAsList_StandardInt_2_2')),
+                ('superseeded_by', models.ForeignKey(blank=True, help_text='Cell this value is superseeded by', null=True, on_delete=django.db.models.deletion.SET_NULL, to='mhd_data.MatrixAsList_StandardInt_2_2')),
             ],
             options={
                 'abstract': False,
@@ -52,11 +52,11 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.UUIDField(default=mdh.utils.uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('active', models.BooleanField(default=True, help_text='Is this item active')),
-                ('value', mdh_data.fields.ndarray.SmartNDArrayField(dim=1, typ=models.IntegerField())),
-                ('item', models.ForeignKey(help_text='Item this this cell represents', on_delete=django.db.models.deletion.CASCADE, to='mdh_data.Item')),
+                ('value', mhd_data.fields.ndarray.SmartNDArrayField(dim=1, typ=models.IntegerField())),
+                ('item', models.ForeignKey(help_text='Item this this cell represents', on_delete=django.db.models.deletion.CASCADE, to='mhd_data.Item')),
                 ('prop', models.ForeignKey(help_text='Property this cell represents', on_delete=django.db.models.deletion.CASCADE, to='mhd_schema.Property')),
                 ('provenance', models.ForeignKey(help_text='Provenance of this cell', on_delete=django.db.models.deletion.CASCADE, to='mhd_provenance.Provenance')),
-                ('superseeded_by', models.ForeignKey(blank=True, help_text='Cell this value is superseeded by', null=True, on_delete=django.db.models.deletion.SET_NULL, to='mdh_data.ListAsArray_StandardInt')),
+                ('superseeded_by', models.ForeignKey(blank=True, help_text='Cell this value is superseeded by', null=True, on_delete=django.db.models.deletion.SET_NULL, to='mhd_data.ListAsArray_StandardInt')),
             ],
             options={
                 'abstract': False,

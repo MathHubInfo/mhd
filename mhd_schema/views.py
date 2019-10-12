@@ -1,13 +1,13 @@
 from django.http import Http404
 from rest_framework import response, serializers, viewsets
 
-from mdh_data.models import CodecManager
+from mhd_data.models import CodecManager
 
 from .models import Collection
 from django.http import Http404
 from rest_framework import response, serializers, viewsets
 
-from mdh_data.models import CodecManager
+from mhd_data.models import CodecManager
 
 from .models import Collection, Property
 

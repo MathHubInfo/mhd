@@ -20,7 +20,7 @@ There are six apps:
 
 - `mdh`: The main entry point. Contains a `utils/` package used by other apps. 
 - `mhd_schema`: Stores schema of MDH data. Home of the `Collection` and `Property` tables. 
-- `mdh_data`: Stores all concrete MDH data. Home of the `Item` and all `Codec` tables. 
+- `mhd_data`: Stores all concrete MDH data. Home of the `Item` and all `Codec` tables. 
 - `mhd_provenance`: Stores meta-information about MDH data. Home of the `Provenance` tables. 
 - `mdh_test`: Test-only app for specific test models
 - `mddl_catalog`: Catalog of specific MDDL items, currently only codecs. 
@@ -187,8 +187,8 @@ To manually enable for local development add `USE_TEST_APP = True` to `mdh/local
 After setting up the project (see Project Structure and Setup), run the following two commands (to create the collection and to insert data).
 
 ```bash
-python manage.py upsert_collection mdh_data/tests/res/z3z_collection.json
-python manage.py insert_data mdh_data/tests/res/z3z_data.json -c "z3zFunctions" -f "f0,f1,f2,invertible" -p mdh_data/tests/res/z3z_provenance.json
+python manage.py upsert_collection mhd_data/tests/res/z3z_collection.json
+python manage.py insert_data mhd_data/tests/res/z3z_data.json -c "z3zFunctions" -f "f0,f1,f2,invertible" -p mhd_data/tests/res/z3z_provenance.json
 ```
 Here is an example of a query URL:
 

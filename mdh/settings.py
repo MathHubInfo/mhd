@@ -32,7 +32,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'mhd_schema',
-    'mdh_data',
+    'mhd_data',
     'mhd_provenance',
     'mddl_catalog',
     'rest_framework',

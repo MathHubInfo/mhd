@@ -22,7 +22,7 @@ RUN mkdir -p /var/www/admin/static/ \
 # Install Django App, configure settings and copy over djano app
 ADD manage.py /app/
 ADD mdh/ /app/mdh/
-ADD mdh_data/ /app/mdh_data/
+ADD mhd_data/ /app/mhd_data/
 ADD mhd_provenance/ /app/mhd_provenance/
 ADD mhd_schema/ /app/mhd_schema/
 ADD mhd_tests/ /app/mhd_tests/

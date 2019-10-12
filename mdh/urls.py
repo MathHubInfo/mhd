@@ -2,8 +2,8 @@ from django.contrib import admin
 from django.urls import include, path
 
 from mhd_schema.router import router as schema_router
-from mdh_data.views.frontend import FrontendHomeView, FrontendCollectionView, FrontendItemView
-from mdh_data.views.api import QueryView, ItemView
+from mhd_data.views.frontend import FrontendHomeView, FrontendCollectionView, FrontendItemView
+from mhd_data.views.api import QueryView, ItemView
 
 urlpatterns = [
     path('api/query/<slug:cid>/', QueryView.as_view()),

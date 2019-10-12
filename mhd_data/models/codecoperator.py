@@ -42,10 +42,10 @@ def _make_applied_codec_operator(clz, name):
 
     # create a new Meta-class which inherits from the above two
     class Meta(Codec.Meta, CodecMeta):
-        app_label = 'mdh_data'
+        app_label = 'mhd_data'
 
     # setup the property dictionary
-    attrs = {'__module__': 'mdh_data.models.codecs', 'Meta': Meta}
+    attrs = {'__module__': 'mhd_data.models.codecs', 'Meta': Meta}
     attrs.update(clz)
 
     # create the new class

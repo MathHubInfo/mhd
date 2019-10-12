@@ -7,7 +7,7 @@ import mdh.utils.uuid
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('mdh_data', '0002_auto_20190807_1314'),
+        ('mhd_data', '0002_auto_20190807_1314'),
     ]
 
     operations = [

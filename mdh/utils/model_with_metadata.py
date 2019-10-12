@@ -1,5 +1,5 @@
 from django.db import models
-from mdh_data.fields.json import SmartJSONField
+from mhd_data.fields.json import SmartJSONField
 
 
 class ModelWithMetadata(models.Model):
