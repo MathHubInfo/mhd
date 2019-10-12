@@ -1,6 +1,6 @@
 # MathHubData
 
-[![Build Status](https://travis-ci.org/MathHubInfo/mhd.svg?branch=master)](https://travis-ci.org/MathHubInfo/mhd). 
+[![Build Status](https://travis-ci.com/MathHubInfo/mhd.svg?branch=master)](https://travis-ci.com/MathHubInfo/mhd). 
 
 MathHubData is a system to provide universal infrastructure for Mathematical Data. 
 See the paper [Towards a Unified Mathematical Data Infrastructure: Database and Interface Generation](https://kwarc.info/people/mkohlhase/papers/cicm19-MDH.pdf)
