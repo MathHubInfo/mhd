@@ -5,7 +5,7 @@ from django.core.management import call_command
 
 from ..models import Collection
 
-from mdh_tests.utils import LoadJSONAsset, AssetPath
+from mhd_tests.utils import LoadJSONAsset, AssetPath
 
 COLLECTION_V0_PATH = AssetPath(__file__, "res", "collection_v0.json")
 COLLECTION_V0_ASSET = LoadJSONAsset(COLLECTION_V0_PATH)

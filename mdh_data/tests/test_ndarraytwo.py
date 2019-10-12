@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from mdh_tests.models import DumbNDArrayTwoModel, SmartNDArrayTwoModel
+from mhd_tests.models import DumbNDArrayTwoModel, SmartNDArrayTwoModel
 
 from .storage import StorageSuite
 

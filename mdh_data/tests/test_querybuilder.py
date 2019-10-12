@@ -3,7 +3,7 @@ from django.test import TestCase
 
 from .collection import insert_testing_data
 
-from mdh_tests.utils import AssetPath
+from mhd_tests.utils import AssetPath
 
 Z3Z_COLLECTION_PATH = AssetPath(__file__, "res", "z3z_collection.json")
 Z3Z_PROVENANCE_PATH = AssetPath(__file__, "res", "z3z_provenance.json")

@@ -1,8 +1,8 @@
 from django.contrib.postgres.fields import JSONField
 from django.test import TestCase
 
-from mdh_tests.models import DumbJSONFieldModel, SmartJSONFieldModel
-from mdh_tests.utils import db
+from mhd_tests.models import DumbJSONFieldModel, SmartJSONFieldModel
+from mhd_tests.utils import db
 
 from ..fields.json import DumbJSONField, SmartJSONField
 from .storage import StorageSuite

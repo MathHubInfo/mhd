@@ -2,7 +2,7 @@ import json
 
 from django.test import TestCase
 
-from mdh_tests.utils import AssetPath, LoadJSONAsset
+from mhd_tests.utils import AssetPath, LoadJSONAsset
 
 from .collection import insert_testing_data
 

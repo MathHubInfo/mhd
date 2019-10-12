@@ -1,7 +1,7 @@
 from django.test import TestCase
 from rest_framework.test import APIClient
 
-from mdh_tests.utils import AssetPath
+from mhd_tests.utils import AssetPath
 
 from .collection import insert_testing_data
 

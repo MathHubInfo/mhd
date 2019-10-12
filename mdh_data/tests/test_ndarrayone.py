@@ -1,7 +1,7 @@
 from django.test import TestCase
 
-from mdh_tests.models import DumbNDArrayOneModel, SmartNDArrayOneModel
-from mdh_tests.utils import db
+from mhd_tests.models import DumbNDArrayOneModel, SmartNDArrayOneModel
+from mhd_tests.utils import db
 
 from ..fields.ndarray import (DumbNDArrayField, PostgresNDArrayField,
                               SmartNDArrayField)

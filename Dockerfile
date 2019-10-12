@@ -25,7 +25,7 @@ ADD mdh/ /app/mdh/
 ADD mdh_data/ /app/mdh_data/
 ADD mdh_provenance/ /app/mdh_provenance/
 ADD mdh_schema/ /app/mdh_schema/
-ADD mdh_tests/ /app/mdh_tests/
+ADD mhd_tests/ /app/mhd_tests/
 ADD mddl_catalog/ /app/mddl_catalog/
 
 ### ALL THE CONFIGURATION

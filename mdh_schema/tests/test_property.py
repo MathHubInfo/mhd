@@ -2,7 +2,7 @@ from django.core.management import call_command
 from django.test import TestCase
 
 from mdh_data.models import StandardBool, StandardInt
-from mdh_tests.utils import AssetPath
+from mhd_tests.utils import AssetPath
 
 from ..models import Collection
 

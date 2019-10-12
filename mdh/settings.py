@@ -177,4 +177,4 @@ except ImportError:
 
 # when set to true, enable the test app
 if USE_TEST_APP:
-    INSTALLED_APPS.append('mdh_tests')
+    INSTALLED_APPS.append('mhd_tests')

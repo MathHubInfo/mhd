@@ -2,4 +2,4 @@ from django.apps import AppConfig
 
 
 class MdhTestsConfig(AppConfig):
-    name = 'mdh_tests'
+    name = 'mhd_tests'

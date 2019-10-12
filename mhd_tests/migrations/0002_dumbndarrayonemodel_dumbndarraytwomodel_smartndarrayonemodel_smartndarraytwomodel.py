@@ -7,7 +7,7 @@ import mdh_data.fields.ndarray
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('mdh_tests', '0001_initial'),
+        ('mhd_tests', '0001_initial'),
     ]
 
     operations = [
