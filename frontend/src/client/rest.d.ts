@@ -1,6 +1,6 @@
 /** @file contains types directly returned from the REST API */
 
-/** a MathDataHub Collection */
+/** a MathHubData Collection */
 export interface TMDHCollection {
     slug: string;
     displayName: string;
@@ -13,7 +13,7 @@ export interface TMDHCollection {
     properties: TMDHProperty[];
 }
 
-/** a MathDataHub Property */
+/** a MathHubData Property */
 export interface TMDHProperty {
     slug: string;
     displayName: string;

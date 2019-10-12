@@ -1,12 +1,12 @@
-# MathDataHub Django
+# MathHubData
 
 [![Build Status](https://travis-ci.org/MathHubInfo/mhd.svg?branch=master)](https://travis-ci.org/MathHubInfo/mhd). 
 
-MathDataHub is a system to provide universal infrastructure for Mathematical Data. 
+MathHubData is a system to provide universal infrastructure for Mathematical Data. 
 See the paper [Towards a Unified Mathematical Data Infrastructure: Database and Interface Generation](https://kwarc.info/people/mkohlhase/papers/cicm19-MDH.pdf)
 for more details. 
 
-This repository contains the MathDataHub Implementation consisting of a [Django](https://www.djangoproject.com/)-powered backend and [create-react-app](https://github.com/facebook/create-react-app)-powered frontend. 
+This repository contains the MathHubData Implementation consisting of a [Django](https://www.djangoproject.com/)-powered backend and [create-react-app](https://github.com/facebook/create-react-app)-powered frontend. 
 
 This README contains backend information, the frontend can be found in the `frontend/` sub-folder. 
 See [frontend/README.md](frontend/README.md) for more details. 
@@ -37,7 +37,7 @@ pip install -r requirements.txt
 
 ## Development
 
-By default, MathDataHub uses an `sqlite` database. 
+By default, MathHubData uses an `sqlite` database. 
 To get started, you can run the initial migrations:
 
 ```bash

@@ -3,4 +3,4 @@ from django.apps import AppConfig
 
 class MdhDataConfig(AppConfig):
     name = 'mhd_data'
-    verbose_name = 'MathDataHub Data'
+    verbose_name = 'MathHubData Data'

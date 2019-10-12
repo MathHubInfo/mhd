@@ -9,7 +9,7 @@ from mhd_schema.models import Collection, Property
 
 class DataImporter(object):
     """
-        A Data Importer is an abstraction for importing data into MathDataHub.
+        A Data Importer is an abstraction for importing data into MathHubData.
 
         Does not yet support the update property
     """
