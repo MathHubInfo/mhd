@@ -1,5 +1,5 @@
 
-from mdh.utils import ModelWithMetadata
+from mhd.utils import ModelWithMetadata
 from django.db import models
 
 

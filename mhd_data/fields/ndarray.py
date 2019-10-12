@@ -5,7 +5,7 @@ from django.db import connection
 
 from django.contrib.postgres.fields import ArrayField
 
-from mdh.utils import check_field_value, get_standard_serializer_field
+from mhd.utils import check_field_value, get_standard_serializer_field
 
 
 class DumbNDArrayField(DumbJSONField):

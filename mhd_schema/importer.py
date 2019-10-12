@@ -1,4 +1,4 @@
-from mdh.utils import with_simulate_arg
+from mhd.utils import with_simulate_arg
 
 from mhd_schema.models import Collection, Property
 from mhd_data.models import CodecManager

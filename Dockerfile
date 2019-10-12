@@ -21,7 +21,7 @@ RUN mkdir -p /var/www/admin/static/ \
 
 # Install Django App, configure settings and copy over djano app
 ADD manage.py /app/
-ADD mdh/ /app/mdh/
+ADD mhd/ /app/mhd/
 ADD mhd_data/ /app/mhd_data/
 ADD mhd_provenance/ /app/mhd_provenance/
 ADD mhd_schema/ /app/mhd_schema/
@@ -30,11 +30,11 @@ ADD mddl_catalog/ /app/mddl_catalog/
 
 ### ALL THE CONFIGURATION
 
-ENV DJANGO_SETTINGS_MODULE "mdh.docker_settings"
+ENV DJANGO_SETTINGS_MODULE "mhd.docker_settings"
 ENV DJANGO_SECRET_KEY ""
 ENV DJANGO_ALLOWED_HOSTS "localhost"
 ENV DJANGO_DB_ENGINE "django.db.backends.sqlite3"
-ENV DJANGO_DB_NAME "/data/mdh.db"
+ENV DJANGO_DB_NAME "/data/mhd.db"
 ENV DJANGO_DB_USER ""
 ENV DJANGO_DB_PASSWORD ""
 ENV DJANGO_DB_HOST ""

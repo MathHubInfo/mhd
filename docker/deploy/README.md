@@ -1,4 +1,4 @@
-This folder contains a sample docker-compose file for deploying `mdh_django` with a postgres instance via docker-compose. 
+This folder contains a sample docker-compose file for deploying `mhd` with a postgres instance via docker-compose. 
 To use it, run:
 
 ```bash
@@ -14,5 +14,5 @@ To run any manage.py commands (like e.g. creating a superuser or inserting data)
 To achieve this, run:
 
 ```bash
-docker-compose exec mdh /bin/sh
+docker-compose exec mhd /bin/sh
 ```

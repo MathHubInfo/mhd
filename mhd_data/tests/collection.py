@@ -3,7 +3,7 @@ from unittest import mock
 
 from django.core.management import call_command
 
-from mdh.utils.uuid import uuid4_mock, uuid4_mock_reset
+from mhd.utils.uuid import uuid4_mock, uuid4_mock_reset
 from mhd_tests.utils import LoadJSONAsset
 
 from mhd_schema.models import Collection

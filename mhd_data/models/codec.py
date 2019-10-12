@@ -3,13 +3,13 @@ from django.db import models, connection
 
 from mhd_provenance.models import Provenance
 from mhd_schema.models import Property
-from mdh.utils import uuid4, memoized_method
+from mhd.utils import uuid4, memoized_method
 
 from .item import Item
 
 from functools import lru_cache
 
-from mdh.utils import get_standard_serializer_field
+from mhd.utils import get_standard_serializer_field
 
 
 class CodecManager(models.Manager):

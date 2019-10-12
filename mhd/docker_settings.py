@@ -1,5 +1,5 @@
 """
-Django Docker settings for mdh project.
+Django Docker settings for mhd project.
 Reads all relevant settings from the environment
 """
 

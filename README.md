@@ -1,6 +1,6 @@
 # MathDataHub Django
 
-[![Build Status](https://travis-ci.org/MathHubInfo/mdh_django.svg?branch=master)](https://travis-ci.org/MathHubInfo/mdh_django). 
+[![Build Status](https://travis-ci.org/MathHubInfo/mhd.svg?branch=master)](https://travis-ci.org/MathHubInfo/mhd). 
 
 MathDataHub is a system to provide universal infrastructure for Mathematical Data. 
 See the paper [Towards a Unified Mathematical Data Infrastructure: Database and Interface Generation](https://kwarc.info/people/mkohlhase/papers/cicm19-MDH.pdf)
@@ -18,11 +18,11 @@ __This code and in particular the documentation are still a work-in-progress__
 The top-level structure of this repository consists of a standard [Django](https://www.djangoproject.com/) project. 
 There are six apps:
 
-- `mdh`: The main entry point. Contains a `utils/` package used by other apps. 
+- `mhd`: The main entry point. Contains a `utils/` package used by other apps. 
 - `mhd_schema`: Stores schema of MDH data. Home of the `Collection` and `Property` tables. 
 - `mhd_data`: Stores all concrete MDH data. Home of the `Item` and all `Codec` tables. 
 - `mhd_provenance`: Stores meta-information about MDH data. Home of the `Provenance` tables. 
-- `mdh_test`: Test-only app for specific test models
+- `mhd_test`: Test-only app for specific test models
 - `mddl_catalog`: Catalog of specific MDDL items, currently only codecs. 
 
 Currently, MDH depends only on Django and [Django Rest Framework](https://www.django-rest-framework.org/).
@@ -63,8 +63,8 @@ To do so, start the server with:
 MDH_LOG_QUERIES=1 python manage.py runserver
 ```
 
-To additionally customize development settings, create a file named `mdh/local_settings.py`. 
-This will be automatically loaded by mdh during configuration time. 
+To additionally customize development settings, create a file named `mhd/local_settings.py`. 
+This will be automatically loaded by mhd during configuration time. 
 
 ## Database structure
 
@@ -178,7 +178,7 @@ One non-feature related test is the CodeStyle test.
 This enforces [PEP8](https://pep8.readthedocs.io)-compliance except for maximum line length. 
 
 Additionally, a test-only app exists with specific models only used during testing. 
-To manually enable for local development add `USE_TEST_APP = True` to `mdh/local_settings.py`. 
+To manually enable for local development add `USE_TEST_APP = True` to `mhd/local_settings.py`. 
 
 ## Data Examples
 
@@ -217,11 +217,11 @@ To achieve the latter, uwsgi intercepts the [X-Sendfile](https://www.nginx.com/r
 
 This repository contains a `Dockerfile` to enable deployment using [Docker](https://www.docker.com/). 
 It listens on port 80 and uses an sqlite database stored in a volume mounted at `/data/`.
-A [DockerHub](https://hub.docker.com/) automated build is available under [mathhub/mdh](https://hub.docker.com/r/mathhub/mdh) and can be run with a command like the following:
+A [DockerHub](https://hub.docker.com/) automated build is available under [mathhub/mhd](https://hub.docker.com/r/mathhub/mhd) and can be run with a command like the following:
 
 
 ```
-   docker run -e DJANGO_SECRET_KEY=totally_secret_key_here -p 8000:80 -v data:/data/ mathhub/mdh
+   docker run -e DJANGO_SECRET_KEY=totally_secret_key_here -p 8000:80 -v data:/data/ mathhub/mhd
 ```
 
 

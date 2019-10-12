@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
 
-from mdh.utils import with_simulate_arg
+from mhd.utils import with_simulate_arg
 
 import json
 

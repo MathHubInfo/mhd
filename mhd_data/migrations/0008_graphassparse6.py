@@ -2,7 +2,7 @@
 
 from django.db import migrations, models
 import django.db.models.deletion
-import mdh.utils.uuid
+import mhd.utils.uuid
 
 
 class Migration(migrations.Migration):
@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='GraphAsSparse6',
             fields=[
-                ('id', models.UUIDField(default=mdh.utils.uuid.uuid4, editable=False, primary_key=True, serialize=False)),
+                ('id', models.UUIDField(default=mhd.utils.uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('active', models.BooleanField(default=True, help_text='Is this item active')),
                 ('value', models.TextField()),
                 ('item', models.ForeignKey(help_text='Item this this cell represents', on_delete=django.db.models.deletion.CASCADE, to='mhd_data.Item')),

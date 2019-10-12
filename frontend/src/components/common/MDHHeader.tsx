@@ -26,7 +26,7 @@ export default class MDHHeader extends React.Component<{}, MDHHeaderState> {
                         <NavLink href="https://docs.mathhub.info/" className={"item-link"}>About</NavLink>
                         </NavItem>
                         <NavItem>
-                            <NavLink href="https://github.com/MathHubInfo/mdh_django" className={"item-link"}>
+                            <NavLink href="https://github.com/MathHubInfo/mhd" className={"item-link"}>
                                 <i className="fab fa-github"></i> GitHub
                             </NavLink>
                         </NavItem>

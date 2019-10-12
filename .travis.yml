@@ -40,5 +40,5 @@ script:
   - if [ ! -z "$TRAVIS_NODE_VERSION" ]; then yarn build; fi
   - if [ ! -z "$TRAVIS_NODE_VERSION" ]; then yarn test; fi
   - if [ ! -z "$TRAVIS_PYTHON_VERSION" ]; then pytest -v; fi
-  - if [ -z "$TRAVIS_NODE_VERSION" ] && [ -z "$TRAVIS_PYTHON_VERSION" ]; then docker build -t mathhub/mdh .; fi
+  - if [ -z "$TRAVIS_NODE_VERSION" ] && [ -z "$TRAVIS_PYTHON_VERSION" ]; then docker build -t mathhub/mhd .; fi
 
