@@ -1,21 +1,19 @@
-sudo: false
-
 matrix:
   include:
-    # Frontend build test
-    - language: node_js
+    - name: "Frontend: NodeJS 12"
+      language: node_js
       nodejs:
         - 12
     
-    # cpython with sqlite
-    - language: python
+    - name: "Backend: CPython 3.7 / sqlite"
+      language: python
       env:
         - DATABASE=sqlite
       python:
          - "3.7"
     
-    # cpython with Postgres
-    - language: python
+    - name: "Backend: CPython 3.7 / PostgreSQL"
+      language: python
       env:
         - DATABASE=postgres
       services:
@@ -23,28 +21,29 @@ matrix:
       python:
         - "3.7"
     
-    # pypy with sqlite
-    # - language: python
-    #   env:
-    #     - DATABASE=sqlite
-    #   python:
-    #      - "pypy3"
+    - name: "Backend: PyPy 3.6 / sqlite" 
+      language: python
+      env:
+        - DATABASE=sqlite
+        - PYPY=pypy3.6-v7.1.1-linux64
+      python: 3.6
+ 
+    - name: "Backend: PyPy 3.6 / PostgreSQL"
+      language: python
+      env:
+        - DATABASE=postgres
+        - PYPY=pypy3.6-v7.1.1-linux64
+      services:
+        - postgresql
+      python: 3.6
     
-    # # pypy with Postgres
-    # - language: python
-    #   env:
-    #     - DATABASE=postgres
-    #   services:
-    #     - postgresql
-    #   python:
-    #     - "pypy3"
-    
-    # Docker build test
-    - language: minimal
+    - name: "Docker Build"
+      language: minimal
       services:
         - docker
 
 before_install:
+  - if [ ! -z "$PYPY" ]; then pushd $HOME; wget -c https://bitbucket.org/pypy/pypy/downloads/$PYPY.tar.bz2  -O - | tar xj; $PYPY/bin/pypy3 -m venv pypyenv; source pypyenv/bin/activate; popd; fi
   - if [ ! -z "$TRAVIS_NODE_VERSION" ]; then cd frontend; fi
 
 install:
