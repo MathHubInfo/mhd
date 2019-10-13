@@ -3,19 +3,19 @@ import functools
 
 def with_simulate_arg(original):
     """
-        Gives a function an addional simulate argument which,
-        when set, wraps the function in an aborted transaction.
+        Wraps a function in a transaction and gives it an
+        additional argument 'simulate' which rolls back the
+        transaction when set to True.
     """
     @functools.wraps(original)
-    def wrapper(*args, simulate = False, **kwargs):
-
+    def wrapper(*args, **kwargs):
         res = None
         try:
+            simulate = kwargs.pop('simulate', False)
             with transaction.atomic(savepoint=False):
-                res = original(*args, simulate = simulate, **kwargs)
+                res = original(*args, **kwargs)
                 if simulate:
                     raise SimulationException()
-
         except SimulationException:
             pass
 
