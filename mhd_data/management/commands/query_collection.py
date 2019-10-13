@@ -14,12 +14,14 @@ def nonnegative(value):
 
 
 class Command(BaseCommand):
-    help = 'Queries the database for a specific collection'
+    help = 'Sends a query for a specific collection'
 
     def add_arguments(self, parser):
         parser.add_argument('collection', help="Slug of collection to fetch")
         parser.add_argument(
             '--properties', '-p', help="Comma-seperated slugs of properties to query to query")
+        parser.add_argument(
+            '--filter', '-f', help="Filter to give for query")
 
         modes = parser.add_mutually_exclusive_group()
         modes.add_argument('--sql', '-s', action='store_true',
@@ -49,7 +51,7 @@ class Command(BaseCommand):
                 'p'), kwargs['properties'].split(","))
 
         # build te queryset
-        qset, props = collection.query(offset=kwargs['from'], limit=kwargs['limit'], order=kwargs['order'])
+        qset, props = collection.query(offset=kwargs['from'], limit=kwargs['limit'], filter=kwargs['filter'], order=kwargs['order'])
 
         if kwargs['sql']:
             print(qset.query)
