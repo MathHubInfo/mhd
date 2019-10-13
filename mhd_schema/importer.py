@@ -1,5 +1,3 @@
-from mhd.utils import with_simulate_arg
-
 from mhd_schema.models import Collection, Property
 from mhd_data.models import CodecManager
 
@@ -68,8 +66,7 @@ class SchemaImporter(object):
             raise SchemaValidationError(
                 'Property {0!r} has unknown codec {1!r}'.format(slug, data['codec']))
 
-    @with_simulate_arg
-    def __call__(self, update=False, simulate=False):
+    def __call__(self, update=False):
         """
             Creates or updates a new collection based on the appropriate
             serialization in value. The value is serialized as:
@@ -186,7 +183,7 @@ class SchemaImporter(object):
                     'Property {0:s} already exists'.format(slug))
 
             self.logger.info(
-                'Did not create property {0:s}, already exists. '.format(slug))
+                'Skipping property {0!r} (already exists). '.format(slug))
             return prop.first(), False
 
         # Create the property unless it already exists

@@ -143,9 +143,6 @@ USE_TZ = True
 # we only have static files for the admin site
 STATIC_URL = '/admin/static/'
 
-
-import django.utils.log
-
 # Log everything of info and above to STDOUT at all times
 LOGGING = {
     'version': 1,

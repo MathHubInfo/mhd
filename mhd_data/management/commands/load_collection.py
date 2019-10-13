@@ -21,19 +21,19 @@ class Command(BaseCommand):
                             help="Do not produce any output in case of success")
         parser.add_argument('--simulate', '-s', action="store_true",
                             help="Only simulate collection creation, do not actually store any data")
-        parser.add_argument('--batch-size', '-b', type=int, default=100,
+        parser.add_argument('--batch-size', '-b', type=int, default=None,
                             help="Batch size for insert queries into the database. ")
 
     @with_simulate_arg
-    def handle(self, schema, data, provenance, quiet=False, simulate=False, batch_size=None, **kwargs):
-        call_command('upsert_collection', schema, update=False, quiet=quiet)
+    def handle(self, *args, **kwargs):
+        call_command('upsert_collection', kwargs['schema'], update=False, quiet=kwargs['quiet'])
 
         # get needed info from schema
-        with open(schema, 'r') as f:
+        with open(kwargs['schema'], 'r') as f:
             schema_data = json.load(f)
         collection_name = schema_data['slug']
         fields = ','.join([p['slug'] for p in schema_data['properties']])
 
         # insert the data in the collection
-        call_command('insert_data', *data,  collection=collection_name,
-                     fields=fields, provenance=provenance, quiet=quiet, batch_size=batch_size)
+        call_command('insert_data', *kwargs['data'], collection=collection_name,
+                     fields=fields, provenance=kwargs['provenance'], quiet=kwargs['quiet'], batch_size=kwargs['batch_size'])

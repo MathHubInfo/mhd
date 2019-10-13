@@ -1,5 +1,4 @@
 import json
-import math
 from collections import deque
 
 from .importer import DataImporter, ImporterError
@@ -10,7 +9,7 @@ from mhd_provenance.models import Provenance
 class JSONFileImporter(DataImporter):
     """ An importer that loads data from a set of json files """
 
-    def __init__(self, collection_slug, property_names, data_path, provenance_path, on_chunk_success = None, on_property_success = None, on_log = None, batch_size = 100):
+    def __init__(self, collection_slug, property_names, data_path, provenance_path, quiet, batch_size):
         collection = Collection.objects.get(slug=collection_slug)
         properties = [collection.get_property(pn) for pn in property_names]
 
@@ -23,7 +22,7 @@ class JSONFileImporter(DataImporter):
 
 
         self.provenance_path = provenance_path
-        super().__init__(collection, properties, on_chunk_success, on_property_success, on_log, batch_size)
+        super().__init__(collection, properties, quiet, batch_size)
 
     def create_provenance(self):
         """ Creates the provenance model for this importer """
@@ -41,38 +40,9 @@ class JSONFileImporter(DataImporter):
             Should return None if no more chunks are left.
         """
 
-        # if we have stuff left from the previous chunk
-        # we should use that as our data
-        if previous is not None and len(previous["next"]) > 0:
-            data = previous["next"]
-            cid = previous["cid"] + 1
-            ctotal = previous["ctotal"]
-            cpath = previous["cpath"]
-
-        # if we do not have any data left over from the previous chunk
-        # read more from disk
-        else:
-            data, cpath = self._read_file_chunk()
-            if data is None:
-                return None
-            cid = 0
-            ctotal = math.ceil(len(data) / self.batch_size)
-
-        self.on_log("[{}] Processing batch {} / {}".format(cpath, cid + 1, ctotal))
-
-        # split into rest and current
-        return {
-            "cid": cid,
-            "ctotal": ctotal,
-            "cpath": cpath,
-            "data": data[:self.batch_size],
-            "next": data[self.batch_size:]
-        }
-
-    def _read_file_chunk(self):
         # if we have no files left, bail
         if len(self._files) == 0:
-            return None, None
+            return None
 
         # get the next file path
         data_path = self._files.popleft()
@@ -88,19 +58,8 @@ class JSONFileImporter(DataImporter):
         if not isinstance(data, list):
             raise ImporterError('Unable to import data from {}: Not a list. '.format(data_path))
 
-        self.on_log("[{}] Loaded {} items".format(data_path, len(data)))
-
         # return the data
-        return data, data_path
-
-    def get_chunk_length(self, chunk):
-        """
-            Gets the length of the given chunk.
-            By default¸ simply calls len() on the chunk object,
-            but this may be overwritten by the subclass.
-        """
-
-        return len(chunk["data"])
+        return data
 
     def get_chunk_column(self, chunk, property, idx):
         """
@@ -109,5 +68,4 @@ class JSONFileImporter(DataImporter):
             To be implemented by the subclass.
         """
 
-        # fetch the idx' property for this column
-        return [r[idx] for r in chunk["data"]]
+        return [r[idx] for r in chunk]

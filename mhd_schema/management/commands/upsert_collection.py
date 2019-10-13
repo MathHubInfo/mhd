@@ -1,5 +1,5 @@
 import json
-import sys
+from mhd.utils import with_simulate_arg
 
 from django.core.management.base import BaseCommand
 
@@ -19,11 +19,12 @@ class Command(BaseCommand):
         parser.add_argument('--simulate', '-s', action='store_true',
                             help="Only simulate collection creation, do not actually store any data")
 
-    def handle(self, filename, update = False, quiet = False, simulate = False, **kwargs):
+    @with_simulate_arg
+    def handle(self, *args, **kwargs):
         # open the file and read json
         data = None
-        with open(filename) as f:
+        with open(kwargs['filename']) as f:
             data = json.load(f)
 
-        importer = SchemaImporter(data, quiet)
-        importer(update=update, simulate=simulate)
+        importer = SchemaImporter(data, kwargs['quiet'])
+        importer(update=kwargs['update'])

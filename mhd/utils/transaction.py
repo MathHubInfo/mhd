@@ -11,7 +11,7 @@ def with_simulate_arg(original):
 
         res = None
         try:
-            with transaction.atomic():
+            with transaction.atomic(savepoint=False):
                 res = original(*args, simulate = simulate, **kwargs)
                 if simulate:
                     raise SimulationException()
