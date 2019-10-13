@@ -3,19 +3,19 @@ from mhd.utils import with_simulate_arg
 from mhd_schema.models import Collection, Property
 from mhd_data.models import CodecManager
 
+from tqdm import tqdm
+
+import logging
 
 class SchemaImporter(object):
     """ Represents the process of an import """
 
-    def __init__(self, data=None, logger=None):
-        self.data = data
-        self.logger = logger
-        self._validate_data(self.data)
+    def __init__(self, data=None, quiet=False):
+        self.logger = logging.getLogger('mhd.schemaimporter')
+        self.logger.setLevel(logging.WARN if quiet else logging.DEBUG)
 
-    def _log(self, message):
-        if self.logger is None:
-            return
-        return self.logger(message)
+        self._validate_data(data)
+        self.data = data
 
     def _validate_data(self, data):
         if not isinstance(data, dict):
@@ -28,7 +28,8 @@ class SchemaImporter(object):
 
         for k in ['slug', 'displayName', 'description', 'url']:
             if k in data and not isinstance(data[k], str):
-                raise SchemaValidationError('Key {0!r} is not a string. '.format(k))
+                raise SchemaValidationError(
+                    'Key {0!r} is not a string. '.format(k))
 
         if not isinstance(data['properties'], list):
             raise SchemaValidationError(
@@ -126,19 +127,21 @@ class SchemaImporter(object):
             'url': url,
             'metadata': metadata,
         })
-        self._log('[{0!s}] {1!s} collection'.format(
+        self.logger.info('{1!s} collection {0!r}'.format(
             slug, 'Created' if created else 'Updated'))
 
         # Create all the properties (TODO)
         props = [
             self.__call__property(collection, p, update=update)[0]
-            for p in properties
+            for p in tqdm(properties, leave=False)
         ]
+        self.logger.info('Created {1} properties for {0!r}'.format(slug, len(props)))
 
         # fetch the extra properties and remove them
         extra = collection.property_set.exclude(pk__in=[p.pk for p in props])
         collection.property_set.remove(*extra)
-        self._log('[{}] Disassociated {} properties'.format(slug, len(extra)))
+
+        self.logger.info('Disassociated {1} properties from {0!r}'.format(slug, len(extra)))
 
         # and return
         return collection, created
@@ -182,7 +185,7 @@ class SchemaImporter(object):
                 raise SchemaImportError(
                     'Property {0:s} already exists'.format(slug))
 
-            self._log(
+            self.logger.info(
                 'Did not create property {0:s}, already exists. '.format(slug))
             return prop.first(), False
 
@@ -192,8 +195,6 @@ class SchemaImporter(object):
         prop.collections.add(collection)
         prop.save()
 
-        self._log("[{0!s}] Created property {1:s}".format(
-            collection.slug, slug))
         return prop, True
 
 

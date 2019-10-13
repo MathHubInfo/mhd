@@ -144,30 +144,50 @@ USE_TZ = True
 STATIC_URL = '/admin/static/'
 
 
-# If we have the MDH_LOG_QUERIES variable enabled
-# log all the queries
-if os.environ.get('MDH_LOG_QUERIES', False):
-    LOGGING = {
-        'version': 1,
-        'filters': {
-            'require_debug_true': {
-                '()': 'django.utils.log.RequireDebugTrue',
-            }
+import django.utils.log
+
+# Log everything of info and above to STDOUT at all times
+LOGGING = {
+    'version': 1,
+    'filters': {
+        'require_log_queries': {
+            '()': 'mhd.logging.RequireLogQueries'
+        }
+    },
+    'formatters': {
+        'default': {
+            'format': '[{levelname}] {name}: {message}',
+            'style': '{',
         },
-        'handlers': {
-            'console': {
-                'level': 'DEBUG',
-                'filters': ['require_debug_true'],
-                'class': 'logging.StreamHandler',
-            }
+        'plain': {
+            'format': '{message}',
+            'style': '{',
         },
-        'loggers': {
-            'django.db.backends': {
-                'level': 'DEBUG',
-                'handlers': ['console'],
-            }
+    },
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'default'
+        },
+        'debugconsole': {
+            'level': 'DEBUG',
+            'filters': ['require_log_queries'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'plain'
+        }
+    },
+    'loggers': {
+        'mhd': {
+            'level': 'DEBUG',
+            'handlers': ['console']
+        },
+        'django.db.backends': {
+            'level': 'DEBUG',
+            'handlers': ['debugconsole'],
         }
     }
+}
 
 # try and import local_settings if they exist
 try:

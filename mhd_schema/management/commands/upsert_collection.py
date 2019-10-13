@@ -19,20 +19,11 @@ class Command(BaseCommand):
         parser.add_argument('--simulate', '-s', action='store_true',
                             help="Only simulate collection creation, do not actually store any data")
 
-    def handle(self, *args, **kwargs):
-        # create a logger
-        if not kwargs['quiet']:
-            def logger(m): return sys.stdout.write(m + "\n")
-        else:
-            logger = None
-
+    def handle(self, filename, update = False, quiet = False, simulate = False, **kwargs):
         # open the file and read json
         data = None
-        with open(kwargs['filename']) as f:
+        with open(filename) as f:
             data = json.load(f)
 
-        importer = SchemaImporter(data, logger=logger)
-        importer(update=kwargs['update'], simulate=kwargs['simulate'])
-
-        if kwargs['simulate']:
-            logger('Simulation successful, rolling back changes because --simulate was given. ')
+        importer = SchemaImporter(data, quiet)
+        importer(update=update, simulate=simulate)
