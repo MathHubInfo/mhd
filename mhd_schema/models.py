@@ -199,10 +199,17 @@ class Property(ModelWithMetadata):
         return self.codec_model.objects.filter(prop=self, item__collections=collection)
 
     collections = models.ManyToManyField(
-        Collection, help_text="Collection(s) this property occurs in", blank=True)
+        Collection, through='PropertyCollectionMembership', help_text="Collection(s) this property occurs in", blank=True)
 
     def __str__(self):
         return "Property {0:d} ({1!r})".format(self.pk, self.slug)
+
+class PropertyCollectionMembership(models.Model):
+    class Meta:
+        unique_together = (('property', 'collection'),)
+
+    property = models.ForeignKey(Property, on_delete=models.CASCADE)
+    collection = models.ForeignKey(Collection, on_delete=models.CASCADE)
 
 
 __all__ = ["Collection", "Property"]
