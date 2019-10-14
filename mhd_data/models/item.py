@@ -11,8 +11,7 @@ class Item(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
 
-    collections = models.ManyToManyField(
-        Collection, help_text="Collection(s) each item occurs in", blank=True)
+    collections = models.ManyToManyField(Collection, through='ItemCollectionAssociation', help_text="Collection(s) each item occurs in", blank=True)
 
     def _annotate_property(self, prop):
         """
@@ -54,6 +53,17 @@ class Item(models.Model):
 
         return SemanticItemSerializer(collection=collection, properties=properties, database=database).to_representation(self)
 
+class ItemCollectionAssociation(models.Model):
+    """ Explicit association between items and collections """
+    class Meta:
+        unique_together = [('item', 'collection')]
+        indexes = [
+            models.Index(fields=['item']),
+            models.Index(fields=['collection']),
+        ]
+
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    collection = models.ForeignKey(Collection, on_delete=models.CASCADE)
 
 class SemanticItemSerializer(serializers.Serializer):
     def __init__(self, *args, database = True, **kwargs):

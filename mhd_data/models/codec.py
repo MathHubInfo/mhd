@@ -53,6 +53,12 @@ class Codec(models.Model):
     class Meta:
         abstract = True
         unique_together = (('item', 'prop', 'superseeded_by'))
+        indexes = [
+            models.Index(fields=['item']),
+            models.Index(fields=['prop']),
+            models.Index(fields=['value']),
+            models.Index(fields=['active'])
+        ]
 
     objects = CodecManager()
 
