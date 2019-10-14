@@ -57,6 +57,10 @@ class ItemCollectionAssociation(models.Model):
     """ Explicit association between items and collections """
     class Meta:
         unique_together = [('item', 'collection')]
+        indexes = [
+            models.Index(fields=['item']),
+            models.Index(fields=['collection']),
+        ]
 
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     collection = models.ForeignKey(Collection, on_delete=models.CASCADE)

@@ -6,6 +6,11 @@ from django.db import models
 class Collection(ModelWithMetadata):
     """ Collection of Mathematical Items """
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['slug']),
+        ]
+
     displayName = models.TextField(help_text="Name of this collection")
     slug = models.SlugField(
         help_text="Identifier of this collection", unique=True)
@@ -176,6 +181,11 @@ class Collection(ModelWithMetadata):
 class Property(ModelWithMetadata):
     """ Information about a specific property """
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['slug']),
+        ]
+
     displayName = models.TextField(help_text="Display Name for this property")
     slug = models.SlugField(help_text="Identifier of this Collection")
 
@@ -206,7 +216,11 @@ class Property(ModelWithMetadata):
 
 class PropertyCollectionMembership(models.Model):
     class Meta:
-        unique_together = (('property', 'collection'),)
+        unique_together = [('property', 'collection')]
+        indexes = [
+            models.Index(fields=['property']),
+            models.Index(fields=['collection']),
+        ]
 
     property = models.ForeignKey(Property, on_delete=models.CASCADE)
     collection = models.ForeignKey(Collection, on_delete=models.CASCADE)
