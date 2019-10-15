@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import generics
+from rest_framework import generics, views, response
 from ..models import SemanticItemSerializer
 from mhd_schema.models import Collection
 from mhd.utils import DefaultRawPaginator
@@ -12,18 +12,8 @@ class QueryViewException(exceptions.APIException):
     default_code = 400
     default_detail = "Incorrect query"
 
-class QueryView(generics.ListAPIView):
-    pagination_class = DefaultRawPaginator
-
-    def get_serializer(self, *args, **kwargs):
-        """ Creates a new serializer for the given collection and properties """
-
-        return SemanticItemSerializer(*args, collection=self._collection, properties=self._properties, **kwargs)
-
-    def get_queryset(self):
-        """ Creates a new queryset for the given page """
-
-        # find the collection to query
+class QueryViewMixin:
+    def build_query_params(self):
         self._collection = get_object_or_404(
             Collection, slug=self.kwargs['cid'])
 
@@ -46,6 +36,22 @@ class QueryView(generics.ListAPIView):
         filter = self.request.query_params.get('filter', None)
         order = self.request.query_params.get('order', None)
 
+        return props, filter, order
+
+class QueryView(QueryViewMixin, generics.ListAPIView):
+    pagination_class = DefaultRawPaginator
+
+    def get_serializer(self, *args, **kwargs):
+        """ Creates a new serializer for the given collection and properties """
+
+        return SemanticItemSerializer(*args, collection=self._collection, properties=self._properties, **kwargs)
+
+    def get_queryset(self):
+        """ Creates a new queryset for the given page """
+
+        # build the query
+        props, filter, order = self.build_query_params()
+
         # store properties and queryset
         try:
             q, self._properties = self._collection.query(
@@ -56,6 +62,13 @@ class QueryView(generics.ListAPIView):
 
         # return the queryset
         return q
+
+class CountQueryView(QueryViewMixin, views.APIView):
+    def get(self, request, **kwargs):
+        # get the query params and then build a count query
+        props, filter, order = self.build_query_params()
+        count = self._collection.query_count(properties=props, filter=filter).fetchone()[0]
+        return response.Response({'count': count})
 
 class ItemView(generics.RetrieveAPIView):
     def get(self, *args, **kwargs):

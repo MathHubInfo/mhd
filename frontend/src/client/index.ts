@@ -113,14 +113,14 @@ export class MDHBackendClient {
 
     /** Fetches the number of items in a collection */
     async fetchItemCount(collection: ParsedMDHCollection, filters: MDHFilter[]): Promise<number> {
-        // Counts the items in a collection
+        // Build the filter params
         const params = {
             filter: MDHBackendClient.buildFilter(filters),
-            per_page: '1',
         };
 
-        const response = await this.fetchJSON<TDRFPagedResponse<TMDHItem<{}>>>(`/query/${collection.slug}`, params);
-        return response.count;
+        // fetch the results
+        const res = await this.fetchJSON<TDRFPagedResponse<{count: number}>>(`/query/${collection.slug}/count`, params);
+        return res.count;
     }
 
     /** hashes the parameters to the fetchItemCount function */

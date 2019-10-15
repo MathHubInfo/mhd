@@ -99,6 +99,7 @@ To load data enti
 This Code Exposes the following urls:
 
 - `/api/query/$collection/` -- List items in a given collection (see details below)
+- `/api/query/$collection/count` -- Count items in a given collection (see details below)
 - `/api/schema/collections/` -- List all collections
     - `/api/schema/collection/$slug` -- Get a specific collection
 - `/api/schema/codecs/` -- Lists all codecs
@@ -109,7 +110,8 @@ This Code Exposes the following urls:
 
 ### Main Querying Syntax
 
-To Query an item, the `/query/$collection/` API can be used. 
+To Query for items, the `/query/$collection/` API can be used. 
+To Query only for the count of items, use `/query/$collection/count` instead. 
 In addition to the collection slug in the URL, it takes the following GET parameters:
 
 - `page`: A 1-based page ID. Defaults to 1. 
