@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { MDHBackendClient } from "../../../../../client";
 import { MDHFilter, ParsedMDHCollection } from "../../../../../client/derived";
 import { TDRFPagedResponse, TMDHItem } from "../../../../../client/rest";
-import { Row, Col } from "reactstrap";
+import { Row, Col, Spinner } from "reactstrap";
 import { Link } from "react-router-dom";
 import Table, { TableColumn, TableState } from "../../../../wrappers/table";
 
@@ -176,6 +176,7 @@ export default class ResultsTable extends Component<ResultsTableProps, ResultsTa
                         per_page={this.props.per_page}
                         widths={this.props.widths}
                     />}
+                    {loading && <Spinner color="primary" />}
                 </Col>
             </Row>
         );
