@@ -217,6 +217,7 @@ class Property(ModelWithMetadata):
         indexes = [
             models.Index(fields=['slug']),
         ]
+        ordering = ['id']
 
     displayName = models.TextField(help_text="Display Name for this property")
     slug = models.SlugField(help_text="Identifier of this Collection")
