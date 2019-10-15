@@ -1,6 +1,6 @@
 
-from mhd.utils import ModelWithMetadata
-from django.db import models
+from mhd.utils import ModelWithMetadata, QuerySetLike
+from django.db import models, connection
 
 
 class Collection(ModelWithMetadata):
@@ -42,8 +42,39 @@ class Collection(ModelWithMetadata):
             If properties is None, all collection properties are returned.
             Limit and Offset can be used for pagination, however using only
             offset is not supported.
-            Returns a tuple (query, properties) of the query itself and the list
+            Order represents an order to return the results in.
+            Returns a tuple (query, properties) of the RawQuerySet query itself and the list
             of queried properties
+        """
+
+        # lazy import
+        from mhd_data.models import Item
+
+        SQL, SQL_ARGS, properties = self._query(
+            properties, filter, limit, offset, order)
+        return Item.objects.raw(SQL, SQL_ARGS), list(properties)
+
+    def query_count(self, properties=None, filter=None):
+        """
+            Like .query() but returns a QuerySetLike for counting
+        """
+        # run the sql
+        SQL, SQL_ARGS, _ = self._query(
+            properties=properties, filter=filter, count=True)
+        return QuerySetLike(SQL, SQL_ARGS)
+
+    def _query(self, properties=None, filter=None, limit=None, offset=None, order=None, count=False):
+        """
+            Builds a query returning items in this collection with
+            annotated properties prop.
+            If properties is None, all collection properties are returned.
+            Limit and Offset can be used for pagination, however using only
+            offset is not supported.
+            Order represents an order to return the results in.
+            When count is True, instead return a query that counts the
+            results instead of a normal query.
+            Returns a triple (sql, query, properties) of the query itself
+            and the list of queried properties
         """
 
         # lazy import
@@ -75,7 +106,7 @@ class Collection(ModelWithMetadata):
             properties = self.property_set.all()
 
         PROPERTIES = []
-        SELECTS = ["I.id as id"]
+        SELECTS = ["Count(*) as count"] if count else ["I.id as id"]
         JOINS = [
             "FROM {} as I".format(Item._meta.db_table),
 
@@ -102,10 +133,11 @@ class Collection(ModelWithMetadata):
             # The property we just added
             PROPERTIES.append(prop.slug)
 
-            # The fields we select
-            # TODO: Support derived values here
-            SELECTS.append("{}.value as {}".format(virtual_table, value_field))
-            SELECTS.append("{}.id as {}".format(virtual_table, cid_field))
+            if not count:
+                # Fields we select, TODO: Support for derived values
+                SELECTS.append("{}.value as {}".format(
+                    virtual_table, value_field))
+                # SELECTS.append("{}.id as {}".format(virtual_table, cid_field))
 
             # build the JOINs query
             JOINS.append("LEFT OUTER JOIN {} as {}".format(
@@ -115,7 +147,7 @@ class Collection(ModelWithMetadata):
                 "ON I.id = {0:s}.item_id AND {0:s}.active AND {0:s}.prop_id = {1:s}".format(virtual_table, physical_prop_id))
 
         # add an order by clause
-        if order is not None and len(order) > 0:
+        if not count and order is not None and len(order) > 0:
             def parse_order(oslug):
                 oslug = oslug.strip()
                 if len(oslug) == 0:
@@ -141,7 +173,7 @@ class Collection(ModelWithMetadata):
             ORDER_PARTS = ', '.join([parse_order(o) for o in order.split(',')])
             SUFFIXES.append("ORDER BY {}".format(ORDER_PARTS))
 
-        else:
+        elif not count:
             SUFFIXES.append("ORDER BY I.id")
 
         # and build the slicing clauses
@@ -167,8 +199,8 @@ class Collection(ModelWithMetadata):
                 SQL_SELECTS, SQL_JOINS, SQL_SUFFIXES)
             SQL_ARGS = []
 
-        # and build the sql
-        return Item.objects.raw(SQL, tuple(SQL_ARGS)), list(properties)
+        # return the sql statement, the arguments and the properties
+        return SQL.strip(), tuple(SQL_ARGS), list(properties)
 
     def semantic(self, *args, **kwargs):
         """ Same as running .query() and calling .semantic() on each returned value """
@@ -213,6 +245,7 @@ class Property(ModelWithMetadata):
 
     def __str__(self):
         return "Property {0:d} ({1!r})".format(self.pk, self.slug)
+
 
 class PropertyCollectionMembership(models.Model):
     class Meta:

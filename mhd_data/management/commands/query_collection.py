@@ -22,16 +22,14 @@ class Command(BaseCommand):
             '--properties', '-p', help="Comma-seperated slugs of properties to query to query")
         parser.add_argument(
             '--filter', '-f', help="Filter to give for query")
-
-        modes = parser.add_mutually_exclusive_group()
-        modes.add_argument('--sql', '-s', action='store_true',
+        parser.add_argument('--sql', '-s', action='store_true',
                            help="Instead of returning results, print the sql query")
-        modes.add_argument('--explain', '-e', action='store_true',
-                           help="Instead of returning results, explain the query only")
 
         parser.add_argument('--order', '-', type=str,
                             default=None, help="Order to return results in. ")
-        parser.add_argument('--from', '-f', type=nonnegative,
+        parser.add_argument('-c', '--count', action='store_true',
+                            help='Send a query to count elements instead of a normal query')
+        parser.add_argument('--offset', '-o', type=nonnegative,
                             default=0, help="Index to start results at. ")
         parser.add_argument('--limit', '-l', type=nonnegative,
                             default=10, help="Maximum number of results to return")
@@ -50,18 +48,19 @@ class Command(BaseCommand):
             properties = map(lambda p: collection.get_property(
                 'p'), kwargs['properties'].split(","))
 
-        # build te queryset
-        qset, props = collection.query(offset=kwargs['from'], limit=kwargs['limit'], filter=kwargs['filter'], order=kwargs['order'])
+        if not kwargs['count']:
+            qset, props = collection.query(
+                offset=kwargs['offset'], limit=kwargs['limit'], filter=kwargs['filter'], order=kwargs['order'])
+        else:
+            qset = collection.query_count(filter=kwargs['filter'])
 
         if kwargs['sql']:
             print(qset.query)
             return
 
-        # if the explain flag was set, explain the query
-        if kwargs['explain']:
-            print(qset.explain())
-            return
-
-
-        results = [result.semantic_result(collection, props) for result in qset]
+        if not kwargs['count']:
+            results = [result.semantic_result(
+                collection, props) for result in qset]
+        else:
+            results = qset.fetchone()[0]
         print(json.dumps(results, indent=4))
