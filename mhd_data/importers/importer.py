@@ -55,12 +55,14 @@ class DataImporter(object):
 
         uuid_list = []
 
-        chunk = self.get_next_chunk(None)
-        while chunk is not None:
-            uuids = self._import_chunk(chunk, update=update)
+        while True:
+            # import the next chunk (if any)
+            uuids = self._import_chunk(self.get_next_chunk(), update=update)
+            if uuids is None:
+                break
+
             uuid_list.append(uuids)
             self.logger.info('Finished import of {} item(s)'.format(len(uuids)))
-            chunk = self.get_next_chunk(chunk)
 
         return uuid_list
 
@@ -69,10 +71,14 @@ class DataImporter(object):
             Imports the given chunk into the system and returns the UUIDs of the elements
             created
         """
-        start = time.time()
 
+        # if no chunk was passed, we are done
         if chunk is None:
-            raise ImportError('Attempted to import an empty chunk')
+            return None
+
+
+        # start time
+        start = time.time()
 
         # Generate UUIDs
         uuids = [
@@ -156,7 +162,7 @@ class DataImporter(object):
 
         raise NotImplementedError
 
-    def get_next_chunk(self, previous):
+    def get_next_chunk(self):
         """
             Gets the next chunk of items from the import source.
             Should return None if no more chunks are left.

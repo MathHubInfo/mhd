@@ -34,7 +34,7 @@ class JSONFileImporter(DataImporter):
         provenance.save()
         return provenance
 
-    def get_next_chunk(self, previous):
+    def get_next_chunk(self):
         """
             Gets the next chunk of items from the import source.
             Should return None if no more chunks are left.
