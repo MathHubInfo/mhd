@@ -6,3 +6,4 @@ from .memoized_method import memoized_method
 from .transaction import with_simulate_arg
 from .fields import get_standard_serializer_field, check_field_value
 from .querysetlike import QuerySetLike
+from .pgsql_serializer import pgsql_serializer

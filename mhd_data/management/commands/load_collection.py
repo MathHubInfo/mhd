@@ -21,6 +21,8 @@ class Command(BaseCommand):
                             help="Do not produce any output in case of success")
         parser.add_argument('--simulate', '-s', action="store_true",
                             help="Only simulate collection creation, do not actually store any data")
+        parser.add_argument('--chunk-size', '-c', type=int, default=None,
+                            help="Maximum size for each chunk read from a file. ")
         parser.add_argument('--batch-size', '-b', type=int, default=None,
                             help="Batch size for insert queries into the database. ")
 
@@ -36,4 +38,4 @@ class Command(BaseCommand):
 
         # insert the data in the collection
         call_command('insert_data', *kwargs['data'], collection=collection_name,
-                     fields=fields, provenance=kwargs['provenance'], quiet=kwargs['quiet'], batch_size=kwargs['batch_size'])
+                     fields=fields, provenance=kwargs['provenance'], quiet=kwargs['quiet'], batch_size=kwargs['batch_size'], chunk_size=kwargs['chunk_size'])

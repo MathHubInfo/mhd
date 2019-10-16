@@ -161,7 +161,7 @@ LOGGING = {
     },
     'formatters': {
         'default': {
-            'format': '[{levelname}] {name}: {message}',
+            'format': '[{levelname} - {asctime}] {name}: {message}',
             'style': '{',
         },
         'plain': {

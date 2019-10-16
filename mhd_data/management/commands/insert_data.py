@@ -9,7 +9,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            '--collection', '-c', help="Slug of collection to insert data into", required=True)
+            '--collection', '-n', help="Slug of collection to insert data into", required=True)
         parser.add_argument(
             '--fields', '-f', help="Comma-seperated list of property names", required=True)
         parser.add_argument(
@@ -18,8 +18,10 @@ class Command(BaseCommand):
                             help="Only simulate inseration, do not actually store any data")
         parser.add_argument('--quiet', '-q', action='store_true',
                             help="Do not produce any output in case of success")
+        parser.add_argument('--chunk-size', '-c', type=int, default=None,
+                            help="Maximum size for each chunk read from a file. ")
         parser.add_argument('--batch-size', '-b', type=int, default=None,
-                            help="Batch size for insert queries into the database. ")
+                            help="Batch size for insert queries into the database (sqlite only). ")
         parser.add_argument(
             'data', nargs='+', help=".json file containing 2-dimensional value array")
 
@@ -28,7 +30,8 @@ class Command(BaseCommand):
         importer = JSONFileImporter(
             kwargs['collection'], kwargs['fields'].strip().split(","),
             kwargs['data'], kwargs['provenance'],
-            quiet=kwargs['quiet'],
-            batch_size=kwargs['batch_size']
+            kwargs['quiet'],
+            kwargs['batch_size'],
+            kwargs['chunk_size'],
         )
         importer(update=False)

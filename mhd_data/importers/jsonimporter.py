@@ -9,9 +9,9 @@ from mhd_provenance.models import Provenance
 class JSONFileImporter(DataImporter):
     """ An importer that loads data from a set of json files """
 
-    def __init__(self, collection_slug, property_names, data_path, provenance_path, quiet, batch_size, inner_chunk_size = 1000000):
+    def __init__(self, collection_slug, property_names, data_path, provenance_path, quiet, batch_size, chunk_size):
         # inner chunk size
-        self._inner_chunk_size = inner_chunk_size
+        self._chunk_size = chunk_size
 
         # file list
         self._files = deque([])
@@ -67,10 +67,10 @@ class JSONFileImporter(DataImporter):
         }
 
         # cut the chunk to at most inner_chunk_size
-        if len(self._chunk) > self._inner_chunk_size:
-            c = self._chunk[:self._inner_chunk_size]
-            self._chunk_offset += self._inner_chunk_size
-            self._chunk = self._chunk[self._inner_chunk_size:]
+        if self._chunk_size is not None and len(self._chunk) > self._chunk_size:
+            c = self._chunk[:self._chunk_size]
+            self._chunk_offset += self._chunk_size
+            self._chunk = self._chunk[self._chunk_size:]
         else:
             c = self._chunk
             self._chunk = None
