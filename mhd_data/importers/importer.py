@@ -108,7 +108,7 @@ class DataImporter(object):
         for (idx, p) in enumerate(self.properties):
             propstart = time.time()
             try:
-                self._import_chunk_property(chunk, items, p, idx, update=update)
+                self._import_chunk_property(chunk, uuids, p, idx, update=update)
             except Exception as e:
                 raise ImporterError('Unable to import property {}: {}'.format(p.slug, str(e)))
             self.logger.info('Collection {2!r}: Property {1!r}: Took {0} second(s)'.format(time.time() - propstart, p.slug, self.collection.slug))
@@ -117,7 +117,7 @@ class DataImporter(object):
         # return the uuds
         return uuids
 
-    def _import_chunk_property(self, chunk, items, prop, idx, update):
+    def _import_chunk_property(self, chunk, uuids, prop, idx, update):
         """
             Creates the given property for the given chunk and the provided items
         """
@@ -130,20 +130,21 @@ class DataImporter(object):
         # this means we don't need to constantly look them up again, leading
         # to a significant speedup
         column = self.get_chunk_column(chunk, prop, idx)
+        prop_id = prop.id
         model = prop.codec_model
         populate_value = model.populate_value
-        provenance = self.provenance
+        provenance_id = self.provenance.id
 
         # Create each of the property values and populate them from the literal ones
         # in the column
         values = [
             model(
                 value=populate_value(value),
-                item=item,
-                prop=prop,
-                provenance=provenance
+                item_id=uuid,
+                prop_id=prop_id,
+                provenance_id=provenance_id
             )
-            for (item, value) in zip(tqdm(items, leave=False), column)
+            for (uuid, value) in zip(tqdm(uuids, leave=False), column)
         ]
         self.logger.info('Collection {2!r}: Property {1!r}: {0!r} Value(s) instantiated'.format(len(values), prop.slug, self.collection.slug))
 
