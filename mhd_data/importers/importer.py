@@ -1,4 +1,5 @@
 from uuid import uuid4
+import gc
 
 import logging
 from tqdm import tqdm
@@ -92,17 +93,20 @@ class DataImporter(object):
         # bulk create the items
         Item.objects.bulk_create(items, batch_size=self.batch_size, ignore_conflicts=True)
         self.logger.info('Collection {1!r}: {0!s} Item(s) saved in database'.format(len(items), self.collection.slug))
+        items = None # we no longer need these in memory
 
         # Create item associations
         ItemCollections = Item.collections.through
         cid = self.collection.id
-        assocs = [ItemCollections(collection_id=cid, item_id=i.id) for i in tqdm(items, leave=False)]
+        assocs = [ItemCollections(collection_id=cid, item_id=uuid) for uuid in tqdm(uuids, leave=False)]
         self.logger.info('Collection {1!r}: {0!s} Item-Collection Association(s) instantiated'.format(len(assocs), self.collection.slug))
 
         # bulk_create them
         ItemCollections.objects.bulk_create(assocs, batch_size=self.batch_size, ignore_conflicts=True)
-
         self.logger.info('Collection {1!r}: {0!s} Item-Collection Association(s) saved in database'.format(len(assocs), self.collection.slug))
+
+        # run the garbage collector to get rid of all the items we already stored
+        gc.collect()
 
         # iterate and create each propesrty
         for (idx, p) in enumerate(self.properties):
@@ -114,7 +118,9 @@ class DataImporter(object):
             self.logger.info('Collection {2!r}: Property {1!r}: Took {0} second(s)'.format(time.time() - propstart, p.slug, self.collection.slug))
 
         self.logger.info('Collection {1!r}: Took {0} second(s)'.format(time.time() - start, self.collection.slug))
-        # return the uuds
+
+        # run the garbage collector and then return the uuids
+        gc.collect()
         return uuids
 
     def _import_chunk_property(self, chunk, uuids, prop, idx, update):
@@ -151,6 +157,10 @@ class DataImporter(object):
         # bulk_create all the values
         model.objects.bulk_create(filter(lambda v: v.value is not None, values), batch_size=self.batch_size, ignore_conflicts=True)
         self.logger.info('Collection {2!r}: Property {1!r}: {0!r} Value(s) saved in database'.format(len(values), prop.slug, self.collection.slug))
+
+        # run the garbage collectorto get rid of things we no longer need
+        values = None
+        gc.collect()
     #
     # Methods to be implemented by subclass
     #
