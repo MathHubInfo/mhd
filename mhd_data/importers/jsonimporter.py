@@ -1,4 +1,4 @@
-import json
+import ujson as json
 from collections import deque
 
 from .importer import DataImporter, ImporterError
