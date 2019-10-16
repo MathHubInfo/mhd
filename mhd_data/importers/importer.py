@@ -90,7 +90,7 @@ class DataImporter(object):
         self.logger.info('Collection {1!r}: {0!s} Item(s) instantiated'.format(len(items), self.collection.slug))
 
         # bulk create the items
-        Item.objects.bulk_create(items, batch_size=self.batch_size)
+        Item.objects.bulk_create(items, batch_size=self.batch_size, ignore_conflicts=True)
         self.logger.info('Collection {1!r}: {0!s} Item(s) saved in database'.format(len(items), self.collection.slug))
 
         # Create item associations
@@ -100,7 +100,7 @@ class DataImporter(object):
         self.logger.info('Collection {1!r}: {0!s} Item-Collection Association(s) instantiated'.format(len(assocs), self.collection.slug))
 
         # bulk_create them
-        ItemCollections.objects.bulk_create(assocs, batch_size=self.batch_size)
+        ItemCollections.objects.bulk_create(assocs, batch_size=self.batch_size, ignore_conflicts=True)
 
         self.logger.info('Collection {1!r}: {0!s} Item-Collection Association(s) saved in database'.format(len(assocs), self.collection.slug))
 
@@ -148,7 +148,7 @@ class DataImporter(object):
         self.logger.info('Collection {2!r}: Property {1!r}: {0!r} Value(s) instantiated'.format(len(values), prop.slug, self.collection.slug))
 
         # bulk_create all the values
-        model.objects.bulk_create(filter(lambda v: v.value is not None, values), batch_size=self.batch_size)
+        model.objects.bulk_create(filter(lambda v: v.value is not None, values), batch_size=self.batch_size, ignore_conflicts=True)
         self.logger.info('Collection {2!r}: Property {1!r}: {0!r} Value(s) saved in database'.format(len(values), prop.slug, self.collection.slug))
     #
     # Methods to be implemented by subclass
