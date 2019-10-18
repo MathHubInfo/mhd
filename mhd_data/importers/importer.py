@@ -2,10 +2,7 @@ import csv
 import gc
 import logging
 import time
-from io import StringIO
 from uuid import uuid4
-
-from mhd.utils import pgsql_serializer
 
 from django.db import connection
 from tqdm import tqdm
@@ -13,6 +10,8 @@ from tqdm import tqdm
 from mhd_data.models import Item
 from mhd_provenance.models import Provenance
 from mhd_schema.models import Collection, Property
+
+from mhd.utils import BatchImporter
 
 
 class DataImporter(object):
@@ -22,14 +21,16 @@ class DataImporter(object):
         Does not yet support the update property
     """
 
-    def __init__(self, collection, properties, quiet=False, batch_size=None):
+    def __init__(self, collection, properties, quiet=False, batch_size=None, output_folder=None):
         """ Creates a new data importer for the given collection and properties """
         self.logger = logging.getLogger('mhd.dataimporter')
         self.logger.setLevel(logging.WARN if quiet else logging.DEBUG)
 
+        self.batch = BatchImporter.get_default_importer(None, quiet=quiet, batch_size=batch_size)
+
         self.collection = collection
         self.properties = properties
-        self.batch_size = batch_size
+        self.output_folder = output_folder
 
         self._validate_params()
 
@@ -91,12 +92,12 @@ class DataImporter(object):
         self.logger.info('Collection {1!r}: {0!s} fresh UUID(s) generated'.format(len(uuids), self.collection.slug))
 
         # Create items in the database
-        self._insert_into_db(Item, ['id'], [[uuid] for uuid in uuids])
+        self.batch(Item, ['id'], [[uuid] for uuid in uuids])
         self.logger.info('Collection {1!r}: {0!s} Item(s) saved in database'.format(len(uuids), self.collection.slug))
 
         # Create Item-Collection Associations
         cid = self.collection.id
-        self._insert_into_db(Item.collections.through, ['collection_id', 'item_id'], [[cid, uuid] for uuid in uuids])
+        self.batch(Item.collections.through, ['collection_id', 'item_id'], [[cid, uuid] for uuid in uuids])
         self.logger.info('Collection {1!r}: {0!s} Item-Collection Association(s) saved in database'.format(len(uuids), self.collection.slug))
 
         # run the garbage collector to get rid of all the items we already stored
@@ -108,7 +109,6 @@ class DataImporter(object):
             try:
                 self._import_chunk_property(chunk, uuids, p, idx, update=update)
             except Exception as e:
-                raise
                 raise ImporterError('Unable to import property {}: {}'.format(p.slug, str(e)))
             self.logger.info('Collection {2!r}: Property {1!r}: Took {0} second(s)'.format(time.time() - propstart, p.slug, self.collection.slug))
 
@@ -152,72 +152,12 @@ class DataImporter(object):
         self.logger.info('Collection {2!r}: Property {1!r}: {0!r} Value(s) instantiated'.format(len(values), prop.slug, self.collection.slug))
 
         # insert them into the db
-        self._insert_into_db(model, ['id', 'value', 'item_id', 'prop_id', 'provenance_id', 'active'], filter(lambda v: v[1] is not None, values), len(values))
+        self.batch(model, ['id', 'value', 'item_id', 'prop_id', 'provenance_id', 'active'], filter(lambda v: v[1] is not None, values), len(values))
         self.logger.info('Collection {2!r}: Property {1!r}: {0!r} Value(s) saved in database'.format(len(values), prop.slug, self.collection.slug))
 
         # run the garbage collectorto get rid of things we no longer need
         values = None
         gc.collect()
-
-    def _insert_into_db(self, model, fields, values, count_instances = None):
-        """
-            Insert into db inserts values for a given model into the database as efficient as possible
-        """
-
-        # split out postgres
-        if connection.vendor == 'postgresql':
-            return self._insert_into_db_postgres(model, fields, values, count_instances=count_instances)
-
-        # else do the normal thing
-        return self._insert_into_db_regular(model, fields, values, count_instances=count_instances)
-
-    def _insert_into_db_regular(self, model, fields, values, count_instances=None):
-        """
-            DB-agnostic data insertion
-        """
-
-        # create the instance from the field names and values
-        instances = [
-            model(**{name: value[i] for (i, name) in enumerate(fields)})
-                for value in tqdm(values, leave=False, total=count_instances)
-        ]
-
-        # send some logger into
-        self.logger.info('Created {} instanc(s), sending to database ...'.format(count_instances or len(values)))
-
-        # and run bulk_create
-        return model.objects.bulk_create(instances, batch_size=self.batch_size)
-
-    def _insert_into_db_postgres(self, model, fields, values, count_instances=None):
-        # dump all the model instances into a csv writer
-        stream = StringIO()
-        writer = csv.writer(stream, delimiter='\t')
-
-        # find serializers and prep values for the database
-        preppers = [model._meta.get_field(f).get_prep_value for f in fields]
-        serializers = [pgsql_serializer(model._meta.get_field(f).db_type(connection=connection)) for f in fields]
-
-        # prepare values for the database
-        for value in tqdm(values, leave=False, total=count_instances):
-            writer.writerow([
-                s(p(v)) for (s, p, v) in zip(serializers, preppers, value)
-            ])
-
-        self.logger.info('Data serialized, sending {} Byte(s) to postgres ...'.format(stream.tell()))
-        stream.seek(0)
-
-        # and import into the database
-        with connection.cursor() as cursor:
-            cursor.copy_from(
-                file=stream,
-                table=model._meta.db_table,
-                sep='\t',
-                columns=fields,
-            )
-
-        # close the stream just to be sure it's no longer used
-        stream.close()
-
 
     #
     # Methods to be implemented by subclass
