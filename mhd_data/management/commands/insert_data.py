@@ -22,6 +22,9 @@ class Command(BaseCommand):
                             help="Maximum size for each chunk read from a file. ")
         parser.add_argument('--batch-size', '-b', type=int, default=None,
                             help="Batch size for insert queries into the database (sqlite only). ")
+        parser.add_argument('--write-sql', '-w', type=str, default=None,
+                    help="When set, instead of batch inserting data write output to the given path. ")
+
         parser.add_argument(
             'data', nargs='+', help=".json file containing 2-dimensional value array")
 
@@ -33,5 +36,6 @@ class Command(BaseCommand):
             kwargs['quiet'],
             kwargs['batch_size'],
             kwargs['chunk_size'],
+            kwargs['write_sql']
         )
         importer(update=False)

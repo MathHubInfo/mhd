@@ -6,10 +6,11 @@ from .importer import DataImporter, ImporterError
 from mhd_schema.models import Collection
 from mhd_provenance.models import Provenance
 
+
 class JSONFileImporter(DataImporter):
     """ An importer that loads data from a set of json files """
 
-    def __init__(self, collection_slug, property_names, data_path, provenance_path, quiet, batch_size, chunk_size):
+    def __init__(self, collection_slug, property_names, data_path, provenance_path, quiet, batch_size, chunk_size, write_sql):
         # inner chunk size
         self._chunk_size = chunk_size
 
@@ -24,17 +25,15 @@ class JSONFileImporter(DataImporter):
         # path to provenance
         self.provenance_path = provenance_path
 
-
         # buffer for current file chunk
         self._chunk = None
         self._chunk_fn = None
         self._chunk_offset = None
 
-
         # call super()
         collection = Collection.objects.get(slug=collection_slug)
         properties = [collection.get_property(pn) for pn in property_names]
-        super().__init__(collection, properties, quiet, batch_size)
+        super().__init__(collection, properties, quiet, batch_size, write_sql)
 
     def create_provenance(self):
         """ Creates the provenance model for this importer """
@@ -96,11 +95,13 @@ class JSONFileImporter(DataImporter):
             try:
                 data = json.load(f)
             except Exception as e:
-                raise ImporterError('Unable to read file {}: {}'.format(data_path, str(e)))
+                raise ImporterError(
+                    'Unable to read file {}: {}'.format(data_path, str(e)))
 
         # if it is not a list, inform the user
         if not isinstance(data, list):
-            raise ImporterError('Unable to import data from {}: Not a list. '.format(data_path))
+            raise ImporterError(
+                'Unable to import data from {}: Not a list. '.format(data_path))
 
         # return the data
         return data

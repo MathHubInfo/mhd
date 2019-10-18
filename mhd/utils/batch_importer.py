@@ -1,5 +1,6 @@
 import json
 import csv
+import os
 from io import StringIO
 from tqdm import tqdm
 import logging
@@ -137,8 +138,25 @@ class CopyFromImporter(SerializingImporter):
 
 
 class CopyFromFile(SerializingImporter):
-    def __init__(self, path):
+    def __init__(self, path, **kwargs):
+        super().__init__(**kwargs)
+
+        # setup basic state (path, counter)
         self.path = path
+        self.counter = 0
+
+        # path to the sql file
+        self._sql_path = os.path.join(path, 'data.sql')
+
+        # write a new line into the sql file
+        with open(self._sql_path, 'w') as f:
+            f.write("-- MHD Data Import\n")
+    
+    def _append_sql(self, s):
+        """ Appends a string to the given file """
+
+        with open(self._sql_path, 'a') as f:
+            f.write(s + '\n')
 
     def __call__(self, model, fields, values, count_values=None):
         """ Imports multiple values at once
@@ -149,5 +167,34 @@ class CopyFromFile(SerializingImporter):
             does not expose it's length, it can be given explicitly.
         """
 
-        # TODO: import into file
-        raise NotImplementedError
+        # find the next path to write csv into
+        name = 'data_{}.csv'.format(self.counter)
+        self.counter += 1
+        path = os.path.join(self.path, name)
+
+        # Write csv file
+        with open(path, 'w+') as stream:
+            size = self._serialize(stream, model, fields, values, count_values=count_values)
+
+        # tell the user
+        self.logger.info(
+            'Serialized {} Byte(s) of data into {}'.format(size, path))
+        
+        # build a 'COPY FROM' command
+        code = '\\copy {}({}) FROM {} WITH DELIMITER AS {} NULL AS {};'.format(
+            CopyFromFile.quote_double(model._meta.db_table),
+            ",".join(map(CopyFromFile.quote_double, fields)),
+            CopyFromFile.quote_single("./" + name),
+            "E'\\t'",
+            "'None'"
+        )
+        self._append_sql(code)
+    
+    @staticmethod
+    def quote_double(s):
+        return '"' + s.translate(str.maketrans({
+            '"': '\\"',
+        })) + '"'
+    @staticmethod
+    def quote_single(s):
+        return "'{}'".format(s)

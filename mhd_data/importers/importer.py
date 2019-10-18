@@ -21,16 +21,15 @@ class DataImporter(object):
         Does not yet support the update property
     """
 
-    def __init__(self, collection, properties, quiet=False, batch_size=None, output_folder=None):
+    def __init__(self, collection, properties, quiet=False, batch_size=None, write_sql=None):
         """ Creates a new data importer for the given collection and properties """
         self.logger = logging.getLogger('mhd.dataimporter')
         self.logger.setLevel(logging.WARN if quiet else logging.DEBUG)
 
-        self.batch = BatchImporter.get_default_importer(None, quiet=quiet, batch_size=batch_size)
+        self.batch = BatchImporter.get_default_importer(write_sql, quiet=quiet, batch_size=batch_size)
 
         self.collection = collection
         self.properties = properties
-        self.output_folder = output_folder
 
         self._validate_params()
 

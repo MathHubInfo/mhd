@@ -25,6 +25,8 @@ class Command(BaseCommand):
                             help="Maximum size for each chunk read from a file. ")
         parser.add_argument('--batch-size', '-b', type=int, default=None,
                             help="Batch size for insert queries into the database. ")
+        parser.add_argument('--write-sql', '-w', type=str, default=None,
+                            help="When set, instead of batch inserting data write output to the given path. ")
 
     @with_simulate_arg
     def handle(self, *args, **kwargs):
@@ -38,4 +40,4 @@ class Command(BaseCommand):
 
         # insert the data in the collection
         call_command('insert_data', *kwargs['data'], collection=collection_name,
-                     fields=fields, provenance=kwargs['provenance'], quiet=kwargs['quiet'], batch_size=kwargs['batch_size'], chunk_size=kwargs['chunk_size'])
+                     fields=fields, provenance=kwargs['provenance'], quiet=kwargs['quiet'], batch_size=kwargs['batch_size'], chunk_size=kwargs['chunk_size'], write_sql=kwargs['write_sql'])
