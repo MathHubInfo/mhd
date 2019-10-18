@@ -36,14 +36,14 @@ class JSONFileImporter(DataImporter):
         super().__init__(collection, properties, quiet, batch_size, write_sql)
 
     def create_provenance(self):
-        """ Creates the provenance model for this importer """
+        """
+            Serializes provenance to be used by this importer.
+        """
 
         with open(self.provenance_path) as f:
             prov = json.load(f)
 
-        provenance = Provenance(metadata=prov)
-        provenance.save()
-        return provenance
+        return prov
 
     def get_next_chunk(self):
         """

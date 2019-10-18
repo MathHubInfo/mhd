@@ -79,18 +79,32 @@ class SerializingImporter(BatchImporter):
     @staticmethod
     def pgsql_serializer(typ):
         """ Builds a serializer for the given postgres type """
+        typ = typ.lower()
+
+        # arrays => serialize each value of the property
         if typ.endswith('[]'):
             s = SerializingImporter.pgsql_serializer(typ[:-2])
             return lambda v: '{' + ','.join(map(s, v)) + '}'
-        if typ.lower() == 'json':
+        elif typ == 'json':
             return json.dumps
+        elif typ == 'jsonb':
+            return lambda x: json.dumps(x.adapted) if x is not None else 'None'
+        elif typ == 'timestamp with time zone':
+            return lambda v:"'{}'".format(v.isoformat())
+        elif typ == 'text' or typ.startswith('char') or typ.startswith('varchar'):
+            return SerializingImporter.pgsql_quote
+        else:
+            return str
 
-        return str
+    @staticmethod
+    def pgsql_quote(s):
+        return '"{}"'.format(s.replace('"', '""'))
+
 
     def _serialize(self, stream, model, fields, values, count_values=None):
         """ Serialializes values into stream as csv and returns the size of stream in bytes """
 
-        writer = csv.writer(stream, delimiter='\t')
+        writer = csv.writer(stream, delimiter='\t', quoting=csv.QUOTE_NONE, quotechar='')
 
         # find serializers and prep values for the database
         preppers = [model._meta.get_field(f).get_prep_value for f in fields]
@@ -130,6 +144,7 @@ class CopyFromImporter(SerializingImporter):
                 file=stream,
                 table=model._meta.db_table,
                 sep='\t',
+                null='None',
                 columns=fields,
             )
 
@@ -151,7 +166,7 @@ class CopyFromFile(SerializingImporter):
         # write a new line into the sql file
         with open(self._sql_path, 'w') as f:
             f.write("-- MHD Data Import\n")
-    
+
     def _append_sql(self, s):
         """ Appends a string to the given file """
 
@@ -179,7 +194,7 @@ class CopyFromFile(SerializingImporter):
         # tell the user
         self.logger.info(
             'Serialized {} Byte(s) of data into {}'.format(size, path))
-        
+
         # build a 'COPY FROM' command
         code = '\\copy {}({}) FROM {} WITH DELIMITER AS {} NULL AS {};'.format(
             CopyFromFile.quote_double(model._meta.db_table),
@@ -189,7 +204,7 @@ class CopyFromFile(SerializingImporter):
             "'None'"
         )
         self._append_sql(code)
-    
+
     @staticmethod
     def quote_double(s):
         return '"' + s.translate(str.maketrans({

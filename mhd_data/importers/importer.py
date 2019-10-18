@@ -2,16 +2,16 @@ import csv
 import gc
 import logging
 import time
-from uuid import uuid4
+
+from django.utils import timezone
 
 from django.db import connection
 from tqdm import tqdm
 
+from mhd.utils import BatchImporter, uuid4
 from mhd_data.models import Item
 from mhd_provenance.models import Provenance
 from mhd_schema.models import Collection, Property
-
-from mhd.utils import BatchImporter
 
 
 class DataImporter(object):
@@ -26,7 +26,8 @@ class DataImporter(object):
         self.logger = logging.getLogger('mhd.dataimporter')
         self.logger.setLevel(logging.WARN if quiet else logging.DEBUG)
 
-        self.batch = BatchImporter.get_default_importer(write_sql, quiet=quiet, batch_size=batch_size)
+        self.batch = BatchImporter.get_default_importer(
+            write_sql, quiet=quiet, batch_size=batch_size)
 
         self.collection = collection
         self.properties = properties
@@ -52,11 +53,16 @@ class DataImporter(object):
             Returns a list of all items by UUIDS
         """
 
-        # Create the procenance
-        self.provenance = self.create_provenance()
+        provenance_data = self.create_provenance()
+        self.provenance = uuid4()
 
-        if not isinstance(self.provenance, Provenance):
-            raise ImportValidationError('Invalid Provenance passed')
+        self.batch(Provenance, ['id', 'metadata', 'time'], [
+            [
+                self.provenance,
+                provenance_data,
+                timezone.now()
+            ]
+        ])
 
         uuid_list = []
 
@@ -67,7 +73,8 @@ class DataImporter(object):
                 break
 
             uuid_list.append(uuids)
-            self.logger.info('Finished import of {} item(s)'.format(len(uuids)))
+            self.logger.info(
+                'Finished import of {} item(s)'.format(len(uuids)))
 
         return uuid_list
 
@@ -81,23 +88,26 @@ class DataImporter(object):
         if chunk is None:
             return None
 
-
         # start time
         start = time.time()
 
         # Generate UUIDs
         uuids = [
             uuid4() if uuid is None else uuid for uuid in tqdm(self.get_chunk_uuids(chunk), leave=False)]
-        self.logger.info('Collection {1!r}: {0!s} fresh UUID(s) generated'.format(len(uuids), self.collection.slug))
+        self.logger.info('Collection {1!r}: {0!s} fresh UUID(s) generated'.format(
+            len(uuids), self.collection.slug))
 
         # Create items in the database
         self.batch(Item, ['id'], [[uuid] for uuid in uuids])
-        self.logger.info('Collection {1!r}: {0!s} Item(s) saved in database'.format(len(uuids), self.collection.slug))
+        self.logger.info('Collection {1!r}: {0!s} Item(s) saved in database'.format(
+            len(uuids), self.collection.slug))
 
         # Create Item-Collection Associations
         cid = self.collection.id
-        self.batch(Item.collections.through, ['collection_id', 'item_id'], [[cid, uuid] for uuid in uuids])
-        self.logger.info('Collection {1!r}: {0!s} Item-Collection Association(s) saved in database'.format(len(uuids), self.collection.slug))
+        self.batch(Item.collections.through, ['collection_id', 'item_id'], [
+                   [cid, uuid] for uuid in uuids])
+        self.logger.info(
+            'Collection {1!r}: {0!s} Item-Collection Association(s) saved in database'.format(len(uuids), self.collection.slug))
 
         # run the garbage collector to get rid of all the items we already stored
         gc.collect()
@@ -106,12 +116,16 @@ class DataImporter(object):
         for (idx, p) in enumerate(self.properties):
             propstart = time.time()
             try:
-                self._import_chunk_property(chunk, uuids, p, idx, update=update)
+                self._import_chunk_property(
+                    chunk, uuids, p, idx, update=update)
             except Exception as e:
-                raise ImporterError('Unable to import property {}: {}'.format(p.slug, str(e)))
-            self.logger.info('Collection {2!r}: Property {1!r}: Took {0} second(s)'.format(time.time() - propstart, p.slug, self.collection.slug))
+                raise ImporterError(
+                    'Unable to import property {}: {}'.format(p.slug, str(e)))
+            self.logger.info('Collection {2!r}: Property {1!r}: Took {0} second(s)'.format(
+                time.time() - propstart, p.slug, self.collection.slug))
 
-        self.logger.info('Collection {1!r}: Took {0} second(s)'.format(time.time() - start, self.collection.slug))
+        self.logger.info('Collection {1!r}: Took {0} second(s)'.format(
+            time.time() - start, self.collection.slug))
 
         # run the garbage collector and then return the uuids
         gc.collect()
@@ -133,7 +147,7 @@ class DataImporter(object):
         prop_id = prop.id
         model = prop.codec_model
         populate_value = model.populate_value
-        provenance_id = self.provenance.id
+        provenance_id = self.provenance
 
         # Create each of the property values and populate them from the literal ones
         # in the column
@@ -148,11 +162,14 @@ class DataImporter(object):
             ]
             for (uuid, value) in zip(tqdm(uuids, leave=False), column)
         ]
-        self.logger.info('Collection {2!r}: Property {1!r}: {0!r} Value(s) instantiated'.format(len(values), prop.slug, self.collection.slug))
+        self.logger.info('Collection {2!r}: Property {1!r}: {0!r} Value(s) instantiated'.format(
+            len(values), prop.slug, self.collection.slug))
 
         # insert them into the db
-        self.batch(model, ['id', 'value', 'item_id', 'prop_id', 'provenance_id', 'active'], filter(lambda v: v[1] is not None, values), len(values))
-        self.logger.info('Collection {2!r}: Property {1!r}: {0!r} Value(s) saved in database'.format(len(values), prop.slug, self.collection.slug))
+        self.batch(model, ['id', 'value', 'item_id', 'prop_id', 'provenance_id', 'active'], filter(
+            lambda v: v[1] is not None, values), len(values))
+        self.logger.info('Collection {2!r}: Property {1!r}: {0!r} Value(s) saved in database'.format(
+            len(values), prop.slug, self.collection.slug))
 
         # run the garbage collectorto get rid of things we no longer need
         values = None
@@ -164,8 +181,8 @@ class DataImporter(object):
 
     def create_provenance(self):
         """
-            Creates or gets the procenance of this importer.
-            To be implemented by sub-class.
+            Serializes provenance to be used by this importer.
+            To be implemented by subclass.
         """
 
         raise NotImplementedError
