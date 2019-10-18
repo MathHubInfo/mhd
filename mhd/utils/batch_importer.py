@@ -5,6 +5,8 @@ from io import StringIO
 from tqdm import tqdm
 import logging
 
+from .pgsql_serializer import make_pgsql_serializer
+
 from django.db import connection
 
 
@@ -76,31 +78,6 @@ class SerializingImporter(BatchImporter):
             raise ValueError(
                 "SerializingImporter requires 'postgresql' database")
 
-    @staticmethod
-    def pgsql_serializer(typ):
-        """ Builds a serializer for the given postgres type """
-        typ = typ.lower()
-
-        # arrays => serialize each value of the property
-        if typ.endswith('[]'):
-            s = SerializingImporter.pgsql_serializer(typ[:-2])
-            return lambda v: '{' + ','.join(map(s, v)) + '}'
-        elif typ == 'json':
-            return json.dumps
-        elif typ == 'jsonb':
-            return lambda x: json.dumps(x.adapted) if x is not None else 'None'
-        elif typ == 'timestamp with time zone':
-            return lambda v:"'{}'".format(v.isoformat())
-        elif typ == 'text' or typ.startswith('char') or typ.startswith('varchar'):
-            return SerializingImporter.pgsql_quote
-        else:
-            return str
-
-    @staticmethod
-    def pgsql_quote(s):
-        return '"{}"'.format(s.replace('"', '""'))
-
-
     def _serialize(self, stream, model, fields, values, count_values=None):
         """ Serialializes values into stream as csv and returns the size of stream in bytes """
 
@@ -108,7 +85,7 @@ class SerializingImporter(BatchImporter):
 
         # find serializers and prep values for the database
         preppers = [model._meta.get_field(f).get_prep_value for f in fields]
-        serializers = [SerializingImporter.pgsql_serializer(model._meta.get_field(
+        serializers = [make_pgsql_serializer(model._meta.get_field(
             f).db_type(connection=connection)) for f in fields]
 
         # prepare values for the database
