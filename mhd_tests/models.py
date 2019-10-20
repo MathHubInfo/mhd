@@ -30,3 +30,13 @@ class SmartNDArrayTwoModel(models.Model):
     """ Model used for two-dimensional SmartNDArrayField testing """
 
     data = SmartNDArrayField(typ = models.IntegerField(), dim = 2)
+
+class JSONArrayFieldModel(models.Model):
+    """ Model used for one-dimension SmartJSONField()-array testing """
+
+    data = SmartNDArrayField(typ = SmartJSONField(), dim = 1)
+
+class TextFieldModel(models.Model):
+    """ Model used for TextField testing """
+
+    data = models.TextField(blank = True)

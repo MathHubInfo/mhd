@@ -1,11 +1,9 @@
-import json
-import csv
 import os
 from io import StringIO
 from tqdm import tqdm
 import logging
 
-from .pgsql_serializer import make_pgsql_serializer
+from .pgsql_serializer import make_pgsql_serializer, CSV_NULL, CSV_NULL_ESCAPED
 
 from django.db import connection
 
@@ -30,7 +28,7 @@ class BatchImporter(object):
         raise NotImplementedError
 
     @staticmethod
-    def get_default_importer(path, **kwargs):
+    def get_default_importer(path, disable_optimisations = None, **kwargs):
         """ Gets the default BatchImporter instance """
 
         # if we have a path given, copy output files to that path
@@ -81,8 +79,6 @@ class SerializingImporter(BatchImporter):
     def _serialize(self, stream, model, fields, values, count_values=None):
         """ Serialializes values into stream as csv and returns the size of stream in bytes """
 
-        writer = csv.writer(stream, delimiter='\t', quoting=csv.QUOTE_NONE, quotechar='')
-
         # find serializers and prep values for the database
         preppers = [model._meta.get_field(f).get_prep_value for f in fields]
         serializers = [make_pgsql_serializer(model._meta.get_field(
@@ -90,9 +86,9 @@ class SerializingImporter(BatchImporter):
 
         # prepare values for the database
         for value in tqdm(values, leave=False, total=count_values):
-            writer.writerow([
-                s(p(v)) for (s, p, v) in zip(serializers, preppers, value)
-            ])
+            stream.write('\t'.join(
+                    s(p(v)) for (s, p, v) in zip(serializers, preppers, value)
+                ) + '\n')
 
         return stream.tell()
 
@@ -121,7 +117,7 @@ class CopyFromImporter(SerializingImporter):
                 file=stream,
                 table=model._meta.db_table,
                 sep='\t',
-                null='None',
+                null=CSV_NULL,
                 columns=fields,
             )
 
@@ -178,7 +174,7 @@ class CopyFromFile(SerializingImporter):
             ",".join(map(CopyFromFile.quote_double, fields)),
             CopyFromFile.quote_single("./" + name),
             "E'\\t'",
-            "'None'"
+            CSV_NULL_ESCAPED,
         )
         self._append_sql(code)
 
