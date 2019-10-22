@@ -20,6 +20,13 @@ class FrontendProxyTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['X-Sendfile'], '/index.html')
 
+    def test_about_url(self):
+        """ Checks that the root url returns an appropriate X-Sendfile """
+
+        response = APIClient().get('/about/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['X-Sendfile'], '/index.html')
+
     def test_collection_url_exists(self):
         """ Checks that a good collection url returns an X-Sendfile header """
 

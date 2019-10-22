@@ -12,6 +12,7 @@ const MDHCollection = loadable(() => import("./components/routes/collection"));
 const MDHHomePage = loadable(() => import("./components/routes/home"));
 const MDHItem = loadable(() => import("./components/routes/item"));
 const Debug = loadable(() => import("./components/routes/debug"));
+const About = loadable(() => import("./components/routes/about"));
 
 interface AppProps {
     /** the base api URL */
@@ -51,6 +52,7 @@ export default class App extends React.Component<AppProps> {
                 
                 <Switch>
                     <Route exact path='/' component={this.homeComponent}></Route>
+                    <Route exact path='/about/' component={About}></Route>
                     <Route path='/item/:collection/:uuid' component={this.itemComponent}></Route>
                     <Route path='/collection/:collection' component={this.collectionComponent}></Route>
 

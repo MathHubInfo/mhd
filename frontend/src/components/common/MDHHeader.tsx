@@ -1,5 +1,6 @@
 import React from 'react';
 import { Navbar, NavbarBrand, NavbarToggler, Collapse, Nav, NavItem, NavLink } from "reactstrap";
+import { NavLink as RNavLink } from "react-router-dom";
 
 interface MDHHeaderState {
     isOpen: boolean;
@@ -23,7 +24,7 @@ export default class MDHHeader extends React.Component<{}, MDHHeaderState> {
                 <Collapse isOpen={isOpen} navbar>
                     <Nav className="ml-auto" navbar>
                         <NavItem>
-                        <NavLink href="https://docs.mathhub.info/" className={"item-link"}>About</NavLink>
+                            <NavLink tag={RNavLink} to='/about/'>About</NavLink>
                         </NavItem>
                         <NavItem>
                             <NavLink href="https://github.com/MathHubInfo/mhd" className={"item-link"}>

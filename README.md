@@ -106,7 +106,7 @@ This Code Exposes the following urls:
     - `/api/schema/codecs/$name` -- Get a specific codec
 - `/admin/` -- Admin interface
     - `/admin/static/` -- staticfiles used for the admin interface
-- `/`, `/collection/$collection/` and `/item/$collection/$uuid` -- Matches frontend routes and returns appropriate `X-Sendfile` when the object exists (see below)
+- `/`, `/about/`, `/collection/$collection/` and `/item/$collection/$uuid` -- Matches frontend routes and returns appropriate `X-Sendfile` when the object exists (see below)
 
 ### Main Querying Syntax
 

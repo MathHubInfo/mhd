@@ -27,7 +27,7 @@ class FrontendProxyView(View):
         raise NotImplementedError
 
 
-class FrontendHomeView(FrontendProxyView):
+class FrontendStaticView(FrontendProxyView):
     def is_found(self, *args, **kwargs):
         return True
 

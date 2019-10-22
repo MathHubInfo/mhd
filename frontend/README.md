@@ -16,6 +16,7 @@ yarn install
 The frontend reacts to the following routes:
 
 - `/`: an overview page of all existing collections
+- `/about/`: a generic about page
 - `/$collection/`: a search page for the given collection if it exists, an error page otherwise
 
 If furthermore expects the backend routes to be available:
