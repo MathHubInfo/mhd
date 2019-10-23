@@ -20,6 +20,10 @@ class Collection(ModelWithMetadata):
     url = models.URLField(
         null=True, blank=True, help_text="URL for more information about this collection")
 
+    flag_large_collection = models.BooleanField(
+        default=False, help_text="Flag this collection as potentially large to the user interface"
+    )
+
     def get_property(self, slug):
         """ Returns a property of the given name """
         return self.property_set.filter(slug=slug).first()

@@ -4,6 +4,7 @@
 export interface TMDHCollection {
     slug: string;
     displayName: string;
+    flag_large_collection: boolean;
 
     description: string;
     url?: string;
