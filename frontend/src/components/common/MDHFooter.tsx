@@ -11,7 +11,7 @@ export default function MDHFooter() {
     return (
         <footer>
             <Container>
-                <Row style={{textAlign: 'center'}}>
+                <Row style={{textAlign: 'center', marginTop: '5em'}}>
                     <Col>
                         <LogoLink url="https://kwarc.info/" pic={kwarc_logo} alt="KWARC research group" width={80} height={80} />
                         <LogoLink url="https://fau.de/" pic={fau_logo} alt="FAU Erlangen-Nürnberg" width={270} height={53} />
@@ -29,7 +29,8 @@ function LogoLink(props: { url: string; pic: any; alt: string, width: number, he
         <a
             href={props.url}
             target="_blank"
-            rel="noopener noreferrer">
+            rel="noopener noreferrer"
+            style={{marginRight: '2em', marginLeft: '2em'}}>
             <img src={props.pic} alt={props.alt} style={{ width: props.width, height: props.height }} />
             &nbsp;
         </a>
