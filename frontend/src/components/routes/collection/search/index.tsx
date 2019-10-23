@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container } from "reactstrap";
+import { Container, Alert } from "reactstrap";
 import { MDHBackendClient } from "../../../../client";
 import { MDHFilter, ParsedMDHCollection } from '../../../../client/derived';
 import ColumnEditor from './columns/ColumnEditor';
@@ -85,6 +85,7 @@ class MDHCollectionSearch extends React.Component<MDHCollectionSearchProps, MDHC
 
         return (
             <main>
+                {collection.flag_large_collection && <Alert color="warning">This collection is very large and queries might be slow. </Alert>}
                 <FilterEditor
                     client={client}
                     collection={collection}
