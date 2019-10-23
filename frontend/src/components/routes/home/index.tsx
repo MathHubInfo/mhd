@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from "react-router-dom";
-import { Button, ListGroup, ListGroupItem } from "reactstrap";
+import { Button, ListGroup, ListGroupItem, Row, Col } from "reactstrap";
 import { MDHBackendClient } from "../../../client";
 import { TDRFPagedResponse, TMDHCollection } from "../../../client/rest";
 import MDHMain, { MDHLoading } from "../../common/MDHMain";
@@ -153,7 +153,13 @@ export default class MDHHomePage extends React.Component<MDHHomePageProps, MDHHo
             {shouldPrevPage && <Button onClick={this.prevPage}>Previous</Button>}
             {shouldNextPage && <Button onClick={this.nextPage}>Next</Button>}
         </>;
+
+        const head = <Row>
+            <Col sm="12">
+                Something here
+            </Col>
+        </Row>;
         
-        return <MDHMain title="Pick a dataset" leftHead={leftHead} buttons={buttons} rightHead={rightHead} />;
+        return <MDHMain title="Pick a dataset" head={head} leftHead={leftHead} buttons={buttons} rightHead={rightHead} />;
     }
 }

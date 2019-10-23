@@ -6,6 +6,9 @@ interface MDHMainProps {
     /** title of the current page */
     title: React.ReactNode;
 
+    /** head displayed on top of other elements */
+    head? : React.ReactNode | React.ReactNode[];
+
     /** children in the left head */
     leftHead?: React.ReactNode | React.ReactNode[];
 
@@ -24,26 +27,27 @@ interface MDHMainProps {
  */
 export default class MDHMain extends React.Component<MDHMainProps> {
     render() {
-        const { title, leftHead, buttons, rightHead, children } = this.props;
+        const { title, head, leftHead, buttons, rightHead, children } = this.props;
         return (
             <main>
-                <MDHMainHead title={title} leftHead={leftHead} buttons={buttons} rightHead={rightHead} />
+                <MDHMainHead title={title} head={head} leftHead={leftHead} buttons={buttons} rightHead={rightHead} />
                 { children }
             </main>
         );
     }
 }
 
-type MDHMainHeadProps = Pick<MDHMainProps, 'title' | 'leftHead' | 'buttons' | 'rightHead'>
+type MDHMainHeadProps = Pick<MDHMainProps, 'title' | 'head' | 'leftHead' | 'buttons' | 'rightHead'>
 
 /** Layouting head */
 export class MDHMainHead extends React.Component<MDHMainHeadProps> {
     render() {
-        const { title, leftHead, buttons, rightHead } = this.props;
+        const { title, head, leftHead, buttons, rightHead } = this.props;
 
         return (
             <section className={`${styles.search}`}>
                 <Container>
+                    { head }
                     <Row>
                         <Col lg="3" sm="12" className="mx-auto my-4">
                             <h2 className="section-heading">{title}</h2>                 
