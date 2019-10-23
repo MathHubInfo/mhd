@@ -33,7 +33,7 @@ class ListAsArrayCell<T> extends React.Component<TCellProps<ListAsArray<T>, Arra
         const separator = (i: number) => (i < value.length-1 ? ", " : "")
         
         return <>[
-            {value.map((x, i) => <><Cell key={i} codec={codec.elementCodec} value={x}/>{separator(i)}</>)}
+            {value.map((x, i) => <React.Fragment key={i}><Cell key={i} codec={codec.elementCodec} value={x}/>{separator(i)}</React.Fragment>)}
         ]
         </>;
     }
