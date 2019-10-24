@@ -30,7 +30,7 @@ function LogoLink(props: { url: string; pic: any; alt: string, width: number, he
             href={props.url}
             target="_blank"
             rel="noopener noreferrer"
-            style={{margin: '1em 2em'}}>
+            style={{margin: '0.5em 1.5em'}}>
             <img src={props.pic} alt={props.alt} style={{ width: props.width, height: props.height }} />
         </a>
     );
