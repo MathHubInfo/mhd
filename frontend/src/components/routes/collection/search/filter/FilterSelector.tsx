@@ -281,6 +281,7 @@ class SelectedFilter<S = any, T = any> extends React.Component<TSelectedFilterPr
 /**
  * A simple informational button
  */
+/**
 function InfoButton(props: {value: string}) {
     return(
         <a href="#!">
@@ -288,3 +289,4 @@ function InfoButton(props: {value: string}) {
         </a>
     );
 }
+*/
