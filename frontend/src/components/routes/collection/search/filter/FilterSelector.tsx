@@ -109,7 +109,7 @@ type TFilterAction = {
                             <li key={p.slug}
                                 onClick={() => this.handleFilterAction({action: "add", slug: p.slug})}>
                                 <span className="fa-li"><i className="fas fa-plus"></i></span>
-                                {p.displayName} <InfoButton value="filter" />
+                                {p.displayName} {/**<InfoButton value="filter" />**/}
                             </li>
                         )}
                     </ul>
@@ -256,14 +256,14 @@ class SelectedFilter<S = any, T = any> extends React.Component<TSelectedFilterPr
                         <FilterEditorComponent value={internalValue} valid={valid} onChange={this.handleValueUpdate} onApply={this.handleApply} codec={this.props.codec}>
                             <>
                                 { displayName }
-                                <InfoButton value="filter" />
+                                {/**<InfoButton value="filter" />**/}
                             </>
                         </FilterEditorComponent>
                         :
                         <FilterViewerComponent value={internalValue} codec={this.props.codec}>
                             <>
                                 { displayName }
-                                <InfoButton value="filter" />
+                                {/**<InfoButton value="filter" />**/}
                             </>
                         </FilterViewerComponent>
                 }
