@@ -70,6 +70,20 @@ This will be automatically loaded by mhd during configuration time.
 
 *TODO: Image of layout and explanation*
 
+## Management commands
+
+This is a list of custom `manage.py` commands. 
+These can be called with `python manage.py <command>` and serve various commands. 
+See also [Built-in commands](https://docs.djangoproject.com/en/dev/ref/django-admin/#available-commands).
+
+- `upsert_collection`: Creates or updates a collection schema
+- `delete_collection`: Removes an empty collection
+- `insert_data`: Inserts data into an existing collection
+- `load_collection`: Combines `upsert_collection` and `insert_data` commands for convenience.
+- `query_collection`: Queries a collection
+- `flush_collection`: Flushes all items associated to a collection
+
+
 ## MDDL Codec Catalog
 
 This project also contains the master list of codecs. 
