@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 
-from ...models import Collection
+from mhd_schema.models import Collection
+from mhd.utils import with_simulate_arg
 
 
 class Command(BaseCommand):
