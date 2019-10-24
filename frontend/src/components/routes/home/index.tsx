@@ -154,13 +154,7 @@ export default class MDHHomePage extends React.Component<MDHHomePageProps, MDHHo
         </>;
 
         const head = <Row>
-            <Col sm="12" style={{marginTop: '2em'}}>
-                <p><b>MathHub Data</b> is a system to provide universal infrastructure for mathematical data.
-                It provides dataset hosting and a searchable interface for the hosted datasets.</p>
-                <p>We encourage you to get in touch if you are interested in hosting your data 
-                    at <b>MathHub Data</b> the best way to do it is to get in touch with one the 
-                    editors (<a href="http://kwarc.info/people/kbercic/">Katja Berčič</a> and <a href="http://kwarc.info/people/mkohlhase/">Michael Kohlhase</a>).
-                    You are also welcome to read the description of the <a href="https://docs.mathhub.info/data/overview/submission-editorial.html">submission process</a>.</p>
+            <Col>                
             </Col>
         </Row>;
         
