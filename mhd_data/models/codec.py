@@ -10,6 +10,7 @@ from .item import Item
 from functools import lru_cache
 
 from mhd.utils import get_standard_serializer_field
+from django.contrib.postgres import indexes
 
 
 class CodecManager(models.Manager):
@@ -54,7 +55,7 @@ class Codec(models.Model):
         abstract = True
         unique_together = (('item', 'prop', 'superseeded_by'))
         indexes = [
-            models.Index(fields=['item']),
+            indexes.HashIndex(fields=['item']),
             models.Index(fields=['prop']),
             models.Index(fields=['value']),
             models.Index(fields=['active'])
