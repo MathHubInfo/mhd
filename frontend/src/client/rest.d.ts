@@ -7,7 +7,7 @@ export interface TMDHCollection {
     flag_large_collection: boolean;
 
     description: string;
-    url?: string;
+    url: string | null;
 
     metadata?: any;
     
@@ -18,6 +18,9 @@ export interface TMDHCollection {
 export interface TMDHProperty {
     slug: string;
     displayName: string;
+
+    description: string;
+    url: string | null;
 
     metadata?: any;
 

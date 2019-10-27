@@ -278,6 +278,11 @@ class Property(ModelWithMetadata):
     displayName = models.TextField(help_text="Display Name for this property")
     slug = models.SlugField(help_text="Identifier of this Collection")
 
+    description = models.TextField(
+        default="", help_text="A human-readable description of this property")
+    url = models.URLField(
+        null=True, blank=True, help_text="URL for more information about this property")
+
     codec = models.SlugField(
         help_text="Name of the codec table that stores this property ")
 

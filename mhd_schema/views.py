@@ -33,7 +33,7 @@ class CodecField(serializers.Field):
 class PropertySerializer(serializers.ModelSerializer):
     class Meta:
         model = Property
-        fields = ['displayName', 'slug', 'codec', 'metadata']
+        fields = ['displayName', 'slug', 'description', 'url', 'codec', 'metadata']
 
     codec = CodecField()
 

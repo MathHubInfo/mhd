@@ -58,6 +58,11 @@ class SchemaImporter(object):
                 raise SchemaValidationError(
                     'Property {0!r}, Key {} is not a string. '.format(slug, k))
 
+        for k in ['description', 'url']:
+            if k in data and not isinstance(data[k], (str, type(None))):
+                raise SchemaValidationError(
+                    'Property {0!r}, Key {} is not a string or undefined. '.format(slug, k))
+
         if 'metadata' in data and not isinstance(data['metadata'], dict):
             raise SchemaValidationError(
                 'Property {0!r}, Key \'metadata\' is not a dict. '.format(slug))
@@ -175,6 +180,9 @@ class SchemaImporter(object):
         metadata = prop.get('metadata', None)
         codec = prop['codec']
 
+        description = prop.get('description', None) or ''
+        url = prop.get('url', None)
+
         # Check if the property already exists
         prop = collection.property_set.filter(slug=slug)
         if prop:
@@ -184,11 +192,17 @@ class SchemaImporter(object):
 
             self.logger.info(
                 'Skipping property {0!r} (already exists). '.format(slug))
-            return prop.first(), False
+
+            p = prop.first()
+            p.description = description
+            p.url = url
+            p.save()
+
+            return p, False
 
         # Create the property unless it already exists
         prop = Property.objects.create(
-            slug=slug, displayName=displayName, codec=codec, metadata=metadata)
+            slug=slug, displayName=displayName, description=description, url=url, codec=codec, metadata=metadata)
         prop.collections.add(collection)
         prop.save()
 

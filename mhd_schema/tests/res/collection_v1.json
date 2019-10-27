@@ -12,6 +12,8 @@
             "slug": "f0",
             "displayName": "f(0)",
             "codec": "StandardInt",
+            "description": "Value at $f = 0$",
+            "url": "https://mathhub.com/examples/?Z3ZFunction?f0",
             "metadata": {
                 "uri": "https://mathhub.com/examples/?Z3ZFunction?f0"
             }
@@ -20,6 +22,8 @@
             "slug": "f1",
             "displayName": "f(1)",
             "codec": "StandardInt",
+            "description": "Value at $f = 1$",
+            "url": "https://mathhub.com/examples/?Z3ZFunction?f2",
             "metadata": {
                 "uri": "https://mathhub.com/examples/?Z3ZFunction?f1"
             }
@@ -27,6 +31,8 @@
         {
             "slug": "f2",
             "displayName": "f(2)",
+            "description": "Value at $f = 2$",
+            "url": "https://mathhub.com/examples/?Z3ZFunction?f2",
             "codec": "StandardInt",
             "metadata": {
                 "uri": "https://mathhub.com/examples/?Z3ZFunction?f2"
@@ -36,6 +42,8 @@
             "slug": "invertible",
             "displayName": "Invertible",
             "codec": "StandardBool",
+            "description": "",
+            "url": null,
             "metadata": {
                 "uri": "https://mathhub.com/examples/?Z3ZFunction?invertible"
             }
