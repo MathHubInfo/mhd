@@ -74,7 +74,7 @@ export default class MHDCollection extends React.Component<MHDCollectionProps, M
 
     render() {
         const { loading, collection, not_found: notFound, failed } = this.state;
-        const { collection: collectionName, client, results_loading_delay } = this.props;
+        const { client, results_loading_delay } = this.props;
         
         // Render a loading indicator when loading
         if (loading) return <MHDLoading />;

@@ -78,7 +78,6 @@ export default class MHDItem extends React.Component<MHDItemProps, MHDItemState>
 
     render() {
         const { loading, data, not_found: notFound, failed } = this.state;
-        const { collection: collectionName, uuid } = this.props;
 
         // Render a loading indicator when loading
         if (loading) return <MHDLoading />;
