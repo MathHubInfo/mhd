@@ -1,5 +1,5 @@
 import React from 'react';
-import { TMDHProperty, TMDHItem } from "../client/rest";
+import { TMHDProperty, TMHDItem } from "../client/rest";
 import { Badge } from "reactstrap";
 import { TableColumn, CellComponentProps } from "../components/wrappers/table";
 
@@ -82,12 +82,12 @@ export default abstract class Codec<ElementType = any, FilterType = string> {
      * Makes a React-Table Column for an instatiation of this codec
      * @param property 
      */
-    makeReactTableColumn(property: TMDHProperty): TableColumn<TMDHItem<any>> {
+    makeReactTableColumn(property: TMHDProperty): TableColumn<TMHDItem<any>> {
         const Component = this.cellComponent;
         return {
             key: property.slug,
             Header: () => <>{property.displayName}</>,
-            Cell: ({data}: CellComponentProps<TMDHItem<any>>) => <Component value={data[property.slug]} codec={this} />,
+            Cell: ({data}: CellComponentProps<TMHDItem<any>>) => <Component value={data[property.slug]} codec={this} />,
         }
     }
 

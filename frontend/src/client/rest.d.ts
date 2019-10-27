@@ -1,7 +1,7 @@
 /** @file contains types directly returned from the REST API */
 
 /** a MathHubData Collection */
-export interface TMDHCollection {
+export interface TMHDCollection {
     slug: string;
     displayName: string;
     flag_large_collection: boolean;
@@ -11,11 +11,11 @@ export interface TMDHCollection {
 
     metadata?: any;
     
-    properties: TMDHProperty[];
+    properties: TMHDProperty[];
 }
 
 /** a MathHubData Property */
-export interface TMDHProperty {
+export interface TMHDProperty {
     slug: string;
     displayName: string;
 
@@ -28,7 +28,7 @@ export interface TMDHProperty {
 }
 
 /** an item in a collection */
-export type TMDHItem<P extends {}> = P & {"_id": string};
+export type TMHDItem<P extends {}> = P & {"_id": string};
 
 /** a paged Django Rest Framework Response */
 export interface TDRFPagedResponse<T> {

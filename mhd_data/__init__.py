@@ -1,1 +1,1 @@
-default_app_config = "mhd_data.apps.MdhDataConfig"
+default_app_config = "mhd_data.apps.MhdDataConfig"

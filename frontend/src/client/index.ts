@@ -1,10 +1,10 @@
-import { ParsedMDHCollection, MDHFilter } from "./derived";
-import { TMDHCollection, TMDHProperty, TDRFPagedResponse, TMDHItem } from "./rest";
+import { ParsedMHDCollection, MHDFilter } from "./derived";
+import { TMHDCollection, TMHDProperty, TDRFPagedResponse, TMHDItem } from "./rest";
 import CodecManager from "../codecs";
 import Codec from "../codecs/codec";
 import { TableColumn } from "../components/wrappers/table";
 
-export class MDHBackendClient {
+export class MHDBackendClient {
     /**
      * @param base_url the Base URL for all API requests
      * @param manager interface to all known codecs
@@ -38,21 +38,21 @@ export class MDHBackendClient {
     }
 
     /** Fetches information about a collection with the given name or rejects */
-    async fetchCollection(name: string): Promise<ParsedMDHCollection> {
-        const collection = await this.fetchJSON<TMDHCollection>(`/schema/collections/${name}`);
+    async fetchCollection(name: string): Promise<ParsedMHDCollection> {
+        const collection = await this.fetchJSON<TMHDCollection>(`/schema/collections/${name}`);
         return this.parseCollection(collection);
     }
 
     /** Fetches information about a collection and an item within the collection */
-    async fetchCollectionAndItem(name: string, id: string): Promise<[ParsedMDHCollection, TMDHItem<{}>]> {
+    async fetchCollectionAndItem(name: string, id: string): Promise<[ParsedMHDCollection, TMHDItem<{}>]> {
         return Promise.all([
             this.fetchCollection(name),
-            this.fetchJSON<TMDHItem<{}>>(`/item/${name}/${id}/`)
+            this.fetchJSON<TMHDItem<{}>>(`/item/${name}/${id}/`)
         ]);
     }
 
     /** Fetches a list of all collections */
-    async fetchCollections(page = 1, per_page = 20): Promise<TDRFPagedResponse<TMDHCollection>> {
+    async fetchCollections(page = 1, per_page = 20): Promise<TDRFPagedResponse<TMHDCollection>> {
         return this.fetchJSON(`/schema/collections/`, {
             page: page.toString(),
             per_page: per_page.toString()
@@ -60,12 +60,12 @@ export class MDHBackendClient {
     }
 
     /** parses a collection and prepares appropriate derived values */
-    private parseCollection(collection: TMDHCollection): ParsedMDHCollection {
+    private parseCollection(collection: TMHDCollection): ParsedMHDCollection {
 
-        const propMap = new Map<string, TMDHProperty>();
+        const propMap = new Map<string, TMHDProperty>();
         const nameMap = new Map<string, string>();
         const codecMap = new Map<string, Codec>();
-        const columnMap = new Map<string, TableColumn<TMDHItem<any>>>();
+        const columnMap = new Map<string, TableColumn<TMHDItem<any>>>();
 
         const propertySlugs = collection.properties.map(p => {
             const { slug, codec } = p;
@@ -85,22 +85,22 @@ export class MDHBackendClient {
     }
 
     /** Fetches information about a set of collection items */
-    async fetchItems<T extends {}>(collection: ParsedMDHCollection, properties: string[], filters: MDHFilter[], page_number = 1, per_page = 100, order?: string[]): Promise<TDRFPagedResponse<TMDHItem<T>>> {
+    async fetchItems<T extends {}>(collection: ParsedMHDCollection, properties: string[], filters: MHDFilter[], page_number = 1, per_page = 100, order?: string[]): Promise<TDRFPagedResponse<TMHDItem<T>>> {
         // Build the filter params
         const params = {
-            filter: MDHBackendClient.buildFilter(filters),
+            filter: MHDBackendClient.buildFilter(filters),
             properties: properties.join(","),
             page: page_number.toString(),
             per_page: per_page.toString(),
-            order: MDHBackendClient.buildSortOrder(collection, properties, order),
+            order: MHDBackendClient.buildSortOrder(collection, properties, order),
         };
 
         // fetch the results
-        return this.fetchJSON<TDRFPagedResponse<TMDHItem<T>>>(`/query/${collection.slug}`, params);
+        return this.fetchJSON<TDRFPagedResponse<TMHDItem<T>>>(`/query/${collection.slug}`, params);
     }
 
     /** hashes the parameters to the fetchItems function */
-    static hashFetchItems(collection: ParsedMDHCollection, properties: string[], filters: MDHFilter[], page_number = 1, per_page = 100): string {
+    static hashFetchItems(collection: ParsedMHDCollection, properties: string[], filters: MHDFilter[], page_number = 1, per_page = 100): string {
         const hash = {
             collection: collection.slug,
             filters: filters.filter(f => f.value !== null),
@@ -112,10 +112,10 @@ export class MDHBackendClient {
     }
 
     /** Fetches the number of items in a collection */
-    async fetchItemCount(collection: ParsedMDHCollection, filters: MDHFilter[]): Promise<number> {
+    async fetchItemCount(collection: ParsedMHDCollection, filters: MHDFilter[]): Promise<number> {
         // Build the filter params
         const params = {
-            filter: MDHBackendClient.buildFilter(filters),
+            filter: MHDBackendClient.buildFilter(filters),
         };
 
         // fetch the results
@@ -124,7 +124,7 @@ export class MDHBackendClient {
     }
 
     /** hashes the parameters to the fetchItemCount function */
-    static hashFetchItemCount(collection: ParsedMDHCollection, filters: MDHFilter[]): string {
+    static hashFetchItemCount(collection: ParsedMHDCollection, filters: MHDFilter[]): string {
         const hash = {
             collection: collection.slug,
             filters: filters.filter(f => f.value !== null),
@@ -133,12 +133,12 @@ export class MDHBackendClient {
     }
 
     /** give a set of filters, build a filter URL */
-    static buildFilter(filters: MDHFilter[]): string {
+    static buildFilter(filters: MHDFilter[]): string {
         return filters.filter(f => f.value !== null).map(f => `(${f.slug}${f.value})`).join("&&")
     }
 
     /** builds a sort order string to pass to the backend */
-    static buildSortOrder(collection: ParsedMDHCollection, properties: string[], order: string[] | undefined): string {
+    static buildSortOrder(collection: ParsedMHDCollection, properties: string[], order: string[] | undefined): string {
         const propName = (n: string) => (n.startsWith('+') || n.startsWith('-')) ? n.substring(1) : n;
         
         // find all the properties that we want to filter by in the appropriate order

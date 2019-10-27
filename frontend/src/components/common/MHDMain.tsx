@@ -1,8 +1,8 @@
 import React from 'react';
 import { Row, Col, Container } from "reactstrap";
-import styles from './MDHMain.module.css';
+import styles from './MHDMain.module.css';
 
-interface MDHMainProps {
+interface MHDMainProps {
     /** title of the current page */
     title: React.ReactNode;
 
@@ -25,22 +25,22 @@ interface MDHMainProps {
 /**
  * The main layouting component
  */
-export default class MDHMain extends React.Component<MDHMainProps> {
+export default class MHDMain extends React.Component<MHDMainProps> {
     render() {
         const { title, head, leftHead, buttons, rightHead, children } = this.props;
         return (
             <main>
-                <MDHMainHead title={title} head={head} leftHead={leftHead} buttons={buttons} rightHead={rightHead} />
+                <MHDMainHead title={title} head={head} leftHead={leftHead} buttons={buttons} rightHead={rightHead} />
                 { children }
             </main>
         );
     }
 }
 
-type MDHMainHeadProps = Pick<MDHMainProps, 'title' | 'head' | 'leftHead' | 'buttons' | 'rightHead'>
+type MHDMainHeadProps = Pick<MHDMainProps, 'title' | 'head' | 'leftHead' | 'buttons' | 'rightHead'>
 
 /** Layouting head */
-export class MDHMainHead extends React.Component<MDHMainHeadProps> {
+export class MHDMainHead extends React.Component<MHDMainHeadProps> {
     render() {
         const { title, head, leftHead, buttons, rightHead } = this.props;
 
@@ -64,11 +64,11 @@ export class MDHMainHead extends React.Component<MDHMainHeadProps> {
     }
 }
 
-type MDHLoadingProps = Pick<MDHMainProps, 'leftHead'>;
+type MHDLoadingProps = Pick<MHDMainProps, 'leftHead'>;
 
 /** Represents a loading component */
-export class MDHLoading extends React.Component<MDHLoadingProps> {
+export class MHDLoading extends React.Component<MHDLoadingProps> {
     render() {
-        return <MDHMain title={'Loading...'} leftHead={this.props.leftHead} />;
+        return <MHDMain title={'Loading...'} leftHead={this.props.leftHead} />;
     }
 }

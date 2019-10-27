@@ -1,25 +1,25 @@
 import React from 'react';
 import { Link } from "react-router-dom";
 import { Button, ListGroup, ListGroupItem, Row, Col } from "reactstrap";
-import { MDHBackendClient } from "../../../client";
-import { TDRFPagedResponse, TMDHCollection } from "../../../client/rest";
-import MDHMain, { MDHLoading } from "../../common/MDHMain";
+import { MHDBackendClient } from "../../../client";
+import { TDRFPagedResponse, TMHDCollection } from "../../../client/rest";
+import MHDMain, { MHDLoading } from "../../common/MHDMain";
 import LaTeX from "react-latex";
 
-interface MDHHomePageProps {
+interface MHDHomePageProps {
     /** client to fetch more data */
-    client: MDHBackendClient;
+    client: MHDBackendClient;
 
     /** timeout under which to not show the loading indicator */
     results_loading_delay: number;
 }
 
-interface MDHHomePageState {
+interface MHDHomePageState {
     /** are we currently loading */
     loading: boolean;
 
     /** the current collections */
-    collections: TMDHCollection[];
+    collections: TMHDCollection[];
 
     /** the current page number */
     page: number;
@@ -32,9 +32,9 @@ interface MDHHomePageState {
 }
 
 /** Renders a collection that is not found */
-export default class MDHHomePage extends React.Component<MDHHomePageProps, MDHHomePageState> {
+export default class MHDHomePage extends React.Component<MHDHomePageProps, MHDHomePageState> {
     
-    state: MDHHomePageState = {
+    state: MHDHomePageState = {
         loading: false,
         collections: [],
         page: 1,
@@ -54,7 +54,7 @@ export default class MDHHomePage extends React.Component<MDHHomePageProps, MDHHo
         // however, to avoid flashing this indicator when loading is quick
         // we only display this after {results_loading_delay} ms. 
         setTimeout(() => {
-            this.setState(({ last_update }: MDHHomePageState) => {
+            this.setState(({ last_update }: MHDHomePageState) => {
                 if (last_update >= time) return null; // an update was applied
                 return { loading: true };
             });
@@ -62,7 +62,7 @@ export default class MDHHomePage extends React.Component<MDHHomePageProps, MDHHo
 
 
         // fetch the results, fallback to the empty result
-        let results: TDRFPagedResponse<TMDHCollection> = {
+        let results: TDRFPagedResponse<TMHDCollection> = {
             count: -1,
 
             next: null,
@@ -80,7 +80,7 @@ export default class MDHHomePage extends React.Component<MDHHomePageProps, MDHHo
         // for introducing a dummy delay of 2 seconds, uncomment the following line
         // await new Promise((resolve) => setTimeout(resolve, 2000));
 
-        this.setState(({ last_update }: MDHHomePageState) => {
+        this.setState(({ last_update }: MHDHomePageState) => {
             if (last_update > time) return null; // newer update was already applied
 
             return {
@@ -94,7 +94,7 @@ export default class MDHHomePage extends React.Component<MDHHomePageProps, MDHHo
 
     /** render the next page */
     private nextPage = () => {
-        this.setState(({page, total_pages}: MDHHomePageState) => {
+        this.setState(({page, total_pages}: MHDHomePageState) => {
             if (page + 1 > total_pages) return null;
             return { page: page + 1 };
         })
@@ -102,13 +102,13 @@ export default class MDHHomePage extends React.Component<MDHHomePageProps, MDHHo
 
     /** render the previous page */
     private prevPage = () => {
-        this.setState(({page}: MDHHomePageState) => {
+        this.setState(({page}: MHDHomePageState) => {
             if (page - 1 < 1) return null;
             return { page: page - 1 };
         })
     }
 
-    componentDidUpdate(_: MDHHomePageProps, { page }: MDHHomePageState) {
+    componentDidUpdate(_: MHDHomePageProps, { page }: MHDHomePageState) {
         // if the page number changed, fetch new data
         if (this.state.page !== page) {
             this.scheduleDataFetch();
@@ -129,7 +129,7 @@ export default class MDHHomePage extends React.Component<MDHHomePageProps, MDHHo
         </p>;
 
         // when loading, render a loading indicator
-        if (loading) return <MDHLoading leftHead={leftHead} />;
+        if (loading) return <MHDLoading leftHead={leftHead} />;
 
 
         const shouldNextPage = (page + 1 <= total_pages);
@@ -158,6 +158,6 @@ export default class MDHHomePage extends React.Component<MDHHomePageProps, MDHHo
             </Col>
         </Row>;
         
-        return <MDHMain title="Pick a dataset" head={head} leftHead={leftHead} buttons={buttons} rightHead={rightHead} />;
+        return <MHDMain title="Pick a dataset" head={head} leftHead={leftHead} buttons={buttons} rightHead={rightHead} />;
     }
 }

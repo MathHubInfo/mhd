@@ -1,14 +1,13 @@
 import React from 'react';
-import { ParsedMDHCollection } from "../../../client/derived";
-import { MDHBackendClient, ResponseError } from "../../../client";
-import { TMDHItem } from "../../../client/rest";
-import MDHMain, { MDHLoading } from "../../common/MDHMain";
-import MDHItemNotFound from './notfound';
-import MDHItemView from './item';
+import { ParsedMHDCollection } from "../../../client/derived";
+import { MHDBackendClient, ResponseError } from "../../../client";
+import { TMHDItem } from "../../../client/rest";
+import MHDMain, { MHDLoading } from "../../common/MHDMain";
+import MHDItemView from './item';
 
-interface MDHItemProps {
+interface MHDItemProps {
     /** client being used by the backend */
-    client: MDHBackendClient;
+    client: MHDBackendClient;
 
     /** name of the collection to render */
     collection: string;
@@ -20,12 +19,12 @@ interface MDHItemProps {
     results_loading_delay: number;
 }
 
-interface MDHItemState {
+interface MHDItemState {
     /** are we loading */
     loading?: boolean;
 
     /** when set, render this collection */
-    data?: [ParsedMDHCollection, TMDHItem<{}>];
+    data?: [ParsedMHDCollection, TMHDItem<{}>];
 
     /** when set, render an error page */
     failed?: any;
@@ -38,8 +37,8 @@ interface MDHItemState {
 /**
  * Loads item data and either loads the Item page or the not found page
  */
-export default class MDHItem extends React.Component<MDHItemProps, MDHItemState> {
-    state: MDHItemState = {
+export default class MHDItem extends React.Component<MHDItemProps, MHDItemState> {
+    state: MHDItemState = {
         loading: true,
     }
 
@@ -48,7 +47,7 @@ export default class MDHItem extends React.Component<MDHItemProps, MDHItemState>
         // however, to avoid flashing this indicator when loading is quick
         // we only display this after {results_loading_delay} ms. 
         setTimeout(() => {
-            this.setState(({ loading }: MDHItemState) => {
+            this.setState(({ loading }: MHDItemState) => {
                 if (loading !== undefined) return null; // an update was applied
                 return { loading: true };
             });
@@ -82,16 +81,16 @@ export default class MDHItem extends React.Component<MDHItemProps, MDHItemState>
         const { collection: collectionName, uuid } = this.props;
 
         // Render a loading indicator when loading
-        if (loading) return <MDHLoading />;
+        if (loading) return <MHDLoading />;
 
         // when something went wrong, render an error
-        if (failed) return <MDHMain title="Error" leftHead={`Something went wrong: ${failed}`} />;
+        if (failed) return <MHDMain title="Error" leftHead={`Something went wrong: ${failed}`} />;
 
         // when the collection wasn't found, render the 404 page
-        if (notFound !== undefined) return <MDHItemNotFound collection={collectionName} uuid={uuid} />;
+        if (notFound !== undefined) return "Not Found";
 
         // when we have data, render it
-        if (data !== undefined) return <MDHItemView collection={data[0]} item={data[1]} />
+        if (data !== undefined) return <MHDItemView collection={data[0]} item={data[1]} />
 
         // else render nothing
         return null;

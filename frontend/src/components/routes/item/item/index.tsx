@@ -1,19 +1,19 @@
 import React from 'react';
-import MDHMain from "../../../common/MDHMain";
-import { ParsedMDHCollection } from "../../../../client/derived";
-import { TMDHItem } from "../../../../client/rest";
+import MHDMain from "../../../common/MHDMain";
+import { ParsedMHDCollection } from "../../../../client/derived";
+import { TMHDItem } from "../../../../client/rest";
 import { Table, Row, Col, Container } from "reactstrap";
 
-interface MDHItemViewProps {
+interface MHDItemViewProps {
     /** collection */
-    collection: ParsedMDHCollection;
+    collection: ParsedMHDCollection;
     
     /** item */
-    item: TMDHItem<any>
+    item: TMHDItem<any>
 }
 
 /** Renders a collection that is not found */
-export default class MDHItemView extends React.Component<MDHItemViewProps> {
+export default class MHDItemView extends React.Component<MHDItemViewProps> {
     render() {
         const { collection, item } = this.props;
         
@@ -29,7 +29,7 @@ export default class MDHItemView extends React.Component<MDHItemViewProps> {
             </tr>
         });
 
-        return <MDHMain title={`Item ${item._id}`}>
+        return <MHDMain title={`Item ${item._id}`}>
             <Container>
                 <Row>
                     <Col sm="12">
@@ -47,6 +47,6 @@ export default class MDHItemView extends React.Component<MDHItemViewProps> {
                     </Col>
                 </Row>
             </Container>
-        </MDHMain>;
+        </MHDMain>;
     }
 }

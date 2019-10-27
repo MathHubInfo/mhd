@@ -1,17 +1,17 @@
 import React from 'react';
 
-import { MDHBackendClient } from '../../../../../client';
-import { ParsedMDHCollection, MDHFilter } from '../../../../../client/derived';
+import { MHDBackendClient } from '../../../../../client';
+import { ParsedMHDCollection, MHDFilter } from '../../../../../client/derived';
 
 interface CounterDisplayProps {
     /** the backend  */
-    client: MDHBackendClient;
+    client: MHDBackendClient;
 
     /** the current collection (if any) */
-    collection: ParsedMDHCollection;
+    collection: ParsedMHDCollection;
 
     /** current filters */
-    filters: MDHFilter[];
+    filters: MHDFilter[];
 
     /** timeout under which to not show the loading indicator */
     results_loading_delay: number;
@@ -89,11 +89,11 @@ export default class CounterDisplay extends React.Component<CounterDisplayProps,
     componentDidUpdate(prevProps: CounterDisplayProps, prevState: CounterDisplayState) {
         // compute old hash
         const {filters: prevFilter, collection: prevCollection} = prevProps;
-        const oldHash = MDHBackendClient.hashFetchItemCount(prevCollection, prevFilter);
+        const oldHash = MHDBackendClient.hashFetchItemCount(prevCollection, prevFilter);
 
         // compute new hash
         const { filters: newFilter, collection: newCollection } = this.props;
-        const newHash = MDHBackendClient.hashFetchItemCount(newCollection, newFilter);
+        const newHash = MHDBackendClient.hashFetchItemCount(newCollection, newFilter);
 
         // if we have different hashes, we need to re-count
         if (oldHash !== newHash) {

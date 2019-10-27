@@ -1,5 +1,5 @@
 from django.apps import AppConfig
 
 
-class MdhTestsConfig(AppConfig):
+class MhdTestsConfig(AppConfig):
     name = 'mhd_tests'

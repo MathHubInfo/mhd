@@ -1,4 +1,4 @@
-# MDH Frontend
+# MHD Frontend
 
 Website frontend code, a standard [create-react-app](https://github.com/facebook/create-react-app) setup. 
 

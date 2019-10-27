@@ -1,4 +1,4 @@
-const STATE_MAGIC = "MDH_V1";
+const STATE_MAGIC = "MHD_V1"; // TODO: Changeme
 
 /**
  * Encodes state into a string along with magic and a hash

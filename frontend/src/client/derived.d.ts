@@ -1,12 +1,12 @@
-import {TMDHCollection, TMDHProperty} from './rest';
+import {TMHDCollection, TMHDProperty} from './rest';
 import Codec from "../codecs/codec";
 
 /**
  * A parsed collection with all derived information needed by any component anywhere
  */
-export interface ParsedMDHCollection extends TMDHCollection {
+export interface ParsedMHDCollection extends TMHDCollection {
     /** a map from slug to slug-schema */
-    propMap: Map<string, TMDHProperty>
+    propMap: Map<string, TMHDProperty>
 
     /** a map from slug to names */
     nameMap: Map<string, string>
@@ -22,7 +22,7 @@ export interface ParsedMDHCollection extends TMDHCollection {
 }
 
 /** a single instantiated filter */
-export interface MDHFilter {
+export interface MHDFilter {
     slug: string;
     value: string | null;
 }

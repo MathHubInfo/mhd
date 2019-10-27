@@ -7,7 +7,7 @@ import kwarc_logo from '../../images/logos/kwarc_logo.png';
 import odk_logo from '../../images/logos/opendreamkit_logo.png';
 
 /** Footer for the entire website */
-export default function MDHFooter() {
+export default function MHDFooter() {
     return (
         <footer>
             <Container>

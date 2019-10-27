@@ -1,16 +1,16 @@
 import React from 'react';
 import { Route, RouteComponentProps, Switch } from 'react-router-dom';
-import { MDHBackendClient } from './client';
+import { MHDBackendClient } from './client';
 import CodecManager from "./codecs/";
 
-import MDHFooter from "./components/common/MDHFooter";
-import MDHHeader from "./components/common/MDHHeader";
+import MHDFooter from "./components/common/MHDFooter";
+import MHDHeader from "./components/common/MHDHeader";
 
 import loadable from '@loadable/component'
 
-const MDHCollection = loadable(() => import("./components/routes/collection"));
-const MDHHomePage = loadable(() => import("./components/routes/home"));
-const MDHItem = loadable(() => import("./components/routes/item"));
+const MHDCollection = loadable(() => import("./components/routes/collection"));
+const MHDHomePage = loadable(() => import("./components/routes/home"));
+const MHDItem = loadable(() => import("./components/routes/item"));
 const Debug = loadable(() => import("./components/routes/debug"));
 const About = loadable(() => import("./components/routes/about"));
 
@@ -26,29 +26,29 @@ interface AppProps {
  * Entrypoint component that instantiates an API Client and fetches initial collection information
  */
 export default class App extends React.Component<AppProps> {
-    private client = new MDHBackendClient(this.props.api || '/api', CodecManager.getInstance());
+    private client = new MHDBackendClient(this.props.api || '/api', CodecManager.getInstance());
 
     private homeComponent = (props: RouteComponentProps<{}>) => {
         const { results_loading_delay } = this.props;
-        return <MDHHomePage client={this.client} results_loading_delay={results_loading_delay} />
+        return <MHDHomePage client={this.client} results_loading_delay={results_loading_delay} />
     }
 
     private collectionComponent = (props: RouteComponentProps<{collection: string}>) => {
         const { match: {params: { collection }}} = props;
         const { results_loading_delay } = this.props;
-        return <MDHCollection client={this.client} key={collection} collection={collection} results_loading_delay={results_loading_delay} />;
+        return <MHDCollection client={this.client} key={collection} collection={collection} results_loading_delay={results_loading_delay} />;
     }
     private itemComponent = (props: RouteComponentProps<{collection: string, uuid: string}>) => {
         const { match: {params: { collection, uuid }}} = props;
         const { results_loading_delay } = this.props;
         
-        return <MDHItem client={this.client} key={`${collection}/${uuid}`} collection={collection} uuid={uuid} results_loading_delay={results_loading_delay} />;
+        return <MHDItem client={this.client} key={`${collection}/${uuid}`} collection={collection} uuid={uuid} results_loading_delay={results_loading_delay} />;
     }
 
     render() {
         return (
             <>
-                <MDHHeader />
+                <MHDHeader />
                 
                 <Switch>
                     <Route exact path='/' component={this.homeComponent}></Route>
@@ -61,7 +61,7 @@ export default class App extends React.Component<AppProps> {
                     }
                 </Switch>
 
-                <MDHFooter />
+                <MHDFooter />
             </>
         );
     }

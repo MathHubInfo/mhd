@@ -19,13 +19,13 @@ The top-level structure of this repository consists of a standard [Django](https
 There are six apps:
 
 - `mhd`: The main entry point. Contains a `utils/` package used by other apps. 
-- `mhd_schema`: Stores schema of MDH data. Home of the `Collection` and `Property` tables. 
-- `mhd_data`: Stores all concrete MDH data. Home of the `Item` and all `Codec` tables. 
-- `mhd_provenance`: Stores meta-information about MDH data. Home of the `Provenance` tables. 
+- `mhd_schema`: Stores schema of MHD data. Home of the `Collection` and `Property` tables. 
+- `mhd_data`: Stores all concrete MHD data. Home of the `Item` and all `Codec` tables. 
+- `mhd_provenance`: Stores meta-information about MHD data. Home of the `Provenance` tables. 
 - `mhd_test`: Test-only app for specific test models
 - `mddl_catalog`: Catalog of specific MDDL items, currently only codecs. 
 
-Currently, MDH depends only on Django and [Django Rest Framework](https://www.django-rest-framework.org/).
+Currently, MHD depends only on Django and [Django Rest Framework](https://www.django-rest-framework.org/).
 To install the dependencies, first make sure you have a recent enough version of Python installed on your system. 
 You can then install the requirements inside a new [venv](https://docs.python.org/3/library/venv.html):
 
@@ -60,7 +60,7 @@ Furthermore, for debugging purposes it is also possible to log all queries to th
 To do so, start the server with:
 
 ```bash
-MDH_LOG_QUERIES=1 python manage.py runserver
+MHD_LOG_QUERIES=1 python manage.py runserver
 ```
 
 To additionally customize development settings, create a file named `mhd/local_settings.py`. 

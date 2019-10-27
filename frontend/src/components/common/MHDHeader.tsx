@@ -2,17 +2,17 @@ import React from 'react';
 import { Navbar, NavbarBrand, NavbarToggler, Collapse, Nav, NavItem, NavLink } from "reactstrap";
 import { NavLink as RNavLink } from "react-router-dom";
 
-interface MDHHeaderState {
+interface MHDHeaderState {
     isOpen: boolean;
 }
 
-export default class MDHHeader extends React.Component<{}, MDHHeaderState> {
-    state: MDHHeaderState = {
+export default class MHDHeader extends React.Component<{}, MHDHeaderState> {
+    state: MHDHeaderState = {
         isOpen: false,
     }
 
     private toggle = () => {
-        this.setState(({ isOpen }: MDHHeaderState) => ({ isOpen: !isOpen }));
+        this.setState(({ isOpen }: MHDHeaderState) => ({ isOpen: !isOpen }));
     }
 
     render() {

@@ -1,24 +1,24 @@
 import React from 'react';
 import { Button, Row } from 'reactstrap';
-import { MDHBackendClient } from "../../../../../client";
-import { MDHFilter, ParsedMDHCollection } from "../../../../../client/derived";
-import { MDHMainHead } from "../../../../common/MDHMain";
+import { MHDBackendClient } from "../../../../../client";
+import { MHDFilter, ParsedMHDCollection } from "../../../../../client/derived";
+import { MHDMainHead } from "../../../../common/MHDMain";
 import CounterDisplay from '../results/CounterDisplay';
 import FilterSelector from './FilterSelector';
 import LaTeX from 'react-latex';
 
 interface FilterEditorProps {
     /** the backend  */
-    client: MDHBackendClient;
+    client: MHDBackendClient;
 
     /** the current collection (if any) */
-    collection: ParsedMDHCollection;
+    collection: ParsedMHDCollection;
 
     /** the filters currently set */
-    filters: MDHFilter[];
+    filters: MHDFilter[];
 
     /** callback when filters are applied  */
-    onFilterApply: (filters: MDHFilter[]) => void;
+    onFilterApply: (filters: MHDFilter[]) => void;
 
     /** timeout under which to not show the loading indicator */
     results_loading_delay: number;
@@ -26,7 +26,7 @@ interface FilterEditorProps {
 
 interface FilterEditorStateProps {
     /** the currently selected filters (maybe not applied yet) */
-    filters: MDHFilter[],
+    filters: MHDFilter[],
 
     /** have the current filters been applied? */
     applied: boolean;
@@ -44,7 +44,7 @@ export default class FilterEditor extends React.Component<FilterEditorProps, Fil
     };
 
     /** stores a new list of filters in state */
-    setFilters = async (filters: MDHFilter[]) => {
+    setFilters = async (filters: MHDFilter[]) => {
         this.setState({ filters: filters, applied: false })
     }
 
@@ -88,6 +88,6 @@ export default class FilterEditor extends React.Component<FilterEditorProps, Fil
                 onFilterUpdate={this.setFilters} />
         </Row>;
 
-        return <MDHMainHead title={<LaTeX>{collection.displayName}</LaTeX>} leftHead={leftHead} buttons={buttons} rightHead={rightHead} />;
+        return <MHDMainHead title={<LaTeX>{collection.displayName}</LaTeX>} leftHead={leftHead} buttons={buttons} rightHead={rightHead} />;
     }
 }

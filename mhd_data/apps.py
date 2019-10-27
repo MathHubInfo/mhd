@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class MdhDataConfig(AppConfig):
+class MhdDataConfig(AppConfig):
     name = 'mhd_data'
     verbose_name = 'MathHubData Data'

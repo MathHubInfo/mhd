@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Container } from "reactstrap";
-import MDHMain from "../../common/MDHMain";
+import MHDMain from "../../common/MHDMain";
 import { Link } from "react-router-dom";
 
 /** Renders a collection that is not found */
@@ -8,7 +8,7 @@ export default class MHDAboutPage extends React.Component {
     render() {
         const buttons = <Link to='/'><Button>Back to Home</Button></Link>;
 
-        return <MDHMain title="About" buttons={buttons}>
+        return <MHDMain title="About" buttons={buttons}>
             <Container>
                 <p><b>MathHub Data</b> provides dataset hosting and a searchable interface 
                     for the hosted datasets.
@@ -33,6 +33,6 @@ export default class MHDAboutPage extends React.Component {
                     You can learn more at the <a href="https://www.go-fair.org/fair-principles/">GO FAIR website</a> or 
                     in the <a href="http://www.nature.com/articles/sdata201618">original publication</a>.</p>
             </Container>
-        </MDHMain>;
+        </MHDMain>;
     }
 }

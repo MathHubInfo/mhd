@@ -1,13 +1,12 @@
 import React from 'react';
-import { ParsedMDHCollection } from "../../../client/derived";
-import { MDHBackendClient, ResponseError } from "../../../client";
-import MDHCollectionNotFound from "./notfound";
-import MDHCollectionSearch from "./search/";
-import MDHMain, { MDHLoading } from "../../common/MDHMain";
+import { ParsedMHDCollection } from "../../../client/derived";
+import { MHDBackendClient, ResponseError } from "../../../client";
+import MHDCollectionSearch from "./search/";
+import MHDMain, { MHDLoading } from "../../common/MHDMain";
 
-interface MDHCollectionProps {
+interface MHDCollectionProps {
     /** client being used by the backend */
-    client: MDHBackendClient;
+    client: MHDBackendClient;
 
     /** name of the collection to render */
     collection: string;
@@ -16,12 +15,12 @@ interface MDHCollectionProps {
     results_loading_delay: number;
 }
 
-interface MDHCollectionState {
+interface MHDCollectionState {
     /** are we loading */
     loading?: boolean;
 
     /** when set, render this collection */
-    collection?: ParsedMDHCollection;
+    collection?: ParsedMHDCollection;
 
     /** when set, render an error page */
     failed?: any;
@@ -34,8 +33,8 @@ interface MDHCollectionState {
 /**
  * Loads collection data and either loads the Search page or the not found page
  */
-export default class MDHCollection extends React.Component<MDHCollectionProps, MDHCollectionState> {
-    state: MDHCollectionState = {
+export default class MHDCollection extends React.Component<MHDCollectionProps, MHDCollectionState> {
+    state: MHDCollectionState = {
         loading: true,
     }
 
@@ -44,7 +43,7 @@ export default class MDHCollection extends React.Component<MDHCollectionProps, M
         // however, to avoid flashing this indicator when loading is quick
         // we only display this after {results_loading_delay} ms. 
         setTimeout(() => {
-            this.setState(({ loading }: MDHCollectionState) => {
+            this.setState(({ loading }: MHDCollectionState) => {
                 if (loading !== undefined) return null; // an update was applied
                 return { loading: true };
             });
@@ -78,16 +77,16 @@ export default class MDHCollection extends React.Component<MDHCollectionProps, M
         const { collection: collectionName, client, results_loading_delay } = this.props;
         
         // Render a loading indicator when loading
-        if (loading) return <MDHLoading />;
+        if (loading) return <MHDLoading />;
 
         // when something went wrong, render an error
-        if (failed) return <MDHMain title="Error" leftHead={`Something went wrong: ${failed}`} />;
+        if (failed) return <MHDMain title="Error" leftHead={`Something went wrong: ${failed}`} />;
 
         // when the collection wasn't found, render the 404 page
-        if (notFound !== undefined) return <MDHCollectionNotFound name={collectionName} />;
+        if (notFound !== undefined) return "Not Found";
 
         // when we have a single collection, render it
-        if (collection !== undefined) return <MDHCollectionSearch client={client} collection={collection} results_loading_delay={results_loading_delay} />
+        if (collection !== undefined) return <MHDCollectionSearch client={client} collection={collection} results_loading_delay={results_loading_delay} />
 
         // else render nothing
         return null;

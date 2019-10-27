@@ -9,7 +9,7 @@ require('typeface-cormorant-unicase');
 require('typeface-montserrat');
 
 // load custom styles
-require('./css/bootstrapMDH.scss');
+require('./css/bootstrapMHD.scss');
 require('katex/dist/katex.min.css');
 
 // load font-awesome

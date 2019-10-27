@@ -1,1 +1,1 @@
-default_app_config = "mhd_schema.apps.MdhSchemaConfig"
+default_app_config = "mhd_schema.apps.MhdSchemaConfig"

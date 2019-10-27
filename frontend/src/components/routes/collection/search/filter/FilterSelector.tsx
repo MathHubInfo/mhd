@@ -1,19 +1,19 @@
 import React from 'react';
 import { Col } from 'reactstrap';
-import { MDHFilter, ParsedMDHCollection } from "../../../../../client/derived";
+import { MHDFilter, ParsedMHDCollection } from "../../../../../client/derived";
 import Codec, { TValidationResult } from "../../../../../codecs/codec";
-import { TMDHProperty } from "../../../../../client/rest";
+import { TMHDProperty } from "../../../../../client/rest";
 import styles from './FilterSelector.module.css';
 
 interface FilterSelectorProps {
     /** the current collection */
-    collection: ParsedMDHCollection;
+    collection: ParsedMHDCollection;
     
     /** the initially set filters */
-    initialFilters: MDHFilter[];
+    initialFilters: MHDFilter[];
 
     /** callback when filters are applied  */
-    onFilterUpdate: (filters: MDHFilter[]) => void;
+    onFilterUpdate: (filters: MHDFilter[]) => void;
 }
 
 interface FilterSelectorState {
@@ -21,7 +21,7 @@ interface FilterSelectorState {
     selected: TFilter[];
 }
 
-interface TFilter extends MDHFilter {
+interface TFilter extends MHDFilter {
     /** unique id of this filter */
     uid: number;
 
@@ -158,7 +158,7 @@ type TFilterAction = {
 
 interface TSelectedFilterProps<S, T> {
     /** the schema of this filter */
-    property: TMDHProperty;
+    property: TMHDProperty;
 
     /** the values of this codec */
     codec: Codec<S, T>,

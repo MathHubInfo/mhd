@@ -3,13 +3,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { Component, CSSProperties } from 'react';
 import { DragDropContext, Draggable, DraggingStyle, Droppable, DropResult, NotDraggingStyle } from "react-beautiful-dnd";
 import { Button, Card, CardText, Col, Collapse, Row } from 'reactstrap';
-import { ParsedMDHCollection } from '../../../../../client/derived';
+import { ParsedMHDCollection } from '../../../../../client/derived';
 
 import styles from './ColumnEditor.module.css'; // Import css modules stylesheet as styles
 
 interface ColumnEditorProps {
     /** the current collection */
-    collection: ParsedMDHCollection;
+    collection: ParsedMHDCollection;
 
     /** the initially selected columns */
     columns: string[];
