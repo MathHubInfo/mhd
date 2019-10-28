@@ -2,6 +2,7 @@ import React from 'react';
 import { TMHDProperty, TMHDItem } from "../client/rest";
 import { Badge } from "reactstrap";
 import { TableColumn, CellComponentProps } from "../components/wrappers/table";
+import PropertyInfoButton from "../components/common/PropertyInfoButton";
 
 type ReactComponent<T> = React.ComponentClass<T> | React.SFC<T>
 
@@ -86,7 +87,7 @@ export default abstract class Codec<ElementType = any, FilterType = string> {
         const Component = this.cellComponent;
         return {
             key: property.slug,
-            Header: () => <>{property.displayName}</>,
+            Header: () => <>{property.displayName}<PropertyInfoButton prop={property}/></>,
             Cell: ({data}: CellComponentProps<TMHDItem<any>>) => <Component value={data[property.slug]} codec={this} />,
         }
     }
