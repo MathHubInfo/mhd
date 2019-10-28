@@ -4,6 +4,7 @@ import { MHDFilter, ParsedMHDCollection } from "../../../../../client/derived";
 import Codec, { TValidationResult } from "../../../../../codecs/codec";
 import { TMHDProperty } from "../../../../../client/rest";
 import styles from './FilterSelector.module.css';
+import PropertyInfoButton from '../../../../common/PropertyInfoButton';
 
 interface FilterSelectorProps {
     /** the current collection */
@@ -111,7 +112,7 @@ type TFilterAction = {
                                 <li key={p.slug}
                                     onClick={() => this.handleFilterAction({action: "add", slug: p.slug})}>
                                     <span className="fa-li"><i className="fas fa-plus"></i></span>
-                                    {p.displayName} {/**<InfoButton value="filter" />**/}
+                                    {p.displayName} {<PropertyInfoButton prop={p} />}
                                 </li>
                             )}
                         </ul>
@@ -260,17 +261,11 @@ class SelectedFilter<S = any, T = any> extends React.Component<TSelectedFilterPr
                 {
                     edit ?
                         <FilterEditorComponent value={internalValue} valid={valid} onChange={this.handleValueUpdate} onApply={this.handleApply} codec={this.props.codec}>
-                            <>
-                                { displayName }
-                                {/**<InfoButton value="filter" />**/}
-                            </>
+                            { displayName }
                         </FilterEditorComponent>
                         :
                         <FilterViewerComponent value={internalValue} codec={this.props.codec}>
-                            <>
-                                { displayName }
-                                {/**<InfoButton value="filter" />**/}
-                            </>
+                            { displayName }
                         </FilterViewerComponent>
                 }
                 
@@ -283,16 +278,3 @@ class SelectedFilter<S = any, T = any> extends React.Component<TSelectedFilterPr
         );
     }
 }
-
-/**
- * A simple informational button
- */
-/**
-function InfoButton(props: {value: string}) {
-    return(
-        <a href="#!">
-            <i className="far fa-question-circle" data-fa-transform="shrink-4 up-3"></i>
-        </a>
-    );
-}
-*/

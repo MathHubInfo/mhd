@@ -3,6 +3,7 @@ import MHDMain from "../../../common/MHDMain";
 import { ParsedMHDCollection } from "../../../../client/derived";
 import { TMHDItem } from "../../../../client/rest";
 import { Table, Row, Col, Container } from "reactstrap";
+import PropertyInfoButton from "../../../common/PropertyInfoButton";
 
 interface MHDItemViewProps {
     /** collection */
@@ -24,7 +25,7 @@ export default class MHDItemView extends React.Component<MHDItemViewProps> {
 
             const Cell = codec.cellComponent;
             return <tr key={p.slug}>
-                <td>{p.displayName}</td>
+                <td>{p.displayName}<PropertyInfoButton prop={p} /></td>
                 <td><Cell value={item[p.slug]} codec={codec} /></td>
             </tr>
         });
