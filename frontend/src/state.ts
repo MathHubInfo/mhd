@@ -1,50 +1,60 @@
-const STATE_MAGIC = "MHD_V1"; // TODO: Changeme
+import { TableState } from "./components/wrappers/table";
+import { MHDFilter } from "./client/derived";
 
-/**
- * Encodes state into a string along with magic and a hash
- */
-export function encodeState<T>(state: {}) {
-    // stringify the state itself
-    const js = JSON.stringify(state);
+export interface MHDCollectionSearchState extends TableState {
+    /** the set of applied filters */
+    filters: MHDFilter[];
 
-    // encode it along with the magic and the hash code
-    const magiced = JSON.stringify([STATE_MAGIC, js, hashCode(js)]);
+    /** the set of selected columns */
+    columns: string[];
 
-    // and turn it into base64
-    return btoa(magiced);
+    /** the widths of each of the columns */
+    widths: number[] | undefined;
+}
+
+function valueToString(value: any) {
+    if (value === undefined) value = null;
+    return JSON.stringify(value);
+}
+
+function stringToValue(value: string): any {
+    const v = JSON.parse(value);
+    return v === null ? undefined : v;
 }
 
 /**
- * decodes some state from the url
- * Return undefined when validate fails
+ * (Potentially lossy) encoding of state into the URL
+ */
+export function encodeState<T>(state: MHDCollectionSearchState) {
+    return Object.entries({...state, widths: undefined}).map(
+        ([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(valueToString(v))}`
+    ).join('&');
+}
+
+/**
+ * Decodes some part of the state from the url
  * @param state
  */
-export function decodeState(state: string): {} | undefined {
+export function decodeState(state: string): MHDCollectionSearchState | undefined {
     if (state === "") return;
-    
-    try {
-        const [m, s, h] = JSON.parse(atob(state));
-        if (m !== STATE_MAGIC) throw new Error("Unable to verify magic");
-        if (hashCode(s) !== h) throw new Error("Unable to verify hash");
-        return JSON.parse(s); 
-    } catch(e) {
-        return undefined;
-    }
-}
 
-/**
- * Computes the hashCode of a string
- * @param s 
- */
-function hashCode(s: string): number {
-    let hash = 0;
-    if (s.length === 0) {
-        return hash;
+    // decode the url keys as JSON valuys
+    const sobj: Record<string, any> = {};
+    try {
+        state.split('&').forEach(e => {
+            const uc = e.split('=');
+            if (uc.length !== 2) return;
+            
+            // only accept these keys
+            const key = decodeURIComponent(uc[0]);
+            if (['per_page', 'page', 'filters', 'columns', 'widths'].indexOf(key) === -1) return;
+            
+            const value = decodeURIComponent(uc[1]);
+            sobj[key] = stringToValue(value);
+        });
+    } catch(_) {
+        return;
     }
-    for (let i = 0; i < s.length; i++) {
-        var char = s.charCodeAt(i);
-        hash = ((hash<<5)-hash)+char;
-        hash = hash & hash; // Convert to 32bit integer
-    }
-    return hash;
+
+    return sobj as MHDCollectionSearchState;
 }

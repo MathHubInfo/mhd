@@ -5,7 +5,7 @@ import { MHDFilter, ParsedMHDCollection } from '../../../../client/derived';
 import ColumnEditor from './columns/ColumnEditor';
 import FilterEditor from './filter';
 import ResultsTable from './results/ResultsTable';
-import { encodeState, decodeState } from '../../../../state';
+import { encodeState, decodeState, MHDCollectionSearchState } from '../../../../state';
 import { withRouter, RouteComponentProps } from "react-router";
 import { TableState } from "../../../wrappers/table";
 
@@ -20,16 +20,6 @@ interface MHDCollectionSearchProps extends RouteComponentProps<{}>{
     results_loading_delay: number;
 }
 
-interface MHDCollectionSearchState extends TableState {
-    /** the set of applied filters */
-    filters: MHDFilter[];
-
-    /** the set of selected columns */
-    columns: string[];
-
-    /** the widths of each of the columns */
-    widths: number[] | undefined;
-}
 /**
  * Display the search interface for a single collection
  */
