@@ -19,13 +19,27 @@ interface MHDCollectionAboutProps {
 /** Renders a collection that is not found */
 export default class MHDCollectionAboutPage extends React.Component<MHDCollectionAboutProps> {
     render() {
-        const { collection } = this.props;
+        const { collection: { displayName, description, metadata } } = this.props;
 
-        return <MHDMain title={<LaTeX>{collection.displayName}</LaTeX>}>
+        return <MHDMain title={<LaTeX>{displayName}</LaTeX>}>
             <Container>
                 <Row>
                     <Col sm="12">
-                        { JSON.stringify(collection.metadata) }
+                        <p><LaTeX>{description || "No description provided"}</LaTeX></p>
+                        <p>
+                        {(metadata.schemaTheoryURL && metadata.schemaTheoryURL.length > 0) &&
+                            <a href={metadata.schemaTheoryURL}>Schema theory</a>
+                        }
+                        </p>
+                        <p>Authors: {metadata.authors || "N/A"}</p>
+                        <p>Size: {metadata.size || "N/A"}</p>
+                        <ul>
+                        {(metadata.references && metadata.references.length > 0) &&
+                            metadata.references.map((r:any) => 
+                                <li><a href={r.url}>{r.title}</a></li>
+                            )
+                        }
+                        </ul>
                     </Col>
                 </Row>
             </Container>

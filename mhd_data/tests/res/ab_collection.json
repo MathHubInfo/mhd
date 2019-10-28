@@ -1,17 +1,43 @@
 {
     "displayName": "Additive Bases",
     "slug": "ab",
-    "description": "This is the full collection of extremal additive bases of up to $25$ elements. ",
+    "description": "This is the full collection of extremal additive bases of up to $25$ elements.",
+    "metadata": {
+        "schemaTheoryURL": 
+        "https://gl.mathhub.info/ODK/mbgen/blob/master/source/additive_bases_schema.mmt",
+        "size": 47,
+        "authors": "Jukka Kohonen",
+        "references": [
+            {
+                "type": "MitM",
+                "title": "Additive Bases (MitM)",
+                "url": "https://gl.mathhub.info/MitM/smglom/blob/devel/source/numbertheory/additiveBases.mmt"
+            },
+            {
+                "type": "pdf",
+                "title": "A Meet-in-the-Middle Algorithm for Finding Extremal Restricted Additive 2-Bases",
+                "url": "http://emis.ams.org/journals/JIS/VOL17/Kohonen2/kohonen5.pdf"
+            },
+            {
+                "type": "web",
+                "title": "Provenance Sketch",
+                "url": "https://github.com/OpenDreamKit/MathDataWorkshop/blob/master/provenance-sketches/additive-basis-provenance-sketch.txt"
+            }
+        ]
+    },
     "properties": [
         {
             "slug": "basis",
             "displayName": "Basis",
-            "codec": "ListAsArray_StandardInt"
+            "codec": "ListAsArray_StandardInt",
+            "url": "https://gl.mathhub.info/MitM/smglom/blob/devel/source/numbertheory/additiveBases.mmt#L12",
+            "description": "A set $A$ of non-negative integers such that every non-negative integer can be written in at least one way as a sum of integers from $A$."
         },
         {
             "slug": "k",
             "displayName": "Size",
-            "codec": "StandardInt"
+            "codec": "StandardInt",
+            "description": "The size of the additive basis."
         },
         {
             "slug": "n",
@@ -21,12 +47,14 @@
         {
             "slug": "S",
             "displayName": "Symmetric",
-            "codec": "StandardBool"
+            "codec": "StandardBool",
+            "url": "https://gl.mathhub.info/MitM/smglom/blob/devel/source/numbertheory/additiveBases.mmt#L21"
         },
         {
             "slug": "R",
             "displayName": "Restricted",
-            "codec": "StandardBool"
+            "codec": "StandardBool",
+            "url": "https://gl.mathhub.info/MitM/smglom/blob/devel/source/numbertheory/additiveBases.mmt#L15"
         }
     ]
 }
