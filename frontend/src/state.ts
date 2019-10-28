@@ -1,9 +1,14 @@
 import { TableState } from "./components/wrappers/table";
 import { MHDFilter } from "./client/derived";
+import { TMHDPreFilter } from "./client/rest";
 
+// TODO: pre_filter in the url
 export interface MHDCollectionSearchState extends TableState {
     /** the set of applied filters */
     filters: MHDFilter[];
+
+    /** selected pre-filter */
+    pre_filter?: TMHDPreFilter;
 
     /** the set of selected columns */
     columns: string[];

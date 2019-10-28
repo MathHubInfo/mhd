@@ -1,4 +1,4 @@
-from mhd_schema.models import Collection, Property
+from mhd_schema.models import Collection, Property, PreFilter
 from mhd_data.models import CodecManager
 
 from tqdm import tqdm
@@ -38,6 +38,13 @@ class SchemaImporter(object):
         for p in data['properties']:
             self._validate_property(p)
 
+        if 'preFilters' in k:
+            if not isinstance(data['preFilters'], list):
+                raise SchemaValidationError(
+                    'Key \'preFilters\' is not a list of PreFilters. ')
+                for pf in data['preFilters']:
+                    self._validate_pre_filter(pf)
+
     def _validate_property(self, data):
         if not isinstance(data, dict):
             raise SchemaValidationError('Found property that is not a dict. ')
@@ -70,6 +77,15 @@ class SchemaImporter(object):
         if CodecManager.find_codec(data['codec']) is None:
             raise SchemaValidationError(
                 'Property {0!r} has unknown codec {1!r}'.format(slug, data['codec']))
+
+    def _validate_pre_filter(self, data):
+        for k in ['name', 'condition']:
+            if k not in data:
+                raise SchemaValidationError(
+                    'Prefilter missing key {}. '.format(k))
+            if not isinstance(data[k], str):
+                raise SchemaValidationError(
+                    'Prefilter value {} is not a string. '.format(k))
 
     def __call__(self, update=False):
         """
@@ -115,6 +131,7 @@ class SchemaImporter(object):
         url = self.data.get('url', None)
         metadata = self.data.get('metadata', None)
         properties = self.data['properties']
+        preFilters = self.data.get('preFilters', None) or []
 
         # if we do not want to update
         # check if the collection already exists and raise an error
@@ -132,7 +149,16 @@ class SchemaImporter(object):
         self.logger.info('{1!s} collection {0!r}'.format(
             slug, 'Created' if created else 'Updated'))
 
-        # Create all the properties (TODO)
+        # Delete all the previous pre-filters
+        collection.prefilter_set.all().delete()
+        PreFilter.objects.bulk_create([
+            PreFilter(collection=collection, description=p["description"], condition=p["condition"])
+                for p in preFilters])
+
+        self.logger.info('Created {1} pre_filters for {0!r}'.format(slug, len(preFilters)))
+
+
+        # Create all the properties
         props = [
             self.__call__property(collection, p, update=update)[0]
             for p in tqdm(properties, leave=False)

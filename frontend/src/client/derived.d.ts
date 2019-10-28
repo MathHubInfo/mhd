@@ -1,4 +1,4 @@
-import {TMHDCollection, TMHDProperty} from './rest';
+import {TMHDCollection, TMHDProperty, TMHDPreFilter} from './rest';
 import Codec from "../codecs/codec";
 
 /**
@@ -10,6 +10,9 @@ export interface ParsedMHDCollection extends TMHDCollection {
 
     /** a map from slug to names */
     nameMap: Map<string, string>
+
+    /** the default pre-filter */
+    defaultPreFilter?: TMHDPreFilter,
 
     /* the slugs of all properties */
     propertySlugs: string[]

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { MHDBackendClient } from "../../../../../client";
 import { MHDFilter, ParsedMHDCollection } from "../../../../../client/derived";
-import { TDRFPagedResponse, TMHDItem } from "../../../../../client/rest";
+import { TDRFPagedResponse, TMHDItem, TMHDPreFilter } from "../../../../../client/rest";
 import { Row, Col, Spinner } from "reactstrap";
 import { Link } from "react-router-dom";
 import Table, { TableColumn, TableState } from "../../../../wrappers/table";
@@ -15,6 +15,9 @@ interface ResultsTableProps extends TableState {
 
     /** the current filters */
     filters: MHDFilter[];
+
+    /** pre-filter */
+    pre_filter?: TMHDPreFilter;
 
     /** the selected columns */
     columns: string[];
@@ -89,12 +92,12 @@ export default class ResultsTable extends Component<ResultsTableProps, ResultsTa
             });
         }, this.props.results_loading_delay);
 
-        const { collection, columns, filters, page, per_page } = this.props;
+        const { collection, columns, pre_filter, filters, page, per_page } = this.props;
 
         // fetch the results with appropriate errors
         let results: TDRFPagedResponse<TMHDItem<{}>> = {count: 0, next: null, previous: null, num_pages: -1, results: []};
         try {
-            results = await this.props.client.fetchItems(collection, columns, filters, page + 1, per_page)
+            results = await this.props.client.fetchItems(collection, columns, pre_filter, filters, page + 1, per_page)
         } catch (e) {
             if (process.env.NODE_ENV !== 'production') console.error(e);
         }
@@ -124,12 +127,12 @@ export default class ResultsTable extends Component<ResultsTableProps, ResultsTa
     }
 
     /** computes a hash of the properties that influence data fetching */
-    private static computeDataUpdateHash({ filters, collection, columns, page, per_page }: ResultsTableProps): string {
-        return MHDBackendClient.hashFetchItems(collection, columns, filters, page, per_page);
+    private static computeDataUpdateHash({ filters, pre_filter, collection, columns, page, per_page }: ResultsTableProps): string {
+        return MHDBackendClient.hashFetchItems(collection, columns, pre_filter, filters, page, per_page);
     }
 
-    private static computeResetHash({collection, filters}: ResultsTableProps): string {
-        return MHDBackendClient.hashFetchItems(collection, [], filters, 1, 1);
+    private static computeResetHash({collection, filters, pre_filter}: ResultsTableProps): string {
+        return MHDBackendClient.hashFetchItems(collection, [], pre_filter, filters, 1, 1);
     }
     
     componentDidUpdate(prevProps: ResultsTableProps, prevState: ResultsTableState) {

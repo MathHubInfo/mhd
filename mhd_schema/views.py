@@ -9,7 +9,7 @@ from rest_framework import response, serializers, viewsets
 
 from mhd_data.models import CodecManager
 
-from .models import Collection, Property
+from .models import Collection, Property, PreFilter
 
 
 class CodecField(serializers.Field):
@@ -37,17 +37,26 @@ class PropertySerializer(serializers.ModelSerializer):
 
     codec = CodecField()
 
+class PreFieldFieldSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PreFilter
+        fields = ['description', 'condition']
+
 
 class CollectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Collection
-        fields = ['displayName', 'slug', 'description', 'url', 'metadata', 'properties', 'flag_large_collection']
+        fields = ['displayName', 'slug', 'description', 'url', 'metadata', 'properties', 'preFilters', 'flag_large_collection']
 
     properties = serializers.SerializerMethodField()
-
     def get_properties(self, obj):
         props = obj.property_set.order_by('id')
         return PropertySerializer(props, many=True, context=self.context).data
+
+    preFilters = serializers.SerializerMethodField()
+    def get_preFilters(self, obj):
+        pre_filters = obj.prefilter_set.order_by('id')
+        return PreFieldFieldSerializer(pre_filters, many=True, context=self.context).data
 
 
 class CollectionViewSet(viewsets.ReadOnlyModelViewSet):

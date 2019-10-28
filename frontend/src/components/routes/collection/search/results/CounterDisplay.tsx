@@ -2,6 +2,7 @@ import React from 'react';
 
 import { MHDBackendClient } from '../../../../../client';
 import { ParsedMHDCollection, MHDFilter } from '../../../../../client/derived';
+import { TMHDPreFilter } from "../../../../../client/rest";
 
 interface CounterDisplayProps {
     /** the backend  */
@@ -9,6 +10,8 @@ interface CounterDisplayProps {
 
     /** the current collection (if any) */
     collection: ParsedMHDCollection;
+
+    pre_filter?: TMHDPreFilter;
 
     /** current filters */
     filters: MHDFilter[];
@@ -63,7 +66,7 @@ export default class CounterDisplay extends React.Component<CounterDisplayProps,
         // fallback to 'NaN' when an error occurs, and log the error during development
         let count = NaN;
         try {
-            count = await this.props.client.fetchItemCount(this.props.collection, this.props.filters);
+            count = await this.props.client.fetchItemCount(this.props.collection, this.props.pre_filter, this.props.filters);
         } catch (e) {
             if (process.env.NODE_ENV !== 'production') console.error(e);
         }
@@ -88,12 +91,12 @@ export default class CounterDisplay extends React.Component<CounterDisplayProps,
 
     componentDidUpdate(prevProps: CounterDisplayProps, prevState: CounterDisplayState) {
         // compute old hash
-        const {filters: prevFilter, collection: prevCollection} = prevProps;
-        const oldHash = MHDBackendClient.hashFetchItemCount(prevCollection, prevFilter);
+        const {filters: prevFilter, pre_filter: prevPreFilter, collection: prevCollection} = prevProps;
+        const oldHash = MHDBackendClient.hashFetchItemCount(prevCollection, prevPreFilter, prevFilter);
 
         // compute new hash
-        const { filters: newFilter, collection: newCollection } = this.props;
-        const newHash = MHDBackendClient.hashFetchItemCount(newCollection, newFilter);
+        const { filters: newFilter, pre_filter: newPreFilter, collection: newCollection } = this.props;
+        const newHash = MHDBackendClient.hashFetchItemCount(newCollection, newPreFilter, newFilter);
 
         // if we have different hashes, we need to re-count
         if (oldHash !== newHash) {

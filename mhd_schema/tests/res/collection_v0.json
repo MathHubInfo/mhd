@@ -7,6 +7,10 @@
     "metadata": {
         "uri": "https://mathhub.com/examples/?Z3ZFunction"
     },
+    "preFilters": [{
+        "description": "f0 = 1",
+        "condition": "f0 = 1"
+    }],
     "properties": [
         {
             "slug": "f0",

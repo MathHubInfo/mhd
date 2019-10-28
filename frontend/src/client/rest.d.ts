@@ -9,9 +9,16 @@ export interface TMHDCollection {
     description: string;
     url: string | null;
 
+    preFilters: TMHDPreFilter[]
+
     metadata?: any;
     
     properties: TMHDProperty[];
+}
+
+export interface TMHDPreFilter {
+    description: string,
+    condition: string
 }
 
 /** a MathHubData Property */

@@ -1,11 +1,12 @@
 import React from 'react';
-import { Button, Row } from 'reactstrap';
+import { Button, Row, Alert } from 'reactstrap';
 import { MHDBackendClient } from "../../../../../client";
 import { MHDFilter, ParsedMHDCollection } from "../../../../../client/derived";
 import { MHDMainHead } from "../../../../common/MHDMain";
 import CounterDisplay from '../results/CounterDisplay';
 import FilterSelector from './FilterSelector';
 import LaTeX from 'react-latex';
+import { TMHDPreFilter } from "../../../../../client/rest";
 
 interface FilterEditorProps {
     /** the backend  */
@@ -17,8 +18,11 @@ interface FilterEditorProps {
     /** the filters currently set */
     filters: MHDFilter[];
 
+    /** the user-selected pre-filter (if any) */
+    pre_filter?: TMHDPreFilter
+
     /** callback when filters are applied  */
-    onFilterApply: (filters: MHDFilter[]) => void;
+    onFilterApply: (filters: MHDFilter[], pre_filter?: TMHDPreFilter) => void;
 
     /** timeout under which to not show the loading indicator */
     results_loading_delay: number;
@@ -27,6 +31,9 @@ interface FilterEditorProps {
 interface FilterEditorStateProps {
     /** the currently selected filters (maybe not applied yet) */
     filters: MHDFilter[],
+
+    /** pre_filter selected by the user  */
+    pre_filter?: TMHDPreFilter,
 
     /** have the current filters been applied? */
     applied: boolean;
@@ -40,7 +47,8 @@ export default class FilterEditor extends React.Component<FilterEditorProps, Fil
 
     state: FilterEditorStateProps = {
         filters: this.props.filters,
-        applied: false,
+        pre_filter: this.props.pre_filter,
+        applied: false
     };
 
     /** stores a new list of filters in state */
@@ -50,7 +58,7 @@ export default class FilterEditor extends React.Component<FilterEditorProps, Fil
 
     /* Applies the filters and passes them to the parent */
     applyFilters = () => {
-        this.props.onFilterApply(this.state.filters);
+        this.props.onFilterApply(this.state.filters, this.state.pre_filter);
         this.setState({ applied: true });
     }
 
@@ -60,13 +68,15 @@ export default class FilterEditor extends React.Component<FilterEditorProps, Fil
 
     render() {
         const { collection, client, results_loading_delay } = this.props;
-        const { applied, filters } = this.state;
+        const { applied, filters, pre_filter } = this.state;
 
         const leftHead = <>
             <p><LaTeX>{collection.description}</LaTeX></p>
+            {pre_filter && <PreFilterDisplay filter={pre_filter} /> }
             <CounterDisplay
                 collection={collection}
                 client={client}
+                pre_filter={pre_filter}
                 filters={filters}
                 results_loading_delay={results_loading_delay}
             />
@@ -90,4 +100,8 @@ export default class FilterEditor extends React.Component<FilterEditorProps, Fil
 
         return <MHDMainHead title={<LaTeX>{collection.displayName}</LaTeX>} leftHead={leftHead} buttons={buttons} rightHead={rightHead} />;
     }
+}
+
+function PreFilterDisplay({filter: {description}}: {filter: TMHDPreFilter}) {
+    return <Alert color="info"><b>Pre-Filter active: </b><LaTeX>{description}</LaTeX></Alert>;
 }

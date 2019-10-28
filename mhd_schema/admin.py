@@ -7,6 +7,9 @@ class PropertyInline(admin.TabularInline):
     model = models.Property.collections.through
     extra = 1
 
+class PreFilterInline(admin.TabularInline):
+    model = models.PreFilter
+    extra = 1
 
 class CollectionInline(admin.TabularInline):
     model = models.Collection.property_set.through
@@ -24,7 +27,7 @@ class CollectionAdmin(admin.ModelAdmin):
     search_fields = ['displayName', 'slug']
 
     inlines = [
-        PropertyInline,
+        PropertyInline, PreFilterInline,
     ]
 
 

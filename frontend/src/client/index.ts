@@ -1,5 +1,5 @@
 import { ParsedMHDCollection, MHDFilter } from "./derived";
-import { TMHDCollection, TMHDProperty, TDRFPagedResponse, TMHDItem } from "./rest";
+import { TMHDCollection, TMHDProperty, TDRFPagedResponse, TMHDItem, TMHDPreFilter } from "./rest";
 import CodecManager from "../codecs";
 import Codec from "../codecs/codec";
 import { TableColumn } from "../components/wrappers/table";
@@ -81,14 +81,16 @@ export class MHDBackendClient {
             return p.slug;
         });
 
-        return { propMap, nameMap, propertySlugs, codecMap, columnMap,  ...collection };
+        const defaultPreFilter = (collection.preFilters.length > 0) ? collection.preFilters[0] : undefined;
+        console.log(defaultPreFilter);
+        return { propMap, nameMap, propertySlugs, codecMap, columnMap, defaultPreFilter, ...collection };
     }
 
     /** Fetches information about a set of collection items */
-    async fetchItems<T extends {}>(collection: ParsedMHDCollection, properties: string[], filters: MHDFilter[], page_number = 1, per_page = 100, order?: string[]): Promise<TDRFPagedResponse<TMHDItem<T>>> {
+    async fetchItems<T extends {}>(collection: ParsedMHDCollection, properties: string[], pre_filter: TMHDPreFilter | undefined, filters: MHDFilter[], page_number = 1, per_page = 100, order?: string[]): Promise<TDRFPagedResponse<TMHDItem<T>>> {
         // Build the filter params
         const params = {
-            filter: MHDBackendClient.buildFilter(filters),
+            filter: MHDBackendClient.buildFilter(pre_filter, filters),
             properties: properties.join(","),
             page: page_number.toString(),
             per_page: per_page.toString(),
@@ -100,9 +102,10 @@ export class MHDBackendClient {
     }
 
     /** hashes the parameters to the fetchItems function */
-    static hashFetchItems(collection: ParsedMHDCollection, properties: string[], filters: MHDFilter[], page_number = 1, per_page = 100): string {
+    static hashFetchItems(collection: ParsedMHDCollection, properties: string[], pre_filter: TMHDPreFilter | undefined, filters: MHDFilter[], page_number = 1, per_page = 100): string {
         const hash = {
             collection: collection.slug,
+            pre_filter: pre_filter,
             filters: filters.filter(f => f.value !== null),
             properties: properties,
             page_number: page_number,
@@ -112,10 +115,10 @@ export class MHDBackendClient {
     }
 
     /** Fetches the number of items in a collection */
-    async fetchItemCount(collection: ParsedMHDCollection, filters: MHDFilter[]): Promise<number> {
+    async fetchItemCount(collection: ParsedMHDCollection, pre_filter: TMHDPreFilter | undefined, filters: MHDFilter[]): Promise<number> {
         // Build the filter params
         const params = {
-            filter: MHDBackendClient.buildFilter(filters),
+            filter: MHDBackendClient.buildFilter(pre_filter, filters),
         };
 
         // fetch the results
@@ -124,17 +127,19 @@ export class MHDBackendClient {
     }
 
     /** hashes the parameters to the fetchItemCount function */
-    static hashFetchItemCount(collection: ParsedMHDCollection, filters: MHDFilter[]): string {
+    static hashFetchItemCount(collection: ParsedMHDCollection, pre_filter: TMHDPreFilter | undefined, filters: MHDFilter[]): string {
         const hash = {
             collection: collection.slug,
+            pre_filter: pre_filter,
             filters: filters.filter(f => f.value !== null),
         }
         return JSON.stringify(hash);
     }
 
     /** give a set of filters, build a filter URL */
-    static buildFilter(filters: MHDFilter[]): string {
-        return filters.filter(f => f.value !== null).map(f => `(${f.slug}${f.value})`).join("&&")
+    static buildFilter(pre_filter: TMHDPreFilter | undefined, filters: MHDFilter[]): string {
+        const filterAry = filters.filter(f => f.value !== null).map(f => `(${f.slug}${f.value})`);
+        return (pre_filter ? [`(${pre_filter.condition})`, ...filterAry] : filterAry).join('&&');
     }
 
     /** builds a sort order string to pass to the backend */

@@ -8,6 +8,7 @@ import ResultsTable from './results/ResultsTable';
 import { encodeState, decodeState, MHDCollectionSearchState } from '../../../../state';
 import { withRouter, RouteComponentProps } from "react-router";
 import { TableState } from "../../../wrappers/table";
+import { TMHDPreFilter } from "../../../../client/rest";
 
 interface MHDCollectionSearchProps extends RouteComponentProps<{}>{
     /** client to talk to the server */
@@ -35,6 +36,7 @@ class MHDCollectionSearch extends React.Component<MHDCollectionSearchProps, MHDC
         // restore the default state
         return {
             filters: [],
+            pre_filter: this.props.collection.defaultPreFilter,
             columns: this.props.collection.propertySlugs.slice(),
             page: 0,
             per_page: 20,
@@ -47,8 +49,8 @@ class MHDCollectionSearch extends React.Component<MHDCollectionSearchProps, MHDC
     }
 
     /** called when new filters are set in the filter editor */
-    private setFilters = (filters: MHDFilter[]) => {
-        this.setState({ filters });
+    private setFilters = (filters: MHDFilter[], pre_filter?: TMHDPreFilter) => {
+        this.setState({ filters, pre_filter });
     }
 
     /** called when new columns are set in the column editor */
@@ -70,7 +72,7 @@ class MHDCollectionSearch extends React.Component<MHDCollectionSearchProps, MHDC
     }
 
     render() {
-        const { filters, columns, page, per_page, widths } = this.state;
+        const { filters, pre_filter, columns, page, per_page, widths } = this.state;
         const { client, collection, results_loading_delay } = this.props;
 
         return (
@@ -80,6 +82,7 @@ class MHDCollectionSearch extends React.Component<MHDCollectionSearchProps, MHDC
                     client={client}
                     collection={collection}
                     filters={filters}
+                    pre_filter={pre_filter}
                     onFilterApply={this.setFilters}
                     results_loading_delay={results_loading_delay}
                 />
@@ -99,6 +102,7 @@ class MHDCollectionSearch extends React.Component<MHDCollectionSearchProps, MHDC
                                     client={client}
                                     collection={collection}
                                     filters={filters}
+                                    pre_filter={pre_filter}
                                     columns={columns}
                                     page={page}
                                     per_page={per_page}

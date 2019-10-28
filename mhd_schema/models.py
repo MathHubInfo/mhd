@@ -336,4 +336,14 @@ class PropertyCollectionMembership(models.Model):
     collection = models.ForeignKey(Collection, on_delete=models.CASCADE)
 
 
+class PreFilter(models.Model):
+    collection = models.ForeignKey(Collection, on_delete=models.CASCADE)
+    description = models.TextField(
+        default="", help_text="Description of this pre-filter")
+    condition = models.TextField(
+        default="", help_text="Condition of this pre-filter")
+
+    def __str__(self):
+        return "PreFilter {0!r} [{1!r}]".format(self.description, self.condition)
+
 __all__ = ["Collection", "Property"]
