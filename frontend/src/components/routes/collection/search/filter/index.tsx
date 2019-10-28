@@ -83,12 +83,15 @@ export default class FilterEditor extends React.Component<FilterEditorProps, Fil
         </>;
 
         const buttons = <>
-            <Button onClick={this.applyFilters} disabled={applied}>Display results</Button>
-            { collection.url &&
-                <a href={collection.url} target="_blank" rel="noopener noreferrer">
-                    <Button>More Info</Button>
-                </a>
+                { collection.metadata &&
+                <p>
+                    <a href="about/" target="_blank" rel="noopener noreferrer">
+                        <i className="far fa-comment-dots" data-fa-transform="shrink-2"></i>&nbsp;
+                        More about this dataset
+                    </a>
+                </p>
                 }
+            <Button onClick={this.applyFilters} disabled={applied}>Display results</Button>
         </>;
 
         const rightHead = <Row>
