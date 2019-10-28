@@ -4,7 +4,7 @@ import { Badge } from "reactstrap";
 import { TableColumn, CellComponentProps } from "../components/wrappers/table";
 import PropertyInfoButton from "../components/common/PropertyInfoButton";
 
-type ReactComponent<T> = React.ComponentClass<T> | React.SFC<T>
+type ReactComponent<T> = React.ComponentClass<T> | React.SFC<T>;
 
 export interface TCellProps<CodecType extends Codec<ElementType, FilterType>, ElementType, FilterType> {
     /** the value of this cell (if any) */

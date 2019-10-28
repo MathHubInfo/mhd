@@ -14,6 +14,7 @@ urlpatterns = [
 
     # frontend-served urls, caught by uwsgi in production
     path('collection/<slug:cid>/', FrontendCollectionView.as_view()),
+    path('collection/<slug:cid>/about/', FrontendCollectionView.as_view()),
     path('item/<slug:cid>/<slug:uuid>/', FrontendItemView.as_view()),
     path('about/', FrontendStaticView.as_view()),
     path('', FrontendStaticView.as_view())

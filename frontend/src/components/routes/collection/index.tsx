@@ -1,18 +1,16 @@
 import React from 'react';
 import { ParsedMHDCollection } from "../../../client/derived";
 import { MHDBackendClient, ResponseError } from "../../../client";
-import MHDCollectionSearch from "./search/";
 import MHDMain, { MHDLoading } from "../../common/MHDMain";
 
 interface MHDCollectionProps {
     /** client being used by the backend */
     client: MHDBackendClient;
 
+    results_loading_delay: number;
+
     /** name of the collection to render */
     collection: string;
-
-    /** timeout under which to not show the loading indicator */
-    results_loading_delay: number;
 }
 
 interface MHDCollectionState {
@@ -30,10 +28,17 @@ interface MHDCollectionState {
 
 }
 
+type ReactComponent<T> = React.ComponentClass<T> | React.SFC<T>;
+type CollectionComponent = ReactComponent<{
+    client: MHDBackendClient;
+    results_loading_delay: number;
+    collection: ParsedMHDCollection;
+}>
+
 /**
  * Loads collection data and either loads the Search page or the not found page
  */
-export default class MHDCollection extends React.Component<MHDCollectionProps, MHDCollectionState> {
+export default class MHDCollectionFactory extends React.Component<MHDCollectionProps & {component: CollectionComponent}, MHDCollectionState> {
     state: MHDCollectionState = {
         loading: true,
     }
@@ -73,8 +78,8 @@ export default class MHDCollection extends React.Component<MHDCollectionProps, M
     }
 
     render() {
-        const { loading, collection, not_found: notFound, failed } = this.state;
-        const { client, results_loading_delay } = this.props;
+        const { loading, collection, not_found, failed } = this.state;
+        const { client, results_loading_delay, component: Component } = this.props;
         
         // Render a loading indicator when loading
         if (loading) return <MHDLoading />;
@@ -83,10 +88,10 @@ export default class MHDCollection extends React.Component<MHDCollectionProps, M
         if (failed) return <MHDMain title="Error" leftHead={`Something went wrong: ${failed}`} />;
 
         // when the collection wasn't found, render the 404 page
-        if (notFound !== undefined) return "Not Found";
+        if (not_found !== undefined) return "Not Found";
 
         // when we have a single collection, render it
-        if (collection !== undefined) return <MHDCollectionSearch client={client} collection={collection} results_loading_delay={results_loading_delay} />
+        if (collection !== undefined) return <Component client={client} collection={collection} results_loading_delay={results_loading_delay} />
 
         // else render nothing
         return null;
