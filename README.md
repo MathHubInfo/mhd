@@ -82,6 +82,7 @@ See also [Built-in commands](https://docs.djangoproject.com/en/dev/ref/django-ad
 - `load_collection`: Combines `upsert_collection` and `insert_data` commands for convenience.
 - `query_collection`: Queries a collection
 - `flush_collection`: Flushes all items associated to a collection
+- `update_count`: Updates the total number of elements in each collection
 
 
 ## MDDL Codec Catalog

@@ -73,13 +73,16 @@ export default class FilterEditor extends React.Component<FilterEditorProps, Fil
         const leftHead = <>
             <p><LaTeX>{collection.description}</LaTeX></p>
             {pre_filter && <PreFilterDisplay filter={pre_filter} /> }
-            <CounterDisplay
-                collection={collection}
-                client={client}
-                pre_filter={pre_filter}
-                filters={filters}
-                results_loading_delay={results_loading_delay}
-            />
+            <p>
+                <CounterDisplay
+                    collection={collection}
+                    client={client}
+                    pre_filter={pre_filter}
+                    filters={filters}
+                    results_loading_delay={results_loading_delay}
+                />
+                {collection.count !== undefined && <> (out of <i>{collection.count}</i>)</>}
+            </p>
         </>;
 
         const buttons = <>

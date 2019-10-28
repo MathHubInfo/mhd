@@ -20,6 +20,19 @@ class Collection(ModelWithMetadata):
     url = models.URLField(
         null=True, blank=True, help_text="URL for more information about this collection")
 
+    count = models.IntegerField(null=True, blank=True, help_text="Total number of items in this collection")
+    count_frozen = models.BooleanField(default=False, help_text="When set to true, freeze the count of this collection")
+    def update_count(self):
+        """ Updates the count of items in this collection iff it is not frozen """
+
+        if self.count_frozen:
+            return None
+
+        self.count = self.query_count().fetchone()[0]
+        self.save()
+        return self.count
+
+
     flag_large_collection = models.BooleanField(
         default=False, help_text="Flag this collection as potentially large to the user interface"
     )
