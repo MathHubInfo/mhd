@@ -102,17 +102,20 @@ type TFilterAction = {
     private renderAvailable() {
         const { collection: { properties } } = this.props;
         return(
-            <div className={styles.searchFilter}>
-                <div className={styles.filterBox}>
-                    <ul className="fa-ul">
-                        {properties.map((p) => 
-                            <li key={p.slug}
-                                onClick={() => this.handleFilterAction({action: "add", slug: p.slug})}>
-                                <span className="fa-li"><i className="fas fa-plus"></i></span>
-                                {p.displayName} {/**<InfoButton value="filter" />**/}
-                            </li>
-                        )}
-                    </ul>
+            <div>
+                <h5>Available conditions</h5>
+                <div className={styles.searchFilter}>
+                    <div className={styles.filterBox}>
+                        <ul className="fa-ul">
+                            {properties.map((p) => 
+                                <li key={p.slug}
+                                    onClick={() => this.handleFilterAction({action: "add", slug: p.slug})}>
+                                    <span className="fa-li"><i className="fas fa-plus"></i></span>
+                                    {p.displayName} {/**<InfoButton value="filter" />**/}
+                                </li>
+                            )}
+                        </ul>
+                    </div>
                 </div>
             </div>
         );
@@ -124,19 +127,22 @@ type TFilterAction = {
         const { collection: { propMap, codecMap } } = this.props;
 
         return(
-            <div className={styles.searchFilter}>
-                <div className={styles.filterBox}>
-                    {selected.length === 0 && <p className="text-center my-3">Select filters from the list on the left</p>}
-                    <ul className="fa-ul">
-                        {selected.map((filter, index) => (
-                            <SelectedFilter key={filter.uid}
-                                property={propMap.get(filter.slug)!}
-                                codec={codecMap.get(filter.slug)!}
-                                filter={filter}
-                                onApplyFilter={(v) => this.handleFilterAction({action: "update", i: index, value: v})}
-                                onRemoveFilter={() => this.handleFilterAction({action: "remove", i: index})}/>
-                        ))}
-                    </ul>
+            <div>
+                <h5>Active conditions</h5>
+                <div className={styles.searchFilter}>
+                    <div className={styles.filterBox}>
+                        {selected.length === 0 && <p className="text-center my-3">Select filters from the list on the left</p>}
+                        <ul className="fa-ul">
+                            {selected.map((filter, index) => (
+                                <SelectedFilter key={filter.uid}
+                                    property={propMap.get(filter.slug)!}
+                                    codec={codecMap.get(filter.slug)!}
+                                    filter={filter}
+                                    onApplyFilter={(v) => this.handleFilterAction({action: "update", i: index, value: v})}
+                                    onRemoveFilter={() => this.handleFilterAction({action: "remove", i: index})}/>
+                            ))}
+                        </ul>
+                    </div>
                 </div>
             </div>
         );
