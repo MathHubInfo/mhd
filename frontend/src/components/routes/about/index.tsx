@@ -1,14 +1,11 @@
 import React from 'react';
-import { Button, Container } from "reactstrap";
+import { Container } from "reactstrap";
 import MHDMain from "../../common/MHDMain";
-import { Link } from "react-router-dom";
 
 /** Renders a collection that is not found */
 export default class MHDAboutPage extends React.Component {
     render() {
-        const buttons = <Link to='/'><Button>Back to Home</Button></Link>;
-
-        return <MHDMain title="About" buttons={buttons}>
+        return <MHDMain title="About">
             <Container>
                 <p><b>MathHub Data</b> provides dataset hosting and a searchable interface 
                     for the hosted datasets.
