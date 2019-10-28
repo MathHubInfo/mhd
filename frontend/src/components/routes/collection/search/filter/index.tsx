@@ -6,7 +6,7 @@ import { MHDMainHead } from "../../../../common/MHDMain";
 import CounterDisplay from '../results/CounterDisplay';
 import FilterSelector from './FilterSelector';
 import LaTeX from 'react-latex';
-import { TMHDPreFilter } from "../../../../../client/rest";
+import { TMHDPreFilter, TMHDCollection } from "../../../../../client/rest";
 
 interface FilterEditorProps {
     /** the backend  */
@@ -72,7 +72,10 @@ export default class FilterEditor extends React.Component<FilterEditorProps, Fil
 
         const leftHead = <>
             <p><LaTeX>{collection.description}</LaTeX></p>
-            {pre_filter && <PreFilterDisplay filter={pre_filter} /> }
+            {pre_filter ?
+                <PreFilterCountDisplay filter={pre_filter} collection={collection} /> :
+                <TotalCountDisplay collection={collection} />
+             }
             <p>
                 <CounterDisplay
                     collection={collection}
@@ -81,7 +84,6 @@ export default class FilterEditor extends React.Component<FilterEditorProps, Fil
                     filters={filters}
                     results_loading_delay={results_loading_delay}
                 />
-                {collection.count !== undefined && <> (out of <i>{collection.count}</i>)</>}
             </p>
         </>;
 
@@ -108,6 +110,18 @@ export default class FilterEditor extends React.Component<FilterEditorProps, Fil
     }
 }
 
-function PreFilterDisplay({filter: {description}}: {filter: TMHDPreFilter}) {
-    return <Alert color="info"><b>Pre-Filter active: </b><LaTeX>{description}</LaTeX></Alert>;
+function PreFilterCountDisplay({filter: {description, count}, collection}: {filter: TMHDPreFilter, collection: TMHDCollection}) {
+    return <Alert color="info">
+        <b>Pre-Filter active: </b>
+        <LaTeX>{description}</LaTeX> {
+            (count !== null && collection.count !== null) &&
+            <>({count} / {collection.count})</>
+        }
+    </Alert>;
+}
+
+function TotalCountDisplay({collection}: {collection: TMHDCollection}) {
+    return <Alert color="info">
+        This dataset has <>{collection.count}</> objects.
+    </Alert>;
 }

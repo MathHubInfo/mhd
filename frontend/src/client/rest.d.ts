@@ -9,7 +9,7 @@ export interface TMHDCollection {
     description: string;
     url: string | null;
 
-    count?: number;
+    count: number | null;
 
     preFilters: TMHDPreFilter[]
 
@@ -20,7 +20,8 @@ export interface TMHDCollection {
 
 export interface TMHDPreFilter {
     description: string,
-    condition: string
+    condition: string,
+    count: number | null,
 }
 
 /** a MathHubData Property */

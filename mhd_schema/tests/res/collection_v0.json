@@ -9,7 +9,8 @@
     },
     "preFilters": [{
         "description": "f0 = 1",
-        "condition": "f0 = 1"
+        "condition": "f0 = 1",
+        "count": null
     }],
     "properties": [
         {

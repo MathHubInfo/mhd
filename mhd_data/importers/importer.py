@@ -76,12 +76,8 @@ class DataImporter(object):
             self.logger.info(
                 'Finished import of {} item(s)'.format(len(uuids)))
 
+        self.collection.invalidate_count()
         self.logger.info('Invalidated collection count, run "python manage.py update_count" to update it. ')
-
-        # if the collection is not frozen, invalidate the count
-        if not self.collection.count_frozen:
-            self.collection.count = None
-            self.collection.save()
 
         return uuid_list
 

@@ -22,6 +22,7 @@ class Collection(ModelWithMetadata):
 
     count = models.IntegerField(null=True, blank=True, help_text="Total number of items in this collection")
     count_frozen = models.BooleanField(default=False, help_text="When set to true, freeze the count of this collection")
+
     def update_count(self):
         """ Updates the count of items in this collection iff it is not frozen """
 
@@ -30,8 +31,23 @@ class Collection(ModelWithMetadata):
 
         self.count = self.query_count().fetchone()[0]
         self.save()
+
+        for p in self.prefilter_set.all():
+            p.update_count()
+
         return self.count
 
+    def invalidate_count(self):
+        """ Invalidates the count associated to this collection iff it is no frozen """
+
+        if self.count_frozen:
+            return
+
+        self.count = None
+        self.save()
+
+        for p in self.prefilter_set.all():
+            p.invalidate_count()
 
     flag_large_collection = models.BooleanField(
         default=False, help_text="Flag this collection as potentially large to the user interface"
@@ -355,6 +371,25 @@ class PreFilter(models.Model):
         default="", help_text="Description of this pre-filter")
     condition = models.TextField(
         default="", help_text="Condition of this pre-filter")
+
+    count = models.IntegerField(null=True, blank=True)
+
+    def update_count(self):
+        """ Updates the count of this pre-filter """
+        if self.collection.count_frozen:
+            return
+
+        self.count = self.collection.query_count(filter=self.condition).fetchone()[0]
+        self.save()
+
+    def invalidate_count(self):
+        """ Invalidates the count of this pre-filter """
+
+        if self.collection.count_frozen:
+            return
+
+        self.count = None
+        self.save()
 
     def __str__(self):
         return "PreFilter {0!r} [{1!r}]".format(self.description, self.condition)

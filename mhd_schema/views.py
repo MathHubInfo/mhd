@@ -40,7 +40,7 @@ class PropertySerializer(serializers.ModelSerializer):
 class PreFieldFieldSerializer(serializers.ModelSerializer):
     class Meta:
         model = PreFilter
-        fields = ['description', 'condition']
+        fields = ['description', 'condition', 'count']
 
 
 class CollectionSerializer(serializers.ModelSerializer):
