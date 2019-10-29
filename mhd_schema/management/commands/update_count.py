@@ -11,7 +11,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('--simulate', '-s', action='store_true',
-                            help="Only simulate count update, do not actually update_count. ")
+                    help="Simulate all database operations by wrapping them in a transaction and rolling it back at the end of the command. ")
         parser.add_argument('--quiet', '-q', action='store_true',
                             help="Do not produce any output in case of success")
 

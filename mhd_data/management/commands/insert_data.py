@@ -15,7 +15,7 @@ class Command(BaseCommand):
         parser.add_argument(
             '--provenance', '-p', help=".json file containing provenance to insert", required=True)
         parser.add_argument('--simulate', '-s', action='store_true',
-                            help="Only simulate inseration, do not actually store any data")
+                    help="Simulate all database operations by wrapping them in a transaction and rolling it back at the end of the command. ")
         parser.add_argument('--quiet', '-q', action='store_true',
                             help="Do not produce any output in case of success")
         parser.add_argument('--chunk-size', '-c', type=int, default=None,

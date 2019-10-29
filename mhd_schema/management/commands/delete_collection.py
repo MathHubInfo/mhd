@@ -11,7 +11,7 @@ class Command(BaseCommand):
         parser.add_argument(
             'slug', help="Slug of collection to delete")
         parser.add_argument('--simulate', '-s', action="store_true",
-                    help="Only simulate deletion")
+                    help="Simulate all database operations by wrapping them in a transaction and rolling it back at the end of the command. ")
 
     @with_simulate_arg
     def handle(self, *args, **kwargs):
