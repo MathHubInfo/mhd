@@ -6,6 +6,8 @@ from mhd_tests.utils import AssetPath, LoadJSONAsset
 
 from .collection import insert_testing_data
 
+from ..models import Item
+
 AB_COLLECTION_PATH = AssetPath(__file__, "res", "ab_collection.json")
 
 AB_DATA_PATH = AssetPath(__file__, "res", "ab_data.json")
@@ -31,3 +33,9 @@ class ABCollectionTest(TestCase):
         GOT_QUERY_ALL = self.collection.semantic()
         self.assertJSONEqual(json.dumps(list(GOT_QUERY_ALL)), AB_ALL_ASSET,
                              "check that the query for all properties returns all properties")
+
+    def test_query_item_semantics(self):
+        for jitem in AB_ALL_ASSET:
+            item = Item.objects.get(id=jitem["_id"])
+            GOT_ITEM_SEMANTIC = item.semantic(self.collection)
+            self.assertJSONEqual(json.dumps(GOT_ITEM_SEMANTIC), jitem)

@@ -6,6 +6,8 @@ from mhd_tests.utils import AssetPath, LoadJSONAsset
 
 from .collection import insert_testing_data
 
+from ..models import Item
+
 Z3Z_COLLECTION_PATH = AssetPath(__file__, "res", "z3z_collection.json")
 Z3Z_PROVENANCE_PATH = AssetPath(__file__, "res", "z3z_provenance.json")
 Z3Z_DATA_PATH = AssetPath(__file__, "res", "z3z_data.json")
@@ -109,3 +111,9 @@ class Z3ZCollectionTest(TestCase):
         EXPECTED_QUERY_F1_F2_FILTER = EXPECTED_QUERY_F1_F2_FILTER.format(col_pk, f1_pk, f2_pk)
         self.assertEqual(GOT_QUERY_F1_F2_FILTER.query.sql, EXPECTED_QUERY_F1_F2_FILTER)
         self.assertTupleEqual(GOT_QUERY_F1_F2_FILTER.query.params, (0,))
+
+    def test_query_item_semantics(self):
+        for jitem in Z3Z_ALL_ASSET:
+            item = Item.objects.get(id=jitem["_id"])
+            GOT_ITEM_SEMANTIC = item.semantic(self.collection)
+            self.assertJSONEqual(json.dumps(GOT_ITEM_SEMANTIC), jitem)

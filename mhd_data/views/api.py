@@ -5,6 +5,8 @@ from mhd_schema.models import Collection
 from mhd.utils import DefaultRawPaginator
 from rest_framework import exceptions, response
 
+from django.http import Http404
+
 from ..querybuilder import QueryBuilderError
 
 
@@ -75,8 +77,9 @@ class ItemView(generics.RetrieveAPIView):
         collection = get_object_or_404(
             Collection, slug=kwargs['cid'])
 
-        item = get_object_or_404(
-            collection.item_set, id=kwargs['uuid']
-        )
+        try:
+            item = collection.item_set.get(id=kwargs['uuid'])
+        except:
+            raise Http404
 
         return response.Response(item.semantic(collection))

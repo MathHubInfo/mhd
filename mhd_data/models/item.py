@@ -22,7 +22,7 @@ class Item(models.Model):
 
         # recover the cell database value by filtering appropriately
         # TODO: What to do with multiple elements?
-        cell = codec_model.objects.filter(active=True, prop=prop).first()
+        cell = codec_model.objects.filter(item_id=self.id, active=True, prop=prop).first()
         if cell is not None:
             value = cell.value
         else:
