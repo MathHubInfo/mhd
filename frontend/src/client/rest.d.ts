@@ -1,6 +1,6 @@
 /** @file contains types directly returned from the REST API */
 
-/** a MathHubData Collection */
+/** a MathDataHub Collection */
 export interface TMHDCollection {
     slug: string;
     displayName: string;
@@ -24,7 +24,7 @@ export interface TMHDPreFilter {
     count: number | null,
 }
 
-/** a MathHubData Property */
+/** a MathDataHub Property */
 export interface TMHDProperty {
     slug: string;
     displayName: string;
