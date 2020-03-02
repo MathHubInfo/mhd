@@ -7,7 +7,7 @@ export default class MHDAboutPage extends React.Component {
     render() {
         return <MHDMain title="About">
             <Container>
-                <p><b>MathHub Data</b> provides dataset hosting and a searchable interface 
+                <p><b>MathDataHub</b> provides dataset hosting and a searchable interface 
                     for the hosted datasets.
                     It is part of <a href="https://mathhub.info/">MathHub</a>, 
                 a portal for active mathematical documents and an archive for flexiformal mathematics.
@@ -20,7 +20,7 @@ export default class MHDAboutPage extends React.Component {
                 <p>For more information, see the <a href="https://docs.mathhub.info/data/">documentation</a>.</p>
                 
                 <p>We encourage you to get in touch if you are interested in hosting your data 
-                    at <b>MathHub Data</b> the best way to do it is to get in touch with one the 
+                    at <b>MathDataHub</b> the best way to do it is to get in touch with one the 
                     editors (<a href="http://kwarc.info/people/kbercic/">Katja Berčič</a> and <a href="http://kwarc.info/people/mkohlhase/">Michael Kohlhase</a>).
                     You are also welcome to read the description of the <a href="https://docs.mathhub.info/data/overview/submission-editorial.html">submission process</a>.</p>
 

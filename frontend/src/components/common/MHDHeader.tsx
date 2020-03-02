@@ -19,7 +19,7 @@ export default class MHDHeader extends React.Component<{}, MHDHeaderState> {
         const { isOpen } = this.state;
         return (
             <Navbar color="light" light expand="md">
-                <NavbarBrand href="/">MathHub Data - your dataset, but FAIR</NavbarBrand>
+                <NavbarBrand href="/">MathDataHub - your dataset, but FAIR</NavbarBrand>
                 <NavbarToggler onClick={this.toggle} />
                 <Collapse isOpen={isOpen} navbar>
                     <Nav className="ml-auto" navbar>
