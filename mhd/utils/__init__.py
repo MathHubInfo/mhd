@@ -7,3 +7,4 @@ from .transaction import with_simulate_arg
 from .fields import get_standard_serializer_field, check_field_value
 from .querysetlike import QuerySetLike
 from .batch_importer import BatchImporter
+from .materialized_view import MaterializedView

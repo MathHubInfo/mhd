@@ -1,7 +1,8 @@
 
-from mhd.utils import ModelWithMetadata, QuerySetLike
+from mhd.utils import ModelWithMetadata, QuerySetLike, MaterializedView
 from django.db import models, connection, transaction
 
+from typing import List, Optional
 
 class Collection(ModelWithMetadata):
     """ Collection of Mathematical Items """
@@ -20,8 +21,13 @@ class Collection(ModelWithMetadata):
     url = models.URLField(
         null=True, blank=True, help_text="URL for more information about this collection")
 
-    count = models.IntegerField(null=True, blank=True, help_text="Total number of items in this collection")
-    count_frozen = models.BooleanField(default=False, help_text="When set to true, freeze the count of this collection")
+    count = models.IntegerField(
+        null=True, blank=True, help_text="Total number of items in this collection")
+    count_frozen = models.BooleanField(
+        default=False, help_text="When set to true, freeze the count of this collection")
+
+    materializedViewName = models.SlugField(
+        help_text="Name for the materialized view of this collection (if any)", unique=True, null=True, blank=True)
 
     def update_count(self):
         """ Updates the count of items in this collection iff it is not frozen """
@@ -98,23 +104,21 @@ class Collection(ModelWithMetadata):
 
     def _query(self, properties=None, filter=None, limit=None, offset=None, order=None, count=False):
         """
-            Builds a query returning items in this collection with
-            annotated properties prop.
-            If properties is None, all collection properties are returned.
-            Limit and Offset can be used for pagination, however using only
-            offset is not supported.
-            Order represents an order to return the results in.
-            When count is True, instead return a query that counts the
-            results instead of a normal query.
-            Returns a triple (sql, query, properties) of the query itself
-            and the list of queried properties
+            Builds a (potentially materialized view enhanced) query for this collection. 
+        """
+
+        if not self.materializedViewName:
+            return self._query_join(properties=properties, filter=filter, limit=limit, offset=offset, order=order, count=count)
+
+        return self._query_view(properties=properties, filter=filter, limit=limit, offset=offset, order=order, count=count)
+
+    def _query_parts(self, properties: Optional[List['Property']], limit: Optional[int], offset: Optional[int], order: Optional[str], count: Optional[int]):
+        """
+            Generates all parts neccessary to build a query. 
         """
 
         # lazy import
         from mhd_data.models import Item
-        from mhd_data.querybuilder import QueryBuilder
-
-        # SELECT I.id FROM
 
         # The queries built by this module look as following:
         #
@@ -140,6 +144,7 @@ class Collection(ModelWithMetadata):
 
         PROPERTIES = []
         SELECTS = ["Count(*) as count"] if count else ["I.id as id"]
+        SELECTS_NAMES = ["Count(*) as count"] if count else ["id"]
         JOINS = [
             "FROM {} as I".format(Item._meta.db_table),
 
@@ -170,7 +175,7 @@ class Collection(ModelWithMetadata):
                 # Fields we select, TODO: Support for derived values
                 SELECTS.append("{}.value as {}".format(
                     virtual_table, value_field))
-                # SELECTS.append("{}.id as {}".format(virtual_table, cid_field))
+                SELECTS_NAMES.append(value_field)
 
             # build the JOINs query
             JOINS.append("LEFT OUTER JOIN {} as {}".format(
@@ -217,8 +222,20 @@ class Collection(ModelWithMetadata):
 
         # join the appropriate string
         SQL_SELECTS = ",".join(SELECTS)
+        SQL_SELECTS_NAMES = ",".join(SELECTS_NAMES)
         SQL_JOINS = " ".join(JOINS)
         SQL_SUFFIXES = " ".join(SUFFIXES)
+
+        return SQL_SELECTS, SQL_SELECTS_NAMES, SQL_JOINS, SQL_SUFFIXES, properties
+
+    def _query_join(self, properties=None, filter=None, limit=None, offset=None, order=None, count=False):
+        """ Builds a query using a plain JOIN approach """
+
+        # lazy import
+        from mhd_data.querybuilder import QueryBuilder
+
+        SQL_SELECTS, SQL_SELECTS_NAMES, SQL_JOINS, SQL_SUFFIXES, properties = self._query_parts(
+            properties=properties, limit=limit, offset=offset, order=order, count=count)
 
         # if we have a filter, we need to build it using the querybuilder
         if filter is not None:
@@ -234,6 +251,57 @@ class Collection(ModelWithMetadata):
 
         # return the sql statement, the arguments and the properties
         return SQL.strip(), tuple(SQL_ARGS), list(properties)
+
+    def _query_view(self, properties=None, filter=None, limit=None, offset=None, order=None, count=False):
+        """ Builds a query using a materialized view """
+
+        SQL_SELECTS, SQL_SELECTS_NAMES, SQL_JOINS, SQL_SUFFIXES, properties = self._query_parts(
+            properties=properties, limit=limit, offset=offset, order=order, count=count)
+        
+        # lazy import
+        from mhd_data.querybuilder import QueryBuilder
+
+        # if we have a filter, we need to build it using the querybuilder
+        if filter is not None:
+            qb = QueryBuilder()
+            SQL_FILTER, SQL_ARGS = qb(filter, properties)
+            SQL = "SELECT {} FROM {} WHERE {} {}".format(
+                SQL_SELECTS_NAMES, self.materializedViewName, SQL_FILTER, SQL_SUFFIXES)
+        else:
+            # Build the final query and return it inside a raw
+            SQL = "SELECT {} FROM {} {}".format(
+                SQL_SELECTS_NAMES, self.materializedViewName, SQL_SUFFIXES)
+            SQL_ARGS = []
+
+        # return the sql statement, the arguments and the properties
+        return SQL.strip(), tuple(SQL_ARGS), list(properties)
+
+    def sync_materialized_view(self):
+        """ Syncronizes this materialized view with the database """
+
+        # if we have a materialized view object, get it
+        view = self.materialized_view
+        if not view:
+            return False
+
+        # and syncronize it
+        from django.db import connection
+        with connection.cursor() as cursor:
+            view.sync(connection, cursor)
+
+        return True
+
+    @property
+    def materialized_view(self) -> MaterializedView:
+        """ Returns the materialized view for a given collection """
+
+        # if we do not have a name for the materialized view, don't use it
+        if not self.materializedViewName:
+            return None
+        
+        # build a query for the materialized view
+        query, _, _ = self._query_join(properties=self.property_set.all(), filter=None, limit=None, offset=None, order=None)
+        return MaterializedView(self.materializedViewName, query)
 
     def semantic(self, *args, **kwargs):
         """ Same as running .query() and calling .semantic() on each returned value """
@@ -286,7 +354,6 @@ class Collection(ModelWithMetadata):
         # clear all the orphaned items
         from mhd_data.models import Item
         Item.objects.filter(collections=None).delete()
-
 
 
 class CollectionNotEmpty(Exception):
@@ -379,7 +446,8 @@ class PreFilter(models.Model):
         if self.collection.count_frozen:
             return
 
-        self.count = self.collection.query_count(filter=self.condition).fetchone()[0]
+        self.count = self.collection.query_count(
+            filter=self.condition).fetchone()[0]
         self.save()
 
     def invalidate_count(self):
@@ -393,5 +461,6 @@ class PreFilter(models.Model):
 
     def __str__(self):
         return "PreFilter {0!r} [{1!r}]".format(self.description, self.condition)
+
 
 __all__ = ["Collection", "Property"]
