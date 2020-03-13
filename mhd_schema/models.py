@@ -4,6 +4,7 @@ from django.db import models, connection, transaction
 
 from typing import List, Optional
 
+
 class Collection(ModelWithMetadata):
     """ Collection of Mathematical Items """
 
@@ -104,7 +105,7 @@ class Collection(ModelWithMetadata):
 
     def _query(self, properties=None, filter=None, limit=None, offset=None, order=None, count=False):
         """
-            Builds a (potentially materialized view enhanced) query for this collection. 
+            Builds a (potentially materialized view enhanced) query for this collection.
         """
 
         if not self.materializedViewName:
@@ -114,7 +115,7 @@ class Collection(ModelWithMetadata):
 
     def _query_parts(self, properties: Optional[List['Property']], limit: Optional[int], offset: Optional[int], order: Optional[str], count: Optional[int]):
         """
-            Generates all parts neccessary to build a query. 
+            Generates all parts neccessary to build a query.
         """
 
         # lazy import
@@ -232,15 +233,15 @@ class Collection(ModelWithMetadata):
         """ Builds a query using a plain JOIN approach """
 
         # lazy import
-        from mhd_data.querybuilder import QueryBuilder
+        from mhd_schema.query import FilterBuilder
 
         SQL_SELECTS, SQL_SELECTS_NAMES, SQL_JOINS, SQL_SUFFIXES, properties = self._query_parts(
             properties=properties, limit=limit, offset=offset, order=order, count=count)
 
-        # if we have a filter, we need to build it using the querybuilder
+        # if we have a filter, we need to build it using the filterbuilder
         if filter is not None:
-            qb = QueryBuilder()
-            SQL_FILTER, SQL_ARGS = qb(filter, properties)
+            qb = FilterBuilder(properties)
+            SQL_FILTER, SQL_ARGS = qb(filter)
             SQL = "SELECT {} {} WHERE {} {}".format(
                 SQL_SELECTS, SQL_JOINS, SQL_FILTER, SQL_SUFFIXES)
         else:
@@ -257,14 +258,14 @@ class Collection(ModelWithMetadata):
 
         SQL_SELECTS, SQL_SELECTS_NAMES, SQL_JOINS, SQL_SUFFIXES, properties = self._query_parts(
             properties=properties, limit=limit, offset=offset, order=order, count=count)
-        
-        # lazy import
-        from mhd_data.querybuilder import QueryBuilder
 
-        # if we have a filter, we need to build it using the querybuilder
+        # lazy import
+        from mdh_data.query import FilterBuilder
+
+        # if we have a filter, we need to build it using the FilterBuilder
         if filter is not None:
-            qb = QueryBuilder()
-            SQL_FILTER, SQL_ARGS = qb(filter, properties)
+            qb = FilterBuilder(properties)
+            SQL_FILTER, SQL_ARGS = qb(filter)
             SQL = "SELECT {} FROM {} WHERE {} {}".format(
                 SQL_SELECTS_NAMES, self.materializedViewName, SQL_FILTER, SQL_SUFFIXES)
         else:
@@ -298,9 +299,10 @@ class Collection(ModelWithMetadata):
         # if we do not have a name for the materialized view, don't use it
         if not self.materializedViewName:
             return None
-        
+
         # build a query for the materialized view
-        query, _, _ = self._query_join(properties=self.property_set.all(), filter=None, limit=None, offset=None, order=None)
+        query, _, _ = self._query_join(properties=self.property_set.all(
+        ), filter=None, limit=None, offset=None, order=None)
         return MaterializedView(self.materializedViewName, query)
 
     def semantic(self, *args, **kwargs):

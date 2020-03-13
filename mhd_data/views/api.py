@@ -7,9 +7,6 @@ from rest_framework import exceptions, response
 
 from django.http import Http404
 
-from ..querybuilder import QueryBuilderError
-
-
 class QueryViewException(exceptions.APIException):
     default_code = 400
     default_detail = "Incorrect query"
@@ -51,6 +48,8 @@ class QueryView(QueryViewMixin, generics.ListAPIView):
     def get_queryset(self):
         """ Creates a new queryset for the given page """
 
+        from mhd_schema.query import FilterBuilderError
+
         # build the query
         props, filter, order = self.build_query_params()
 
@@ -59,7 +58,7 @@ class QueryView(QueryViewMixin, generics.ListAPIView):
             q, self._properties = self._collection.query(
                 limit=None, offset=None, properties=props, filter=filter, order=order,
             )
-        except QueryBuilderError as qe:
+        except FilterBuilderError as qe:
             raise QueryViewException(detail=qe)
 
         # return the queryset

@@ -1,8 +1,6 @@
 from django.db.backends.utils import CursorWrapper as Cursor
 from django.db.backends.base.base import BaseDatabaseWrapper as Connection
 
-from typing import List
-
 import sys
 
 
@@ -12,7 +10,7 @@ class MaterializedView(object):
     def __init__(self, name: str, query: str):
         self.query = query
         self.name = name
-    
+
     @staticmethod
     def supported(connection: Connection):
         """ Checks if materialized views are supported by a given connection """
@@ -91,6 +89,7 @@ class MaterializedView(object):
         sys.stdout.flush()
         self.refresh(connection, cursor, concurrently=concurrently)
         print("OK")
+
 
 class MaterializedViewNotSupported(Exception):
     def __init__(self):

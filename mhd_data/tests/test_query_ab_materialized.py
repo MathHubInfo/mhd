@@ -1,3 +1,4 @@
+from mhd_tests.utils import db
 import json
 
 from django.test import TestCase
@@ -17,7 +18,6 @@ AB_PROVENANCE_PATH = AssetPath(__file__, "res", "ab_provenance.json")
 AB_ALL_PATH = AssetPath(__file__, "res", "ab_all.json")
 AB_ALL_ASSET = LoadJSONAsset(AB_ALL_PATH)
 
-from mhd_tests.utils import db
 
 class ABMaterializedCollectionTest(TestCase):
     """
@@ -25,6 +25,7 @@ class ABMaterializedCollectionTest(TestCase):
         and queryied from the database.
         The AB collection is mathematically meaningful.
     """
+
     def setUp(self):
 
         self.collection = insert_testing_data(
@@ -40,7 +41,7 @@ class ABMaterializedCollectionTest(TestCase):
         GOT_QUERY_ALL = self.collection.semantic()
         self.assertJSONEqual(json.dumps(list(GOT_QUERY_ALL)), AB_ALL_ASSET,
                              "check that the query for all properties returns all properties")
-    
+
     @db.skipUnlessPostgres
     def test_query_item_semantics(self):
         # create a materialized view
