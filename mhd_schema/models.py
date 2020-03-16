@@ -1,12 +1,19 @@
 
 from mhd.utils import ModelWithMetadata, QuerySetLike, MaterializedView
-from django.db import models, connection, transaction
+from django.db import models, transaction
 
-from typing import List, Optional
+from typing import Optional, Iterable
 
 
 class Collection(ModelWithMetadata):
     """ Collection of Mathematical Items """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # create a new query builder
+        from .query import QueryBuilder
+        self._query_builder = QueryBuilder(self)
 
     class Meta:
         indexes = [
@@ -30,7 +37,7 @@ class Collection(ModelWithMetadata):
     materializedViewName = models.SlugField(
         help_text="Name for the materialized view of this collection (if any)", unique=True, null=True, blank=True)
 
-    def update_count(self):
+    def update_count(self) -> int:
         """ Updates the count of items in this collection iff it is not frozen """
 
         if self.count_frozen:
@@ -44,7 +51,7 @@ class Collection(ModelWithMetadata):
 
         return self.count
 
-    def invalidate_count(self):
+    def invalidate_count(self) -> None:
         """ Invalidates the count associated to this collection iff it is no frozen """
 
         if self.count_frozen:
@@ -60,12 +67,15 @@ class Collection(ModelWithMetadata):
         default=False, help_text="Flag this collection as potentially large to the user interface"
     )
 
-    def get_property(self, slug):
+    def get_property(self, slug: str) -> Optional['Property']:
         """ Returns a property of the given name """
         return self.property_set.filter(slug=slug).first()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "Collection {0!r}".format(self.slug)
+
+    def properties(self) -> Iterable['Property']:
+        return self.property_set.all()
 
     @property
     def codecs(self):
@@ -87,195 +97,64 @@ class Collection(ModelWithMetadata):
             of queried properties
         """
 
-        # lazy import
         from mhd_data.models import Item
 
-        SQL, SQL_ARGS, properties = self._query(
-            properties, filter, limit, offset, order)
-        return Item.objects.raw(SQL, SQL_ARGS), list(properties)
+        # get all the properties
+        if properties is None:
+            properties = self.properties()
+
+        # check if we have a materialized view
+        mview = self.materialized_view
+        if mview is not None:
+            use_view = mview.name
+        else:
+            use_view = None
+
+        # build the query
+        sql, sql_args = self._query_builder(
+            properties=properties,
+            where=filter,
+            limit=limit,
+            offset=offset,
+            order=order,
+            count_query=False,
+            use_view=use_view
+        )
+
+        # and return it
+        return Item.objects.raw(sql, sql_args), list(properties)
 
     def query_count(self, properties=None, filter=None):
         """
             Like .query() but returns a QuerySetLike for counting
         """
-        # run the sql
-        SQL, SQL_ARGS, _ = self._query(
-            properties=properties, filter=filter, count=True)
-        return QuerySetLike(SQL, SQL_ARGS)
 
-    def _query(self, properties=None, filter=None, limit=None, offset=None, order=None, count=False):
-        """
-            Builds a (potentially materialized view enhanced) query for this collection.
-        """
-
-        if not self.materializedViewName:
-            return self._query_join(properties=properties, filter=filter, limit=limit, offset=offset, order=order, count=count)
-
-        return self._query_view(properties=properties, filter=filter, limit=limit, offset=offset, order=order, count=count)
-
-    def _query_parts(self, properties: Optional[List['Property']], limit: Optional[int], offset: Optional[int], order: Optional[str], count: Optional[int]):
-        """
-            Generates all parts neccessary to build a query.
-        """
-
-        # lazy import
         from mhd_data.models import Item
 
-        # The queries built by this module look as following:
-        #
-        # SELECT I.id as id,
-        #
-        # T_prop1.value as prop1_value, T_prop1.id as prop1_cid,
-        # T_prop2.value as prop2_value, T_prop2.id as prop2_cid
-        #
-        # FROM mhd_data_item as I
-        #
-        # JOIN mhd_data_item_collection as CI
-        # ON I.id = CI.item_id AND CI.collection_id = ${collection_id}
-        #
-        # LEFT OUTER JOIN Codec1 as T_prop1
-        # ON I.id = T_prop1.item_id AND T_prop1.active AND T_prop1.prop_id = ${id_of_prop1}
-        #
-        # LEFT OUTER JOIN Codec2 as T_prop2
-        # ON I.id = T_prop2.item_id AND T_prop2.active AND T_prop2.prop_id = ${id_of_prop2};
-
-        # if no properties are given use all of them
+        # get all the properties
         if properties is None:
-            properties = self.property_set.all()
+            properties = self.properties()
 
-        PROPERTIES = []
-        SELECTS = ["Count(*) as count"] if count else ["I.id as id"]
-        SELECTS_NAMES = ["Count(*) as count"] if count else ["id"]
-        JOINS = [
-            "FROM {} as I".format(Item._meta.db_table),
-
-            "JOIN {} as CI ON I.id = CI.item_id AND CI.collection_id = {}".format(
-                Item.collections.through._meta.db_table,
-                self.pk
-            )
-        ]
-        SUFFIXES = []
-
-        for prop in properties:
-            # the physical table to look up the values in
-            physical_table = prop.codec_model._meta.db_table
-            physical_prop_id = str(prop.pk)
-
-            # alias for the appropriate property table
-            virtual_table = '"T_{}"'.format(prop.slug)
-
-            # alias for the value field
-            value_field = '"property_value_{}"'.format(prop.slug)
-            # alias for the cid field
-            cid_field = '"property_cid_{}"'.format(prop.slug)
-
-            # The property we just added
-            PROPERTIES.append(prop.slug)
-
-            if not count:
-                # Fields we select, TODO: Support for derived values
-                SELECTS.append("{}.value as {}".format(
-                    virtual_table, value_field))
-                SELECTS_NAMES.append(value_field)
-
-            # build the JOINs query
-            JOINS.append("LEFT OUTER JOIN {} as {}".format(
-                physical_table, virtual_table))
-
-            JOINS.append(
-                "ON I.id = {0:s}.item_id AND {0:s}.active AND {0:s}.prop_id = {1:s}".format(virtual_table, physical_prop_id))
-
-        # add an order by clause
-        if not count and order is not None and len(order) > 0:
-            def parse_order(oslug):
-                oslug = oslug.strip()
-                if len(oslug) == 0:
-                    raise Exception('Order string received empty property')
-
-                if oslug[0] == '+':
-                    order = 'ASC'
-                    oslug = oslug[1:]
-                elif oslug[0] == '-':
-                    order = 'DESC'
-                    oslug = oslug[1:]
-                else:
-                    order = 'ASC'
-
-                oslug = oslug.strip()
-                if len(oslug) == 0:
-                    raise Exception('Order string received empty property')
-
-                if not oslug in PROPERTIES:
-                    raise Exception('Unknown property {}'.format(oslug))
-
-                return '"property_value_{}" {}'.format(oslug, order)
-            ORDER_PARTS = ', '.join([parse_order(o) for o in order.split(',')])
-            SUFFIXES.append("ORDER BY {}".format(ORDER_PARTS))
-
-        elif not count:
-            SUFFIXES.append("ORDER BY I.id")
-
-        # and build the slicing clauses
-        if (limit is not None):
-            SUFFIXES.append("LIMIT {0:d}".format(limit))
-            if (offset is not None):
-                SUFFIXES.append("OFFSET {0:d}".format(offset))
-
-        # join the appropriate string
-        SQL_SELECTS = ",".join(SELECTS)
-        SQL_SELECTS_NAMES = ",".join(SELECTS_NAMES)
-        SQL_JOINS = " ".join(JOINS)
-        SQL_SUFFIXES = " ".join(SUFFIXES)
-
-        return SQL_SELECTS, SQL_SELECTS_NAMES, SQL_JOINS, SQL_SUFFIXES, properties
-
-    def _query_join(self, properties=None, filter=None, limit=None, offset=None, order=None, count=False):
-        """ Builds a query using a plain JOIN approach """
-
-        # lazy import
-        from mhd_schema.query import FilterBuilder
-
-        SQL_SELECTS, SQL_SELECTS_NAMES, SQL_JOINS, SQL_SUFFIXES, properties = self._query_parts(
-            properties=properties, limit=limit, offset=offset, order=order, count=count)
-
-        # if we have a filter, we need to build it using the filterbuilder
-        if filter is not None:
-            qb = FilterBuilder(properties)
-            SQL_FILTER, SQL_ARGS = qb(filter)
-            SQL = "SELECT {} {} WHERE {} {}".format(
-                SQL_SELECTS, SQL_JOINS, SQL_FILTER, SQL_SUFFIXES)
+        # check if we have a materialized view
+        mview = self.materialized_view
+        if mview is not None:
+            use_view = mview.name
         else:
-            # Build the final query and return it inside a raw
-            SQL = "SELECT {} {} {}".format(
-                SQL_SELECTS, SQL_JOINS, SQL_SUFFIXES)
-            SQL_ARGS = []
+            use_view = None
 
-        # return the sql statement, the arguments and the properties
-        return SQL.strip(), tuple(SQL_ARGS), list(properties)
+        # build the query
+        sql, sql_args = self._query_builder(
+            properties=properties,
+            where=filter,
+            limit=None,
+            offset=None,
+            order=None,
+            count_query=True,
+            use_view=use_view
+        )
 
-    def _query_view(self, properties=None, filter=None, limit=None, offset=None, order=None, count=False):
-        """ Builds a query using a materialized view """
-
-        SQL_SELECTS, SQL_SELECTS_NAMES, SQL_JOINS, SQL_SUFFIXES, properties = self._query_parts(
-            properties=properties, limit=limit, offset=offset, order=order, count=count)
-
-        # lazy import
-        from mdh_data.query import FilterBuilder
-
-        # if we have a filter, we need to build it using the FilterBuilder
-        if filter is not None:
-            qb = FilterBuilder(properties)
-            SQL_FILTER, SQL_ARGS = qb(filter)
-            SQL = "SELECT {} FROM {} WHERE {} {}".format(
-                SQL_SELECTS_NAMES, self.materializedViewName, SQL_FILTER, SQL_SUFFIXES)
-        else:
-            # Build the final query and return it inside a raw
-            SQL = "SELECT {} FROM {} {}".format(
-                SQL_SELECTS_NAMES, self.materializedViewName, SQL_SUFFIXES)
-            SQL_ARGS = []
-
-        # return the sql statement, the arguments and the properties
-        return SQL.strip(), tuple(SQL_ARGS), list(properties)
+        # and return it
+        return QuerySetLike(sql, sql_args)
 
     def sync_materialized_view(self):
         """ Syncronizes this materialized view with the database """
@@ -300,10 +179,8 @@ class Collection(ModelWithMetadata):
         if not self.materializedViewName:
             return None
 
-        # build a query for the materialized view
-        query, _, _ = self._query_join(properties=self.property_set.all(
-        ), filter=None, limit=None, offset=None, order=None)
-        return MaterializedView(self.materializedViewName, query)
+        mview_sql, mview_sql_args = self._query_builder.join_builder()
+        return MaterializedView(self.materializedViewName, mview_sql, mview_sql_args)
 
     def semantic(self, *args, **kwargs):
         """ Same as running .query() and calling .semantic() on each returned value """

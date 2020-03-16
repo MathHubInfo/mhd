@@ -4,12 +4,15 @@ from django.db.backends.base.base import BaseDatabaseWrapper as Connection
 import sys
 
 
+from typing import Optional, List, Any
+
 class MaterializedView(object):
     """ Represents a single materialized view """
 
-    def __init__(self, name: str, query: str):
+    def __init__(self, name: str, query: str, args: Optional[List[Any]] = None):
         self.query = query
         self.name = name
+        self.args = args
 
     @staticmethod
     def supported(connection: Connection):
@@ -32,10 +35,10 @@ class MaterializedView(object):
         the_view = cursor.execute(self._exists_sql())
         return cursor.fetchone() is not None
 
-    def _create_sql(self, with_data: bool = False) -> str:
+    def _create_sql(self, with_data: bool = False) -> (str, List[Any]):
         """ Generates an SQL statement that creates this materialized view """
 
-        return "CREATE MATERIALIZED VIEW {} AS {} WITH {};".format(self.name, self.query, "DATA" if with_data else "NO DATA")
+        return "CREATE MATERIALIZED VIEW {} AS {} WITH {};".format(self.name, self.query, "DATA" if with_data else "NO DATA"), self.args
 
     def create(self, connection: Connection, cursor: Cursor, with_data: bool = False) -> None:
         """ Creates this materialized view """
@@ -43,7 +46,8 @@ class MaterializedView(object):
         if not self.supported(connection):
             raise MaterializedViewNotSupported
 
-        cursor.execute(self._create_sql(with_data=with_data))
+        create_sql, create_sql_args = self._create_sql(with_data=with_data)
+        cursor.execute(create_sql, params=create_sql_args)
 
     def _refresh_sql(self, concurrently: bool = False) -> str:
         """ Generates an SQL statement to refresh this view """
