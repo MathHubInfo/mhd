@@ -5,37 +5,37 @@ matrix:
       nodejs:
         - 12
     
-    - name: "Backend: CPython 3.7 / sqlite"
+    - name: "Backend: CPython 3.8 / sqlite"
       language: python
       env:
         - DATABASE=sqlite
       python:
-         - "3.7"
+         - "3.8"
     
-    - name: "Backend: CPython 3.7 / PostgreSQL"
+    - name: "Backend: CPython 3.8 / PostgreSQL"
       language: python
       env:
         - DATABASE=postgres
       services:
         - postgresql
       python:
-        - "3.7"
+        - "3.8"
     
-    - name: "Backend: PyPy 3.6 / sqlite" 
-      language: python
-      env:
-        - DATABASE=sqlite
-        - PYPY=pypy3.6-v7.1.1-linux64
-      python: 3.6
+    #- name: "Backend: PyPy 3.6 / sqlite" 
+    #  language: python
+    #  env:
+    #    - DATABASE=sqlite
+    #    - PYPY=pypy3.6-v7.1.1-linux64
+    #  python: 3.6
  
-    - name: "Backend: PyPy 3.6 / PostgreSQL"
-      language: python
-      env:
-        - DATABASE=postgres
-        - PYPY=pypy3.6-v7.1.1-linux64
-      services:
-        - postgresql
-      python: 3.6
+    #- name: "Backend: PyPy 3.6 / PostgreSQL"
+    #  language: python
+    #  env:
+    #    - DATABASE=postgres
+    #    - PYPY=pypy3.6-v7.1.1-linux64
+    #  services:
+    #    - postgresql
+    #  python: 3.6
     
     - name: "Docker Build"
       language: minimal

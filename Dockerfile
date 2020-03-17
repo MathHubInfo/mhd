@@ -5,7 +5,7 @@ ADD frontend .
 RUN yarn && yarn build
 
 # Stage 2: Build the backend + add the frontend to it
-FROM python:3.7-alpine
+FROM python:3.8-alpine
 
 # Add requirements and install dependencies
 WORKDIR /app/
@@ -15,7 +15,7 @@ ADD requirements-prod.txt /app/
 # Add dependencies
 RUN mkdir -p /var/www/admin/static/ \
     && apk add --no-cache bash postgresql-libs postgresql-client pcre-dev libffi-dev mailcap \
-    && apk add --no-cache --virtual .build-deps gcc musl-dev postgresql-dev linux-headers python3-dev \
+    && apk add --no-cache --virtual .build-deps gcc g++ musl-dev postgresql-dev linux-headers python3-dev \
     && pip install -r requirements.txt -r requirements-prod.txt --no-cache-dir \
     && apk --purge del .build-deps
 
