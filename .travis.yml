@@ -37,10 +37,22 @@ matrix:
     #    - postgresql
     #  python: 3.6
     
-    - name: "Docker Build"
-      language: minimal
+    - name: "Docker"
       services:
-        - docker
+      - docker
+      
+      install:
+        - docker pull node:12
+        - docker pull python:3.8-alpine
+      
+      script:
+        - docker build -t mathhub/mhd .
+        - docker run -d --name=smoke -e DJANGO_SECRET_KEY=smoke -p 8080:80 mathhub/mhd
+        - sleep 10
+        - curl http://localhost:8080/
+      
+      after_script:
+        - docker stop smoke
 
 before_install:
   - if [ ! -z "$PYPY" ]; then pushd $HOME; wget -c https://bitbucket.org/pypy/pypy/downloads/$PYPY.tar.bz2  -O - | tar xj; $PYPY/bin/pypy3 -m venv pypyenv; source pypyenv/bin/activate; popd; fi
