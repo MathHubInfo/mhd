@@ -1,3 +1,4 @@
+from __future__ import annotations
 import os
 from io import StringIO
 from tqdm import tqdm
@@ -7,16 +8,24 @@ from .pgsql_serializer import make_pgsql_serializer, CSV_NULL, CSV_NULL_ESCAPED
 
 from django.db import connection
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import Optional, Iterator, Any, List, Type, IO
+    from django.db.models import Model
+
 
 class BatchImporter(object):
     """ A BatchImporter can import multiple values into the database at once """
 
-    def __init__(self, quiet=False, batch_size=None):
+    logger: logging.Logger
+    batch_size: Optional[int]
+
+    def __init__(self, quiet: bool = False, batch_size: Optional[int] = None) -> None:
         self.logger = logging.getLogger('mhd.batchimporter')
         self.logger.setLevel(logging.WARN if quiet else logging.DEBUG)
         self.batch_size = batch_size
 
-    def __call__(self, model, fields, values, count_values=None):
+    def __call__(self, model: Type[Model], fields: List[str], values: Iterator[Any], count_values: Optional[int] = None) -> None:
         """ Imports multiple values at once
             :param model: Model instance to import values from
             :param fields: List of fields to import values for
@@ -28,7 +37,7 @@ class BatchImporter(object):
         raise NotImplementedError
 
     @staticmethod
-    def get_default_importer(path, disable_optimisations = None, **kwargs):
+    def get_default_importer(path: Optional[str], **kwargs: Any) -> BatchImporter:
         """ Gets the default BatchImporter instance """
 
         # if we have a path given, copy output files to that path
@@ -45,7 +54,7 @@ class BatchImporter(object):
 class BulkCreateImporter(BatchImporter):
     """ Bulk imports values using the bulk_create function """
 
-    def __call__(self, model, fields, values, count_values=None):
+    def __call__(self, model: Type[Model], fields: List[str], values: Iterator[Any], count_values: Optional[int] = None) -> None:
         """ Imports multiple values at once
             :param model: Model instance to import values from
             :param fields: List of fields to import values for
@@ -65,18 +74,18 @@ class BulkCreateImporter(BatchImporter):
             count_values or len(values)))
 
         # and run bulk_create
-        return model.objects.bulk_create(instances, batch_size=self.batch_size)
+        model.objects.bulk_create(instances, batch_size=self.batch_size)
 
 
 class SerializingImporter(BatchImporter):
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any):
         super().__init__(**kwargs)
 
         if connection.vendor != 'postgresql':
             raise ValueError(
                 "SerializingImporter requires 'postgresql' database")
 
-    def _serialize(self, stream, model, fields, values, count_values=None):
+    def _serialize(self, stream: IO[str], model: Type[Model], fields: List[str], values: Iterator[Any], count_values: Optional[int] = None):
         """ Serialializes values into stream as csv and returns the size of stream in bytes """
 
         # find serializers and prep values for the database
@@ -87,14 +96,14 @@ class SerializingImporter(BatchImporter):
         # prepare values for the database
         for value in tqdm(values, leave=False, total=count_values):
             stream.write('\t'.join(
-                    s(p(v)) for (s, p, v) in zip(serializers, preppers, value)
-                ) + '\n')
+                s(p(v)) for (s, p, v) in zip(serializers, preppers, value)
+            ) + '\n')
 
         return stream.tell()
 
 
 class CopyFromImporter(SerializingImporter):
-    def __call__(self, model, fields, values, count_values=None):
+    def __call__(self, model: Type[Model], fields: List[str], values: Iterator[Any], count_values: Optional[int] = None) -> None:
         """ Imports multiple values at once
             :param model: Model instance to import values from
             :param fields: List of fields to import values for
@@ -126,6 +135,10 @@ class CopyFromImporter(SerializingImporter):
 
 
 class CopyFromFile(SerializingImporter):
+    path: str
+    counter: int
+    _sql_path: str
+
     def __init__(self, path, **kwargs):
         super().__init__(**kwargs)
 
@@ -140,13 +153,13 @@ class CopyFromFile(SerializingImporter):
         with open(self._sql_path, 'w') as f:
             f.write("-- MHD Data Import\n")
 
-    def _append_sql(self, s):
+    def _append_sql(self, s: str) -> None:
         """ Appends a string to the given file """
 
         with open(self._sql_path, 'a') as f:
             f.write(s + '\n')
 
-    def __call__(self, model, fields, values, count_values=None):
+    def __call__(self, model: Type[Model], fields: List[str], values: Iterator[Any], count_values: Optional[int] = None):
         """ Imports multiple values at once
             :param model: Model instance to import values from
             :param fields: List of fields to import values for
@@ -162,7 +175,8 @@ class CopyFromFile(SerializingImporter):
 
         # Write csv file
         with open(path, 'w+') as stream:
-            size = self._serialize(stream, model, fields, values, count_values=count_values)
+            size = self._serialize(stream, model, fields,
+                                   values, count_values=count_values)
 
         # tell the user
         self.logger.info(
@@ -179,10 +193,11 @@ class CopyFromFile(SerializingImporter):
         self._append_sql(code)
 
     @staticmethod
-    def quote_double(s):
+    def quote_double(s: str) -> str:
         return '"' + s.translate(str.maketrans({
             '"': '\\"',
         })) + '"'
+
     @staticmethod
-    def quote_single(s):
+    def quote_single(s: str) -> str:
         return "'{}'".format(s)

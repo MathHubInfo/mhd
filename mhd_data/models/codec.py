@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django.apps import apps
 from django.db import models, connection
 
@@ -11,12 +13,24 @@ from functools import lru_cache
 
 from mhd.utils import get_standard_serializer_field
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import Iterable, Type, Optional, Any, Union
+    from django.db.models import Field
+    from rest_framework.serializers import Field as SerializerField
+
+    from uuid import UUID
+
+    SQL = str
+    SQLWithParams = (SQL, List[Union[int, str]])  # an sql query with parameters
+
+
 
 class CodecManager(models.Manager):
 
     @staticmethod
     @lru_cache(maxsize=None)
-    def find_all_codecs():
+    def find_all_codecs() -> Iterable[Type[Codec]]:
         """ Returns a tuple of all known codecs """
 
         # we return a tuple here, because those are not mutable
@@ -24,7 +38,7 @@ class CodecManager(models.Manager):
         return tuple(filter(lambda clz: issubclass(clz, Codec), apps.get_models()))
 
     @staticmethod
-    def collect_operators(codecs=None):
+    def collect_operators(codecs: Optional[Iterable[Type[Codec]]]=None) -> Iterable[str]:
         """ Returns a set containing all know operators """
 
         if codecs is None:
@@ -38,7 +52,7 @@ class CodecManager(models.Manager):
 
     @staticmethod
     @lru_cache(maxsize=None)
-    def find_codec(name):
+    def find_codec(name: str) -> Optional[Type[Codec]]:
         """ Finds a Codec By Name """
 
         # And find a codec with that name
@@ -59,29 +73,29 @@ class Codec(models.Model):
             models.Index(fields=['active'])
         ]
 
-    objects = CodecManager()
+    objects: CodecManager = CodecManager()
 
     @classmethod
     @memoized_method(maxsize=None)
-    def get_codec_name(cls):
+    def get_codec_name(cls) -> str:
         """ Gets the name of this codec """
         return cls.__name__
 
     # A database field containing the value, overwritten by subclass
-    value = None
+    value: Any = None
 
     @classmethod
-    def get_value_field(cls):
+    def get_value_field(cls) -> Field:
         """ gets the value field of this model """
         return cls._meta.get_field('value')
 
     # A DRF serializer field (if any) corresponding to the value object
     # may be omitted iff 'value' can be directly serialized from / to json
     # (e.g. when using integers)
-    _serializer_field = None
+    _serializer_field: Optional[SerializerField] = None
 
     @classmethod
-    def get_serializer_field(cls):
+    def get_serializer_field(cls) -> SerializerField:
         """ Gets the serializer field of a class """
 
         # if the user defined one, return it
@@ -92,7 +106,7 @@ class Codec(models.Model):
         return cls._serializer_field
 
     @classmethod
-    def populate_value(cls, value):
+    def populate_value(cls: Type[Codec], value: Optional[Any]) -> Any:
         """
             Called to turn a serialized value (usually from the importer)
             into a python object to be assigned to a property.
@@ -104,17 +118,17 @@ class Codec(models.Model):
         return cls.get_serializer_field().to_internal_value(value)
 
     @classmethod
-    def populate_db_value(cls, value):
+    def populate_db_value(cls: Type[Codec], value: Any) -> Any:
         """
             Called to turn a python value of this codec into a raw
             database object to be used by the annotator.
         """
 
-        valuefield = cls._meta.get_field('value')
+        valuefield = cls.get_value_field()
         return valuefield.get_prep_value(value)
 
     @classmethod
-    def serialize_value(cls, value, database = True):
+    def serialize_value(cls: Type[Codec], value: Any, database: bool = True) -> Any:
         """
             Called by the data serializer to turn a database or python
             value of this codec into a json-serialized value of this codec.
@@ -125,7 +139,7 @@ class Codec(models.Model):
 
         # if the value field has a 'from_db_value' we should call it first
         # because our value was not yet parsed
-        vfield = cls._meta.get_field('value')
+        vfield = cls.get_value_field()
         if database and hasattr(vfield, 'from_db_value'):
             value = vfield.from_db_value(value, None, connection=connection)
 
@@ -133,13 +147,13 @@ class Codec(models.Model):
         return cls.get_serializer_field().to_representation(value)
 
     # A list of supported operators
-    operators = ()
+    operators: Iterable[str] = ()
 
     # if not None, the query builder will enforce that the operand is of this class
     # using the method is_valid_operand below
-    operator_type = None
+    operator_type: Optional[Type[object]] = None
     @classmethod
-    def is_valid_operand(cls, literal):
+    def is_valid_operand(cls: Type[Codec], literal: Any) -> bool:
         """ Checks if the provided literal is a valid argument to operator (left || right) on """
         if cls.operator_type is None:
             return True
@@ -158,35 +172,35 @@ class Codec(models.Model):
     # user controlled.
 
     @classmethod
-    def operate_left(cls, literal, operator, db_column):
+    def operate_left(cls: Type[Codec], literal: Any, operator: str, db_column: str) -> SQLWithParams:
         """ Implements literal <operator> db_column """
 
         return "%s {} {}".format(operator, db_column), [cls.serialize_value(literal)]
 
     @classmethod
-    def operate_right(cls, db_column, operator, literal):
+    def operate_right(cls: Type[Codec], db_column: str, operator: str, literal: Any) -> SQLWithParams:
         """ Implements db_column <operator> literal """
 
         return "{} {} %s".format(db_column, operator), [cls.serialize_value(literal)]
 
     @classmethod
-    def operate_both(cls, db_column1, operator, db_column2):
+    def operate_both(cls: Type[Codec], db_column1: str, operator: str, db_column2: str) -> SQLWithParams:
         """ Implements db_column1 <operator> db_column2 """
 
         return "{} {} {}".format(db_column1, operator, db_column2), []
 
-    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
+    id: UUID = models.UUIDField(primary_key=True, default=uuid4, editable=False)
 
-    item = models.ForeignKey(
+    item: Item = models.ForeignKey(
         Item, on_delete=models.CASCADE, help_text="Item this this cell represents")
-    prop = models.ForeignKey(
+    prop: Property = models.ForeignKey(
         Property, on_delete=models.CASCADE, help_text="Property this cell represents")
 
-    provenance = models.ForeignKey(
+    provenance: Provenance = models.ForeignKey(
         Provenance, on_delete=models.CASCADE, help_text="Provenance of this cell")
 
-    active = models.BooleanField(default=True, help_text="Is this item active")
-    superseeded_by = models.ForeignKey('self', on_delete=models.SET_NULL,
+    active: bool = models.BooleanField(default=True, help_text="Is this item active")
+    superseeded_by: Optional[Codec] = models.ForeignKey('self', on_delete=models.SET_NULL,
                                        null=True, blank=True, help_text="Cell this value is superseeded by")
 
 

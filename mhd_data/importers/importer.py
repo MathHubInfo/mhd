@@ -1,17 +1,24 @@
-import csv
+from __future__ import annotations
+
 import gc
 import logging
 import time
 
 from django.utils import timezone
 
-from django.db import connection
 from tqdm import tqdm
 
 from mhd.utils import BatchImporter, uuid4
 from mhd_data.models import Item
 from mhd_provenance.models import Provenance
 from mhd_schema.models import Collection, Property
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import Iterable, Any, List, Optional
+    from logging import Logger
+    ChunkType = Any
+    ProvenanceType = Any
 
 
 class DataImporter(object):
@@ -21,7 +28,12 @@ class DataImporter(object):
         Does not yet support the update property
     """
 
-    def __init__(self, collection, properties, quiet=False, batch_size=None, write_sql=None):
+    logger: Logger
+    batch: BatchImporter
+    collection: Collection
+    properties: Iterable[Property]
+
+    def __init__(self, collection: Collection, properties: Iterable[Property], quiet: bool=False, batch_size: Optional[int]=None, write_sql=None):
         """ Creates a new data importer for the given collection and properties """
         self.logger = logging.getLogger('mhd.dataimporter')
         self.logger.setLevel(logging.WARN if quiet else logging.DEBUG)
@@ -34,7 +46,7 @@ class DataImporter(object):
 
         self._validate_params()
 
-    def _validate_params(self):
+    def _validate_params(self) -> None:
         if not isinstance(self.collection, Collection):
             raise ImportValidationError(
                 'No valid collection passed to DataImporter. ')
@@ -47,7 +59,7 @@ class DataImporter(object):
                 raise ImportValidationError(
                     'Property {} is not a part of collection {}'.format(p.slug, self.collection.slug))
 
-    def __call__(self, update=False):
+    def __call__(self, update: bool=False) -> List[str]:
         """
             Imports all data available to this DataImporter.
             Returns a list of all items by UUIDS
@@ -81,7 +93,7 @@ class DataImporter(object):
 
         return uuid_list
 
-    def _import_chunk(self, chunk, update):
+    def _import_chunk(self, chunk: ChunkType, update: bool) -> List[str]:
         """
             Imports the given chunk into the system and returns the UUIDs of the elements
             created
@@ -134,7 +146,7 @@ class DataImporter(object):
         gc.collect()
         return uuids
 
-    def _import_chunk_property(self, chunk, uuids, prop, idx, update):
+    def _import_chunk_property(self, chunk: ChunkType, uuids: List[str], prop: Property, idx: int, update: bool) -> None:
         """
             Creates the given property for the given chunk and the provided items
         """
@@ -182,7 +194,7 @@ class DataImporter(object):
     # Methods to be implemented by subclass
     #
 
-    def create_provenance(self):
+    def create_provenance(self) -> ProvenanceType:
         """
             Serializes provenance to be used by this importer.
             To be implemented by subclass.
@@ -190,7 +202,7 @@ class DataImporter(object):
 
         raise NotImplementedError
 
-    def get_next_chunk(self):
+    def get_next_chunk(self) -> Optional[ChunkType]:
         """
             Gets the next chunk of items from the import source.
             Should return None if no more chunks are left.
@@ -199,7 +211,7 @@ class DataImporter(object):
 
         raise NotImplementedError
 
-    def get_chunk_length(self, chunk):
+    def get_chunk_length(self, chunk: ChunkType) -> int:
         """
             Gets the length of the given chunk.
             By default¸ simply calls len() on the chunk object,
@@ -208,7 +220,7 @@ class DataImporter(object):
 
         return len(chunk)
 
-    def get_chunk_uuids(self, chunk):
+    def get_chunk_uuids(self, chunk: ChunkType) -> List[Optional[str]]:
         """
             Returns an iterator of length get_chunk_length(chunk)
             with each element representing the uuid of each element in the
@@ -219,7 +231,7 @@ class DataImporter(object):
         """
         return [None] * self.get_chunk_length(chunk)
 
-    def get_chunk_column(self, chunk, property, idx):
+    def get_chunk_column(self, chunk: ChunkType, property: str, idx: int) -> Iterable[Any]:
         """
             Returns an iterator for the given property of the given chunk of data.
             Should contain get_chunk_length(chunk) elements.
@@ -230,10 +242,10 @@ class DataImporter(object):
 
 
 class ImporterError(Exception):
-    def __init__(self, message):
+    def __init__(self, message: str) -> None:
         super().__init__('Unable to create collection: {}'.format(message))
 
 
 class ImportValidationError(ImporterError):
-    def __init__(self, messsage):
+    def __init__(self, messsage: str) -> None:
         super().__init__('Invalid input: {}'.format(message))

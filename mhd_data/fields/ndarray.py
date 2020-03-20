@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from .json import DumbJSONField
 from django.core.exceptions import ValidationError
 
@@ -7,11 +9,15 @@ from django.contrib.postgres.fields import ArrayField
 
 from mhd.utils import check_field_value, get_standard_serializer_field
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import Optional, Any, List, Dict
+    from django.db.models import Field
 
 class DumbNDArrayField(DumbJSONField):
     """ Stores values as an n-dimensional array """
 
-    def __init__(self, *args, typ=None, dim=1, size=None, **kwargs):
+    def __init__(self, *args: Any, typ: Field=None, dim: int=1, size: Optional[int]=None, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
         self.dim = int(dim)
@@ -22,7 +28,7 @@ class DumbNDArrayField(DumbJSONField):
         self.typ = typ
         self._field = get_standard_serializer_field(typ)
 
-    def _validate(self, value):
+    def _validate(self, value: Any) -> bool:
         """ Checks that the value passed is indeed an n-dimensional array """
 
         if value is None:
@@ -49,7 +55,7 @@ class DumbNDArrayField(DumbJSONField):
         validate_ndarray(value, self.dim)
         return True
 
-    def deconstruct(self):
+    def deconstruct(self) -> (str, str, List[Any], Dict[str, Any]):
         name, path, args, kwargs = super().deconstruct()
         kwargs['dim'] = self.dim
         kwargs['typ'] = self.typ
@@ -59,7 +65,7 @@ class DumbNDArrayField(DumbJSONField):
 
 class PostgresNDArrayField(ArrayField):
 
-    def __init__(self, typ=None, dim=1, **kwargs):
+    def __init__(self, typ: Field=None, dim: int=1, **kwargs: Any):
         self.dim = int(dim)
         if self.dim < 0:
             raise ValueError('dimension must be a positive integer')
@@ -72,7 +78,7 @@ class PostgresNDArrayField(ArrayField):
 
         super().__init__(base_field, **kwargs)
 
-    def deconstruct(self):
+    def deconstruct(self) -> (str, str, List[Any], Dict[str, Any]):
         name, path, args, kwargs = super().deconstruct()
         kwargs.pop('base_field')
         kwargs['dim'] = self.dim

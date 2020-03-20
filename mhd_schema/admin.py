@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django.contrib import admin
 
 from . import models
@@ -18,7 +20,7 @@ class CollectionInline(admin.TabularInline):
 
 @admin.register(models.Collection)
 class CollectionAdmin(admin.ModelAdmin):
-    def prop_size(self, obj):
+    def prop_size(self, obj: models.Collection) -> int:
         return obj.property_set.count()
     prop_size.short_description = '# of Properties'
     prop_size.admin_order_field = 'property'
@@ -35,7 +37,7 @@ class CollectionAdmin(admin.ModelAdmin):
 class PropertyAdmin(admin.ModelAdmin):
     exclude = ['collections']
 
-    def collection_size(self, obj):
+    def collection_size(self, obj: models.Property) -> int:
         return obj.collections.count()
     collection_size.short_description = '# of Collections'
     collection_size.admin_order_field = 'collections'

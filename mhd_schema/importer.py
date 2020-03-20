@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from mhd_schema.models import Collection, Property, PreFilter
 from mhd_data.models import CodecManager
 
@@ -5,17 +7,22 @@ from tqdm import tqdm
 
 import logging
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import Any
+
 class SchemaImporter(object):
     """ Represents the process of an import """
 
-    def __init__(self, data=None, quiet=False):
+    logger: logging.Logger
+    def __init__(self, data: Any = None, quiet: bool = False):
         self.logger = logging.getLogger('mhd.schemaimporter')
         self.logger.setLevel(logging.WARN if quiet else logging.DEBUG)
 
         self._validate_data(data)
         self.data = data
 
-    def _validate_data(self, data):
+    def _validate_data(self, data: Any) -> None:
         if not isinstance(data, dict):
             raise SchemaValidationError('Expected schema to be a dict. ')
 
@@ -45,7 +52,7 @@ class SchemaImporter(object):
                 for pf in data['preFilters']:
                     self._validate_pre_filter(pf)
 
-    def _validate_property(self, data):
+    def _validate_property(self, data: Any) -> None:
         if not isinstance(data, dict):
             raise SchemaValidationError('Found property that is not a dict. ')
 
@@ -78,7 +85,7 @@ class SchemaImporter(object):
             raise SchemaValidationError(
                 'Property {0!r} has unknown codec {1!r}'.format(slug, data['codec']))
 
-    def _validate_pre_filter(self, data):
+    def _validate_pre_filter(self, data: Any) -> None:
         for k in ['name', 'condition']:
             if k not in data:
                 raise SchemaValidationError(
@@ -87,7 +94,7 @@ class SchemaImporter(object):
                 raise SchemaValidationError(
                     'Prefilter value {} is not a string. '.format(k))
 
-    def __call__(self, update=False):
+    def __call__(self, update: bool = False) -> (Collection, bool):
         """
             Creates or updates a new collection based on the appropriate
             serialization in value. The value is serialized as:
@@ -152,29 +159,32 @@ class SchemaImporter(object):
         # Delete all the previous pre-filters
         collection.prefilter_set.all().delete()
         PreFilter.objects.bulk_create([
-            PreFilter(collection=collection, description=p["description"], condition=p["condition"])
-                for p in preFilters])
+            PreFilter(collection=collection,
+                      description=p["description"], condition=p["condition"])
+            for p in preFilters])
 
-        self.logger.info('Created {1} pre_filters for {0!r}'.format(slug, len(preFilters)))
-
+        self.logger.info(
+            'Created {1} pre_filters for {0!r}'.format(slug, len(preFilters)))
 
         # Create all the properties
         props = [
             self.__call__property(collection, p, update=update)[0]
             for p in tqdm(properties, leave=False)
         ]
-        self.logger.info('Created {1} properties for {0!r}'.format(slug, len(props)))
+        self.logger.info(
+            'Created {1} properties for {0!r}'.format(slug, len(props)))
 
         # fetch the extra properties and remove them
         extra = collection.property_set.exclude(pk__in=[p.pk for p in props])
         collection.property_set.remove(*extra)
 
-        self.logger.info('Disassociated {1} properties from {0!r}'.format(slug, len(extra)))
+        self.logger.info(
+            'Disassociated {1} properties from {0!r}'.format(slug, len(extra)))
 
         # and return
         return collection, created
 
-    def __call__property(self, collection, prop, update=False):
+    def __call__property(self, collection: Collection, prop: Dict, update: bool = False) -> (Property, bool):
         """
             Creates a (collection-associated) property based on the appropriate
             serialization in value. The value is serialized as:
@@ -236,10 +246,10 @@ class SchemaImporter(object):
 
 
 class SchemaImportError(Exception):
-    def __init__(self, message):
+    def __init__(self, message: str) -> None:
         super().__init__('Unable to create collection: {}'.format(message))
 
 
 class SchemaValidationError(SchemaImportError):
-    def __init__(self, message):
+    def __init__(self, message: str) -> None:
         super().__init__('Error in Schema: {}'.format(message))

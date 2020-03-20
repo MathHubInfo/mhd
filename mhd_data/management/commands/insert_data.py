@@ -1,13 +1,19 @@
+from __future__ import annotations
+
 from django.core.management.base import BaseCommand
 
 from mhd.utils import with_simulate_arg
 from mhd_data.importers import JSONFileImporter
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import Any
+    from argparse import ArgumentParser
 
 class Command(BaseCommand):
     help = 'Inserts data into an existing collection'
 
-    def add_arguments(self, parser):
+    def add_arguments(self, parser: ArgumentParser) -> None:
         parser.add_argument(
             '--collection', '-n', help="Slug of collection to insert data into", required=True)
         parser.add_argument(
@@ -29,7 +35,7 @@ class Command(BaseCommand):
             'data', nargs='+', help=".json file containing 2-dimensional value array")
 
     @with_simulate_arg
-    def handle(self, *args, **kwargs):
+    def handle(self, *args: Any, **kwargs: Any) -> None:
         importer = JSONFileImporter(
             kwargs['collection'], kwargs['fields'].strip().split(","),
             kwargs['data'], kwargs['provenance'],

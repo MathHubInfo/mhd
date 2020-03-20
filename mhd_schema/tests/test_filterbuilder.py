@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from ..query import FilterBuilder
 from django.test import TestCase
 
@@ -11,11 +13,11 @@ Z3Z_DATA_PATH = AssetPath(__file__, "..", "..", "mhd_data", "tests", "res", "z3z
 
 
 class FilterBuilderTest(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.collection = insert_testing_data(
             Z3Z_COLLECTION_PATH, Z3Z_DATA_PATH, Z3Z_PROVENANCE_PATH, reset=True)
 
-    def test_build_filters(self):
+    def test_build_filters(self) -> None:
         # create a filter builder
         fb = FilterBuilder(self.collection)
 

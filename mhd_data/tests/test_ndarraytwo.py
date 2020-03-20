@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django.test import TestCase
 
 from mhd_tests.models import DumbNDArrayTwoModel, SmartNDArrayTwoModel
@@ -6,11 +8,11 @@ from .storage import StorageSuite
 
 
 class NDArraySuiteTwo(StorageSuite):
-    def test_positive(self):
+    def test_positive(self) -> None:
         self._assert_stores([])
         self._assert_stores([[1, 2, 3], [4, 5, 6]])
 
-    def test_negative(self):
+    def test_negative(self) -> None:
         # not a list
         self._assert_notstores(True)
         self._assert_notstores(12)

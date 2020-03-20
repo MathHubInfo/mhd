@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django.db import models
 
 from ..codec import Codec
@@ -6,4 +8,4 @@ from ..codec import Codec
 class CoveringRelationAsDigraph6(Codec):
     """ CoveringRelationAsDigraph6 Codec """
 
-    value = models.TextField()
+    value: str = models.TextField()

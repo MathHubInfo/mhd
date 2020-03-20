@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from rest_framework import pagination
 from rest_framework.response import Response
 
@@ -5,11 +7,15 @@ from collections import OrderedDict
 
 from .raw_paginator import RawQuerySetPaginator
 
-class DefaultPaginator(pagination.PageNumberPagination):
-    page_size_query_param = "per_page"
-    max_page_size = 100
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    pass
 
-    def get_paginated_response(self, data):
+class DefaultPaginator(pagination.PageNumberPagination):
+    page_size_query_param: str = "per_page"
+    max_page_size: int = 100
+
+    def get_paginated_response(self, data: List[Any]) -> Response:
         return Response(OrderedDict([
             ('count', self.page.paginator.count),
             ('next', self.get_next_link()),

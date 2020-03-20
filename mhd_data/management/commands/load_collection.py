@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
 
@@ -5,11 +7,16 @@ from mhd.utils import with_simulate_arg
 
 import json
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import Any
+    from argparse import ArgumentParser
+
 
 class Command(BaseCommand):
     help = 'Creates a new collection and loads data for it into the system'
 
-    def add_arguments(self, parser):
+    def add_arguments(self, parser: ArgumentParser) -> None:
         parser.add_argument(
             'schema', help='.json file containing collection schema')
         parser.add_argument(
@@ -29,7 +36,7 @@ class Command(BaseCommand):
                             help="When set, instead of batch inserting data write output to the given path. ")
 
     @with_simulate_arg
-    def handle(self, *args, **kwargs):
+    def handle(self, *args: Any, **kwargs: Any) -> None:
         call_command('upsert_collection', kwargs['schema'], update=False, quiet=kwargs['quiet'])
 
         # get needed info from schema

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import json
 
 from django.test import TestCase
@@ -7,6 +9,14 @@ from mhd_tests.utils import AssetPath, LoadJSONAsset
 from .collection import insert_testing_data
 
 from ..models import Item
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import Union
+    from django.db.models import QuerySet
+
+    SQL = QuerySet
+    SQLWithParams = (SQL, List[Union[int, str]])  # an sql query with parameters
 
 Z3Z_COLLECTION_PATH = AssetPath(__file__, "res", "z3z_collection.json")
 Z3Z_PROVENANCE_PATH = AssetPath(__file__, "res", "z3z_provenance.json")
@@ -29,11 +39,11 @@ class Z3ZCollectionTest(TestCase):
         nulls, which checks that the database importer and querying can handle those.
     """
 
-    def setUp(self):
+    def setUp(self) -> None:
         self.collection = insert_testing_data(
             Z3Z_COLLECTION_PATH, Z3Z_DATA_PATH, Z3Z_PROVENANCE_PATH, reset=True)
 
-    def _assert_query(self, got, expected_query, expected_props):
+    def _assert_query(self, got: Union[SQL, SQLWithParams], expected_query: str, expected_props: List[Any]):
         if isinstance(got, tuple):
             got_qs = got[0]
         else:
@@ -47,7 +57,7 @@ class Z3ZCollectionTest(TestCase):
         self.assertTupleEqual(tuple(got_qs.query.params), expected_props,
                               "props are as expected")
 
-    def test_build_query(self):
+    def test_build_query(self) -> None:
         """ Checks that queries are built correctly """
 
         col_pk = str(self.collection.pk)
@@ -82,7 +92,7 @@ SELECT id, "property_value_f1", "property_cid_f1" FROM (SELECT I.id as id, "T_f0
 SELECT id, "property_value_f1", "property_cid_f1", "property_value_f2", "property_cid_f2" FROM (SELECT I.id as id, "T_f0".value as "property_value_f0", "T_f0".id as "property_cid_f0", "T_f1".value as "property_value_f1", "T_f1".id as "property_cid_f1", "T_f2".value as "property_value_f2", "T_f2".id as "property_cid_f2", "T_invertible".value as "property_value_invertible", "T_invertible".id as "property_cid_invertible" FROM mhd_data_item as I JOIN mhd_data_itemcollectionassociation as CI ON I.id = CI.item_id AND CI.collection_id = %s LEFT OUTER JOIN mhd_data_standardint AS "T_f0" ON I.id = "T_f0".item_id AND "T_f0".active AND "T_f0".prop_id = %s LEFT OUTER JOIN mhd_data_standardint AS "T_f1" ON I.id = "T_f1".item_id AND "T_f1".active AND "T_f1".prop_id = %s LEFT OUTER JOIN mhd_data_standardint AS "T_f2" ON I.id = "T_f2".item_id AND "T_f2".active AND "T_f2".prop_id = %s LEFT OUTER JOIN mhd_data_standardbool AS "T_invertible" ON I.id = "T_invertible".item_id AND "T_invertible".active AND "T_invertible".prop_id = %s) AS collection WHERE "property_value_f1" = %s
         """, (col_pk, f0_pk, f1_pk, f2_pk, invertible, 0))
 
-    def test_query_semantics(self):
+    def test_query_semantics(self) -> None:
         """ Tests that .semantic() queries return the right values """
 
         GOT_QUERY_ALL = self.collection.semantic()
@@ -99,7 +109,7 @@ SELECT id, "property_value_f1", "property_cid_f1", "property_value_f2", "propert
         self.assertJSONEqual(json.dumps(list(GOT_QUERY_F1_F2_FILTER)), Z3Z_F1_F2_ASSET,
                              "check that the query for f1 = 0 returns the right results")
 
-    def test_query_count(self):
+    def test_query_count(self) -> None:
         col_pk = str(self.collection.pk)
         f0_pk = str(self.collection.get_property('f0').pk)
         f1_pk = str(self.collection.get_property('f1').pk)
@@ -119,7 +129,7 @@ SELECT COUNT(*) FROM (SELECT I.id as id, "T_f0".value as "property_value_f0", "T
 SELECT COUNT(*) FROM (SELECT I.id as id, "T_f0".value as "property_value_f0", "T_f0".id as "property_cid_f0", "T_f1".value as "property_value_f1", "T_f1".id as "property_cid_f1", "T_f2".value as "property_value_f2", "T_f2".id as "property_cid_f2", "T_invertible".value as "property_value_invertible", "T_invertible".id as "property_cid_invertible" FROM mhd_data_item as I JOIN mhd_data_itemcollectionassociation as CI ON I.id = CI.item_id AND CI.collection_id = %s LEFT OUTER JOIN mhd_data_standardint AS "T_f0" ON I.id = "T_f0".item_id AND "T_f0".active AND "T_f0".prop_id = %s LEFT OUTER JOIN mhd_data_standardint AS "T_f1" ON I.id = "T_f1".item_id AND "T_f1".active AND "T_f1".prop_id = %s LEFT OUTER JOIN mhd_data_standardint AS "T_f2" ON I.id = "T_f2".item_id AND "T_f2".active AND "T_f2".prop_id = %s LEFT OUTER JOIN mhd_data_standardbool AS "T_invertible" ON I.id = "T_invertible".item_id AND "T_invertible".active AND "T_invertible".prop_id = %s) AS collection WHERE "property_value_f1" = %s
         """, (col_pk, f0_pk, f1_pk, f2_pk, invertible, 0))
 
-    def test_query_item_semantics(self):
+    def test_query_item_semantics(self) -> None:
         for jitem in Z3Z_ALL_ASSET:
             item = Item.objects.get(id=jitem["_id"])
             GOT_ITEM_SEMANTIC = item.semantic(self.collection)

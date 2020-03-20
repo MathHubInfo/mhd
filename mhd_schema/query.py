@@ -1,19 +1,28 @@
+from __future__ import annotations
+
 """ This file contains the main query and filter builder """
 from PreJsPy import PreJsPy
 
 from mhd_data.models import CodecManager, Codec, Item
 from .models import Property, Collection
 
-from typing import List, Type, Any, Optional, Iterable, Union, Dict
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import List, Type, Any, Optional, Iterable, Union, Dict
 
-SQL = str
-SQLWithParams = (SQL, List[Union[int, str]])  # an sql query with parameters
+    SQL = str
+    SQLWithParams = (SQL, List[Union[int, str]])  # an sql query with parameters
+
+    FilterAST = Any  # the type used by filter annotations, for now just 'FilterAST'
 
 
 class QueryBuilder(object):
     """ The QueryBuilder class represents the class to build queries from """
 
-    def __init__(self, collection: Collection):
+    collection: Collection
+    filter_builder: FilterBuilder
+
+    def __init__(self, collection: Collection) -> None:
         self.collection = collection  # type: Collection
 
         # and create a filter builder
@@ -31,7 +40,7 @@ class QueryBuilder(object):
     def _prop_cid(prop: Property) -> str:
         return '"property_cid_{}"'.format(prop.slug)
 
-    def __call__(self, properties: Optional[List[Property]], where: Optional[str], order: Optional[str], offset: Optional[int], limit: Optional[int], count_query: bool, use_view: Optional[str]) -> (SQLWithParams, List[Property]):
+    def __call__(self, properties: Optional[List[Property]], where: Optional[str], order: Optional[str], offset: Optional[int], limit: Optional[int], count_query: bool, use_view: Optional[str]) -> SQLWithParams:
         """ Builds an SQL query on this collection. See inline documentation for details of the query.
 
         :param properties: A list of properties to return. When omitted, all properties are returned.
@@ -223,11 +232,11 @@ class QueryBuilder(object):
         )
 
 
-FilterAST = Any  # the type used by filter annotations, for now just 'FilterAST'
-
-
 class FilterBuilder(object):
     """ The FilterBuilder represents an object to build WHERE filters from """
+
+    collection: Collection
+    parser: PreJsPy
 
     def __init__(self, collection: Collection):
         self.collection = collection
@@ -241,7 +250,7 @@ class FilterBuilder(object):
         self.parser.setUnaryOperators(['!'])  # only a single unary operator
         self.parser.setTertiaryOperatorEnabled(False)  # no teriary operator
 
-    def _update_parser(self):
+    def _update_parser(self) -> None:
         """ Updates the parser with the current configuration """
 
         bin_ops = {

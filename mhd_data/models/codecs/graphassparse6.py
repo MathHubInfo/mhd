@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django.db import models
 
 from ..codec import Codec
@@ -6,4 +8,4 @@ from ..codec import Codec
 class GraphAsSparse6(Codec):
     """ GraphAsSparse6 Codec """
 
-    value = models.TextField()
+    value: str = models.TextField()

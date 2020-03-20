@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import json
 import uuid
 from unittest import mock
@@ -20,7 +22,7 @@ Z3Z_ALL_PATH = AssetPath(__file__, "res", "z3z_query_all.json")
 Z3Z_ALL_ASSET = LoadJSONAsset(Z3Z_ALL_PATH)
 
 class LoadCollectionTest(TestCase):
-    def test_no_simulate_arg(self):
+    def test_no_simulate_arg(self) -> None:
         """ Checks that calling 'load_collection' without a simulate argument works """
 
         uuid4_mock_reset()
@@ -40,7 +42,7 @@ class LoadCollectionTest(TestCase):
         self.assertJSONEqual(json.dumps(list(GOT_QUERY_ALL)), Z3Z_ALL_ASSET,
                              "check that the query inserted all entries")
 
-    def test_simulate_arg(self):
+    def test_simulate_arg(self) -> None:
         """ Checks that calling 'load_collection' without a simulate argument does not load any data """
 
         with transaction.atomic():

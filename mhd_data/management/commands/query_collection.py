@@ -1,11 +1,18 @@
+from __future__ import annotations
+
 import json
 
 from django.core.management.base import BaseCommand
 import argparse
 from mhd_schema.models import Collection
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import Any
+    from argparse import ArgumentParser
 
-def nonnegative(value):
+
+def nonnegative(value: Any) -> int:
     ivalue = int(value)
     if ivalue < 0:
         raise argparse.ArgumentTypeError(
@@ -16,7 +23,7 @@ def nonnegative(value):
 class Command(BaseCommand):
     help = 'Sends a query for a specific collection'
 
-    def add_arguments(self, parser):
+    def add_arguments(self, parser: ArgumentParser) -> None:
         parser.add_argument('collection', help="Slug of collection to fetch")
         parser.add_argument(
             '--properties', '-p', help="Comma-seperated slugs of properties to query to query")
@@ -34,7 +41,7 @@ class Command(BaseCommand):
         parser.add_argument('--limit', '-l', type=nonnegative,
                             default=10, help="Maximum number of results to return")
 
-    def handle(self, *args, **kwargs):
+    def handle(self, *args: Any, **kwargs: Any) -> None:
         # find collection
         collection = Collection.objects.filter(
             slug=kwargs['collection']).first()

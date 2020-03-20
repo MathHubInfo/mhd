@@ -1,13 +1,20 @@
-from django.db.backends.utils import CursorWrapper as Cursor
-from django.db.backends.base.base import BaseDatabaseWrapper as Connection
+from __future__ import annotations
 
 import sys
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import Optional, List, Any
 
-from typing import Optional, List, Any
+    from django.db.backends.utils import CursorWrapper as Cursor
+    from django.db.backends.base.base import BaseDatabaseWrapper as Connection
 
 class MaterializedView(object):
     """ Represents a single materialized view """
+
+    query: str
+    name: str
+    args: Optional[List[Any]]
 
     def __init__(self, name: str, query: str, args: Optional[List[Any]] = None):
         self.query = query

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django.db import models
 
 from ..codec import Codec
@@ -6,7 +8,7 @@ from ..codec import Codec
 class StandardBool(Codec):
     """ Standard Boolean Codec """
 
-    value = models.BooleanField()
+    value: bool = models.BooleanField()
 
     operators = ('=', '!=')
     operator_type = bool

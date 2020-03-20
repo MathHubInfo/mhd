@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import uuid
 from unittest import mock
 
@@ -9,7 +11,7 @@ from mhd_tests.utils import LoadJSONAsset
 from mhd_schema.models import Collection
 
 
-def insert_testing_data(schema_path, data_path, provenance_path, reset=False):
+def insert_testing_data(schema_path: str, data_path: str, provenance_path: str, reset: bool=False) -> Collection:
     """ Inserts testing data from the given collection, data, and provenance paths """
 
     # if requested, reset the ids

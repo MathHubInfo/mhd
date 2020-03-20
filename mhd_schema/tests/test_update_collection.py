@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django.core.management import call_command
 from django.test import TestCase
 from rest_framework.test import APIClient
@@ -11,7 +13,7 @@ Z3Z_V1_ASSET = LoadJSONAsset(Z3Z_V1_PATH)
 
 
 class UpdateCollectionTest(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         """ Creates the demo collection using the upsert command """
 
         # create the collection
@@ -22,7 +24,7 @@ class UpdateCollectionTest(TestCase):
         call_command('upsert_collection', Z3Z_V1_PATH,
                      update=True, quiet=True)
 
-    def test_api_all_collections(self):
+    def test_api_all_collections(self) -> None:
         """ Checks that the demo collection was correctly updated in the list of collections """
 
         response = APIClient().get('/api/schema/collections/')
@@ -37,7 +39,7 @@ class UpdateCollectionTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content, expected_response)
 
-    def test_api_exact_collection(self):
+    def test_api_exact_collection(self) -> None:
         """ Checks that the demo collection can be correctly found by slug """
 
         self.maxDiff = None

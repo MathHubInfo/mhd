@@ -1,14 +1,22 @@
+from __future__ import annotations
 
 from mhd.utils import ModelWithMetadata, QuerySetLike, MaterializedView
 from django.db import models, transaction
 
-from typing import Optional, Iterable
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import Optional, Iterable, Type, Any
+    from .query import QueryBuilder
+    from mhd_data.models import Codec
+    from django.db.models import QuerySet
+    from collections import OrderedDict
 
 
 class Collection(ModelWithMetadata):
     """ Collection of Mathematical Items """
+    _query_builder: QueryBuilder
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
         # create a new query builder
@@ -20,21 +28,21 @@ class Collection(ModelWithMetadata):
             models.Index(fields=['slug']),
         ]
 
-    displayName = models.TextField(help_text="Name of this collection")
-    slug = models.SlugField(
+    displayName: str = models.TextField(help_text="Name of this collection")
+    slug: str = models.SlugField(
         help_text="Identifier of this collection", unique=True)
 
-    description = models.TextField(
+    description: str = models.TextField(
         help_text="A human-readable description of this collection")
-    url = models.URLField(
+    url: Optional[str] = models.URLField(
         null=True, blank=True, help_text="URL for more information about this collection")
 
-    count = models.IntegerField(
+    count: Optional[int] = models.IntegerField(
         null=True, blank=True, help_text="Total number of items in this collection")
-    count_frozen = models.BooleanField(
+    count_frozen: bool = models.BooleanField(
         default=False, help_text="When set to true, freeze the count of this collection")
 
-    materializedViewName = models.SlugField(
+    materializedViewName: Optional[str] = models.SlugField(
         help_text="Name for the materialized view of this collection (if any)", unique=True, null=True, blank=True)
 
     def update_count(self) -> int:
@@ -63,29 +71,29 @@ class Collection(ModelWithMetadata):
         for p in self.prefilter_set.all():
             p.invalidate_count()
 
-    flag_large_collection = models.BooleanField(
+    flag_large_collection: bool = models.BooleanField(
         default=False, help_text="Flag this collection as potentially large to the user interface"
     )
 
-    def get_property(self, slug: str) -> Optional['Property']:
+    def get_property(self, slug: str) -> Optional[Property]:
         """ Returns a property of the given name """
         return self.property_set.filter(slug=slug).first()
 
     def __str__(self) -> str:
         return "Collection {0!r}".format(self.slug)
 
-    def properties(self) -> Iterable['Property']:
+    def properties(self) -> Iterable[Property]:
         return self.property_set.all()
 
     @property
-    def codecs(self):
+    def codecs(self) -> Iterable[Codec]:
         """ An iterator for the codecs of this collection """
         codecs = set()
         for prop in self.property_set.all():
             codecs.add(prop.codec_model)
         return codecs
 
-    def query(self, properties=None, filter=None, limit=None, offset=None, order=None):
+    def query(self, properties: Optional[Iterable[Property]] = None, filter: Optional[str] = None, limit: Optional[int] = None, offset: Optional[int] = None, order: Optional[str] = None) -> QuerySet:
         """
             Builds a query returning items in this collection with
             annotated properties prop.
@@ -124,7 +132,7 @@ class Collection(ModelWithMetadata):
         # and return it
         return Item.objects.raw(sql, sql_args), list(properties)
 
-    def query_count(self, properties=None, filter=None):
+    def query_count(self, properties: Optional[Iterable[Property]]=None, filter: Optional[str]=None) -> QuerySetLike:
         """
             Like .query() but returns a QuerySetLike for counting
         """
@@ -156,7 +164,7 @@ class Collection(ModelWithMetadata):
         # and return it
         return QuerySetLike(sql, sql_args)
 
-    def sync_materialized_view(self):
+    def sync_materialized_view(self) -> bool:
         """ Syncronizes this materialized view with the database """
 
         # if we have a materialized view object, get it
@@ -182,14 +190,14 @@ class Collection(ModelWithMetadata):
         mview_sql, mview_sql_args = self._query_builder.join_builder()
         return MaterializedView(self.materializedViewName, mview_sql, mview_sql_args)
 
-    def semantic(self, *args, **kwargs):
+    def semantic(self, *args: Any, **kwargs: Any) -> Iterable[OrderedDict]:
         """ Same as running .query() and calling .semantic() on each returned value """
 
         # make the query
         qset, props = self.query(*args, **kwargs)
         return map(lambda o: o.semantic_result(self, props), qset)
 
-    def is_empty(self):
+    def is_empty(self) -> bool:
         """ Checks if this collection is empty """
 
         # check if any of the properties have values
@@ -201,7 +209,7 @@ class Collection(ModelWithMetadata):
         return not self.item_set.all().exists()
 
     @transaction.atomic()
-    def safe_delete(self):
+    def safe_delete(self) -> None:
         """ Safely deletes this collection from the database
             Raise CollectionNotEmpty when the collection is not empty
         """
@@ -220,7 +228,7 @@ class Collection(ModelWithMetadata):
         self.delete()
 
     @transaction.atomic()
-    def flush(self):
+    def flush(self) -> None:
         """ Removes all items from this collection """
 
         # first delete all the values for all the properties
@@ -250,19 +258,19 @@ class Property(ModelWithMetadata):
         ]
         ordering = ['id']
 
-    displayName = models.TextField(help_text="Display Name for this property")
-    slug = models.SlugField(help_text="Identifier of this Collection")
+    displayName: str = models.TextField(help_text="Display Name for this property")
+    slug: str = models.SlugField(help_text="Identifier of this Collection")
 
-    description = models.TextField(
+    description: str = models.TextField(
         default="", help_text="A human-readable description of this property")
-    url = models.URLField(
+    url: Optional[str] = models.URLField(
         null=True, blank=True, help_text="URL for more information about this property")
 
-    codec = models.SlugField(
+    codec: str = models.SlugField(
         help_text="Name of the codec table that stores this property ")
 
     @property
-    def codec_model(self):
+    def codec_model(self) -> Type[Codec]:
         """ Returns the Codec Model belonging to this Property or None """
         from mhd_data.models import CodecManager
 
@@ -272,7 +280,7 @@ class Property(ModelWithMetadata):
                 'Can not find Codec Table {0:r}'.format(self.codec))
         return model
 
-    def get_column(self, collection):
+    def get_column(self, collection: Collection) ->Iterable[Codec]:
         """ Returns a QuerySet of the appropriate CodecModel that represents this property within the collection """
 
         return self.codec_model.objects.filter(prop=self, item__collections=collection)
@@ -280,10 +288,10 @@ class Property(ModelWithMetadata):
     collections = models.ManyToManyField(
         Collection, through='PropertyCollectionMembership', help_text="Collection(s) this property occurs in", blank=True)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "Property {0:d} ({1!r})".format(self.pk, self.slug)
 
-    def values(self, collection=None):
+    def values(self, collection: Optional[Collection]=None) -> Iterable[Codec]:
         """ Returns a QuerySet of all values of this property,
         optionally only those linked to a specific collection.
         """
@@ -293,7 +301,7 @@ class Property(ModelWithMetadata):
 
         return self.codec_model.objects.filter(prop_id=self.id)
 
-    def has_values(self, collection=None):
+    def has_values(self, collection: Optional[Collection]=None) -> bool:
         """ Returns a bool indicating if this property has any values """
 
         return self.values(collection=collection).exists()
@@ -307,20 +315,20 @@ class PropertyCollectionMembership(models.Model):
             models.Index(fields=['collection']),
         ]
 
-    property = models.ForeignKey(Property, on_delete=models.CASCADE)
-    collection = models.ForeignKey(Collection, on_delete=models.CASCADE)
+    property: Property = models.ForeignKey(Property, on_delete=models.CASCADE)
+    collection: Collection = models.ForeignKey(Collection, on_delete=models.CASCADE)
 
 
 class PreFilter(models.Model):
-    collection = models.ForeignKey(Collection, on_delete=models.CASCADE)
-    description = models.TextField(
+    collection: Collection = models.ForeignKey(Collection, on_delete=models.CASCADE)
+    description: str = models.TextField(
         default="", help_text="Description of this pre-filter")
-    condition = models.TextField(
+    condition: str = models.TextField(
         default="", help_text="Condition of this pre-filter")
 
-    count = models.IntegerField(null=True, blank=True)
+    count: Optional[int] = models.IntegerField(null=True, blank=True)
 
-    def update_count(self):
+    def update_count(self) -> None:
         """ Updates the count of this pre-filter """
         if self.collection.count_frozen:
             return
@@ -329,7 +337,7 @@ class PreFilter(models.Model):
             filter=self.condition).fetchone()[0]
         self.save()
 
-    def invalidate_count(self):
+    def invalidate_count(self) -> None:
         """ Invalidates the count of this pre-filter """
 
         if self.collection.count_frozen:
@@ -338,7 +346,7 @@ class PreFilter(models.Model):
         self.count = None
         self.save()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "PreFilter {0!r} [{1!r}]".format(self.description, self.condition)
 
 

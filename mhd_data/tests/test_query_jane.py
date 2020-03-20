@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import json
 
 from django.test import TestCase
@@ -22,7 +24,7 @@ Z3Z_PROVENANCE_PATH = AssetPath(__file__, "res", "z3z_provenance.json")
 Z3Z_DATA_PATH = AssetPath(__file__, "res", "z3z_data.json")
 
 class CreateCollectionTest(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         """ Creates the demo collection using the upsert command """
 
         self.collection = insert_testing_data(
@@ -32,13 +34,13 @@ class CreateCollectionTest(TestCase):
         # properly
         insert_testing_data(Z3Z_COLLECTION_PATH, Z3Z_DATA_PATH, Z3Z_PROVENANCE_PATH)
 
-    def test_data_exists(self):
+    def test_data_exists(self) -> None:
 
         GOT_QUERY_ALL = self.collection.semantic()
         self.assertJSONEqual(json.dumps(list(GOT_QUERY_ALL)), JANE_ALL_ASSET,
                              "check that the query for all properties returns all properties")
 
-    def test_query_item_semantics(self):
+    def test_query_item_semantics(self) -> None:
         for jitem in JANE_ALL_ASSET:
             item = Item.objects.get(id=jitem["_id"])
             GOT_ITEM_SEMANTIC = item.semantic(self.collection)

@@ -1,11 +1,17 @@
+from __future__ import annotations
+
 from ...fields.ndarray import SmartNDArrayField
 from ..codecoperator import codec_operator
 
 from .standardint import StandardInt
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from ...models import Codec
+    from typing import Type
 
 @codec_operator
-def MatrixAsListCodec(elementCodec, rows, columns):
+def MatrixAsListCodec(elementCodec: Type[Codec], rows: int, columns: int) -> (Type[object], str):
     """ A Codec Operator for Matrices as list """
 
     class CodecClass():

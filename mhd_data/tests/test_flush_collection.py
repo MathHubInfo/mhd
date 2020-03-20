@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import json
 
 from django.test import TestCase
@@ -21,12 +23,12 @@ Z3Z_PROVENANCE_PATH = AssetPath(__file__, "res", "z3z_provenance.json")
 Z3Z_DATA_PATH = AssetPath(__file__, "res", "z3z_data.json")
 
 class FlushCollectionTest(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.collection_a = insert_testing_data(
             JANE_COLLECTION_PATH, JANE_DATA_PATH, JANE_PROVENANCE_PATH, reset=True)
         self.collection_b = insert_testing_data(Z3Z_COLLECTION_PATH, Z3Z_DATA_PATH, Z3Z_PROVENANCE_PATH)
 
-    def test_flush_collection(self):
+    def test_flush_collection(self) -> None:
 
         self.assertFalse(self.collection_a.is_empty(), 'Check that the first collection is not empty')
         self.assertFalse(self.collection_b.is_empty(), 'Check that the second collection is not empty')

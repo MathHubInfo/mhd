@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 # This code has been adapated from https://github.com/mblance/django-paginator-rawqueryset
 # Copyright (c) 2014, Matt Buck
 # All rights reserved.
@@ -17,6 +19,9 @@ from django.core.paginator import Paginator as DefaultPaginator
 from django.db import connections
 from django.db.models.query import RawQuerySet
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import Optional, Any
 
 class DatabaseNotSupportedException(Exception):
     pass
@@ -25,14 +30,14 @@ class DatabaseNotSupportedException(Exception):
 class RawQuerySetPaginator(DefaultPaginator):
     """An efficient paginator for RawQuerySets.
     """
-    _count = None
+    _count: Optional[int] = None
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.raw_query_set = self.object_list
         self.connection = connections[self.raw_query_set.db]
 
-    def _get_count(self):
+    def _get_count(self) -> int:
         if self._count is None:
             cursor = self.connection.cursor()
             count_query = """SELECT COUNT(*) FROM (%s) AS sub_query_for_count""" % self.raw_query_set.raw_query
@@ -40,9 +45,9 @@ class RawQuerySetPaginator(DefaultPaginator):
             self._count = cursor.fetchone()[0]
 
         return self._count
-    count = property(_get_count)
+    count: int = property(_get_count)
 
-    def _get_limit_offset_query(self, limit, offset):
+    def _get_limit_offset_query(self, limit: int, offset: int) -> str:
         """mysql, postgresql, and sqlite can all use this syntax
         """
         return """SELECT * FROM (%s) as sub_query_for_pagination
@@ -52,7 +57,7 @@ class RawQuerySetPaginator(DefaultPaginator):
     postgresql_getquery = _get_limit_offset_query
     sqlite_getquery = _get_limit_offset_query
 
-    def oracle_getquery(self, limit, offset):
+    def oracle_getquery(self, limit: int, offset: int) -> str:
         """Get the oracle query, but check the version first
            Query is only supported in oracle version >= 12.1
            TODO:TESTING
@@ -66,12 +71,12 @@ class RawQuerySetPaginator(DefaultPaginator):
                   OFFSET %s ROWS FETCH NEXT %s ROWS ONLY
                """ % (self.raw_query_set.raw_query, offset, limit)
 
-    def firebird_getquery(self, limit, offset):  # TODO:TESTING
+    def firebird_getquery(self, limit: int, offset: int) -> str:  # TODO:TESTING
         return """SELECT FIRST %s SKIP %s *
                 FROM (%s) as sub_query_for_pagination
                """ % (limit, offset, self.raw_query_set.raw_query)
 
-    def page(self, number):
+    def page(self, number: int) -> Page:
         number = self.validate_number(number)
         offset = (number - 1) * self.per_page
         limit = self.per_page
@@ -92,7 +97,7 @@ class RawQuerySetPaginator(DefaultPaginator):
 
 
 class Paginator(object):
-    def __new__(cls, object_list, per_page, *args, **kwargs):
+    def __new__(cls, object_list: RawQuerySet, per_page: int, *args: Any, **kwargs: Any) -> DefaultPaginator:
         cls = (RawQuerySetPaginator if isinstance(
             object_list, RawQuerySet) else DefaultPaginator)
         instance = cls(object_list, per_page, *args, **kwargs)

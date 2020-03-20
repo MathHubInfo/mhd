@@ -1,23 +1,29 @@
+from __future__ import annotations
+
 """
     This file contains a no-op wrapper around UUIDs.
     It exists to allow hooking into UUID generation during tests and should not be changed.
 """
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import Any
+
 import uuid
 
 
-def uuid4(*args, **kwargs):
+def uuid4(*args: Any, **kwargs: Any) -> uuid.UUID:
     """ A no-op wrapper to be used instead of uuid.uuid4 """
     return uuid.uuid4(*args, **kwargs)
 
 
 uuid4_mock_state = {'counter': -1}
 
-def uuid4_mock_reset():
+def uuid4_mock_reset() -> Any:
     """ Resets the uuid4_mock """
     uuid4_mock_state['counter'] = -1
 
-def uuid4_mock(*args, **kwargs):
+def uuid4_mock(*args: Any, **kwargs: Any) -> Any:
     """ A mocked version of UUIDv4 """
 
     # grab the current hex and format the counter

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, views, response
 from ..models import SemanticItemSerializer
@@ -7,12 +9,20 @@ from rest_framework import exceptions, response
 
 from django.http import Http404
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from mhd_schema.models import Property
+    from django.db.models import QuerySet
+    from django.db import HttpRequest
+    from typing import Any, List, Optional
+    from rest_framework.response import Response
+
 class QueryViewException(exceptions.APIException):
     default_code = 400
     default_detail = "Incorrect query"
 
 class QueryViewMixin:
-    def build_query_params(self):
+    def build_query_params(self) -> (List[Property], Optional[str], Optional[str]):
         self._collection = get_object_or_404(
             Collection, slug=self.kwargs['cid'])
 
@@ -40,12 +50,12 @@ class QueryViewMixin:
 class QueryView(QueryViewMixin, generics.ListAPIView):
     pagination_class = DefaultRawPaginator
 
-    def get_serializer(self, *args, **kwargs):
+    def get_serializer(self, *args: Any, **kwargs: Any) -> SemanticItemSerializer:
         """ Creates a new serializer for the given collection and properties """
 
         return SemanticItemSerializer(*args, collection=self._collection, properties=self._properties, **kwargs)
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet:
         """ Creates a new queryset for the given page """
 
         from mhd_schema.query import FilterBuilderError
@@ -65,14 +75,14 @@ class QueryView(QueryViewMixin, generics.ListAPIView):
         return q
 
 class CountQueryView(QueryViewMixin, views.APIView):
-    def get(self, request, **kwargs):
+    def get(self, request: HttpRequest, **kwargs: Any) -> Response:
         # get the query params and then build a count query
         props, filter, order = self.build_query_params()
         count = self._collection.query_count(properties=props, filter=filter).fetchone()[0]
         return response.Response({'count': count})
 
 class ItemView(generics.RetrieveAPIView):
-    def get(self, *args, **kwargs):
+    def get(self, *args: Any, **kwargs: Any) -> Response:
         collection = get_object_or_404(
             Collection, slug=kwargs['cid'])
 

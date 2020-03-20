@@ -1,11 +1,18 @@
-from django.db import connection as default_connection
-from django.db.backends.base.base import BaseDatabaseWrapper as Connection
+from __future__ import annotations
 
-from typing import List, Any, Optional
+from django.db import connection as default_connection
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import List, Any, Optional
+    from django.db.backends.base.base import BaseDatabaseWrapper as Connection
 
 
 class QuerySetLike(object):
     """ A Query-Set similar wrapper for raw queries """
+
+    _connection: Connection
+    query: QuerySetLikeQuery
 
     def __init__(self, sql: str, params: List[Any], connection: Optional[Connection] = None):
         # type: Connection

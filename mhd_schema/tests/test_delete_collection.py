@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django.test import TestCase
 
 from django.core.management import call_command
@@ -11,7 +13,7 @@ COLLECTION_V0_ASSET = LoadJSONAsset(COLLECTION_V0_PATH)
 
 
 class CreateCollectionTest(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         """ Creates the demo collection using the upsert command """
 
         call_command('upsert_collection', COLLECTION_V0_PATH,
@@ -19,7 +21,7 @@ class CreateCollectionTest(TestCase):
 
         self.collection = Collection.objects.get(slug='z3zFunctions')
 
-    def test_delete_collection(self):
+    def test_delete_collection(self) -> None:
         """ Checks that delete_collection actually deletes a collection """
 
         self.collection.safe_delete()

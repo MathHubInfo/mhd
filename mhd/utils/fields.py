@@ -1,7 +1,15 @@
+from __future__ import annotations
+
 from django.db import models
 from rest_framework import serializers
 
-def get_standard_serializer_field(field):
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import Any
+    from django.db.models import Field
+    from rest_framework.serializers import Serializer
+
+def get_standard_serializer_field(field: Field) -> Serializer:
     """
         Given a field, returns the standardized DRF Serializer for it
     """
@@ -24,12 +32,12 @@ def get_standard_serializer_field(field):
     sfield, sargs = serializer.build_standard_field('value', field)
     return sfield(**sargs)
 
-def check_field_value(field, serializer, value):
+def check_field_value(field: Field, serializer: Serializer, value: Any):
     """ Checks if the given value for the given field is valid """
 
     serializer.to_internal_value(value)
 
-def reconstruct(field):
+def reconstruct(field: Field) -> Field:
     """ Deconstructs and Re-constructs a field """
 
     name, clz, args, kwargs = field.deconstruct()

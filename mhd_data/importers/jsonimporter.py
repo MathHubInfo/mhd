@@ -1,16 +1,26 @@
+from __future__ import annotations
+
 import ujson as json
 from collections import deque
 
 from .importer import DataImporter, ImporterError
 
 from mhd_schema.models import Collection
-from mhd_provenance.models import Provenance
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import List, Optional, Any
+    from .importer import ChunkType, ProvenanceType
 
 
 class JSONFileImporter(DataImporter):
     """ An importer that loads data from a set of json files """
 
-    def __init__(self, collection_slug, property_names, data_path, provenance_path, quiet, batch_size, chunk_size, write_sql):
+    _chunk_size: int
+    _files: deque
+    provenance_path: str
+
+    def __init__(self, collection_slug: str, property_names: List[str], data_path: str, provenance_path: str, quiet: bool, batch_size: Optional[int], chunk_size: int, write_sql: Optional[str]):
         # inner chunk size
         self._chunk_size = chunk_size
 
@@ -35,7 +45,7 @@ class JSONFileImporter(DataImporter):
         properties = [collection.get_property(pn) for pn in property_names]
         super().__init__(collection, properties, quiet, batch_size, write_sql)
 
-    def create_provenance(self):
+    def create_provenance(self) -> ProvenanceType:
         """
             Serializes provenance to be used by this importer.
         """
@@ -45,7 +55,7 @@ class JSONFileImporter(DataImporter):
 
         return prov
 
-    def get_next_chunk(self):
+    def get_next_chunk(self) -> Optional[ChunkType]:
         """
             Gets the next chunk of items from the import source.
             Should return None if no more chunks are left.
@@ -76,7 +86,7 @@ class JSONFileImporter(DataImporter):
 
         return {'data': c, 'meta': meta}
 
-    def _get_next_chunk(self):
+    def _get_next_chunk(self) -> Optional[ChunkType]:
         """
             Loads the next file representing a chunk from disk.
         """
@@ -106,7 +116,7 @@ class JSONFileImporter(DataImporter):
         # return the data
         return data
 
-    def get_chunk_column(self, chunk, property, idx):
+    def get_chunk_column(self, chunk: ChunkType, property: str, idx: int) -> List[Any]:
         """
             Returns an iterator for the given property of the given chunk of data.
             Should contain get_chunk_length(chunk) elements.
@@ -115,7 +125,7 @@ class JSONFileImporter(DataImporter):
 
         return [r[idx] for r in chunk['data']]
 
-    def get_chunk_length(self, chunk):
+    def get_chunk_length(self, chunk: ChunkType) -> int:
         """
             Gets the length of the given chunk.
             By default¸ simply calls len() on the chunk object,

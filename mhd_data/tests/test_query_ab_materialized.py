@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from mhd_tests.utils import db
 import json
 
@@ -26,13 +28,13 @@ class ABMaterializedCollectionTest(TestCase):
         The AB collection is mathematically meaningful.
     """
 
-    def setUp(self):
+    def setUp(self) -> None:
 
         self.collection = insert_testing_data(
             AB_COLLECTION_PATH, AB_DATA_PATH, AB_PROVENANCE_PATH, reset=True)
 
     @db.skipUnlessPostgres
-    def test_data_exists(self):
+    def test_data_exists(self) -> None:
         # create a materialized view
         self.collection.materializedViewName = 'mhd_materializedview_test'
         self.collection.sync_materialized_view()
@@ -43,7 +45,7 @@ class ABMaterializedCollectionTest(TestCase):
                              "check that the query for all properties returns all properties")
 
     @db.skipUnlessPostgres
-    def test_query_item_semantics(self):
+    def test_query_item_semantics(self) -> None:
         # create a materialized view
         self.collection.materializedViewName = 'mhd_materializedview_test'
         self.collection.sync_materialized_view()

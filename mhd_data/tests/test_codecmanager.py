@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django.test import TestCase
 
 from ..models import Codec, CodecManager
@@ -5,7 +7,7 @@ from ..models.codecs import StandardInt, StandardBool
 
 
 class CodecManagerTest(TestCase):
-    def test_find_all_codecs(self):
+    def test_find_all_codecs(self) -> None:
         """ Checks that all codecs returned by codec are indeed codecs """
 
         # find all codecs
@@ -25,7 +27,7 @@ class CodecManagerTest(TestCase):
             self.assertTrue(not codec._meta.abstract,
                             msg="CodecManager.find_all_codecs() returns only concrete models")
 
-    def test_find_codec(self):
+    def test_find_codec(self) -> None:
         """ Checks that find_codec behaves as expected """
 
         # existing codec
@@ -42,7 +44,7 @@ class CodecManagerTest(TestCase):
         self.assertIsNone(CodecManager.find_codec(
             "This-codec-doesnt-exist"), msg="does not find a non-existent codec")
 
-    def test_collect_operators(self):
+    def test_collect_operators(self) -> None:
         """ Checks that the collect_operators function works as expected """
 
         self.assertSetEqual(CodecManager.collect_operators(
@@ -52,7 +54,7 @@ class CodecManagerTest(TestCase):
                             set(['=', '<', '<=', '>', '>=', '!=']),
                             "Test that collecting int and bool operators works as expected")
 
-    def test_is_valid_operand(self):
+    def test_is_valid_operand(self) -> None:
         """ Checks the is_valid_operand methods """
 
         # StandardInt
@@ -67,7 +69,7 @@ class CodecManagerTest(TestCase):
         self.assertTrue(StandardBool.is_valid_operand(True),
                         "checks that True is a valid StandardBool operand")
 
-    def test_operations(self):
+    def test_operations(self) -> None:
         """ Checks that generating operations on StandardInt works properly """
 
         # operate left

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django.test import TestCase
 from rest_framework.test import APIClient
 
@@ -12,7 +14,7 @@ COLLECTION_V0_ASSET = LoadJSONAsset(COLLECTION_V0_PATH)
 
 
 class CreateCollectionTest(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         """ Creates the demo collection using the upsert command """
 
         call_command('upsert_collection', COLLECTION_V0_PATH,
@@ -20,7 +22,7 @@ class CreateCollectionTest(TestCase):
 
         self.collection = Collection.objects.get(slug='z3zFunctions')
 
-    def test_api_all_collections(self):
+    def test_api_all_collections(self) -> None:
         """ Checks that the demo collection is the only item in the list of collections """
 
         response = APIClient().get('/api/schema/collections/')

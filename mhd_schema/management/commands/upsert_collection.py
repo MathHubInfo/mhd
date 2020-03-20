@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import json
 from mhd.utils import with_simulate_arg
 
@@ -5,11 +7,16 @@ from django.core.management.base import BaseCommand
 
 from ...importer import SchemaImporter
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import Any
+    from argparse import ArgumentParser
+
 
 class Command(BaseCommand):
     help = 'Creates or updates a collection. '
 
-    def add_arguments(self, parser):
+    def add_arguments(self, parser: ArgumentParser) -> None:
         parser.add_argument(
             'filename', help=".json file with serialized collection data")
         parser.add_argument('--update', '-u', dest='update', action='store_true',
@@ -20,7 +27,7 @@ class Command(BaseCommand):
                     help="Simulate all database operations by wrapping them in a transaction and rolling it back at the end of the command. ")
 
     @with_simulate_arg
-    def handle(self, *args, **kwargs):
+    def handle(self, *args: Any, **kwargs: Any) -> None:
         # open the file and read json
         data = None
         with open(kwargs['filename']) as f:
