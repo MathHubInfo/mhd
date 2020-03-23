@@ -27,6 +27,7 @@ ADD mhd_provenance/ /app/mhd_provenance/
 ADD mhd_schema/ /app/mhd_schema/
 ADD mhd_tests/ /app/mhd_tests/
 ADD mddl_catalog/ /app/mddl_catalog/
+ADD mviews/ /app/mviews/
 
 ### ALL THE CONFIGURATION
 

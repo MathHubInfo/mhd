@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'mhd_provenance',
     'mddl_catalog',
     'rest_framework',
+    'mviews',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -150,6 +151,9 @@ USE_TZ = True
 
 # we only have static files for the admin site
 STATIC_URL = '/admin/static/'
+
+# buildpath used (only used in development)
+WEBPACK_BUILD_PATH = os.path.join(BASE_DIR, 'frontend', 'build')
 
 # Log everything of info and above to STDOUT at all times
 LOGGING = {

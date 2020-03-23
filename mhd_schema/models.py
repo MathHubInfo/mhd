@@ -1,7 +1,9 @@
 from __future__ import annotations
 
-from mhd.utils import ModelWithMetadata, QuerySetLike, MaterializedView
-from django.db import models, transaction
+from mhd.utils import ModelWithMetadata, QuerySetLike
+from mviews.models import View
+from django.db import models, transaction, connection
+from django.db.models.signals import post_save
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -42,8 +44,8 @@ class Collection(ModelWithMetadata):
     count_frozen: bool = models.BooleanField(
         default=False, help_text="When set to true, freeze the count of this collection")
 
-    materializedViewName: Optional[str] = models.SlugField(
-        help_text="Name for the materialized view of this collection (if any)", unique=True, null=True, blank=True)
+    viewName: Optional[str] = models.SlugField(
+        help_text="Name for the (potentially materialized) view of this collection (if any)", unique=True, null=True, blank=True)
 
     def update_count(self) -> int:
         """ Updates the count of items in this collection iff it is not frozen """
@@ -112,9 +114,9 @@ class Collection(ModelWithMetadata):
             properties = self.properties()
 
         # check if we have a materialized view
-        mview = self.materialized_view
-        if mview is not None:
-            use_view = mview.name
+        view = self.view
+        if view is not None:
+            use_view = view.name
         else:
             use_view = None
 
@@ -143,10 +145,10 @@ class Collection(ModelWithMetadata):
         if properties is None:
             properties = self.properties()
 
-        # check if we have a materialized view
-        mview = self.materialized_view
-        if mview is not None:
-            use_view = mview.name
+        # check if we have a view
+        view = self.view
+        if view is not None:
+            use_view = view.name
         else:
             use_view = None
 
@@ -164,31 +166,16 @@ class Collection(ModelWithMetadata):
         # and return it
         return QuerySetLike(sql, sql_args)
 
-    def sync_materialized_view(self) -> bool:
-        """ Syncronizes this materialized view with the database """
-
-        # if we have a materialized view object, get it
-        view = self.materialized_view
-        if not view:
-            return False
-
-        # and syncronize it
-        from django.db import connection
-        with connection.cursor() as cursor:
-            view.sync(connection, cursor)
-
-        return True
-
     @property
-    def materialized_view(self) -> MaterializedView:
-        """ Returns the materialized view for a given collection """
+    def view(self) -> Optional[View]:
+        """ Returns the view for this collection """
 
         # if we do not have a name for the materialized view, don't use it
-        if not self.materializedViewName:
+        if not self.viewName:
             return None
 
-        mview_sql, mview_sql_args = self._query_builder.join_builder()
-        return MaterializedView(self.materializedViewName, mview_sql, mview_sql_args)
+        mview_sql, mview_sql_params = self._query_builder.join_builder()
+        return View.make_view(self.viewName, mview_sql, mview_sql_params, materialized=View.supports_materialization(connection))
 
     def semantic(self, *args: Any, **kwargs: Any) -> Iterable[OrderedDict]:
         """ Same as running .query() and calling .semantic() on each returned value """
@@ -241,6 +228,14 @@ class Collection(ModelWithMetadata):
         # clear all the orphaned items
         from mhd_data.models import Item
         Item.objects.filter(collections=None).delete()
+
+def collection_save(sender: Type[Collection], instance: Collection, **kwargs: Any) -> None:
+    """ Creates the view of a collection """
+    view = instance.view
+    if view is not None:
+        view.save()
+
+post_save.connect(collection_save, sender=Collection)
 
 
 class CollectionNotEmpty(Exception):
@@ -305,7 +300,6 @@ class Property(ModelWithMetadata):
         """ Returns a bool indicating if this property has any values """
 
         return self.values(collection=collection).exists()
-
 
 class PropertyCollectionMembership(models.Model):
     class Meta:

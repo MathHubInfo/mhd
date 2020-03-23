@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from django.conf import settings
+from django.views.static import serve as file_serve
+
 from django.http import HttpResponse, Http404
 from django.views import View
 
@@ -16,17 +18,19 @@ if TYPE_CHECKING:
 
 class FrontendProxyView(View):
     def get(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+
+        # if we can't find what we are looking for, then return nothing
         if not self.is_found(request, *args, **kwargs):
             raise Http404
 
+        if settings.DEBUG:
+            return file_serve(request, path='index.html', document_root=settings.WEBPACK_BUILD_PATH)
+
+        # for production simply return index.html
         res = HttpResponse()
         res['X-Sendfile'] = '/index.html'
 
-        # in debugging mode, print a message to show what is expected to happen
-        if settings.DEBUG:
-            res['Content-Type'] = 'text/html'
-            res.write('X-Sendfile /index.html<br/>(In production this will be replaced with index.html')
-
+        # retturn the response
         return res
 
     def is_found(self, *args: Any, **kwargs: Any) -> bool:

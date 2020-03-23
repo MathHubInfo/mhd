@@ -39,7 +39,7 @@ export class MHDBackendClient {
 
     /** Fetches information about a collection with the given name or rejects */
     async fetchCollection(name: string): Promise<ParsedMHDCollection> {
-        const collection = await this.fetchJSON<TMHDCollection>(`/schema/collections/${name}`);
+        const collection = await this.fetchJSON<TMHDCollection>(`/schema/collections/${name}/`);
         return this.parseCollection(collection);
     }
 
@@ -98,7 +98,7 @@ export class MHDBackendClient {
         };
 
         // fetch the results
-        return this.fetchJSON<TDRFPagedResponse<TMHDItem<T>>>(`/query/${collection.slug}`, params);
+        return this.fetchJSON<TDRFPagedResponse<TMHDItem<T>>>(`/query/${collection.slug}/`, params);
     }
 
     /** hashes the parameters to the fetchItems function */
@@ -122,7 +122,7 @@ export class MHDBackendClient {
         };
 
         // fetch the results
-        const res = await this.fetchJSON<TDRFPagedResponse<{count: number}>>(`/query/${collection.slug}/count`, params);
+        const res = await this.fetchJSON<TDRFPagedResponse<{count: number}>>(`/query/${collection.slug}/count/`, params);
         return res.count;
     }
 
