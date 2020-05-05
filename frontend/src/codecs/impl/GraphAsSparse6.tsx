@@ -25,12 +25,34 @@ class GraphAsSparse6Cell extends React.Component<TCellProps<GraphAsSparse6, stri
         const { value } = this.props;
         if (value === null) return null;
 
+        // split the encoding into a pair (graph6, coordinates-json)
+        // if we have a ";", the second part is assumed to be a json of edge -> [number, number]
+        let graphString: string;
+        let coordinateString: string;
+        if(value.indexOf(";") !== -1) {
+            graphString = value.split(";")[0];
+            coordinateString = value.split(";")[1];
+        } else {
+            graphString = value;
+            coordinateString = "";
+        }
+
         // decode the graph
-        const graph = Sparse6toEdgeList(value);
+        const graph = Sparse6toEdgeList(graphString);
         if (graph === undefined) return null;
+
+        // decode the coordinates
+        let coordinates: {[node: number]: [number, number]} | undefined;
+        if(coordinateString !== "") {
+            try {
+                coordinates = JSON.parse(coordinateString);
+            } catch(e) {
+                console.warn("Unable to parse GraphAsSparse6 coordinates, will use a force-based-layout. ", e);
+            }
+        }
 
         if(graph.nodes > GraphAsSparse6Cell.MAX_RENDER_ORDER) return `Graph with ${graph.nodes} nodes and ${2 * graph.edges.length} edges`;
         
-        return <D3ForceGraph strength={-50} style={{width: 200, height: 200, innerNodeRadius: 1, outerNodeRadius: 5}} graph={graph}/>;
+        return <D3ForceGraph strength={-50} style={{width: 200, height: 200, innerNodeRadius: 1, outerNodeRadius: 5}} graph={graph} coordinates={coordinates}/>;
     }
 }

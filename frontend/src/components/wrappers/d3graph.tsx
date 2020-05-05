@@ -20,9 +20,12 @@ interface D3GraphStyle {
     labelClass: string;
 }
 
-interface D3ForceGraphProps {
+interface D3GraphProps {
     /** graph being rendered */
     graph: Graph
+
+    /** coordinates of each node (if any) */
+    coordinates?: { [key: number]: [number, number] }
 
     /** Attraction strength between the different nodes. Defaults to 400 */
     strength?: number;
@@ -33,9 +36,9 @@ interface D3ForceGraphProps {
 /**
  * A component that renders a graph of nodes and edges using a force-based layout. 
  */
-export default class D3ForceGraph extends React.Component<D3ForceGraphProps> {
+export default class D3Graph extends React.Component<D3GraphProps> {
 
-    private static getProps({ graph, strength = -100, style: css = {} }: D3ForceGraphProps): D3GraphInstanceProps {
+    private static getProps({ graph, strength = -100, style: css = {}, coordinates }: D3GraphProps): D3GraphInstanceProps {
         const {
             width = 100, height = 100,
 
@@ -48,6 +51,7 @@ export default class D3ForceGraph extends React.Component<D3ForceGraphProps> {
 
         return {
             graph,
+            coordinates,
             strength,
             style: {
                 width,
@@ -65,6 +69,7 @@ export default class D3ForceGraph extends React.Component<D3ForceGraphProps> {
 
     private static getKey({
         graph: { nodes, edges },
+        coordinates,
         strength,
         style: {
             width,
@@ -78,19 +83,29 @@ export default class D3ForceGraph extends React.Component<D3ForceGraphProps> {
             labelClass,
         }
     }: D3GraphInstanceProps): string {
-        return JSON.stringify([nodes, edges, strength, width, height, outerNodeRadius, innerNodeRadius, nodeClass, linkClass, labelClass])
+        return JSON.stringify([nodes, edges, coordinates, strength, width, height, outerNodeRadius, innerNodeRadius, nodeClass, linkClass, labelClass])
     }
 
     render() {
-        const props = D3ForceGraph.getProps(this.props);
-        const key = D3ForceGraph.getKey(props);
-        return <D3GraphInstance {...props} key={key} />;
+        const props = D3Graph.getProps(this.props);
+        const key = D3Graph.getKey(props);
+        const { coordinates } = props;
+
+        // if we were given coordinates, we don't run a force-layout simulation
+        if (coordinates !== undefined) {
+            return <D3FixedLayoutInstance {...props} coordinates={coordinates} key={key} />;
+
+            // if we weren't we should run such a simulation
+        } else {
+            return <D3ForceLayoutInstance {...props} coordinates={coordinates} key={key} />;
+        }
     }
 }
 
 interface D3GraphInstanceProps {
     /** graph being rendered */
-    graph: Graph
+    graph: Graph;
+    coordinates?: { [key: number]: [number, number] };
     strength: number;
     style: D3GraphStyle;
 }
@@ -100,8 +115,77 @@ interface D3Node extends d3.SimulationNodeDatum {
 }
 interface D3Link extends d3.SimulationLinkDatum<D3Node> { }
 
+class D3FixedLayoutInstance extends React.Component<D3GraphInstanceProps & {
+    coordinates: { [key: number]: [number, number] };
+}> {
+    private divElement = React.createRef<HTMLDivElement>();
 
-class D3GraphInstance extends React.Component<D3GraphInstanceProps> {
+    private simulationNodes: D3Node[] = [];
+    private simulationLinks: D3Link[] = [];
+
+    private svg: d3.Selection<SVGSVGElement, unknown, null, undefined> | undefined;
+    private link: d3.Selection<SVGLineElement, D3Link, SVGGElement, unknown> | undefined;
+    private node: d3.Selection<SVGCircleElement, D3Node, SVGGElement, unknown> | undefined;
+    private label: d3.Selection<SVGTextElement, D3Node, SVGGElement, unknown> | undefined;
+
+    componentDidMount() {
+        const { style: { width, height, innerNodeRadius, nodeClass, linkClass, labelClass }, graph: { nodes, edges }, coordinates } = this.props;
+
+        this.simulationNodes = Array.from(new Array(nodes).keys()).map((_, i) => ({ id: i, x: (coordinates[i] || [0, 0])[0], y: (coordinates[i] || [0, 0])[1] }));
+        this.simulationLinks = edges.map(v => ({ source: v[0], target: v[1] }));
+
+        this.svg =
+            d3.select(this.divElement.current).append("svg")
+                .attr("width", width)
+                .attr("height", height);
+
+        this.link = this.svg.append("g")
+            .attr("class", linkClass)
+            .selectAll("line")
+            .data(this.simulationLinks)
+            .enter().append("line");
+
+        this.node = this.svg.append("g")
+            .attr("class", nodeClass)
+            .selectAll("circle")
+            .data(this.simulationNodes)
+            .enter().append("circle")
+            .attr("r", innerNodeRadius);
+
+        this.label = this.svg.append("g")
+            .selectAll("text")
+            .data(this.simulationNodes)
+            .enter().append("text")
+            .attr("class", labelClass)
+            .text(d => '' + d.id);
+    }
+
+    componentWillUnmount() {
+        // remove all of the elements
+        if (this.label) this.label.remove();
+        this.label = undefined;
+
+        if (this.node) this.node.remove();
+        this.node = undefined;
+
+        if (this.link) this.link.remove();
+        this.link = undefined;
+
+        if (this.svg) this.svg.remove();
+        this.svg = undefined;
+
+        // empty the arrays
+        this.simulationLinks = [];
+        this.simulationNodes = [];
+    }
+
+
+    render() {
+        return <div ref={this.divElement} />;
+    }
+}
+
+class D3ForceLayoutInstance extends React.Component<D3GraphInstanceProps & { coordinates?: undefined }> {
     private divElement = React.createRef<HTMLDivElement>();
 
     private simulationNodes: D3Node[] = [];
@@ -171,8 +255,8 @@ class D3GraphInstance extends React.Component<D3GraphInstanceProps> {
             .attr("r", outerNodeRadius)
             .attr("cx", d => d.x! + innerNodeRadius)
             .attr("cy", d => d.y! - innerNodeRadius);
-        
-            this.link
+
+        this.link
             .attr("x1", d => (d.source as D3Node).x!)
             .attr("y1", d => (d.source as D3Node).y!)
             .attr("x2", d => (d.target as D3Node).x!)
