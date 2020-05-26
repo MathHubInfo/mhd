@@ -111,7 +111,7 @@ export default abstract class Codec<ElementType = any, FilterType = string> {
     protected abstract readonly _filterViewerComponent: ReactComponent<TFilterViewerProps<any, ElementType, FilterType>> | null;
 
     filterViewerComponent(): ReactComponent<TFilterViewerProps<any, ElementType, FilterType>> {
-        return this._filterViewerComponent || UnsupportedFilter;
+        return this._filterViewerComponent || UnsupportedFilterViewer;
     }
 
     /**
@@ -120,7 +120,7 @@ export default abstract class Codec<ElementType = any, FilterType = string> {
     protected abstract readonly _filterEditorComponent: ReactComponent<TFilterEditorProps<any, ElementType, FilterType>> | null;
 
     filterEditorComponent(): ReactComponent<TFilterEditorProps<any, ElementType, FilterType>> {
-        return this._filterEditorComponent || UnsupportedFilter;
+        return this._filterEditorComponent || UnsupportedFilterEditor;
     }
 }
 
@@ -132,10 +132,10 @@ export class Fallback extends Codec<any, null> {
 
     readonly ordered: boolean = false;
 
-    readonly cellComponent = FallbackElement;
+    readonly cellComponent = FallbackCell;
 
-    readonly _filterViewerComponent = FallbackElement;
-    readonly _filterEditorComponent = FallbackElement;
+    readonly _filterViewerComponent = null;
+    readonly _filterEditorComponent = null;
 
     parseFilterValue() {
         return null;
@@ -146,7 +146,7 @@ export class Fallback extends Codec<any, null> {
     }
 }
 
-class FallbackElement<T> extends React.Component<{codec: Codec<any, any>} & T> {
+class FallbackCell extends React.Component<TCellProps<any, any, null>> {
     render() {
         const { children, codec } = this.props;
         
@@ -157,7 +157,17 @@ class FallbackElement<T> extends React.Component<{codec: Codec<any, any>} & T> {
     }
 }
 
-class UnsupportedFilter<T> extends React.Component<{codec: Codec<any, null>} & T> {
+class UnsupportedFilterViewer<ElementType, FilterType> extends React.Component<TFilterViewerProps<any, ElementType, FilterType>> {
+    render() {
+        const { children, codec } = this.props;
+        return <>
+            { children }
+            <Badge color="danger">Filters for {codec.slug} is not supported</Badge>;
+        </>;
+    }
+}
+
+class UnsupportedFilterEditor<ElementType, FilterType> extends React.Component<TFilterEditorProps<any, ElementType, FilterType>> {
     render() {
         const { children, codec } = this.props;
         return <>
