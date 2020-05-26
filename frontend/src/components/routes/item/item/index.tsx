@@ -30,7 +30,7 @@ export default class MHDItemView extends React.Component<MHDItemViewProps> {
             </tr>
         });
 
-        return <MHDMain title={`Item ${item._id}`}>
+        return <MHDMain title={`Item ${item._id}`} wide={true}>
             <Container>
                 <Row>
                     <Col sm="12">
