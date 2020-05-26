@@ -4,18 +4,17 @@ import App from './App';
 import { BrowserRouter } from 'react-router-dom';
 import * as serviceWorker from './serviceWorker';
 
-
 // load the required fonts
-require('typeface-cormorant-garamond');
-require('typeface-cormorant-unicase');
-require('typeface-montserrat');
+import 'typeface-cormorant-garamond';
+import 'typeface-cormorant-unicase';
+import 'typeface-montserrat';
 
 // load custom styles
-require('./css/bootstrapMHD.scss');
-require('katex/dist/katex.min.css');
+import './css/bootstrapMHD.scss';
+import 'katex/dist/katex.min.css';
 
 // load font-awesome
-require('@fortawesome/fontawesome-free/js/all.js');
+import '@fortawesome/fontawesome-free/js/all.js';
 
 
 // and render the app
