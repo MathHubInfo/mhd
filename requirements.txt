@@ -1,4 +1,4 @@
-Django==2.2.11
+Django==2.2.13
 djangorestframework==3.11.0
 pre-js-py==1.2.0
 django-cors-headers==3.2.1
