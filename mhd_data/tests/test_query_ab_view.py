@@ -36,7 +36,7 @@ class ABCollectionWithViewTest(TestCase):
             AB_COLLECTION_PATH, AB_DATA_PATH, AB_PROVENANCE_PATH, reset=True)
 
         # enable the view and refresh from the db
-        management.call_command('collection_view', self.collection.slug, '--enable', '--sync', enable=True, sync=True)
+        management.call_command('collection_view', self.collection.slug, '--enable', '--sync')
         self.collection.refresh_from_db()
 
     def test_sql_uses_view(self) -> None:
