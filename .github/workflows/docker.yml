@@ -1,0 +1,12 @@
+name: Docker
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build the Docker Image
+
+    steps:
+    - uses: actions/checkout@v2
+    - run: docker build -t mathhub/mhd .

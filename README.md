@@ -1,6 +1,8 @@
 # MathDataHub
 
-[![Build Status](https://travis-ci.com/MathHubInfo/mhd.svg?branch=master)](https://travis-ci.com/MathHubInfo/mhd)
+Frontend: ![Frontend Tests](https://github.com/MathHubInfo/mdh/workflows/Frontend/badge.svg)  
+Backend: ![Backend Tests](https://github.com/MathHubInfo/mdh/workflows/Backend/badge.svg)  
+Docker: ![Docker Tests](https://github.com/MathHubInfo/mdh/workflows/Docker/badge.svg)  
 
 MathDataHub is a system to provide universal infrastructure for Mathematical Data.
 See the paper [Towards a Unified Mathematical Data Infrastructure: Database and Interface Generation](https://kwarc.info/people/mkohlhase/papers/cicm19-MDH.pdf)
@@ -191,7 +193,7 @@ In addition round brackets can be used for grouping.
 
 ## Tests & Code Style
 
-For the backend, tests for every important feature exist, and are run by Travis CI on every commit.
+For the backend, tests for every important feature exist, and are run by GitHub Actions on every commit.
 Note that tests are run both on `sqlite` and `postgres`.
 
 To be able to run the tests, you first need to install the development dependencies:

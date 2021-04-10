@@ -1,0 +1,48 @@
+name: Backend
+
+on: [push,pull_request]
+
+
+jobs:
+  test:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.8]
+        database-backend: [ sqlite, postgres ]
+
+    services:
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ''
+          POSTGRES_HOST_AUTH_METHOD: trust
+          POSTGRES_DB: postgres
+        ports:
+          - "5432:5432"
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    name: Python ${{ matrix.python-version }} / ${{ matrix.database-backend }}
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install -r requirements.txt
+        python -m pip install -r requirements-dev.txt
+    - name: Test with pytest
+      env:
+        POSTGRES_HOSTNAME: postgres
+        DATABASE: ${{ matrix.database-backend }}
+      run: |
+        pytest -v
