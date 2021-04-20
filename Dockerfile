@@ -13,7 +13,7 @@ ADD requirements.txt /app/
 ADD requirements-prod.txt /app/
 
 # Add dependencies
-RUN mkdir -p /var/www/admin/static/ \
+RUN mkdir -p /var/www/api/admin/static/ \
     && apk add --no-cache bash postgresql-libs postgresql-client pcre-dev libffi-dev mailcap \
     && apk add --no-cache --virtual .build-deps gcc g++ musl-dev postgresql-dev linux-headers python3-dev \
     && pip install -r requirements.txt -r requirements-prod.txt --no-cache-dir \

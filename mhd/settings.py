@@ -150,7 +150,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 # we only have static files for the admin site
-STATIC_URL = '/admin/static/'
+STATIC_URL = '/api/admin/static/'
 
 # buildpath used (only used in development)
 WEBPACK_BUILD_PATH = os.path.join(BASE_DIR, 'frontend', 'build')

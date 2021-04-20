@@ -28,4 +28,4 @@ DATABASES = {
 }
 
 # add the static files to the root
-STATIC_ROOT = "/var/www/admin/static/"
+STATIC_ROOT = "/var/www/api/admin/static/"

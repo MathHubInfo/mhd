@@ -13,7 +13,7 @@ urlpatterns = [
     path('api/query/<slug:cid>/count/', CountQueryView.as_view()),
     path('api/item/<slug:cid>/<slug:uuid>/', ItemView.as_view()),
     path('api/schema/', include(schema_router.urls)),
-    path('admin/', admin.site.urls),
+    path('api/admin/', admin.site.urls),
 
     # frontend-served urls, caught by uwsgi in production
     path('collection/<slug:cid>/', FrontendCollectionView.as_view()),
@@ -25,7 +25,6 @@ urlpatterns = [
 
 # in debugging mode, mixin webpack_build_path
 if settings.DEBUG:
-    from os.path import dirname, join
     from django.views.static import serve as dir_serve
     from django.urls import re_path
 

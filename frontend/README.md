@@ -22,7 +22,7 @@ The frontend reacts to the following routes:
 If furthermore expects the backend routes to be available:
 
 - `/api/`: for all api requests
-- `/admin/`: if admin login is enabled
+- `/api/admin/`: if admin login is enabled
 
 This implies that frontend and backend are served under the same url. 
 
