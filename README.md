@@ -213,6 +213,16 @@ This enforces [PEP8](https://pep8.readthedocs.io)-compliance except for maximum 
 Additionally, a test-only app exists with specific models only used during testing.
 To manually enable for local development add `USE_TEST_APP = True` to `mhd/local_settings.py`.
 
+## Adding A New Codec
+
+### Backend
+
+In `mhd_data/models/codecs` add a class (in its own file) extending the abstract class Codec and a line in `__init__.py`
+
+### Frontend
+
+In `frontend/src/codecs/impl` add a class extending the React class Codec. 
+
 ## Data Examples
 
 ### Z3Z Functions

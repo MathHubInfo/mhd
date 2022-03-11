@@ -3,6 +3,7 @@ from .standardbool import StandardBool
 from .standardstring import StandardString
 from .standardjson import StandardJSON
 from .polynomialassparsearray import PolynomialAsSparseArray
+from .factorizationassparsearray import FactorizationAsSparseArray
 
 # codec operators
 from . import matrixaslist
