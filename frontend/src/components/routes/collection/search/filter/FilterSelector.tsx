@@ -223,7 +223,7 @@ class SelectedFilter<S = any, T = any> extends React.Component<TSelectedFilterPr
         // validate using the codec
         try {
             return codec.cleanFilterValue(internalValue, lastValue || undefined )
-        } catch(e) {
+        } catch(e: any) {
             return { valid: false, message: (e || "").toString()};
         }
     }
