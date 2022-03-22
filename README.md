@@ -41,7 +41,7 @@ pip install -r requirements.txt
 
 ## Development
 
-** To run this, you need Python 3.7+. We recommend using Python 3.8. **
+** To run this, you need Python 3.7+. We recommend using Python 3.10. **
 
 By default, MathDataHub uses an `sqlite` database.
 To get started, you can run the initial migrations:

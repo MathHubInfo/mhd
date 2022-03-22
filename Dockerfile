@@ -5,7 +5,7 @@ ADD frontend .
 RUN yarn && yarn build
 
 # Stage 2: Build the backend + add the frontend to it
-FROM python:3.8-alpine
+FROM python:3.10-alpine
 
 # Add requirements and install dependencies
 WORKDIR /app/
