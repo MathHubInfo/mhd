@@ -1,5 +1,5 @@
 # Stage 1: Build the frontend
-FROM node:12 as frontend
+FROM node:16 as frontend
 WORKDIR /app/frontend/
 ADD frontend .
 RUN yarn && yarn build
