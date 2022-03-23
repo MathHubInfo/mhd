@@ -252,6 +252,7 @@ class Property(ModelWithMetadata):
             models.Index(fields=['slug']),
         ]
         ordering = ['id']
+        verbose_name_plural = 'Properties'
 
     displayName: str = models.TextField(help_text="Display Name for this property")
     slug: str = models.SlugField(help_text="Identifier of this Collection")
