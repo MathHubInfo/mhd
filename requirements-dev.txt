@@ -1,6 +1,6 @@
-pycodestyle==2.6.0
+pycodestyle==2.8.0
 pytest==7.1.1
-zipp==3.1.0
-pytest-django==3.9.0
-autopep8==1.5.4
-pylint==2.5.3
+zipp==3.7.0
+pytest-django==4.5.2
+autopep8==1.6.0
+pylint==2.12.1

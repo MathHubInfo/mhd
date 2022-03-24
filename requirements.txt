@@ -1,7 +1,7 @@
-Django==3.0.14
-djangorestframework==3.11.2
+Django==3.1.14
+djangorestframework==3.13.1
 pre-js-py==1.2.0
-django-cors-headers==3.4.0
-tqdm==4.48.2
-psycopg2cffi==2.8.1
-ujson==3.1.0
+django-cors-headers==3.11.0
+tqdm==4.63.1
+psycopg2cffi==2.9.0
+ujson==5.1.0
