@@ -2,7 +2,7 @@
 FROM node:16 as frontend
 WORKDIR /app/frontend/
 ADD frontend .
-RUN yarn && yarn build
+RUN yarn --frozen-lockfile && yarn build
 
 # Stage 2: Build the backend + add the frontend to it
 FROM python:3.10-alpine
