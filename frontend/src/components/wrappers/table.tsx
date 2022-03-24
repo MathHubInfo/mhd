@@ -56,7 +56,7 @@ export interface TableState {
 /**
  * The table component is a fully-controlled React-Table Component. 
  */
-export default class Table<D, H = undefined> extends React.Component<TableProps<D>> {
+export default class Table<D> extends React.Component<TableProps<D>> {
 
     private tableRef = React.createRef<HTMLTableElement>();
     private resizer: ColumnResizer | undefined;

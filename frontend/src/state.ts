@@ -30,7 +30,7 @@ function stringToValue(value: string): any {
 /**
  * (Potentially lossy) encoding of state into the URL
  */
-export function encodeState<T>(state: MHDCollectionSearchState) {
+export function encodeState(state: MHDCollectionSearchState) {
     return Object.entries({...state, widths: undefined}).map(
         ([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(valueToString(v))}`
     ).join('&');
