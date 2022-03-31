@@ -1,5 +1,7 @@
 import React from 'react';
-import Table, { TableState, TableColumn, CellComponentProps } from "../../wrappers/table";
+import Table, { TableState, TableColumn, CellComponentProps } from "../src/components/wrappers/table";
+
+// TODO: Consider making this page debug only
 
 class Header extends React.Component<{column: TableColumn<any>}> {
     render() {
@@ -30,7 +32,6 @@ export default class DebugComponent extends React.Component<{}, DebugTableState>
     }
     
     private onTableStateChange = (newState: TableState) => {
-        console.log("new state", newState);
         this.setState({table: newState});
     }
 

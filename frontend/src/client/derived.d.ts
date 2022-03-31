@@ -1,5 +1,6 @@
 import {TMHDCollection, TMHDProperty, TMHDPreFilter} from './rest';
 import Codec from "../codecs/codec";
+import { TableColumn } from "../components/wrappers/table";
 
 /**
  * A parsed collection with all derived information needed by any component anywhere
@@ -21,11 +22,13 @@ export interface ParsedMHDCollection extends TMHDCollection {
     codecMap: Map<string, Codec<any, any>>
 
     /** columns of this property */
-    columnMap: Map<string, Column<any>>
+    columnMap: Map<string, TableColumn<any>>
 }
 
 /** a single instantiated filter */
 export interface MHDFilter {
     slug: string;
+    uid: number;
+    initial: boolean;
     value: string | null;
 }

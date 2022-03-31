@@ -1,6 +1,6 @@
-import {encodeState, decodeState, MHDCollectionSearchState} from './state';
+import {encodeState, decodeState, PageState} from './state';
 
-const states: MHDCollectionSearchState[] = [
+const states: PageState[] = [
     {filters: [], columns: ["test"], widths: undefined, page: 1, per_page: 20}
 ];
 

@@ -5,9 +5,6 @@ import { ParsedMHDCollection, MHDFilter } from '../../../../../client/derived';
 import { TMHDPreFilter } from "../../../../../client/rest";
 
 interface CounterDisplayProps {
-    /** the backend  */
-    client: MHDBackendClient;
-
     /** the current collection (if any) */
     collection: ParsedMHDCollection;
 
@@ -66,7 +63,7 @@ export default class CounterDisplay extends React.Component<CounterDisplayProps,
         // fallback to 'NaN' when an error occurs, and log the error during development
         let count = NaN;
         try {
-            count = await this.props.client.fetchItemCount(this.props.collection, this.props.pre_filter, this.props.filters);
+            count = await MHDBackendClient.getInstance().fetchItemCount(this.props.collection, this.props.pre_filter, this.props.filters);
         } catch (e) {
             if (process.env.NODE_ENV !== 'production') console.error(e);
         }

@@ -3,13 +3,10 @@ import { MHDBackendClient } from "../../../../../client";
 import { MHDFilter, ParsedMHDCollection } from "../../../../../client/derived";
 import { TDRFPagedResponse, TMHDItem, TMHDPreFilter } from "../../../../../client/rest";
 import { Row, Col, Spinner } from "reactstrap";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import Table, { TableColumn, TableState } from "../../../../wrappers/table";
 
 interface ResultsTableProps extends TableState {
-    /** backend client */
-    client: MHDBackendClient;
-
     /** the current collection */
     collection: ParsedMHDCollection;
 
@@ -97,7 +94,7 @@ export default class ResultsTable extends Component<ResultsTableProps, ResultsTa
         // fetch the results with appropriate errors
         let results: TDRFPagedResponse<TMHDItem<{}>> = {count: 0, next: null, previous: null, num_pages: -1, results: []};
         try {
-            results = await this.props.client.fetchItems(collection, columns, pre_filter, filters, page + 1, per_page)
+            results = await MHDBackendClient.getInstance().fetchItems(collection, columns, pre_filter, filters, page + 1, per_page)
         } catch (e) {
             if (process.env.NODE_ENV !== 'production') console.error(e);
         }
@@ -114,7 +111,7 @@ export default class ResultsTable extends Component<ResultsTableProps, ResultsTa
                 Cell: ({data}: TMHDItem<any>) => <ItemLink collection={this.props.collection} uuid={data._id}/>,
                 Header: () => "",
                 width: 50,
-            })
+            } as unknown as TableColumn<any>)
 
             return {
                 last_update: time,
@@ -190,8 +187,10 @@ class ItemLink extends React.Component<{collection: ParsedMHDCollection, uuid: s
     render() {
         const { collection, uuid } = this.props;
         return (
-            <Link to={`/item/${collection.slug}/${uuid}/`} target="_blank">
-                <i className="fa fa-info-circle" data-fa-transform="shrink-4 up-3"></i>
+            <Link href={`/item/${collection.slug}/${uuid}/`}>
+                <a target="_blank">
+                    <i className="fa fa-info-circle" data-fa-transform="shrink-4 up-3"></i>
+                </a>
             </Link>
         )
     }

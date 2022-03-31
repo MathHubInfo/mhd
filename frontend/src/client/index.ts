@@ -11,6 +11,16 @@ export class MHDBackendClient {
      */
     constructor(public base_url: string, public manager: CodecManager) { }
 
+    private static instance: MHDBackendClient;
+    static getInstance(): MHDBackendClient {
+        if (MHDBackendClient.instance) {
+            return MHDBackendClient.instance;
+        }
+        const base_url = (typeof window === "undefined") ? process.env.DJANGO_URL + "/api" : `/api`;
+        MHDBackendClient.instance = new MHDBackendClient(base_url, CodecManager.getInstance());
+        return MHDBackendClient.instance;
+    }
+
     /**
      * Fetches json data from the api given the url and provided parameters. 
      * Rejects when the request fails
@@ -38,13 +48,12 @@ export class MHDBackendClient {
     }
 
     /** Fetches information about a collection with the given name or rejects */
-    async fetchCollection(name: string): Promise<ParsedMHDCollection> {
-        const collection = await this.fetchJSON<TMHDCollection>(`/schema/collections/${name}/`);
-        return this.parseCollection(collection);
+    async fetchCollection(name: string): Promise<TMHDCollection> {
+        return this.fetchJSON<TMHDCollection>(`/schema/collections/${name}/`);
     }
 
     /** Fetches information about a collection and an item within the collection */
-    async fetchCollectionAndItem(name: string, id: string): Promise<[ParsedMHDCollection, TMHDItem<{}>]> {
+    async fetchCollectionAndItem(name: string, id: string): Promise<[TMHDCollection, TMHDItem<{}>]> {
         return Promise.all([
             this.fetchCollection(name),
             this.fetchJSON<TMHDItem<{}>>(`/item/${name}/${id}/`)
@@ -60,7 +69,7 @@ export class MHDBackendClient {
     }
 
     /** parses a collection and prepares appropriate derived values */
-    private parseCollection(collection: TMHDCollection): ParsedMHDCollection {
+    parseCollection(collection: TMHDCollection): ParsedMHDCollection {
 
         const propMap = new Map<string, TMHDProperty>();
         const nameMap = new Map<string, string>();
@@ -82,7 +91,6 @@ export class MHDBackendClient {
         });
 
         const defaultPreFilter = (collection.preFilters.length > 0) ? collection.preFilters[0] : undefined;
-        console.log(defaultPreFilter);
         return { propMap, nameMap, propertySlugs, codecMap, columnMap, defaultPreFilter, ...collection };
     }
 

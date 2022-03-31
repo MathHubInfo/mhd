@@ -1,6 +1,5 @@
 import React from 'react';
 import { Button, Row, Alert } from 'reactstrap';
-import { MHDBackendClient } from "../../../../../client";
 import { MHDFilter, ParsedMHDCollection } from "../../../../../client/derived";
 import { MHDMainHead } from "../../../../common/MHDMain";
 import CounterDisplay from '../results/CounterDisplay';
@@ -9,8 +8,6 @@ import LaTeX from 'react-latex';
 import { TMHDPreFilter, TMHDCollection } from "../../../../../client/rest";
 
 interface FilterEditorProps {
-    /** the backend  */
-    client: MHDBackendClient;
 
     /** the current collection (if any) */
     collection: ParsedMHDCollection;
@@ -67,7 +64,7 @@ export default class FilterEditor extends React.Component<FilterEditorProps, Fil
     }
 
     render() {
-        const { collection, client, results_loading_delay } = this.props;
+        const { collection, results_loading_delay } = this.props;
         const { applied, filters, pre_filter } = this.state;
 
         const leftHead = <>
@@ -79,7 +76,6 @@ export default class FilterEditor extends React.Component<FilterEditorProps, Fil
             <p>
                 <CounterDisplay
                     collection={collection}
-                    client={client}
                     pre_filter={pre_filter}
                     filters={filters}
                     results_loading_delay={results_loading_delay}

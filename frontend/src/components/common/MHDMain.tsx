@@ -1,6 +1,7 @@
 import React from 'react';
 import { Row, Col, Container } from "reactstrap";
 import styles from './MHDMain.module.css';
+import Head from "next/head";
 
 interface MHDMainProps {
     /** title of the current page */
@@ -33,6 +34,7 @@ export default class MHDMain extends React.Component<MHDMainProps> {
         const { title, head, wide, leftHead, buttons, rightHead, children } = this.props;
         return (
             <main>
+                <Head><title>{title}</title></Head>
                 <MHDMainHead title={title} head={head} wide={wide} leftHead={leftHead} buttons={buttons} rightHead={rightHead} />
                 { children }
             </main>

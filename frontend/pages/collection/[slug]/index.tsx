@@ -1,24 +1,31 @@
 import React from 'react';
-import { Container, Alert } from "reactstrap";
-import { MHDBackendClient } from "../../../../client";
-import { MHDFilter, ParsedMHDCollection } from '../../../../client/derived';
-import ColumnEditor from './columns/ColumnEditor';
-import FilterEditor from './filter';
-import ResultsTable from './results/ResultsTable';
-import { encodeState, decodeState, MHDCollectionSearchState } from '../../../../state';
-import { withRouter, RouteComponentProps } from "react-router";
-import { TableState } from "../../../wrappers/table";
-import { TMHDPreFilter } from "../../../../client/rest";
+import { MHDBackendClient, ResponseError } from "../../../src/client";
 
-interface MHDCollectionSearchProps extends RouteComponentProps<{}>{
-    /** client to talk to the server */
-    client: MHDBackendClient;
+import type { GetServerSideProps } from 'next';
+import { TMHDCollection } from "../../../src/client/rest";
+
+import { Container, Alert } from "reactstrap";
+import { MHDFilter, ParsedMHDCollection } from '../../../src/client/derived';
+import ColumnEditor from '../../../src/components/routes/collection/search/columns/ColumnEditor'; // ../../../src/routes/search/columns/ColumnEditor
+import FilterEditor from '../../../src/components/routes/collection/search/filter';
+import ResultsTable from '../../../src/components/routes/collection/search/results/ResultsTable';
+import { encodeState, decodeState, PageState } from '../../../src/state';
+import { withRouter, NextRouter } from 'next/router'
+import { TableState } from "../../../src/components/wrappers/table";
+import { TMHDPreFilter } from "../../../src/client/rest";
+
+interface MHDCollectionSearchProps{
+    router: NextRouter;
 
     /** collection that was read */
-    collection: ParsedMHDCollection;
+    collection: TMHDCollection;
 
     /** timeout under which to not show the loading indicator */
     results_loading_delay: number;
+}
+
+interface MHDCollectionSearchState extends PageState {
+    collection: ParsedMHDCollection;
 }
 
 /**
@@ -27,24 +34,31 @@ interface MHDCollectionSearchProps extends RouteComponentProps<{}>{
 class MHDCollectionSearch extends React.Component<MHDCollectionSearchProps, MHDCollectionSearchState> {
 
     state: MHDCollectionSearchState = ((): MHDCollectionSearchState => {
-        const s = decodeState(this.props.location.search.substring(1));
-        if(s !== undefined) return s as MHDCollectionSearchState;
+        // find the collection
+        const collection = MHDBackendClient.getInstance().parseCollection(this.props.collection);
 
-        // replace invalid search state to ""
-        this.props.history.replace({search: ''});
+        // HACK: Decode the search state manually cause new URL() doesn't work
+        let search = this.props.router.asPath;
+        if (search.indexOf('?') != -1) {
+            search = search.split('?')[1];
+        } else {
+            search = "";
+        }
 
-        // restore the default state
-        return {
+        const state = decodeState(search) ?? {
             filters: [],
-            pre_filter: this.props.collection.defaultPreFilter,
-            columns: this.props.collection.propertySlugs.slice(),
+            pre_filter: collection.defaultPreFilter,
+            columns: collection.propertySlugs.slice(),
             page: 0,
             per_page: 20,
             widths: undefined,
-        };
+        }
+
+        // add the collection
+        return { ...state, collection }
     })();
 
-    private generateURLParams = (state: MHDCollectionSearchState): string => {
+    private generateURLParams = ({collection, ...state}: MHDCollectionSearchState): string => {
         return encodeState(state);
     }
 
@@ -67,19 +81,21 @@ class MHDCollectionSearch extends React.Component<MHDCollectionSearchProps, MHDC
         const oldParams = this.generateURLParams(prevState);
         const newParams = this.generateURLParams(this.state);
         if (oldParams !== newParams) {
-            this.props.history.replace({search: `?${newParams}`});
+            // TODO: This should be:
+            // this.props.router.replace(`?${newParams}`);
+            // but NextJS doesn't like that at all
+            this.props.router.replace(`/collection/${this.state.collection.slug}?${newParams}`);
         }
     }
 
     render() {
-        const { filters, pre_filter, columns, page, per_page, widths } = this.state;
-        const { client, collection, results_loading_delay } = this.props;
+        const { filters, pre_filter, columns, page, per_page, widths, collection } = this.state;
+        const { results_loading_delay } = this.props;
 
         return (
             <main>
                 {collection.flag_large_collection && <Alert color="warning">This collection is very large and queries might be slow. </Alert>}
                 <FilterEditor
-                    client={client}
                     collection={collection}
                     filters={filters}
                     pre_filter={pre_filter}
@@ -99,7 +115,6 @@ class MHDCollectionSearch extends React.Component<MHDCollectionSearchProps, MHDC
                         {
                             (filters !== null) && (columns !== null) &&
                                 <ResultsTable
-                                    client={client}
                                     collection={collection}
                                     filters={filters}
                                     pre_filter={pre_filter}
@@ -120,3 +135,19 @@ class MHDCollectionSearch extends React.Component<MHDCollectionSearchProps, MHDC
 }
 
 export default withRouter(MHDCollectionSearch);
+
+
+export const getServerSideProps: GetServerSideProps = async function ({ params: { slug } }) {
+    // TODO: Move client into a seperate page
+    let collection: TMHDCollection;
+    try {
+        collection = await MHDBackendClient.getInstance().fetchCollection(slug as string);
+    } catch(e) {
+        if (!(e instanceof ResponseError) || !e.isNotFound) throw e;
+        return { notFound: true};
+    }
+
+    return {
+        props: { collection, results_loading_delay: 100 }, // will be passed to the page component as props
+    }
+}

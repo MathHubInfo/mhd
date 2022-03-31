@@ -3,7 +3,7 @@ import { MHDFilter } from "./client/derived";
 import { TMHDPreFilter } from "./client/rest";
 
 // TODO: pre_filter in the url
-export interface MHDCollectionSearchState extends TableState {
+export interface PageState extends TableState {
     /** the set of applied filters */
     filters: MHDFilter[];
 
@@ -30,17 +30,19 @@ function stringToValue(value: string): any {
 /**
  * (Potentially lossy) encoding of state into the URL
  */
-export function encodeState(state: MHDCollectionSearchState) {
+export function encodeState(state: PageState) {
     return Object.entries({...state, widths: undefined}).map(
         ([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(valueToString(v))}`
     ).join('&');
 }
 
+const ALL_STATE_PROPS = ['per_page', 'page', 'filters', 'columns', 'widths'];
+
 /**
  * Decodes some part of the state from the url
  * @param state
  */
-export function decodeState(state: string): MHDCollectionSearchState | undefined {
+export function decodeState(state: string): PageState | undefined {
     if (state === "") return;
 
     // decode the url keys as JSON valuys
@@ -52,7 +54,7 @@ export function decodeState(state: string): MHDCollectionSearchState | undefined
             
             // only accept these keys
             const key = decodeURIComponent(uc[0]);
-            if (['per_page', 'page', 'filters', 'columns', 'widths'].indexOf(key) === -1) return;
+            if (ALL_STATE_PROPS.indexOf(key) === -1) return;
             
             const value = decodeURIComponent(uc[1]);
             sobj[key] = stringToValue(value);
@@ -61,5 +63,50 @@ export function decodeState(state: string): MHDCollectionSearchState | undefined
         return;
     }
 
-    return sobj as MHDCollectionSearchState;
+    // ensure that the state is valid
+    if (!validateState(sobj)) {
+        console.log("filter validate fail!", sobj);
+        return;
+    }
+
+    return sobj;
+}
+
+function validateState(candidate: Record<string, any>): candidate is PageState {
+    const { per_page, page, filters, columns, widths, ...extra} = candidate;
+    if(Object.keys(extra).length !== 0) return false // extra properties
+
+    if (!isInteger(per_page)) return false;
+    if (!isInteger(page)) return false;
+    if (!Array.isArray(filters) || !filters.every(isFilter)) return false;
+    if (!Array.isArray(columns) || !columns.every(isString)) return false;
+
+    return widths === undefined || (Array.isArray(widths) && widths.every(isNonNegative));
+}
+
+function isBoolean(candidate: any): candidate is boolean {
+    return typeof candidate === 'boolean';
+}
+
+function isNonNegative(candidate: any): candidate is number {
+    return typeof candidate === "number" && isFinite(candidate) && candidate >= 0;
+}
+
+function isInteger(candidate: any): candidate is number {
+    return typeof candidate === "number" && isFinite(candidate) && (candidate % 1 === 0);
+}
+
+function isString(candidate: any): candidate is string {
+    return typeof candidate === 'string';
+}
+
+function isFilter(candidate: any): candidate is MHDFilter {
+    const { slug, value, uid, initial, ...extra } = candidate;
+    console.log("checking filter", candidate);
+
+    if(Object.keys(extra).length !== 0) return false;
+    if (!isString(slug)) return false;
+    if (!isInteger(uid)) return false;
+    if (!isBoolean(initial)) return false;
+    return value == null || typeof value === 'string';
 }
