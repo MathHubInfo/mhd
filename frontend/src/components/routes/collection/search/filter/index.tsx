@@ -116,8 +116,14 @@ function PreFilterCountDisplay({filter: {description, count}, collection}: {filt
     </Alert>;
 }
 
-function TotalCountDisplay({collection}: {collection: TMHDCollection}) {
+function TotalCountDisplay({collection: { count }}: {collection: TMHDCollection}) {
+    if (count === null) {
+        if (process.env.NODE_ENV === 'development') {
+            return <Alert color="warning">No collection count available. Run <code style={{fontSize: '.75rem'}}>python manage.py update_count</code> to update it.</Alert>
+        }
+        return null;
+    }
     return <Alert color="info">
-        This dataset has <>{collection.count}</> objects.
+        This dataset has {count} objects.
     </Alert>;
 }
