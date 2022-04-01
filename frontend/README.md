@@ -1,6 +1,6 @@
 # MHD Frontend
 
-Website frontend code, a standard [create-react-app](https://github.com/facebook/create-react-app) setup. 
+Website frontend code, a standard [NextJS](https://nextjs.org/) setup. 
 
 ## Installation
 
@@ -13,23 +13,24 @@ yarn install
 
 ## Structure
 
-The frontend reacts to the following routes:
+Frontend routes can be found under `pages/` in standard NextJS fashion.
+These are:
 
-- `/`: an overview page of all existing collections
+- `/`, `/home/[no]`: an overview page of all existing collections
 - `/about/`: a generic about page
-- `/$collection/`: a search page for the given collection if it exists, an error page otherwise
+- `/debug/`: a debug page
+- `/collection/[slug]`: a search page for the given collection if it exists, an error page otherwise
+- `/collection/[slug]/about`: an info page about a specific collection
+- `/item/[slug]/[uuid]`: a details page for the specific item
 
 If furthermore expects the backend routes to be available:
 
-- `/api/`: for all api requests
-- `/api/admin/`: if admin login is enabled
+- `/api/`: proxied to the backend (assumed to be running at `127.0.0.1:8000`) for api requests
+- `/api/admin/`: the admin page (also proxied to the backend)
 
-This implies that frontend and backend are served under the same url. 
+From a user perspective the frontend and backend are served under the same url. 
 
 ## Development
-
-We [proxy requests in development](https://create-react-app.dev/docs/proxying-api-requests-in-development) to achieve this strucuture.
-In particular, we configure a proxy on the url `/api/` and `/admin/` in [src/setupProxy.js](./src/setupProxy.js).
 
 Thus to start a complete development environment (with support for auto-reloading) we first start the backend on localhost:8000. 
 This can be achieve by something like `python manage.py runserver` (see [Backend README](../README.md#Development) for details). 

@@ -8,7 +8,7 @@ MathDataHub is a system to provide universal infrastructure for Mathematical Dat
 See the paper [Towards a Unified Mathematical Data Infrastructure: Database and Interface Generation](https://kwarc.info/people/mkohlhase/papers/cicm19-MDH.pdf)
 for more details.
 
-This repository contains the MathDataHub Implementation consisting of a [Django](https://www.djangoproject.com/)-powered backend and [create-react-app](https://github.com/facebook/create-react-app)-powered frontend.
+This repository contains the MathDataHub Implementation consisting of a [Django](https://www.djangoproject.com/)-powered backend and [NextJS](https://nextjs.org/)-powered frontend.
 
 _Note: The code refers to the project as `mhd` (as opposed to the expected `mdh`). This is due to historical reasons._
 
@@ -291,18 +291,20 @@ To achieve the url structure expected by the frontend, we need to serve the back
 
 To achieve this we
 
-- generate a static build of the frontend repository;
-- collect all the static files needed by the backend; and
-- start the Django app using [uwsgi](http://projects.unbit.it/uwsgi).
+- build the NextJS Frontend
+- prepare a Django Deployment using [uwsgi](http://projects.unbit.it/uwsgi).
+- setup a [supervisord](https://supervisord.readthedocs.io/en/latest/) configuration to run both at the same time
 
 The uwsgi config used to achieve this can be found in [docker/uwsgi.ini](docker/uwsgi.ini).
-For every request it then switches appropriately between:
+For every request it switches appropriately between:
 
-- sending a static file (this is in two seperate locations, one for the frontend build and one for the backend)
-- directly forwarding the API response from the backend
-- checking if the object referenced by the url exists, and if so return `index.html` and else a 404 error page.
+- sending a static file (as collected by `python manage.py collectstatic`)
+- sending the response to the backend
 
-To achieve the latter, uwsgi intercepts the [X-Sendfile](https://www.nginx.com/resources/wiki/start/topics/examples/x-accel/) returned by the backend to detect if the appropriate object exists or not.
+Next, the NextJS frontend is configured to proxy requests for the `/api/` route to the backend.
+
+Finally, a supervisord instance is configured to run both the backend and frontend at the same time.
+The config can be found in [docker/supervisor.conf](docker/supervisor.conf).
 
 This repository contains a `Dockerfile` to enable deployment using [Docker](https://www.docker.com/).
 It listens on port 80 and uses an sqlite database stored in a volume mounted at `/data/`.
