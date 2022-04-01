@@ -1,10 +1,9 @@
+import type { GetServerSideProps } from 'next';
 import React from 'react';
 import { MHDBackendClient } from "../../../src/client";
-
-import type { GetServerSideProps } from 'next';
-import CodecManager from "../../../src/codecs";
 import { TMHDCollection, TMHDItem } from "../../../src/client/rest";
 import MHDItemView from "../../../src/components/routes/item/item";
+
 
 interface ItemPageProps {
     collection: TMHDCollection,

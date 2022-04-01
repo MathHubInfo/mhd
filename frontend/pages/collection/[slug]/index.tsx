@@ -1,18 +1,15 @@
-import React from 'react';
-import { MHDBackendClient, ResponseError } from "../../../src/client";
-
 import type { GetServerSideProps } from 'next';
-import { TMHDCollection } from "../../../src/client/rest";
-
-import { Container, Alert } from "reactstrap";
+import { NextRouter, withRouter } from 'next/router';
+import React from 'react';
+import { Alert, Container } from "reactstrap";
+import { MHDBackendClient, ResponseError } from "../../../src/client";
 import { MHDFilter, ParsedMHDCollection } from '../../../src/client/derived';
-import ColumnEditor from '../../../src/components/routes/collection/search/columns/ColumnEditor'; // ../../../src/routes/search/columns/ColumnEditor
+import { TMHDCollection, TMHDPreFilter } from "../../../src/client/rest";
+import ColumnEditor from '../../../src/components/routes/collection/search/columns/ColumnEditor';
 import FilterEditor from '../../../src/components/routes/collection/search/filter';
 import ResultsTable from '../../../src/components/routes/collection/search/results/ResultsTable';
-import { encodeState, decodeState, PageState } from '../../../src/state';
-import { withRouter, NextRouter } from 'next/router'
 import { TableState } from "../../../src/components/wrappers/table";
-import { TMHDPreFilter } from "../../../src/client/rest";
+import { decodeState, encodeState, PageState } from '../../../src/state';
 
 interface MHDCollectionSearchProps{
     router: NextRouter;
