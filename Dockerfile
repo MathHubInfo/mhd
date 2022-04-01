@@ -40,7 +40,8 @@ RUN DJANGO_SECRET_KEY=setup python manage.py collectstatic --noinput
 ADD frontend /app/frontend
 WORKDIR /app/frontend
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN yarn --frozen-lockfile && NODE_ENV=production yarn build
+ENV NODE_ENV=production
+RUN yarn install --frozen-lockfile --production && NODE_ENV=production yarn build --no-lint
 
 # Add uwsgi, supervisor config and entrypoint
 ADD docker/entrypoint.sh /entrypoint.sh
