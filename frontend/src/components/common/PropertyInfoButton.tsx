@@ -1,6 +1,6 @@
-import React from 'react';
-import { Tooltip } from 'reactstrap';
-import LaTeX from 'react-latex';
+import React from "react";
+import { Tooltip } from "reactstrap";
+import LaTeX from "react-latex";
 
 import { TMHDProperty } from "../../client/rest";
 

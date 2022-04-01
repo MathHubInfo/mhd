@@ -1,16 +1,16 @@
 import { AppProps } from "next/app";
 
 // load the required fonts
-import 'typeface-cormorant-garamond';
-import 'typeface-cormorant-unicase';
-import 'typeface-montserrat';
+import "typeface-cormorant-garamond";
+import "typeface-cormorant-unicase";
+import "typeface-montserrat";
 
 // load custom styles
-import '../src/css/bootstrapMHD.scss';
-import 'katex/dist/katex.min.css';
+import "../src/css/bootstrapMHD.scss";
+import "katex/dist/katex.min.css";
 
 // load font-awesome
-import '@fortawesome/fontawesome-free/js/all.js';
+import "@fortawesome/fontawesome-free/js/all.js";
 
 
 import MHDHeader from "../src/components/common/MHDHeader";

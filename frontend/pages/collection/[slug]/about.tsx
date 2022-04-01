@@ -1,6 +1,6 @@
-import type { GetServerSideProps } from 'next';
-import React from 'react';
-import LaTeX from 'react-latex';
+import type { GetServerSideProps } from "next";
+import React from "react";
+import LaTeX from "react-latex";
 import { Col, Container, Row } from "reactstrap";
 import { MHDBackendClient, ResponseError } from "../../../src/client";
 import { TMHDCollection } from "../../../src/client/rest";

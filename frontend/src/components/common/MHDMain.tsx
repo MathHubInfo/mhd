@@ -1,6 +1,6 @@
-import React from 'react';
+import React from "react";
 import { Row, Col, Container } from "reactstrap";
-import styles from './MHDMain.module.css';
+import styles from "./MHDMain.module.css";
 import Head from "next/head";
 
 interface MHDMainProps {
@@ -42,7 +42,7 @@ export default class MHDMain extends React.Component<MHDMainProps> {
     }
 }
 
-type MHDMainHeadProps = Pick<MHDMainProps, 'title' | 'head' | 'leftHead' | 'buttons' | 'rightHead' | 'wide'>
+type MHDMainHeadProps = Pick<MHDMainProps, "title" | "head" | "leftHead" | "buttons" | "rightHead" | "wide">
 
 /** Layouting head */
 export class MHDMainHead extends React.Component<MHDMainHeadProps> {
@@ -83,11 +83,11 @@ export class MHDMainHead extends React.Component<MHDMainHeadProps> {
     }
 }
 
-type MHDLoadingProps = Pick<MHDMainProps, 'leftHead'>;
+type MHDLoadingProps = Pick<MHDMainProps, "leftHead">;
 
 /** Represents a loading component */
 export class MHDLoading extends React.Component<MHDLoadingProps> {
     render() {
-        return <MHDMain title={'Loading...'} leftHead={this.props.leftHead} />;
+        return <MHDMain title={"Loading..."} leftHead={this.props.leftHead} />;
     }
 }

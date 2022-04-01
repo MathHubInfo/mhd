@@ -1,7 +1,7 @@
-import React from 'react';
+import React from "react";
 
-import { MHDBackendClient } from '../../../../../client';
-import { ParsedMHDCollection, MHDFilter } from '../../../../../client/derived';
+import { MHDBackendClient } from "../../../../../client";
+import { ParsedMHDCollection, MHDFilter } from "../../../../../client/derived";
 import { TMHDPreFilter } from "../../../../../client/rest";
 
 interface CounterDisplayProps {
@@ -65,7 +65,7 @@ export default class CounterDisplay extends React.Component<CounterDisplayProps,
         try {
             count = await MHDBackendClient.getInstance().fetchItemCount(this.props.collection, this.props.pre_filter, this.props.filters);
         } catch (e) {
-            if (process.env.NODE_ENV !== 'production') console.error(e);
+            if (process.env.NODE_ENV !== "production") console.error(e);
         }
 
         // for introducing a dummy delay of 2 seconds, uncomment the following line

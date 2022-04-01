@@ -1,7 +1,7 @@
-import React, { ChangeEvent } from 'react';
-import style from './table.module.css';
+import React, { ChangeEvent } from "react";
+import style from "./table.module.css";
 
-import ColumnResizer, { ColumnResizerOptions } from './column-resizer';
+import ColumnResizer, { ColumnResizerOptions } from "./column-resizer";
 import { Button, InputGroup, InputGroupAddon, Input } from "reactstrap";
 
 interface TableProps<D> extends TableState {
@@ -66,7 +66,7 @@ export default class Table<D> extends React.Component<TableProps<D>> {
      */
     private initResizer({widths}: {widths: number[] | undefined}) {
         const opts: Partial<ColumnResizerOptions> = {
-            resizeMode: 'flex',
+            resizeMode: "flex",
             gripInnerHtml:`<div class='${this.props.tableGripClassName || style.grip}'></div>`,
             widths,
             serialize: false,
@@ -228,7 +228,7 @@ class TableTablePerPageSelector extends React.Component<TablePerPageSelectorProp
     }
     render() {
         const { per_page, per_page_selection } = this.props;
-        return <div style={{textAlign: 'center'}}>
+        return <div style={{textAlign: "center"}}>
             <Input type="select" onChange={this.handlePerPageChange as any} value={"" + per_page}>
                 { per_page_selection.map(pp => {
                     return <option key={pp} value={"" + pp}>{pp}</option>
@@ -262,7 +262,7 @@ class TablePageSelector extends React.Component<TablePageSelectorProps> {
                     <Button disabled>&lt;&lt;</Button>
                 }
             </InputGroupAddon>
-            <Input disabled style={{textAlign: 'center'}} value={`${page + 1} / ${total_pages}`} />
+            <Input disabled style={{textAlign: "center"}} value={`${page + 1} / ${total_pages}`} />
             <InputGroupAddon addonType="prepend">
                 { has_next_page ? 
                     <Button onClick={this.navigateNextPage}>&gt;&gt;</Button> :

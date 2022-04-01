@@ -1,15 +1,15 @@
-import type { GetServerSideProps } from 'next';
-import { NextRouter, withRouter } from 'next/router';
-import React from 'react';
+import type { GetServerSideProps } from "next";
+import { NextRouter, withRouter } from "next/router";
+import React from "react";
 import { Alert, Container } from "reactstrap";
 import { MHDBackendClient, ResponseError } from "../../../src/client";
-import { MHDFilter, ParsedMHDCollection } from '../../../src/client/derived';
+import { MHDFilter, ParsedMHDCollection } from "../../../src/client/derived";
 import { TMHDCollection, TMHDPreFilter } from "../../../src/client/rest";
-import ColumnEditor from '../../../src/components/routes/collection/search/columns/ColumnEditor';
-import FilterEditor from '../../../src/components/routes/collection/search/filter';
-import ResultsTable from '../../../src/components/routes/collection/search/results/ResultsTable';
+import ColumnEditor from "../../../src/components/routes/collection/search/columns/ColumnEditor";
+import FilterEditor from "../../../src/components/routes/collection/search/filter";
+import ResultsTable from "../../../src/components/routes/collection/search/results/ResultsTable";
 import { TableState } from "../../../src/components/wrappers/table";
-import { decodeState, encodeState, PageState } from '../../../src/state';
+import { decodeState, encodeState, PageState } from "../../../src/state";
 
 interface MHDCollectionSearchProps{
     router: NextRouter;
@@ -36,8 +36,8 @@ class MHDCollectionSearch extends React.Component<MHDCollectionSearchProps, MHDC
 
         // HACK: Decode the search state manually cause new URL() doesn't work
         let search = this.props.router.asPath;
-        if (search.indexOf('?') != -1) {
-            search = search.split('?')[1];
+        if (search.indexOf("?") != -1) {
+            search = search.split("?")[1];
         } else {
             search = "";
         }

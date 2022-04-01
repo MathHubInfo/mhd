@@ -1,7 +1,7 @@
-import React from 'react';
-import * as d3 from 'd3';
+import React from "react";
+import * as d3 from "d3";
 
-import style from './d3graph.module.css';
+import style from "./d3graph.module.css";
 
 interface Graph {
     edges: [number, number][]
@@ -142,10 +142,10 @@ class D3GraphInstance extends React.Component<D3GraphInstanceProps> {
             .data(this.simulationNodes)
             .enter().append("text")
             .attr("class", labelClass)
-            .text(d => '' + d.id);
+            .text(d => "" + d.id);
 
         this.simulation = d3.forceSimulation<D3Node, D3Link>()
-            .force("link", d3.forceLink<D3Node, D3Link>().id((node: D3Node) => '' + node.id))
+            .force("link", d3.forceLink<D3Node, D3Link>().id((node: D3Node) => "" + node.id))
             .force("charge", d3.forceManyBody().strength(strength))
             .force("center", d3.forceCenter(width / 2, height / 2));
 

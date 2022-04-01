@@ -1,10 +1,10 @@
-import React from 'react';
-import { Button, Row, Alert } from 'reactstrap';
+import React from "react";
+import { Button, Row, Alert } from "reactstrap";
 import { MHDFilter, ParsedMHDCollection } from "../../../../../client/derived";
 import { MHDMainHead } from "../../../../common/MHDMain";
-import CounterDisplay from '../results/CounterDisplay';
-import FilterSelector from './FilterSelector';
-import LaTeX from 'react-latex';
+import CounterDisplay from "../results/CounterDisplay";
+import FilterSelector from "./FilterSelector";
+import LaTeX from "react-latex";
 import { TMHDPreFilter, TMHDCollection } from "../../../../../client/rest";
 
 interface FilterEditorProps {
@@ -118,8 +118,8 @@ function PreFilterCountDisplay({filter: {description, count}, collection}: {filt
 
 function TotalCountDisplay({collection: { count }}: {collection: TMHDCollection}) {
     if (count === null) {
-        if (process.env.NODE_ENV === 'development') {
-            return <Alert color="warning">No collection count available. Run <code style={{fontSize: '.75rem'}}>python manage.py update_count</code> to update it.</Alert>
+        if (process.env.NODE_ENV === "development") {
+            return <Alert color="warning">No collection count available. Run <code style={{fontSize: ".75rem"}}>python manage.py update_count</code> to update it.</Alert>
         }
         return null;
     }

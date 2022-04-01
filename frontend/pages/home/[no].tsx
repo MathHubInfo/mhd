@@ -1,6 +1,6 @@
-import type { GetServerSideProps, InferGetServerSidePropsType } from 'next';
+import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { default as Link } from "next/link";
-import React from 'react';
+import React from "react";
 import LaTeX from "react-latex";
 import { Button, Col, ListGroup, ListGroupItem, Row } from "reactstrap";
 import { MHDBackendClient } from "../../src/client";

@@ -1,17 +1,17 @@
 import Image from "next/image";
-import React from 'react';
-import { Col, Container, Row } from 'reactstrap';
-import eu_logo from '../../images/logos/eu.svg';
-import fau_logo from '../../images/logos/fau_logo.png';
-import kwarc_logo from '../../images/logos/kwarc_logo.png';
-import odk_logo from '../../images/logos/opendreamkit_logo.png';
+import React from "react";
+import { Col, Container, Row } from "reactstrap";
+import eu_logo from "../../images/logos/eu.svg";
+import fau_logo from "../../images/logos/fau_logo.png";
+import kwarc_logo from "../../images/logos/kwarc_logo.png";
+import odk_logo from "../../images/logos/opendreamkit_logo.png";
 
 /** Footer for the entire website */
 export default function MHDFooter() {
     return (
         <footer>
             <Container>
-                <Row style={{textAlign: 'center', marginTop: '5em'}}>
+                <Row style={{textAlign: "center", marginTop: "5em"}}>
                     <Col>
                         <LogoLink url="https://kwarc.info/" pic={kwarc_logo} alt="KWARC research group" width={80} height={80} />
                         <LogoLink url="https://fau.de/" pic={fau_logo} alt="FAU Erlangen-Nürnberg" width={220} height={43} />
@@ -30,7 +30,7 @@ function LogoLink(props: { url: string; pic: any; alt: string, width: number, he
             href={props.url}
             target="_blank"
             rel="noopener noreferrer"
-            style={{margin: '0.5em 1.5em'}}>
+            style={{margin: "0.5em 1.5em"}}>
             <Image src={props.pic} width={props.width} height={props.height} alt={props.alt} />
         </a>
     );

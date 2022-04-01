@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import MHDMain from "../../../common/MHDMain";
 import { ParsedMHDCollection } from "../../../../client/derived";
 import { TMHDItem } from "../../../../client/rest";

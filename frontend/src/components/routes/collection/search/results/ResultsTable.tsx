@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import { MHDBackendClient } from "../../../../../client";
 import { MHDFilter, ParsedMHDCollection } from "../../../../../client/derived";
 import { TDRFPagedResponse, TMHDItem, TMHDPreFilter } from "../../../../../client/rest";
@@ -96,7 +96,7 @@ export default class ResultsTable extends Component<ResultsTableProps, ResultsTa
         try {
             results = await MHDBackendClient.getInstance().fetchItems(collection, columns, pre_filter, filters, page + 1, per_page)
         } catch (e) {
-            if (process.env.NODE_ENV !== 'production') console.error(e);
+            if (process.env.NODE_ENV !== "production") console.error(e);
         }
 
         // for introducing a dummy delay of 2 seconds, uncomment the following line

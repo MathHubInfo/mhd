@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import Table, { CellComponentProps, TableColumn, TableState } from "../src/components/wrappers/table";
 
 // TODO: Consider making this page debug only

@@ -1,10 +1,10 @@
-import React from 'react';
-import { Col } from 'reactstrap';
+import React from "react";
+import { Col } from "reactstrap";
 import { MHDFilter, ParsedMHDCollection } from "../../../../../client/derived";
 import Codec, { TValidationResult } from "../../../../../codecs/codec";
 import { TMHDProperty } from "../../../../../client/rest";
-import styles from './FilterSelector.module.css';
-import PropertyInfoButton from '../../../../common/PropertyInfoButton';
+import styles from "./FilterSelector.module.css";
+import PropertyInfoButton from "../../../../common/PropertyInfoButton";
 
 interface FilterSelectorProps {
     /** the current collection */

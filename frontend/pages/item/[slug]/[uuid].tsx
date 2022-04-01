@@ -1,5 +1,5 @@
-import type { GetServerSideProps } from 'next';
-import React from 'react';
+import type { GetServerSideProps } from "next";
+import React from "react";
 import { MHDBackendClient } from "../../../src/client";
 import { TMHDCollection, TMHDItem } from "../../../src/client/rest";
 import MHDItemView from "../../../src/components/routes/item/item";
