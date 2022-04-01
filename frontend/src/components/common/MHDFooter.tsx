@@ -1,6 +1,6 @@
+import Image from "next/image";
 import React from 'react';
-import { Container, Row, Col } from 'reactstrap';
-
+import { Col, Container, Row } from 'reactstrap';
 import eu_logo from '../../images/logos/eu.svg';
 import fau_logo from '../../images/logos/fau_logo.png';
 import kwarc_logo from '../../images/logos/kwarc_logo.png';
@@ -31,7 +31,7 @@ function LogoLink(props: { url: string; pic: any; alt: string, width: number, he
             target="_blank"
             rel="noopener noreferrer"
             style={{margin: '0.5em 1.5em'}}>
-            <img src={props.pic} alt={props.alt} style={{ width: props.width, height: props.height }} />
+            <Image src={props.pic} width={props.width} height={props.height} alt={props.alt} />
         </a>
     );
 }

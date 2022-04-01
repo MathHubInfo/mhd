@@ -27,7 +27,7 @@ export default function AboutPage({ collection: { displayName, description, meta
                     <ul>
                         {(metadata.references && metadata.references.length > 0) &&
                             metadata.references.map((r: any) =>
-                                <li><a href={r.url}>{r.title}</a></li>
+                                <li key={r.url}><a href={r.url}>{r.title}</a></li>
                             )
                         }
                     </ul>

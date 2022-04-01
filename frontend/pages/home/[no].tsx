@@ -29,9 +29,9 @@ export default function Home({ page, collections: { results, num_pages } }: Home
     </>;
 
     const buttons = <>
-        {(page - 1 >= 1) ? <Link href={`/home/${page - 1}`}><Button>Previous</Button></Link> : <Button disabled>Previous</Button>}
+        {(page - 1 >= 1) ? <Link href={`/home/${page - 1}`} passHref><Button>Previous</Button></Link> : <Button disabled>Previous</Button>}
         &nbsp;
-        {(page + 1 <= num_pages) ? <Link href={`/home/${page + 1}`}><Button>Next</Button></Link> : <Button disabled>Next</Button>}
+        {(page + 1 <= num_pages) ? <Link href={`/home/${page + 1}`} passHref><Button>Next</Button></Link> : <Button disabled>Next</Button>}
     </>;
 
     const head = <Row>
