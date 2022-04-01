@@ -64,10 +64,7 @@ export function decodeState(state: string): PageState | undefined {
     }
 
     // ensure that the state is valid
-    if (!validateState(sobj)) {
-        console.log("filter validate fail!", sobj);
-        return;
-    }
+    if (!validateState(sobj)) return;
 
     return sobj;
 }
@@ -102,7 +99,6 @@ function isString(candidate: any): candidate is string {
 
 function isFilter(candidate: any): candidate is MHDFilter {
     const { slug, value, uid, initial, ...extra } = candidate;
-    console.log("checking filter", candidate);
 
     if(Object.keys(extra).length !== 0) return false;
     if (!isString(slug)) return false;
