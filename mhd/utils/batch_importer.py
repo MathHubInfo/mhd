@@ -7,10 +7,11 @@ import logging
 from .pgsql_serializer import make_pgsql_serializer, CSV_NULL, CSV_NULL_ESCAPED
 
 from django.db import connection
+from django.db.models import JSONField
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from typing import Optional, Iterator, Any, List, Type, IO
+    from typing import Optional, Iterator, Any, List, Type, IO, Dict, Callable
     from django.db.models import Model
 
 
@@ -78,6 +79,10 @@ class BulkCreateImporter(BatchImporter):
 
 
 class SerializingImporter(BatchImporter):
+    PREPPER_OVERRIDES: Dict[Type[Model], Callable] = {
+        JSONField: lambda x: x,
+    }
+
     def __init__(self, **kwargs: Any):
         super().__init__(**kwargs)
 
@@ -85,13 +90,22 @@ class SerializingImporter(BatchImporter):
             raise ValueError(
                 "SerializingImporter requires 'postgresql' database")
 
+    def _get_prepper(self, model: Type[Model], field_name: str) -> Callable:
+        field = model._meta.get_field(field_name)
+        for (clz, o) in self.PREPPER_OVERRIDES.items():
+            if isinstance(field, clz):
+                return o
+        return field.get_prep_value
+
+    def _get_serializer(self, model: Type[Model], field_name: str) -> Callable:
+        return make_pgsql_serializer(model._meta.get_field(field_name).db_type(connection=connection))
+
     def _serialize(self, stream: IO[str], model: Type[Model], fields: List[str], values: Iterator[Any], count_values: Optional[int] = None):
         """ Serialializes values into stream as csv and returns the size of stream in bytes """
 
         # find serializers and prep values for the database
-        preppers = [model._meta.get_field(f).get_prep_value for f in fields]
-        serializers = [make_pgsql_serializer(model._meta.get_field(
-            f).db_type(connection=connection)) for f in fields]
+        preppers = [self._get_prepper(model, f) for f in fields]
+        serializers = [self._get_serializer(model, f) for f in fields]
 
         # prepare values for the database
         for value in tqdm(values, leave=False, total=count_values):

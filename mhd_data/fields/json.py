@@ -125,7 +125,7 @@ class DumbJSONFieldSerializer(serializers.Field):
 serializers.ModelSerializer.serializer_field_mapping[DumbJSONField] = DumbJSONFieldSerializer
 
 if connection.vendor == 'postgresql':
-    from django.contrib.postgres.fields import JSONField
+    from django.db.models import JSONField
 
     class SmartJSONField(JSONField):
         """ posgres-aware version of a JSONField """

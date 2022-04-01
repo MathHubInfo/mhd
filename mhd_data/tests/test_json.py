@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from django.contrib.postgres.fields import JSONField
+from django.db.models import JSONField
 from django.test import TestCase
 
 from mhd_tests.models import DumbJSONFieldModel, SmartJSONFieldModel
