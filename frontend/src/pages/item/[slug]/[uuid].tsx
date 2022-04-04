@@ -11,7 +11,6 @@ interface ItemPageProps {
 }
 
 
-// TODO: Refactor parsing into a seperate component and inline the item view
 export default function ItemPage({ collection, item }: ItemPageProps) {
     return <MHDItemView collection={MHDBackendClient.getInstance().parseCollection(collection)} item={item} />;
 }

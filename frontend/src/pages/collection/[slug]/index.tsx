@@ -135,7 +135,6 @@ export default withRouter(MHDCollectionSearch);
 
 
 export const getServerSideProps: GetServerSideProps = async function ({ params: { slug } }) {
-    // TODO: Move client into a seperate page
     let collection: TMHDCollection;
     try {
         collection = await MHDBackendClient.getInstance().fetchCollection(slug as string);
