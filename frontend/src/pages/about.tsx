@@ -1,6 +1,6 @@
 import React from "react";
 import { Container } from "reactstrap";
-import MHDMain from "../src/components/common/MHDMain";
+import MHDMain from "../components/common/MHDMain";
 
 export default function MHDAboutPage() {
     return <MHDMain title="About">

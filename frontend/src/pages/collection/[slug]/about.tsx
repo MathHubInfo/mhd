@@ -2,9 +2,9 @@ import type { GetServerSideProps } from "next";
 import React from "react";
 import LaTeX from "react-latex";
 import { Col, Container, Row } from "reactstrap";
-import { MHDBackendClient, ResponseError } from "../../../src/client";
-import { TMHDCollection } from "../../../src/client/rest";
-import MHDMain from "../../../src/components/common/MHDMain";
+import { MHDBackendClient, ResponseError } from "../../../client";
+import { TMHDCollection } from "../../../client/rest";
+import MHDMain from "../../../components/common/MHDMain";
 
 interface AboutPageProps {
     collection: TMHDCollection,

@@ -3,8 +3,8 @@ import { default as Link } from "next/link";
 import React from "react";
 import LaTeX from "react-latex";
 import { Button, Col, ListGroup, ListGroupItem, Row } from "reactstrap";
-import { MHDBackendClient } from "../../src/client";
-import MHDMain from "../../src/components/common/MHDMain";
+import { MHDBackendClient } from "../../client";
+import MHDMain from "../../components/common/MHDMain";
 
 type HomeProps = InferGetServerSidePropsType<typeof getServerSideProps>
 

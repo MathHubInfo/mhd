@@ -1,5 +1,5 @@
 import React from "react";
-import Table, { CellComponentProps, TableColumn, TableState } from "../src/components/wrappers/table";
+import Table, { CellComponentProps, TableColumn, TableState } from "../components/wrappers/table";
 
 // TODO: Consider making this page debug only
 

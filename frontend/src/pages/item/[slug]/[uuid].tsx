@@ -1,8 +1,8 @@
 import type { GetServerSideProps } from "next";
 import React from "react";
-import { MHDBackendClient } from "../../../src/client";
-import { TMHDCollection, TMHDItem } from "../../../src/client/rest";
-import MHDItemView from "../../../src/components/routes/item/item";
+import { MHDBackendClient } from "../../../client";
+import { TMHDCollection, TMHDItem } from "../../../client/rest";
+import MHDItemView from "../../../components/routes/item/item";
 
 
 interface ItemPageProps {

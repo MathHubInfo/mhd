@@ -13,7 +13,7 @@ yarn install
 
 ## Structure
 
-Frontend routes can be found under `pages/` in standard NextJS fashion.
+Frontend routes can be found under `src/pages/` in standard NextJS fashion.
 These are:
 
 - `/`, `/home/[no]`: an overview page of all existing collections
