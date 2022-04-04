@@ -12,7 +12,7 @@ interface AboutPageProps {
 
 export default function AboutPage({ collection: { displayName, description, metadata } }: AboutPageProps) {
     // TODO: Title
-    return <MHDMain title={<LaTeX>{displayName}</LaTeX>}>
+    return <MHDMain title={<LaTeX>{displayName}</LaTeX>} textTitle={displayName}>
         <Container>
             <Row>
                 <Col sm="12">

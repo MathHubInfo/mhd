@@ -102,7 +102,7 @@ export default class FilterEditor extends React.Component<FilterEditorProps, Fil
                 onFilterUpdate={this.setFilters} />
         </Row>;
 
-        return <MHDMainHead title={<LaTeX>{collection.displayName}</LaTeX>} leftHead={leftHead} buttons={buttons} rightHead={rightHead} />;
+        return <MHDMainHead title={<LaTeX>{collection.displayName}</LaTeX>} textTitle={collection.displayName} leftHead={leftHead} buttons={buttons} rightHead={rightHead} />;
     }
 }
 
