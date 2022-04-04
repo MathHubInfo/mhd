@@ -1,8 +1,8 @@
 # MathDataHub
 
-![Frontend Tests](https://github.com/MathHubInfo/mhd/workflows/Frontend/badge.svg)
-![Backend Tests](https://github.com/MathHubInfo/mhd/workflows/Backend/badge.svg)
-![Docker Tests](https://github.com/MathHubInfo/mhd/workflows/Docker/badge.svg)
+![Frontend Tests](https://github.com/MathHubInfo/mhd/actions/workflows/frontend/badge.svg)
+![Backend Tests](https://github.com/MathHubInfo/mhd/actions/workflows/backend.yml/badge.svg)
+![Docker Build](https://github.com/MathHubInfo/mhd/actions/workflows/docker_build/badge.svg)
 
 MathDataHub is a system to provide universal infrastructure for Mathematical Data.
 See the paper [Towards a Unified Mathematical Data Infrastructure: Database and Interface Generation](https://kwarc.info/people/mkohlhase/papers/cicm19-MDH.pdf)
@@ -270,6 +270,8 @@ In particular, when updating or amending a collection, it is recommended to firs
 
 ## Deployment
 
+![Docker Image](https://github.com/MathHubInfo/mhd/actions/workflows/docker/badge.svg)
+
 Deployment only makes sense in conjunction with the frontend.
 To achieve the url structure expected by the frontend, we need to serve the backend and frontend on the same domain.
 
@@ -290,10 +292,11 @@ To achieve the latter, uwsgi intercepts the [X-Sendfile](https://www.nginx.com/r
 
 This repository contains a `Dockerfile` to enable deployment using [Docker](https://www.docker.com/).
 It listens on port 80 and uses an sqlite database stored in a volume mounted at `/data/`.
-A [DockerHub](https://hub.docker.com/) automated build is available under [mathhub/mhd](https://hub.docker.com/r/mathhub/mhd) and can be run with a command like the following:
+GitHub Actions build a new image on every commit that is available under [ghcr.io/mathhubinfo/mhd](https://github.com/mathhubinfo/mhd/pkgs/container/mhd).
+It can be run with a command like the following:
 
 ```
-   docker run -e DJANGO_SECRET_KEY=totally_secret_key_here -p 8000:80 -v data:/data/ mathhub/mhd
+   docker run -e DJANGO_SECRET_KEY=totally_secret_key_here -p 8000:80 -v data:/data/ ghcr.io/mathhubinfo/mhd:latest
 ```
 
 ## License
