@@ -6,6 +6,7 @@ import CounterDisplay from "../results/CounterDisplay";
 import FilterSelector from "./FilterSelector";
 import LaTeX from "react-latex";
 import { TMHDPreFilter, TMHDCollection } from "../../../../../client/rest";
+import Link from "next/link";
 
 interface FilterEditorProps {
 
@@ -86,10 +87,12 @@ export default class FilterEditor extends React.Component<FilterEditorProps, Fil
         const buttons = <>
                 { collection.metadata &&
                 <p>
-                    <a href="about/" target="_blank" rel="noopener noreferrer">
-                        <i className="far fa-comment-dots" data-fa-transform="shrink-2"></i>&nbsp;
-                        More about this dataset
-                    </a>
+                    <Link href={`/collection/${collection.slug}/about`} passHref>
+                        <a target="_blank" rel="noopener noreferrer">
+                            <i className="far fa-comment-dots" data-fa-transform="shrink-2"></i>&nbsp;
+                            More about this dataset
+                        </a>
+                    </Link>
                 </p>
                 }
             <Button onClick={this.applyFilters} disabled={applied}>Display results</Button>
