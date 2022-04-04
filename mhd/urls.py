@@ -5,7 +5,7 @@ from django.contrib import admin
 from django.urls import include, path
 
 from mhd_schema.router import router as schema_router
-from mhd_data.views.api import QueryView, CountQueryView, ItemView
+from mhd_data.views import QueryView, CountQueryView, ItemView
 
 urlpatterns = [
     path('api/query/<slug:cid>/', QueryView.as_view()),
