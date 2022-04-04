@@ -38,7 +38,7 @@ This can be achieve by something like `python manage.py runserver` (see [Backend
 In parallel, we can then start the react development server with:
 
 ```
-yarn start
+yarn dev
 ```
 
 By default, this server listens on localhost:3000. 
