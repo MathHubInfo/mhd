@@ -25,6 +25,7 @@
     "react-dom": "^17.0.0",
     "react-latex": "^2.0.0",
     "reactstrap": "^8.0.1",
+    "sharp": "^0.30.3",
     "string-hash": "^1.1.3",
     "typeface-cormorant-garamond": "^1.1.13",
     "typeface-cormorant-unicase": "^1.1.13",
