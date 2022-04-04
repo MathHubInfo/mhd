@@ -1,4 +1,5 @@
-FROM python:3.10-alpine
+# Add all the dependencies
+FROM python:3.10-alpine as base
 
 # Add requirements and install dependencies
 WORKDIR /app/
@@ -11,6 +12,18 @@ RUN mkdir -p /var/www/api/admin/static/ \
     && apk add --no-cache --virtual .build-deps gcc g++ musl-dev postgresql-dev linux-headers python3-dev \
     && pip install -r requirements.txt -r requirements-prod.txt --no-cache-dir \
     && apk --purge del .build-deps
+
+FROM base as frontend
+
+# add and run the frontend code
+ADD frontend /app/frontend
+WORKDIR /app/frontend
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production
+RUN yarn install --frozen-lockfile --production
+RUN yarn build --no-lint
+
+FROM base as final
 
 # Install Django App, configure settings and copy over djano app
 ADD manage.py /app/
@@ -36,12 +49,15 @@ ENV DJANGO_DB_PORT ""
 # Copy over static files
 RUN DJANGO_SECRET_KEY=setup python manage.py collectstatic --noinput
 
-# add and run the frontend code
-ADD frontend /app/frontend
-WORKDIR /app/frontend
-ENV NEXT_TELEMETRY_DISABLED=1
-ENV NODE_ENV=production
-RUN yarn install --frozen-lockfile --production && NODE_ENV=production yarn build --no-lint
+WORKDIR /app/frontend/
+COPY --from=frontend /app/frontend/public ./public
+COPY --from=frontend /app/frontend/package.json ./package.json
+
+# Automatically leverage output traces to reduce image size 
+# https://nextjs.org/docs/advanced-features/output-file-tracing
+COPY --from=frontend /app/frontend/.next/standalone ./
+COPY --from=frontend /app/frontend/.next/static ./.next/static
+
 
 # Add uwsgi, supervisor config and entrypoint
 ADD docker/entrypoint.sh /entrypoint.sh

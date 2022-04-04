@@ -1,4 +1,7 @@
 module.exports = {
+  experimental: {
+    outputStandalone: true
+  },
   async rewrites() {
     return [
       {
