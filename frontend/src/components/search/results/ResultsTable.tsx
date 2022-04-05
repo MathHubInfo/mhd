@@ -1,10 +1,10 @@
 import React, { Component } from "react";
-import { MHDBackendClient } from "../../../../../client";
-import { MHDFilter, ParsedMHDCollection } from "../../../../../client/derived";
-import { TDRFPagedResponse, TMHDItem, TMHDPreFilter } from "../../../../../client/rest";
+import { MHDBackendClient } from "../../../client";
+import { MHDFilter, ParsedMHDCollection } from "../../../client/derived";
+import { TDRFPagedResponse, TMHDItem, TMHDPreFilter } from "../../../client/rest";
 import { Row, Col, Spinner } from "reactstrap";
 import Link from "next/link";
-import Table, { TableColumn, TableState } from "../../../../wrappers/table";
+import Table, { TableColumn, TableState } from "../../wrappers/table";
 
 interface ResultsTableProps extends TableState {
     /** the current collection */

@@ -101,12 +101,3 @@ export class MHDMainHead extends React.Component<MHDMainHeadProps> {
         );
     }
 }
-
-type MHDLoadingProps = Pick<MHDMainProps, "leftHead">;
-
-/** Represents a loading component */
-export class MHDLoading extends React.Component<MHDLoadingProps> {
-    render() {
-        return <MHDMain title={"Loading..."} leftHead={this.props.leftHead} />;
-    }
-}

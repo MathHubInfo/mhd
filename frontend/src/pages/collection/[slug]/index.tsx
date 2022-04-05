@@ -5,9 +5,9 @@ import { Alert, Container } from "reactstrap";
 import { MHDBackendClient, ResponseError } from "../../../client";
 import { MHDFilter, ParsedMHDCollection } from "../../../client/derived";
 import { TMHDCollection, TMHDPreFilter } from "../../../client/rest";
-import ColumnEditor from "../../../components/routes/collection/search/columns/ColumnEditor";
-import FilterEditor from "../../../components/routes/collection/search/filter";
-import ResultsTable from "../../../components/routes/collection/search/results/ResultsTable";
+import ColumnEditor from "../../../components/search/columns/ColumnEditor";
+import FilterEditor from "../../../components/search/filter";
+import ResultsTable from "../../../components/search/results/ResultsTable";
 import { TableState } from "../../../components/wrappers/table";
 import { decodeState, encodeState, PageState } from "../../../state";
 

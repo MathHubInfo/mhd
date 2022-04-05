@@ -5,7 +5,15 @@ import LaTeX from "react-latex";
 import { TMHDProperty } from "../../client/rest";
 
 
-export class InfoButton extends React.Component<{href?: string}, {isOpen: boolean}> {
+export default class PropertyInfoButton extends React.Component<{prop: TMHDProperty}> {
+    render() {
+        const {url, description} = this.props.prop;
+        return <InfoButton href={url || undefined}>
+            <LaTeX>{description || "No description provided"}</LaTeX>
+        </InfoButton>;
+    }
+}
+class InfoButton extends React.Component<{href?: string}, {isOpen: boolean}> {
     state = {
         isOpen: false
     }
@@ -44,14 +52,5 @@ export class InfoButton extends React.Component<{href?: string}, {isOpen: boolea
                 </Tooltip>   
             }
         </>;
-    }
-}
-
-export default class PropertyInfoButton extends React.Component<{prop: TMHDProperty}> {
-    render() {
-        const {url, description} = this.props.prop;
-        return <InfoButton href={url || undefined}>
-            <LaTeX>{description || "No description provided"}</LaTeX>
-        </InfoButton>;
     }
 }

@@ -1,11 +1,11 @@
 import React from "react";
 import { Button, Row, Alert } from "reactstrap";
-import { MHDFilter, ParsedMHDCollection } from "../../../../../client/derived";
-import { MHDMainHead } from "../../../../common/MHDMain";
+import { MHDFilter, ParsedMHDCollection } from "../../../client/derived";
+import { MHDMainHead } from "../../common/MHDMain";
 import CounterDisplay from "../results/CounterDisplay";
 import FilterSelector from "./FilterSelector";
 import LaTeX from "react-latex";
-import { TMHDPreFilter, TMHDCollection } from "../../../../../client/rest";
+import { TMHDPreFilter, TMHDCollection } from "../../../client/rest";
 import Link from "next/link";
 
 interface FilterEditorProps {

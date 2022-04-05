@@ -1,8 +1,8 @@
 import React from "react";
 
-import { MHDBackendClient } from "../../../../../client";
-import { ParsedMHDCollection, MHDFilter } from "../../../../../client/derived";
-import { TMHDPreFilter } from "../../../../../client/rest";
+import { MHDBackendClient } from "../../../client";
+import { ParsedMHDCollection, MHDFilter } from "../../../client/derived";
+import { TMHDPreFilter } from "../../../client/rest";
 
 interface CounterDisplayProps {
     /** the current collection (if any) */
