@@ -18,7 +18,7 @@ These are:
 
 - `/`, `/home/[no]`: an overview page of all existing collections
 - `/about/`: a generic about page
-- `/debug/`: a debug page
+- `/debug/`: a debug page (development mode only)
 - `/collection/[slug]`: a search page for the given collection if it exists, an error page otherwise
 - `/collection/[slug]/about`: an info page about a specific collection
 - `/item/[slug]/[uuid]`: a details page for the specific item
