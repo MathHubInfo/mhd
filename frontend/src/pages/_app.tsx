@@ -1,4 +1,5 @@
 import { AppProps } from "next/app";
+import Head from "next/head";
 
 // load the required fonts
 import "typeface-cormorant-garamond";
@@ -29,6 +30,23 @@ import odk_logo from "../images/logos/opendreamkit_logo.png";
 
 export default function MHDApp({ Component, pageProps }: AppProps<{}>) {
     return <>
+        <Head>
+            <meta charSet="utf-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+            
+            {/* Icons */}
+            <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
+            <link rel="apple-touch-icon" sizes="180x180" href="%PUBLIC_URL%/img/fav/apple-touch-icon.png" />
+            <link rel="icon" type="image/png" sizes="32x32" href="%PUBLIC_URL%/img/fav/favicon-32.png" />
+            <link rel="icon" type="image/png" sizes="16x16" href="%PUBLIC_URL%/img/fav/favicon-16.png" />
+            <link rel="mask-icon" href="%PUBLIC_URL%/img/fav/safari-pinned-tab.svg" color="#ef6d4b" />
+            
+            {/* Manifest and title */}
+            <meta name="apple-mobile-web-app-title" content="MathDataHub" />
+            <meta name="application-name" content="MathDataHub" />
+            <meta name="msapplication-TileColor" content="#da532c" />
+            <meta name="theme-color" content="#ffffff" />
+        </Head>
         <header><MHDHeader /></header>
         <Component {...pageProps} />
         <footer><MHDFooter /></footer>
