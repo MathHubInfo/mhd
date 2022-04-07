@@ -88,9 +88,11 @@ export class MHDMainHead extends React.Component<MHDMainHeadProps> {
             </>;
         }
 
+        const pageTitle = textTitle ?? title;
+
         return (
             <section className={`${styles.search}`}>
-                <Head><title>{textTitle ?? title} | MathDataHub</title></Head>
+                <Head><title>{ pageTitle ? `${pageTitle} | MathDataHub` : "MathDataHub"}</title></Head>
                 <Container>
                     { head }
                     <Row>

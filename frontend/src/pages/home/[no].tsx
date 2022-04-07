@@ -40,7 +40,7 @@ export default function Home({ page, collections: { results, num_pages } }: Home
     </Row>;
 
     // TODO: Title
-    return <MHDMain title="Pick a dataset" head={head} leftHead={leftHead} buttons={buttons} rightHead={rightHead} />;
+    return <MHDMain title="Pick a dataset" textTitle="" head={head} leftHead={leftHead} buttons={buttons} rightHead={rightHead} />;
 }
 
 
