@@ -8,6 +8,8 @@ import LaTeX from "react-latex";
 import { TMHDPreFilter, TMHDCollection } from "../../../client/rest";
 import Link from "next/link";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faCommentDots } from "@fortawesome/free-regular-svg-icons"
 interface FilterEditorProps {
 
     /** the current collection (if any) */
@@ -89,7 +91,7 @@ export default class FilterEditor extends React.Component<FilterEditorProps, Fil
                 <p>
                     <Link href={`/collection/${collection.slug}/about`} passHref>
                         <a target="_blank" rel="noopener noreferrer">
-                            <i className="far fa-comment-dots" data-fa-transform="shrink-2"></i>&nbsp;
+                            <FontAwesomeIcon transform="shrink-2" icon={faCommentDots} />&nbsp;
                             More about this dataset
                         </a>
                     </Link>

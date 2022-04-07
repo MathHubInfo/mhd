@@ -5,6 +5,8 @@ import { TDRFPagedResponse, TMHDItem, TMHDPreFilter } from "../../../client/rest
 import { Row, Col, Spinner } from "reactstrap";
 import Link from "next/link";
 import Table, { TableColumn, TableState } from "../../wrappers/table";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 
 interface ResultsTableProps extends TableState {
     /** the current collection */
@@ -189,7 +191,7 @@ class ItemLink extends React.Component<{collection: ParsedMHDCollection, uuid: s
         return (
             <Link href={`/item/${collection.slug}/${uuid}/`}>
                 <a target="_blank">
-                    <i className="fa fa-info-circle" data-fa-transform="shrink-4 up-3"></i>
+                    <FontAwesomeIcon icon={faInfoCircle} transform="shrink-4 up-3"/>
                 </a>
             </Link>
         )

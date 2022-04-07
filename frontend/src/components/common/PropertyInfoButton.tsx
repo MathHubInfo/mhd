@@ -3,6 +3,8 @@ import { Tooltip } from "reactstrap";
 import LaTeX from "react-latex";
 
 import { TMHDProperty } from "../../client/rest";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
 
 
 export default class PropertyInfoButton extends React.Component<{prop: TMHDProperty}> {
@@ -44,7 +46,7 @@ class InfoButton extends React.Component<{href?: string}, {isOpen: boolean}> {
 
         return <>
             <a href={href || "#!" } target={href && "_blank"} rel="noopener noreferrer" ref={this.buttonRef} onClick={this.onClick}>
-                <i className="far fa-question-circle" data-fa-transform="shrink-4 up-3"></i>
+                <FontAwesomeIcon icon={faQuestionCircle} transform="shrink-4 up-3" />
             </a>
             {this.buttonRef.current &&
                 <Tooltip placement="right" isOpen={isOpen} target={this.buttonRef.current} toggle={this.toggleOpen}>

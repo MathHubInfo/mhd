@@ -11,7 +11,9 @@ import "../css/bootstrapMHD.scss";
 import "katex/dist/katex.min.css";
 
 // load font-awesome
-import "@fortawesome/fontawesome-free/js/all.js";
+import "@fortawesome/fontawesome-svg-core/styles.css"
+import { config } from "@fortawesome/fontawesome-svg-core"
+config.autoAddCss = false
 
 
 //
@@ -22,7 +24,8 @@ import * as React from "react";
 import Image from "next/image";
 import { default as Link } from "next/link";
 import { Col, Container, Row, Navbar, NavbarBrand, NavbarToggler, Collapse, Nav, NavItem, NavLink } from "reactstrap";
-import eu_logo from "../images/logos/eu.svg";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGithub } from "@fortawesome/free-brands-svg-icons";import eu_logo from "../images/logos/eu.svg";
 import fau_logo from "../images/logos/fau_logo.png";
 import kwarc_logo from "../images/logos/kwarc_logo.png";
 import odk_logo from "../images/logos/opendreamkit_logo.png";
@@ -33,14 +36,14 @@ export default function MHDApp({ Component, pageProps }: AppProps<{}>) {
         <Head>
             <meta charSet="utf-8" />
             <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-            
+
             {/* Icons */}
             <link rel="shortcut icon" href="/favicon.ico" />
             <link rel="apple-touch-icon" sizes="180x180" href="/img/fav/apple-touch-icon.png" />
             <link rel="icon" type="image/png" sizes="32x32" href="/img/fav/favicon-32.png" />
             <link rel="icon" type="image/png" sizes="16x16" href="/img/fav/favicon-16.png" />
             <link rel="mask-icon" href="/img/fav/safari-pinned-tab.svg" color="#ef6d4b" />
-            
+
             {/* Manifest and title */}
             <meta name="apple-mobile-web-app-title" content="MathDataHub" />
             <meta name="application-name" content="MathDataHub" />
@@ -84,7 +87,7 @@ class MHDHeader extends React.Component<{}, MHDHeaderState> {
                         </NavItem>
                         <NavItem>
                             <NavLink href="https://github.com/MathHubInfo/mhd" className={"item-link"} target="_blank" rel="noopener noreferrer">
-                                <i className="fab fa-github"></i> GitHub
+                                <FontAwesomeIcon icon={faGithub} /> GitHub
                             </NavLink>
                         </NavItem>
                     </Nav>
@@ -102,7 +105,7 @@ function MHDFooter() {
     return (
         <footer>
             <Container>
-                <Row style={{textAlign: "center", marginTop: "5em"}}>
+                <Row style={{ textAlign: "center", marginTop: "5em" }}>
                     <Col>
                         <LogoLink url="https://kwarc.info/" pic={kwarc_logo} alt="KWARC research group" width={80} height={80} />
                         <LogoLink url="https://fau.de/" pic={fau_logo} alt="FAU Erlangen-Nürnberg" width={220} height={43} />
@@ -121,7 +124,7 @@ function LogoLink(props: { url: string; pic: any; alt: string, width: number, he
             href={props.url}
             target="_blank"
             rel="noopener noreferrer"
-            style={{margin: "0.5em 1.5em"}}>
+            style={{ margin: "0.5em 1.5em" }}>
             <Image src={props.pic} width={props.width} height={props.height} alt={props.alt} />
         </a>
     );

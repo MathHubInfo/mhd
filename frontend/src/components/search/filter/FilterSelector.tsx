@@ -6,6 +6,9 @@ import { TMHDProperty } from "../../../client/rest";
 import styles from "./FilterSelector.module.css";
 import PropertyInfoButton from "../../common/PropertyInfoButton";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus, faMinus, faCheck, faPen } from "@fortawesome/free-solid-svg-icons";
+
 interface FilterSelectorProps {
     /** the current collection */
     collection: ParsedMHDCollection;
@@ -111,7 +114,7 @@ type TFilterAction = {
                             {properties.map((p) => 
                                 <li key={p.slug}
                                     onClick={() => this.handleFilterAction({action: "add", slug: p.slug})}>
-                                    <span className="fa-li"><i className="fas fa-plus"></i></span>
+                                    <FontAwesomeIcon icon={faPlus} listItem />
                                     {p.displayName} {<PropertyInfoButton prop={p} />}
                                 </li>
                             )}
@@ -270,9 +273,9 @@ class SelectedFilter<S = any, T = any> extends React.Component<TSelectedFilterPr
                 }
                 
                 <span className="text-muted small">
-                    <span className={styles.removeButton} onClick={onRemoveFilter}><i className="fas fa-minus"></i></span>
-                    <span className={styles.doneButton} onClick={this.handleApply}><i className="fas fa-check"></i></span>
-                    <span className={styles.editButton} onClick={this.editFilter}><i className="fas fa-pen"></i></span>
+                    <span className={styles.removeButton} onClick={onRemoveFilter}><FontAwesomeIcon icon={faMinus} /></span>
+                    <span className={styles.doneButton} onClick={this.handleApply}><FontAwesomeIcon icon={faCheck} /></span>
+                    <span className={styles.editButton} onClick={this.editFilter}><FontAwesomeIcon icon={faPen} /></span>
                 </span>
             </li>
         );
