@@ -39,7 +39,6 @@ export default function Home({ page, collections: { results, num_pages } }: Home
         </Col>
     </Row>;
 
-    // TODO: Title
     return <MHDMain title="Pick a dataset" textTitle="" head={head} leftHead={leftHead} buttons={buttons} rightHead={rightHead} />;
 }
 
@@ -52,6 +51,6 @@ export const getServerSideProps: GetServerSideProps = async function({ params: {
     const collections = await MHDBackendClient.getInstance().fetchCollections(pageNo, PER_PAGE);
     
     return {
-        props: { page: pageNo, collections }, // will be passed to the page component as props
+        props: { page: pageNo, collections },
     }
 }
