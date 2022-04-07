@@ -232,16 +232,13 @@ http://localhost:8000/api/query/z3zFunctions/?properties=f1,f2&filter=f1%3Df2%26
 
 ### Additive Bases
 
+To import a second collection for testing, use:
+
 ```bash
 python manage.py upsert_collection mhd_data/tests/res/ab_collection.json
 python manage.py insert_data mhd_data/tests/res/ab_data.json --collection "ab" -f "basis,k,n,S,R" -p mhd_data/tests/res/ab_provenance.json
 ```
 
-Here is an example of a query URL:
-
-```
-http://localhost:8000/api/query/z3zFunctions/?properties=f1,f2&filter=f1%3Df2%26%26f2%3C1
-```
 
 
 ### Using (Materialized) Views
