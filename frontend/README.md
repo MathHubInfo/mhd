@@ -43,6 +43,13 @@ yarn dev
 
 By default, this server listens on localhost:3000. 
 
+Additionally, we employ [`@next/bundle-analyzer`](https://www.npmjs.com/package/@next/bundle-analyzer) to debug bundle sizes.
+To view the ouput, run the builder with `ANALYZE` set to true:
+
+```bash
+ANALZYE=true yarn dev
+```
+
 ## Deployment
 
 See [Backend Deployment](../README.md#Deployment). 
