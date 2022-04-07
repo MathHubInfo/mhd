@@ -35,11 +35,11 @@ export default function MHDApp({ Component, pageProps }: AppProps<{}>) {
             <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
             
             {/* Icons */}
-            <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
-            <link rel="apple-touch-icon" sizes="180x180" href="%PUBLIC_URL%/img/fav/apple-touch-icon.png" />
-            <link rel="icon" type="image/png" sizes="32x32" href="%PUBLIC_URL%/img/fav/favicon-32.png" />
-            <link rel="icon" type="image/png" sizes="16x16" href="%PUBLIC_URL%/img/fav/favicon-16.png" />
-            <link rel="mask-icon" href="%PUBLIC_URL%/img/fav/safari-pinned-tab.svg" color="#ef6d4b" />
+            <link rel="shortcut icon" href="/favicon.ico" />
+            <link rel="apple-touch-icon" sizes="180x180" href="/img/fav/apple-touch-icon.png" />
+            <link rel="icon" type="image/png" sizes="32x32" href="/img/fav/favicon-32.png" />
+            <link rel="icon" type="image/png" sizes="16x16" href="/img/fav/favicon-16.png" />
+            <link rel="mask-icon" href="/img/fav/safari-pinned-tab.svg" color="#ef6d4b" />
             
             {/* Manifest and title */}
             <meta name="apple-mobile-web-app-title" content="MathDataHub" />
