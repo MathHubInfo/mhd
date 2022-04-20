@@ -9,6 +9,8 @@ export interface TMHDCollection {
     description: string;
     url: string | null;
 
+    template: string | null;
+
     count: number | null;
 
     preFilters: TMHDPreFilter[]
