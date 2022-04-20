@@ -52,8 +52,8 @@ class SchemaImporter(object):
             if not isinstance(data['preFilters'], list):
                 raise SchemaValidationError(
                     'Key \'preFilters\' is not a list of PreFilters. ')
-                for pf in data['preFilters']:
-                    self._validate_pre_filter(pf)
+            for pf in data['preFilters']:
+                self._validate_pre_filter(pf)
 
     def _validate_property(self, data: Any) -> None:
         if not isinstance(data, dict):
@@ -70,15 +70,15 @@ class SchemaImporter(object):
         for k in ['displayName', 'codec']:
             if k not in data:
                 raise SchemaValidationError(
-                    'Property {0!r} missing key {}. '.format(slug, k))
+                    'Property {0!r} missing key {1}. '.format(slug, k))
             if not isinstance(data[k], str):
                 raise SchemaValidationError(
-                    'Property {0!r}, Key {} is not a string. '.format(slug, k))
+                    'Property {0!r}, Key {1} is not a string. '.format(slug, k))
 
         for k in ['description', 'url']:
             if k in data and not isinstance(data[k], (str, type(None))):
                 raise SchemaValidationError(
-                    'Property {0!r}, Key {} is not a string or undefined. '.format(slug, k))
+                    'Property {0!r}, Key {1} is not a string or undefined. '.format(slug, k))
 
         if 'metadata' in data and not isinstance(data['metadata'], dict):
             raise SchemaValidationError(
@@ -129,10 +129,6 @@ class SchemaImporter(object):
             Returns a pair (collection, created). Collection is the new or update collection.
             When created is true, the collection was newly created. When false, it was updated.
         """
-
-        # Return values
-        collection = None
-        created = False
 
         # read all the data from the existing data
         slug = self.data['slug']

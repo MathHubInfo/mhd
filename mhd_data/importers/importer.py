@@ -186,7 +186,7 @@ class DataImporter(object):
         self.logger.info('Collection {2!r}: Property {1!r}: {0!r} Value(s) saved in database'.format(
             len(values), prop.slug, self.collection.slug))
 
-        # run the garbage collectorto get rid of things we no longer need
+        # run the garbage collector to get rid of things we no longer need
         values = None
         gc.collect()
 
@@ -247,5 +247,5 @@ class ImporterError(Exception):
 
 
 class ImportValidationError(ImporterError):
-    def __init__(self, messsage: str) -> None:
+    def __init__(self, message: str) -> None:
         super().__init__('Invalid input: {}'.format(message))

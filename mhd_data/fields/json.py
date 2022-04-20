@@ -26,7 +26,8 @@ class DumbJSONField(models.TextField):
         else:
             self._has_blank = True
 
-        if 'default' in kwargs and kwargs['default'] is not None:
+        default = kwargs.get('default', None)
+        if default is not None:
             kwargs['default'] = self._dump_json(default)
 
         super().__init__(*args, **kwargs)

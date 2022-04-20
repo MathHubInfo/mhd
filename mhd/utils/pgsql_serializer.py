@@ -4,10 +4,8 @@ import math
 import json
 import re
 
-from typing import TYPE_CHECKING
-if TYPE_CHECKING:
-    from typing import Type, Callable, Any, List, Union, Optional
-    from datetime import datetime
+from typing import Callable, Any, List, Union, Optional
+from datetime import datetime
 
 CSV_NULL = '\\N'
 CSV_NULL_ESCAPED = "E'\\N'"

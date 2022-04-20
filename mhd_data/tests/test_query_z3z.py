@@ -10,13 +10,13 @@ from .collection import insert_testing_data
 
 from ..models import Item
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, TypeAlias, Any
+
 if TYPE_CHECKING:
-    from typing import Union
     from django.db.models import QuerySet
 
-    SQL = QuerySet
-    SQLWithParams = (SQL, List[Union[int, str]])  # an sql query with parameters
+    SQL: TypeAlias = QuerySet
+    SQLWithParams: TypeAlias = tuple[SQL, list[int | str]]  # an sql query with parameters
 
 Z3Z_COLLECTION_PATH = AssetPath(__file__, "res", "z3z_collection.json")
 Z3Z_PROVENANCE_PATH = AssetPath(__file__, "res", "z3z_provenance.json")
@@ -43,7 +43,7 @@ class Z3ZCollectionTest(TestCase):
         self.collection = insert_testing_data(
             Z3Z_COLLECTION_PATH, Z3Z_DATA_PATH, Z3Z_PROVENANCE_PATH, reset=True)
 
-    def _assert_query(self, got: Union[SQL, SQLWithParams], expected_query: str, expected_props: List[Any]):
+    def _assert_query(self, got: SQL | SQLWithParams, expected_query: str, expected_props: list[Any]):
         if isinstance(got, tuple):
             got_qs = got[0]
         else:
