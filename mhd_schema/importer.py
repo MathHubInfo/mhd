@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import os
-from os import PathLike
+
+from django.db.models import QuerySet
 
 from mhd_schema.models import Collection, Property, PreFilter
 from mhd_data.models import CodecManager
@@ -10,15 +11,13 @@ from tqdm import tqdm
 
 import logging
 
-from typing import TYPE_CHECKING
-if TYPE_CHECKING:
-    from typing import Any
+from typing import Optional, Any
 
 class SchemaImporter(object):
     """ Represents the process of an import """
 
     logger: logging.Logger
-    def __init__(self, data: Any = None, root_path : PathLike = "", quiet: bool = False):
+    def __init__(self, data: Any = None, root_path : str = "", quiet: bool = False):
         self.logger = logging.getLogger('mhd.schemaimporter')
         self.logger.setLevel(logging.WARN if quiet else logging.DEBUG)
         self.root_path = root_path
@@ -98,7 +97,7 @@ class SchemaImporter(object):
                 raise SchemaValidationError(
                     'Prefilter value {} is not a string. '.format(k))
 
-    def __call__(self, update: bool = False) -> (Collection, bool):
+    def __call__(self, update: bool = False) -> tuple[Collection, bool]:
         """
             Creates or updates a new collection based on the appropriate
             serialization in value. The value is serialized as:
@@ -197,7 +196,7 @@ class SchemaImporter(object):
         # and return
         return collection, created
 
-    def __call__property(self, collection: Collection, prop: Dict, update: bool = False) -> (Property, bool):
+    def __call__property(self, collection: Collection, prop: dict[str, str], update: bool = False) -> tuple[Property, bool]:
         """
             Creates a (collection-associated) property based on the appropriate
             serialization in value. The value is serialized as:
@@ -233,8 +232,8 @@ class SchemaImporter(object):
         url = prop.get('url', None)
 
         # Check if the property already exists
-        prop = collection.property_set.filter(slug=slug)
-        if prop:
+        prop_set: Optional[QuerySet[Property]] = collection.property_set.filter(slug=slug)
+        if prop_set:
             if not update:
                 raise SchemaImportError(
                     'Property {0:s} already exists'.format(slug))
@@ -242,7 +241,8 @@ class SchemaImporter(object):
             self.logger.info(
                 'Skipping property {0!r} (already exists). '.format(slug))
 
-            p = prop.first()
+            p = prop_set.first()
+            assert p is not None
             p.description = description
             p.url = url
             p.save()
@@ -250,12 +250,12 @@ class SchemaImporter(object):
             return p, False
 
         # Create the property unless it already exists
-        prop = Property.objects.create(
+        created_prop: Property = Property.objects.create(
             slug=slug, displayName=displayName, description=description, url=url, codec=codec, metadata=metadata)
-        prop.collections.add(collection)
-        prop.save()
+        created_prop.collections.add(collection)
+        created_prop.save()
 
-        return prop, True
+        return created_prop, True
 
 
 class SchemaImportError(Exception):

@@ -51,7 +51,7 @@ class Collection(ModelWithMetadata):
         help_text="Custom template for rendering this collection", null=True, blank=True, default=None
     )
 
-    def update_count(self) -> int:
+    def update_count(self) -> Optional[int]:
         """ Updates the count of items in this collection iff it is not frozen """
 
         if self.count_frozen:

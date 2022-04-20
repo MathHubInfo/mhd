@@ -9,7 +9,7 @@ from rest_framework import serializers
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from typing import Any, Dict, List, Optional
+    from typing import Any, Optional
     from django.forms import Field
     from django.db.models import Expression
     from django.db.backends.base.base import BaseDatabaseWrapper
@@ -31,7 +31,7 @@ class DumbJSONField(models.TextField):
 
         super().__init__(*args, **kwargs)
 
-    def deconstruct(self) -> (str, str, List[Any], Dict[str, Any]):
+    def deconstruct(self) -> tuple[str, str, list[Any], dict[str, Any]]:
         name, path, args, kwargs = super().deconstruct()
         if 'default' in kwargs and kwargs['default'] is not None:
             kwargs['default'] = self._load_json(kwargs['default'])

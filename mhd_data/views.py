@@ -7,14 +7,13 @@ from mhd_schema.models import Collection
 from mhd.utils import DefaultRawPaginator
 from rest_framework import exceptions, response
 
-from django.http import Http404
+from django.http import Http404, HttpRequest
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from mhd_schema.models import Property
     from django.db.models import QuerySet
-    from django.db import HttpRequest
-    from typing import Any, List, Optional
+    from typing import Any, Optional
     from rest_framework.response import Response
 
 class QueryViewException(exceptions.APIException):
@@ -22,7 +21,7 @@ class QueryViewException(exceptions.APIException):
     default_detail = "Incorrect query"
 
 class QueryViewMixin:
-    def build_query_params(self) -> (List[Property], Optional[str], Optional[str]):
+    def build_query_params(self) -> tuple[list[Property], Optional[str], Optional[str]]:
         self._collection = get_object_or_404(
             Collection, slug=self.kwargs['cid'])
 

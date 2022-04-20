@@ -6,14 +6,14 @@ from PreJsPy import PreJsPy
 from mhd_data.models import CodecManager, Codec, Item
 from .models import Property, Collection
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, TypeAlias, Type, Any, Optional, Iterable
+
 if TYPE_CHECKING:
-    from typing import List, Type, Any, Optional, Iterable, Union, Dict
 
-    SQL = str
-    SQLWithParams = (SQL, List[Union[int, str]])  # an sql query with parameters
+    SQL: TypeAlias = str
+    SQLWithParams: TypeAlias = tuple[SQL, list[int | str]]  # an sql query with parameters
 
-    FilterAST = Any  # the type used by filter annotations, for now just 'FilterAST'
+    FilterAST: TypeAlias = Any  # the type used by filter annotations, for now just 'FilterAST'
 
 
 class QueryBuilder(object):
@@ -40,10 +40,10 @@ class QueryBuilder(object):
     def _prop_cid(prop: Property) -> str:
         return '"property_cid_{}"'.format(prop.slug)
 
-    def __call__(self, properties: Optional[List[Property]], where: Optional[str], order: Optional[str], offset: Optional[int], limit: Optional[int], count_query: bool, use_view: Optional[str]) -> SQLWithParams:
+    def __call__(self, properties: Optional[Iterable[Property]], where: Optional[str], order: Optional[str], offset: Optional[int], limit: Optional[int], count_query: bool, use_view: Optional[str]) -> SQLWithParams:
         """ Builds an SQL query on this collection. See inline documentation for details of the query.
 
-        :param properties: A list of properties to return. When omitted, all properties are returned.
+        :param properties: An iterable of properties to return. When omitted, all properties are returned.
         :param where: A WHERE string. When omitted, no WHERE clause in the query is generated. See FilterBuilder for details.
         :param order: Order of properties to return. When omitted, the default order of properties is used.
         :param offset: Offset to start return of elements at. If omitted no OFFSET is generated.
@@ -154,7 +154,7 @@ class QueryBuilder(object):
 
         # select all the properties
         SQL = 'SELECT I.id as id'
-        SQL_ARGS = []
+        SQL_ARGS: list[str | int] = []
 
         for prop in self.collection.properties():
             virtual_table = self._prop_table(prop)
@@ -197,11 +197,11 @@ class QueryBuilder(object):
 
     def order_builder(self, order: str, properties: Iterable[Property]) -> SQL:
         """ Builds the order part of the query """
-        property_dict = {
-            p.slug: p for p in properties}  # type: Dict[str, Property]
+        property_dict: dict[str, Property] = {
+            p.slug: p for p in properties}
         return ', '.join([self._parser_order(o, property_dict) for o in order.split(',')])
 
-    def _parser_order(self, oslug: str, property_dict: Dict[str, Property]) -> str:
+    def _parser_order(self, oslug: str, property_dict: dict[str, Property]) -> str:
         order = oslug.strip()
         if len(order) == 0:
             raise QueryBuilderError('Order string received empty property')
@@ -242,9 +242,9 @@ class FilterBuilder(object):
         self.collection = collection
         self._init_parser()
 
-    def _init_parser(self):
+    def _init_parser(self) -> None:
         """ Setups up the parser initially """
-        self.parser = PreJsPy()  # type: PreJsPy
+        self.parser = PreJsPy()
         # constants: true, false, null
         self.parser.setConstants({'true': True, 'false': False, 'null': None})
         self.parser.setUnaryOperators(['!'])  # only a single unary operator
@@ -357,7 +357,7 @@ class FilterBuilder(object):
 
         return codecL.operate_both(columnL, op, columnR)
 
-    def _resolve_codec(self, slug: str, op: str) -> (Property, Type[Codec], str):
+    def _resolve_codec(self, slug: str, op: str) -> tuple[Property, Type[Codec], str]:
         """ Returns a triple (property, codec, column) for a given identifier """
 
         # Find the matching property
@@ -366,7 +366,7 @@ class FilterBuilder(object):
             if p.slug == slug:
                 prop = p
                 break
-        if prop == None:
+        if prop is None:
             raise FilterBuilderError("Unknown property {}".format(slug))
 
         codec = prop.codec_model

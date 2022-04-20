@@ -11,7 +11,7 @@ from django.db.models import JSONField
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from typing import Optional, Iterator, Any, List, Type, IO, Dict, Callable
+    from typing import Optional, Iterator, Any, Type, IO, Callable
     from django.db.models import Model
 
 
@@ -26,7 +26,7 @@ class BatchImporter(object):
         self.logger.setLevel(logging.WARN if quiet else logging.DEBUG)
         self.batch_size = batch_size
 
-    def __call__(self, model: Type[Model], fields: List[str], values: Iterator[Any], count_values: Optional[int] = None) -> None:
+    def __call__(self, model: Type[Model], fields: list[str], values: Iterator[Any], count_values: Optional[int] = None) -> None:
         """ Imports multiple values at once
             :param model: Model instance to import values from
             :param fields: List of fields to import values for
@@ -55,7 +55,7 @@ class BatchImporter(object):
 class BulkCreateImporter(BatchImporter):
     """ Bulk imports values using the bulk_create function """
 
-    def __call__(self, model: Type[Model], fields: List[str], values: Iterator[Any], count_values: Optional[int] = None) -> None:
+    def __call__(self, model: Type[Model], fields: list[str], values: Iterator[Any], count_values: Optional[int] = None) -> None:
         """ Imports multiple values at once
             :param model: Model instance to import values from
             :param fields: List of fields to import values for
@@ -79,7 +79,7 @@ class BulkCreateImporter(BatchImporter):
 
 
 class SerializingImporter(BatchImporter):
-    PREPPER_OVERRIDES: Dict[Type[Model], Callable] = {
+    PREPPER_OVERRIDES: dict[Type[Model], Callable] = {
         JSONField: lambda x: x,
     }
 
@@ -100,7 +100,7 @@ class SerializingImporter(BatchImporter):
     def _get_serializer(self, model: Type[Model], field_name: str) -> Callable:
         return make_pgsql_serializer(model._meta.get_field(field_name).db_type(connection=connection))
 
-    def _serialize(self, stream: IO[str], model: Type[Model], fields: List[str], values: Iterator[Any], count_values: Optional[int] = None):
+    def _serialize(self, stream: IO[str], model: Type[Model], fields: list[str], values: Iterator[Any], count_values: Optional[int] = None):
         """ Serialializes values into stream as csv and returns the size of stream in bytes """
 
         # find serializers and prep values for the database
@@ -117,7 +117,7 @@ class SerializingImporter(BatchImporter):
 
 
 class CopyFromImporter(SerializingImporter):
-    def __call__(self, model: Type[Model], fields: List[str], values: Iterator[Any], count_values: Optional[int] = None) -> None:
+    def __call__(self, model: Type[Model], fields: list[str], values: Iterator[Any], count_values: Optional[int] = None) -> None:
         """ Imports multiple values at once
             :param model: Model instance to import values from
             :param fields: List of fields to import values for
@@ -173,7 +173,7 @@ class CopyFromFile(SerializingImporter):
         with open(self._sql_path, 'a') as f:
             f.write(s + '\n')
 
-    def __call__(self, model: Type[Model], fields: List[str], values: Iterator[Any], count_values: Optional[int] = None):
+    def __call__(self, model: Type[Model], fields: list[str], values: Iterator[Any], count_values: Optional[int] = None):
         """ Imports multiple values at once
             :param model: Model instance to import values from
             :param fields: List of fields to import values for

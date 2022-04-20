@@ -15,13 +15,11 @@ class QuerySetLike(object):
     query: QuerySetLikeQuery
 
     def __init__(self, sql: str, params: List[Any], connection: Optional[Connection] = None):
-        # type: Connection
         self._connection = connection if connection is not None else default_connection
         self.query = QuerySetLikeQuery(sql, params)
 
     def fetchone(self):
         """ Fetches a single result from the server """
-        self._connection
         with self._connection.cursor() as c:
             c.execute(self.query.sql, self.query.params)
             return c.fetchone()

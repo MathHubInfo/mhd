@@ -5,26 +5,26 @@ import logging
 
 from django.db import models
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, TypeAlias, Optional, Any
+
 if TYPE_CHECKING:
-    from typing import List, Optional, Any
 
     from django.db.backends.utils import CursorWrapper as Cursor
     from django.db.backends.base.base import BaseDatabaseWrapper as Connection
 
-    SQLWithParams = [str, List[Any]]
+    SQLWithParams: TypeAlias = list[str, list[Any]]
 
 class ViewImplementation:
     name: str
     sql: str
     materialized: bool
-    params: Optional[List[Any]]
+    params: Optional[list[Any]]
 
     @staticmethod
     def supports_materialization(connection) -> bool:
         return connection.vendor != 'sqlite'
 
-    def _quote_values(self, connection: Connection, cursor: Cursor, values: List[Any]) -> List[str]:
+    def _quote_values(self, connection: Connection, cursor: Cursor, values: list[Any]) -> list[str]:
         """ Quotes a list of values for inclusion in a different sql value """
 
         # make a statement SELECT quote(%s), quote(%s), ... for each of the values
@@ -32,7 +32,7 @@ class ViewImplementation:
         cursor.execute(sql, values)
         return cursor.fetchone()
 
-    def _execute(self, connection: Connection, cursor: Cursor, sql: str, args: List[Any], force_manual_escape: bool = False) -> None:
+    def _execute(self, connection: Connection, cursor: Cursor, sql: str, args: list[Any], force_manual_escape: bool = False) -> None:
         if force_manual_escape:
             # in a manual escape sitatuon, we use the quote() SQL function to manually escape each parameter
             escape_args = self._quote_values(connection, cursor, args)
@@ -148,7 +148,7 @@ class View(ViewImplementation, models.Model):
         help_text='Boolean indicating if this view is materialized')
 
     @staticmethod
-    def make_view(name: str, sql: str, params: Optional[List[Any]] = None, materialized: bool = False, update: bool = False) -> View:
+    def make_view(name: str, sql: str, params: Optional[list[Any]] = None, materialized: bool = False, update: bool = False) -> View:
         """ Gets an appropriate view. Should call .sync() on the view when possible """
 
         # get or update the view
@@ -176,7 +176,7 @@ class View(ViewImplementation, models.Model):
                 v.delete()
 
     @property
-    def params(self) -> Optional[List[Any]]:
+    def params(self) -> Optional[tuple[Any]]:
         """ Sets the parameters of this view """
         return tuple(json.loads(self.paramsJSON))
 
