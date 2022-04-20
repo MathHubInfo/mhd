@@ -370,7 +370,7 @@ class FilterBuilder(object):
             raise FilterBuilderError("Unknown property {}".format(slug))
 
         codec = prop.codec_model
-        if not op in codec.operators:
+        if op not in codec.operators:
             raise FilterBuilderError("Codec {} does not support operator {}".format(
                 codec.get_codec_name(), op))
 

@@ -35,4 +35,4 @@ class PropertyTest(TestCase):
         """ Checks that the .codecs property of a collection returns the right codecs and properties """
 
         self.assertSetEqual(self.collection.codecs,
-                            set([StandardInt, StandardBool]))
+                            {StandardInt, StandardBool})
