@@ -55,7 +55,7 @@ class PreFieldFieldSerializer(serializers.ModelSerializer):
 class CollectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Collection
-        fields = ['displayName', 'slug', 'description', 'url', 'metadata', 'properties', 'preFilters', 'flag_large_collection', 'count']
+        fields = ['displayName', 'slug', 'description', 'url', 'metadata', 'properties', 'preFilters', 'flag_large_collection', 'count', 'template']
 
     properties = serializers.SerializerMethodField()
     def get_properties(self, obj: Collection) -> PropertySerializer:

@@ -10,7 +10,10 @@ from ..models import Collection
 from mhd_tests.utils import LoadJSONAsset, AssetPath
 
 COLLECTION_V0_PATH = AssetPath(__file__, "res", "collection_v0.json")
+COLLECTION_V0_PATH_INLINE = AssetPath(__file__, "res", "collection_v0_inline_template.json")
 COLLECTION_V0_ASSET = LoadJSONAsset(COLLECTION_V0_PATH)
+COLLECTION_V0_TEMPLATE = open(AssetPath(__file__, "res", "simple_template.jinja2")).read()
+COLLECTION_V0_ASSET["template"] = COLLECTION_V0_TEMPLATE
 
 
 class CreateCollectionTest(TestCase):
@@ -31,7 +34,7 @@ class CreateCollectionTest(TestCase):
             "next": None,
             "previous": None,
             "num_pages": 1,
-            "results": [COLLECTION_V0_ASSET]
+            "results": [COLLECTION_V0_ASSET],
         }
 
         self.assertEqual(response.status_code, 200)
@@ -47,3 +50,10 @@ class CreateCollectionTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content, expected_response)
+
+    def test_collection_with_inline_template(self):
+        call_command('upsert_collection', COLLECTION_V0_PATH_INLINE,
+                     update=False, quiet=True)
+
+        collection = Collection.objects.get(slug='z3zFunctionsInline')
+        self.assertEqual(collection.template, "Hello,\n brave %s new {{ name }}")

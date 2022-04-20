@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import os
+from os import PathLike
+
 from mhd_schema.models import Collection, Property, PreFilter
 from mhd_data.models import CodecManager
 
@@ -15,9 +18,10 @@ class SchemaImporter(object):
     """ Represents the process of an import """
 
     logger: logging.Logger
-    def __init__(self, data: Any = None, quiet: bool = False):
+    def __init__(self, data: Any = None, root_path : PathLike = "", quiet: bool = False):
         self.logger = logging.getLogger('mhd.schemaimporter')
         self.logger.setLevel(logging.WARN if quiet else logging.DEBUG)
+        self.root_path = root_path
 
         self._validate_data(data)
         self.data = data
@@ -139,6 +143,14 @@ class SchemaImporter(object):
         metadata = self.data.get('metadata', None)
         properties = self.data['properties']
         preFilters = self.data.get('preFilters', None) or []
+        template = self.data.get('template', None)
+
+        if isinstance(template, dict):
+            template_file = template.get('file', '')
+            try:
+                template = open(os.path.join(self.root_path, template_file), 'r').read()
+            except FileNotFoundError:
+                raise SchemaImportError(f'Template file: {template_file} not found')
 
         # if we do not want to update
         # check if the collection already exists and raise an error
@@ -152,6 +164,7 @@ class SchemaImporter(object):
             'description': description,
             'url': url,
             'metadata': metadata,
+            'template': template,
         })
         self.logger.info('{1!s} collection {0!r}'.format(
             slug, 'Created' if created else 'Updated'))

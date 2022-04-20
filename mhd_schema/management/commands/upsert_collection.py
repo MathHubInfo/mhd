@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import pathlib
 from mhd.utils import with_simulate_arg
 
 from django.core.management.base import BaseCommand
@@ -30,8 +31,10 @@ class Command(BaseCommand):
     def handle(self, *args: Any, **kwargs: Any) -> None:
         # open the file and read json
         data = None
-        with open(kwargs['filename']) as f:
+        filename = kwargs['filename']
+        root_path = pathlib.Path(filename)
+        with open(filename) as f:
             data = json.load(f)
 
-        importer = SchemaImporter(data, kwargs['quiet'])
+        importer = SchemaImporter(data, root_path.parent, kwargs['quiet'])
         importer(update=kwargs['update'])
