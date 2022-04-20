@@ -47,6 +47,10 @@ class Collection(ModelWithMetadata):
     viewName: Optional[str] = models.SlugField(
         help_text="Name for the (potentially materialized) view of this collection (if any)", unique=True, null=True, blank=True)
 
+    template: Optional[str] = models.TextField(
+        help_text="Custom template for rendering this collection", null=True, blank=True, default=None
+    )
+
     def update_count(self) -> int:
         """ Updates the count of items in this collection iff it is not frozen """
 
