@@ -13,17 +13,16 @@ from functools import lru_cache
 
 from mhd.utils import get_standard_serializer_field
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, TypeAlias, Iterable, Type, Optional, Any
+
 if TYPE_CHECKING:
-    from typing import Iterable, Type, Optional, Any, Union
     from django.db.models import Field
     from rest_framework.serializers import Field as SerializerField
 
     from uuid import UUID
 
-    SQL = str
-    SQLWithParams = (SQL, List[Union[int, str]])  # an sql query with parameters
-
+    SQL: TypeAlias = str
+    SQLWithParams: TypeAlias = tuple[SQL, list[int | str]]  # an sql query with parameters
 
 
 class CodecManager(models.Manager):
@@ -44,7 +43,7 @@ class CodecManager(models.Manager):
         if codecs is None:
             codecs = CodecManager.find_all_codecs()
 
-        ops = set()
+        ops: set[str] = set()
         for codec in codecs:
             ops.update(codec.operators)
 

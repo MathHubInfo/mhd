@@ -7,7 +7,8 @@ from collections import OrderedDict
 
 from .raw_paginator import RawQuerySetPaginator
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
+
 if TYPE_CHECKING:
     pass
 
@@ -15,7 +16,7 @@ class DefaultPaginator(pagination.PageNumberPagination):
     page_size_query_param: str = "per_page"
     max_page_size: int = 100
 
-    def get_paginated_response(self, data: List[Any]) -> Response:
+    def get_paginated_response(self, data: list[Any]) -> Response:
         return Response(OrderedDict([
             ('count', self.page.paginator.count),
             ('next', self.get_next_link()),

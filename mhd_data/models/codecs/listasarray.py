@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from typing import Type
 
 @codec_operator
-def ListAsArrayCodec(elementCodec: Type[Codec]) -> (Type[object], str):
+def ListAsArrayCodec(elementCodec: Type[Codec]) -> tuple[Type[object], str]:
     """ A Codec Operator for Matrices as list """
 
     class CodecClass():

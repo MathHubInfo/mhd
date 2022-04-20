@@ -14,6 +14,8 @@ import os
 
 # if we have psycopg2cffi installed, use it
 # (which will work with pypy)
+from typing import List
+
 try:
     from psycopg2cffi import compat
     compat.register()
@@ -34,7 +36,7 @@ SECRET_KEY = 'o0_0r&@$9=!)#^78dao^f4rd^kxiw1db&navvk27q8hest#_fb'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS: List[str] = []
 
 
 # Application definition

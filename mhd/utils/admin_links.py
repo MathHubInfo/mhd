@@ -2,14 +2,16 @@ from __future__ import annotations
 
 import functools
 
+from django.db import models
 from django.urls import reverse
 from django.utils.html import format_html
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
+
 if TYPE_CHECKING:
     from typing import Callable, Optional
 
-def AdminLink(original: Callable[..., Optional[str]]) -> Callable[..., Optional[str]]:
+def AdminLink(original: Callable[..., Optional[models.Model]]) -> Callable[..., Optional[str]]:
     """ Decorator that makes a Django admin ForeignKey clickable """
 
     @functools.wraps(original)

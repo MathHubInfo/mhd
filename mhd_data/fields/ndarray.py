@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 class DumbNDArrayField(DumbJSONField):
     """ Stores values as an n-dimensional array """
 
-    def __init__(self, *args: Any, typ: Field=None, dim: int=1, size: Optional[int]=None, **kwargs: Any) -> None:
+    def __init__(self, *args: Any, typ: Optional[Field]=None, dim: int=1, size: Optional[int]=None, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
         self.dim = int(dim)
@@ -55,7 +55,7 @@ class DumbNDArrayField(DumbJSONField):
         validate_ndarray(value, self.dim)
         return True
 
-    def deconstruct(self) -> (str, str, List[Any], Dict[str, Any]):
+    def deconstruct(self) -> tuple[str, str, List[Any], Dict[str, Any]]:
         name, path, args, kwargs = super().deconstruct()
         kwargs['dim'] = self.dim
         kwargs['typ'] = self.typ
@@ -65,7 +65,7 @@ class DumbNDArrayField(DumbJSONField):
 
 class PostgresNDArrayField(ArrayField):
 
-    def __init__(self, typ: Field=None, dim: int=1, **kwargs: Any):
+    def __init__(self, typ: Optional[Field]=None, dim: int=1, **kwargs: Any):
         self.dim = int(dim)
         if self.dim < 0:
             raise ValueError('dimension must be a positive integer')
@@ -78,7 +78,7 @@ class PostgresNDArrayField(ArrayField):
 
         super().__init__(base_field, **kwargs)
 
-    def deconstruct(self) -> (str, str, List[Any], Dict[str, Any]):
+    def deconstruct(self) -> tuple[str, str, List[Any], Dict[str, Any]]:
         name, path, args, kwargs = super().deconstruct()
         kwargs.pop('base_field')
         kwargs['dim'] = self.dim
