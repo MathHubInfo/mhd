@@ -1,8 +1,8 @@
-import React from "react";
+import React from "react"
 
-import { MHDBackendClient } from "../../../client";
-import { ParsedMHDCollection, MHDFilter } from "../../../client/derived";
-import { TMHDPreFilter } from "../../../client/rest";
+import { MHDBackendClient } from "../../../client"
+import type { ParsedMHDCollection, MHDFilter } from "../../../client/derived"
+import type { TMHDPreFilter } from "../../../client/rest"
 
 interface CounterDisplayProps {
     /** the current collection (if any) */
@@ -45,7 +45,7 @@ export default class CounterDisplay extends React.Component<CounterDisplayProps,
         // because we are in a non-blocking (async) situation, we may have multiple
         // updates at the same time. To keep track if a newer one has already been applied
         // we use the current time, which is strictly increasing
-        const time = new Date().getTime();
+        const time = new Date().getTime()
 
         
         // we want to set loading to true, to display a loading indicator
@@ -53,64 +53,64 @@ export default class CounterDisplay extends React.Component<CounterDisplayProps,
         // we only display this after {results_loading_delay} ms. 
         setTimeout(() => {
             this.setState(({ last_update }: CounterDisplayState) => {
-                if (last_update >= time) return null; // an update was applied
-                return { loading: true };
-            });
-        }, this.props.results_loading_delay);
+                if (last_update >= time) return null // an update was applied
+                return { loading: true }
+            })
+        }, this.props.results_loading_delay)
 
 
         // update the counter using the APIClient
         // fallback to 'NaN' when an error occurs, and log the error during development
-        let count = NaN;
+        let count = NaN
         try {
-            count = await MHDBackendClient.getInstance().fetchItemCount(this.props.collection, this.props.pre_filter, this.props.filters);
+            count = await MHDBackendClient.getInstance().fetchItemCount(this.props.collection, this.props.pre_filter, this.props.filters)
         } catch (e) {
-            if (process.env.NODE_ENV !== "production") console.error(e);
+            if (process.env.NODE_ENV !== "production") console.error(e)
         }
 
         // for introducing a dummy delay of 2 seconds, uncomment the following line
         // await new Promise((resolve) => setTimeout(resolve, 2000));
 
         this.setState(({ last_update }: CounterDisplayState) => {
-            if (last_update > time) return null; // newer update was already applied
+            if (last_update > time) return null // newer update was already applied
 
             return {
                 loading: false,
                 count,
                 last_update: time,
-            };
-        });
+            }
+        })
     }
 
     componentDidMount() {
-        this.scheduleCountUpdate();
+        this.scheduleCountUpdate()
     }
 
     componentDidUpdate(prevProps: CounterDisplayProps, prevState: CounterDisplayState) {
         // compute old hash
-        const {filters: prevFilter, pre_filter: prevPreFilter, collection: prevCollection} = prevProps;
-        const oldHash = MHDBackendClient.hashFetchItemCount(prevCollection, prevPreFilter, prevFilter);
+        const { filters: prevFilter, pre_filter: prevPreFilter, collection: prevCollection } = prevProps
+        const oldHash = MHDBackendClient.hashFetchItemCount(prevCollection, prevPreFilter, prevFilter)
 
         // compute new hash
-        const { filters: newFilter, pre_filter: newPreFilter, collection: newCollection } = this.props;
-        const newHash = MHDBackendClient.hashFetchItemCount(newCollection, newPreFilter, newFilter);
+        const { filters: newFilter, pre_filter: newPreFilter, collection: newCollection } = this.props
+        const newHash = MHDBackendClient.hashFetchItemCount(newCollection, newPreFilter, newFilter)
 
         // if we have different hashes, we need to re-count
         if (oldHash !== newHash) {
-            this.scheduleCountUpdate();
+            this.scheduleCountUpdate()
         }
     }
 
     render() {
-        const { loading, count } = this.state;
+        const { loading, count } = this.state
         
         // TODO: Show a spinner here once the bootstrap theme is fixed
-        if(loading) return <>Matches found: <i>Loading...</i></>;
+        if(loading) return <>Matches found: <i>Loading...</i></>
 
         // when something went wrong, display an error
         if (isNaN(count)) return <>Matches found: <i></i></>
 
         // else return the actual count
-        return <>Matches found: <i>{count}</i></>;
+        return <>Matches found: <i>{count}</i></>
     }
 }

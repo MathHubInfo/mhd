@@ -1,6 +1,6 @@
-import React from "react";
-import { Container } from "reactstrap";
-import MHDMain from "../components/common/MHDMain";
+import React from "react"
+import { Container } from "reactstrap"
+import MHDMain from "../components/common/MHDMain"
 
 export default function MHDAboutPage() {
     return <MHDMain title="About">
@@ -28,5 +28,5 @@ export default function MHDAboutPage() {
                 You can learn more at the <a href="https://www.go-fair.org/fair-principles/">GO FAIR website</a> or
                 in the <a href="http://www.nature.com/articles/sdata201618">original publication</a>.</p>
         </Container>
-    </MHDMain>;
+    </MHDMain>
 }

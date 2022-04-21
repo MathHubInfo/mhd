@@ -1,13 +1,14 @@
-import React from "react";
-import { Col } from "reactstrap";
-import { MHDFilter, ParsedMHDCollection } from "../../../client/derived";
-import Codec, { TValidationResult } from "../../../codecs/codec";
-import { TMHDProperty } from "../../../client/rest";
-import styles from "./FilterSelector.module.css";
-import PropertyInfoButton from "../../common/PropertyInfoButton";
+import React from "react"
+import { Col } from "reactstrap"
+import type { MHDFilter, ParsedMHDCollection } from "../../../client/derived"
+import type { TValidationResult } from "../../../codecs/codec"
+import type Codec from "../../../codecs/codec"
+import type { TMHDProperty } from "../../../client/rest"
+import styles from "./FilterSelector.module.css"
+import PropertyInfoButton from "../../common/PropertyInfoButton"
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faMinus, faCheck, faPen } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faPlus, faMinus, faCheck, faPen } from "@fortawesome/free-solid-svg-icons"
 
 interface FilterSelectorProps {
     /** the current collection */
@@ -60,7 +61,7 @@ type TFilterAction = {
  */
  export default class FilterSelector extends React.Component<FilterSelectorProps, FilterSelectorState> {
     state: FilterSelectorState = {
-        selected: this.props.initialFilters.map(({slug, value}) => ({
+        selected: this.props.initialFilters.map(({ slug, value }) => ({
             uid: (this.number++),
             initial: true,
             slug,
@@ -69,17 +70,17 @@ type TFilterAction = {
     }
 
     // number used for filter state
-    private number = 0;
+    private number = 0
     
     /** updates the state of filters */
     private readonly handleFilterAction = (par: TFilterAction) => {
         // fetch a copy of the new filters
-        const selected = this.state.selected.slice();
+        const selected = this.state.selected.slice()
 
         // add a new element
         if (par.action === "add") {
-            this.number++;
-            selected.push({slug: par.slug, uid: this.number, value: null, initial: false});
+            this.number++
+            selected.push({ slug: par.slug, uid: this.number, value: null, initial: false })
         
         // update the value of an existing element
         } else if(par.action === "update") {
@@ -88,23 +89,23 @@ type TFilterAction = {
             selected[par.i] = {
                 ...selected[par.i],
                 value: par.value,
-            };
+            }
         
         // remove an element
         } else {
-            selected.splice(par.i, 1);
+            selected.splice(par.i, 1)
         }
 
         // update the state and notify the parent
-        this.setState({ selected });
-        this.props.onFilterUpdate(selected);
+        this.setState({ selected })
+        this.props.onFilterUpdate(selected)
     }
 
 
     
     /** renders the available filters */
     private renderAvailable() {
-        const { collection: { properties } } = this.props;
+        const { collection: { properties } } = this.props
         return(
             <div>
                 <h5>Available conditions</h5>
@@ -113,7 +114,7 @@ type TFilterAction = {
                         <ul className="fa-ul">
                             {properties.map((p) => 
                                 <li key={p.slug}
-                                    onClick={() => this.handleFilterAction({action: "add", slug: p.slug})}>
+                                    onClick={() => this.handleFilterAction({ action: "add", slug: p.slug })}>
                                     <FontAwesomeIcon icon={faPlus} listItem />
                                     {p.displayName} {<PropertyInfoButton prop={p} />}
                                 </li>
@@ -122,13 +123,13 @@ type TFilterAction = {
                     </div>
                 </div>
             </div>
-        );
+        )
     }
     
     /** renders the selected filters */
     private renderSelected() {
-        const { selected } = this.state;
-        const { collection: { propMap, codecMap } } = this.props;
+        const { selected } = this.state
+        const { collection: { propMap, codecMap } } = this.props
 
         return(
             <div>
@@ -142,14 +143,14 @@ type TFilterAction = {
                                     property={propMap.get(filter.slug)!}
                                     codec={codecMap.get(filter.slug)!}
                                     filter={filter}
-                                    onApplyFilter={(v) => this.handleFilterAction({action: "update", i: index, value: v})}
-                                    onRemoveFilter={() => this.handleFilterAction({action: "remove", i: index})}/>
+                                    onApplyFilter={(v) => this.handleFilterAction({ action: "update", i: index, value: v })}
+                                    onRemoveFilter={() => this.handleFilterAction({ action: "remove", i: index })}/>
                             ))}
                         </ul>
                     </div>
                 </div>
             </div>
-        );
+        )
     }
     
     render() {
@@ -162,7 +163,7 @@ type TFilterAction = {
                     {this.renderSelected()}
                 </Col>
             </>
-        );
+        )
     }
 }
 
@@ -199,35 +200,35 @@ class SelectedFilter<S = any, T = any> extends React.Component<TSelectedFilterPr
 
     state: TSelectedFilterState<T> = {
         edit: !this.props.filter.initial,
-        internalValue: this.props.codec.parseFilterValue(this.props.filter.value)
+        internalValue: this.props.codec.parseFilterValue(this.props.filter.value),
     }
     
     editFilter = () => {
-        this.setState({ edit: true, valid: true });
+        this.setState({ edit: true, valid: true })
     }
     
     handleValueUpdate = (internalValue: T, surpressValidation?: boolean) => {
         // if we want to surpress validation
         if ( surpressValidation ) {
-            this.setState({ internalValue, valid: undefined });
-            return;
+            this.setState({ internalValue, valid: undefined })
+            return
         }
 
-        const { valid } = this.validateValue(internalValue);
-        this.setState({ internalValue, valid });
+        const { valid } = this.validateValue(internalValue)
+        this.setState({ internalValue, valid })
     }
 
     /**
      * Validates the internal value of this result
      */
     validateValue = (internalValue: T): TValidationResult => {
-        const { codec, filter: {value: lastValue}} = this.props;
+        const { codec, filter: { value: lastValue } } = this.props
         
         // validate using the codec
         try {
             return codec.cleanFilterValue(internalValue, lastValue || undefined )
         } catch(e: any) {
-            return { valid: false, message: (e || "").toString()};
+            return { valid: false, message: (e || "").toString() }
         }
     }
     
@@ -239,25 +240,25 @@ class SelectedFilter<S = any, T = any> extends React.Component<TSelectedFilterPr
         
         // when valid update the parent
         if (validationResult.valid) {
-            this.setState({ valid: true, edit: false });
-            this.props.onApplyFilter(validationResult.value);
+            this.setState({ valid: true, edit: false })
+            this.props.onApplyFilter(validationResult.value)
 
         // else mark as invalid
         } else {
-            this.setState({ valid: false });
+            this.setState({ valid: false })
         }
     }
 
     componentDidMount() {
-        this.handleValueUpdate(this.state.internalValue, false);
+        this.handleValueUpdate(this.state.internalValue, false)
     }
     
     render() {
-        const { edit, internalValue, valid } = this.state;
-        const { onRemoveFilter, property: { displayName }, codec } = this.props;
+        const { edit, internalValue, valid } = this.state
+        const { onRemoveFilter, property: { displayName }, codec } = this.props
 
-        const FilterViewerComponent = codec.filterViewerComponent();
-        const FilterEditorComponent = codec.filterEditorComponent();
+        const FilterViewerComponent = codec.filterViewerComponent()
+        const FilterEditorComponent = codec.filterEditorComponent()
 
         return(
             <li className={(edit ? styles.edit : "")}>
@@ -278,6 +279,6 @@ class SelectedFilter<S = any, T = any> extends React.Component<TSelectedFilterPr
                     <span className={styles.editButton} onClick={this.editFilter}><FontAwesomeIcon icon={faPen} /></span>
                 </span>
             </li>
-        );
+        )
     }
 }

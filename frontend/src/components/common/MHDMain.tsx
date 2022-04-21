@@ -1,8 +1,7 @@
-import React from "react";
-import { Row, Col, Container } from "reactstrap";
-import styles from "./MHDMain.module.css";
-import Head from "next/head";
-import { text } from "@fortawesome/fontawesome-svg-core";
+import React from "react"
+import { Row, Col, Container } from "reactstrap"
+import styles from "./MHDMain.module.css"
+import Head from "next/head"
 
 interface MHDMainProps {
     /** title of the current page */
@@ -35,14 +34,14 @@ interface MHDMainProps {
  */
 export default class MHDMain extends React.Component<MHDMainProps> {
     render() {
-        const { title, textTitle, head, wide, leftHead, buttons, rightHead, children } = this.props;
+        const { title, textTitle, head, wide, leftHead, buttons, rightHead, children } = this.props
         
         return (
             <main>
                 <MHDMainHead title={title} textTitle={textTitle} head={head} wide={wide} leftHead={leftHead} buttons={buttons} rightHead={rightHead} />
                 { children }
             </main>
-        );
+        )
     }
 }
 
@@ -51,23 +50,23 @@ type MHDMainHeadProps = Pick<MHDMainProps, "title" | "textTitle" | "head" | "lef
 /** Layouting head */
 export class MHDMainHead extends React.Component<MHDMainHeadProps> {
     componentDidMount() {
-        this.checkReceivedTitle();
+        this.checkReceivedTitle()
     }
     componentDidUpdate() {
-        this.checkReceivedTitle();
+        this.checkReceivedTitle()
     }
     private readonly checkReceivedTitle = () => {
-        if (process.env.NODE_ENV !== "development") return;
+        if (process.env.NODE_ENV !== "development") return
 
-        const { textTitle, title } = this.props;
+        const { textTitle, title } = this.props
         if (typeof title !== "string" && !textTitle) {
             console.warn("MHDMainHead: Received non-string title, but no textTitle", title, textTitle)
         }
     }
     render() {
-        const { title, textTitle, head, wide, leftHead, buttons, rightHead } = this.props;
+        const { title, textTitle, head, wide, leftHead, buttons, rightHead } = this.props
 
-        let body: React.ReactNode;
+        let body: React.ReactNode
         if (wide) {
             body = <Col>
                 <h2 className="section-heading">{title}</h2>                 
@@ -85,10 +84,10 @@ export class MHDMainHead extends React.Component<MHDMainHeadProps> {
                 <Col lg="9" sm="12">
                     { rightHead }
                 </Col>
-            </>;
+            </>
         }
 
-        const pageTitle = textTitle ?? title;
+        const pageTitle = textTitle ?? title
 
         return (
             <section className={`${styles.search}`}>
@@ -100,6 +99,6 @@ export class MHDMainHead extends React.Component<MHDMainHeadProps> {
                     </Row>
                 </Container>
             </section>
-        );
+        )
     }
 }

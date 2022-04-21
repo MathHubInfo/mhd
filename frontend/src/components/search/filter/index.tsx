@@ -1,12 +1,12 @@
-import React from "react";
-import { Button, Row, Alert } from "reactstrap";
-import { MHDFilter, ParsedMHDCollection } from "../../../client/derived";
-import { MHDMainHead } from "../../common/MHDMain";
-import CounterDisplay from "../results/CounterDisplay";
-import FilterSelector from "./FilterSelector";
-import LaTeX from "react-latex";
-import { TMHDPreFilter, TMHDCollection } from "../../../client/rest";
-import Link from "next/link";
+import React from "react"
+import { Button, Row, Alert } from "reactstrap"
+import type { MHDFilter, ParsedMHDCollection } from "../../../client/derived"
+import { MHDMainHead } from "../../common/MHDMain"
+import CounterDisplay from "../results/CounterDisplay"
+import FilterSelector from "./FilterSelector"
+import LaTeX from "react-latex"
+import type { TMHDPreFilter, TMHDCollection } from "../../../client/rest"
+import Link from "next/link"
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faCommentDots } from "@fortawesome/free-regular-svg-icons"
@@ -48,8 +48,8 @@ export default class FilterEditor extends React.Component<FilterEditorProps, Fil
     state: FilterEditorStateProps = {
         filters: this.props.filters,
         pre_filter: this.props.pre_filter,
-        applied: false
-    };
+        applied: false,
+    }
 
     /** stores a new list of filters in state */
     setFilters = async (filters: MHDFilter[]) => {
@@ -58,17 +58,17 @@ export default class FilterEditor extends React.Component<FilterEditorProps, Fil
 
     /* Applies the filters and passes them to the parent */
     applyFilters = () => {
-        this.props.onFilterApply(this.state.filters, this.state.pre_filter);
-        this.setState({ applied: true });
+        this.props.onFilterApply(this.state.filters, this.state.pre_filter)
+        this.setState({ applied: true })
     }
 
     componentDidMount() {
-        this.applyFilters();
+        this.applyFilters()
     }
 
     render() {
-        const { collection, results_loading_delay } = this.props;
-        const { applied, filters, pre_filter } = this.state;
+        const { collection, results_loading_delay } = this.props
+        const { applied, filters, pre_filter } = this.state
 
         const leftHead = <>
             <p><LaTeX>{collection.description}</LaTeX></p>
@@ -84,7 +84,7 @@ export default class FilterEditor extends React.Component<FilterEditorProps, Fil
                     results_loading_delay={results_loading_delay}
                 />
             </p>
-        </>;
+        </>
 
         const buttons = <>
                 { collection.metadata &&
@@ -98,37 +98,37 @@ export default class FilterEditor extends React.Component<FilterEditorProps, Fil
                 </p>
                 }
             <Button onClick={this.applyFilters} disabled={applied}>Display results</Button>
-        </>;
+        </>
 
         const rightHead = <Row>
             <FilterSelector
                 initialFilters={this.props.filters}
                 collection={this.props.collection}
                 onFilterUpdate={this.setFilters} />
-        </Row>;
+        </Row>
 
-        return <MHDMainHead title={<LaTeX>{collection.displayName}</LaTeX>} textTitle={collection.displayName} leftHead={leftHead} buttons={buttons} rightHead={rightHead} />;
+        return <MHDMainHead title={<LaTeX>{collection.displayName}</LaTeX>} textTitle={collection.displayName} leftHead={leftHead} buttons={buttons} rightHead={rightHead} />
     }
 }
 
-function PreFilterCountDisplay({filter: {description, count}, collection}: {filter: TMHDPreFilter, collection: TMHDCollection}) {
+function PreFilterCountDisplay({ filter: { description, count }, collection }: {filter: TMHDPreFilter, collection: TMHDCollection}) {
     return <Alert color="info">
         <b>Pre-Filter active: </b>
         <LaTeX>{description}</LaTeX> {
             (count !== null && collection.count !== null) &&
             <>({count} / {collection.count})</>
         }
-    </Alert>;
+    </Alert>
 }
 
-function TotalCountDisplay({collection: { count }}: {collection: TMHDCollection}) {
+function TotalCountDisplay({ collection: { count } }: {collection: TMHDCollection}) {
     if (count === null) {
         if (process.env.NODE_ENV === "development") {
-            return <Alert color="warning">No collection count available. Run <code style={{fontSize: ".75rem"}}>python manage.py update_count</code> to update it.</Alert>
+            return <Alert color="warning">No collection count available. Run <code style={{ fontSize: ".75rem" }}>python manage.py update_count</code> to update it.</Alert>
         }
-        return null;
+        return null
     }
     return <Alert color="info">
         This dataset has {count} objects.
-    </Alert>;
+    </Alert>
 }

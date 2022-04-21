@@ -1,15 +1,17 @@
-import type { GetServerSideProps } from "next";
-import { NextRouter, withRouter } from "next/router";
-import React from "react";
-import { Alert, Container } from "reactstrap";
-import { MHDBackendClient, ResponseError } from "../../../client";
-import { MHDFilter, ParsedMHDCollection } from "../../../client/derived";
-import { TMHDCollection, TMHDPreFilter } from "../../../client/rest";
-import ColumnEditor from "../../../components/search/columns/ColumnEditor";
-import FilterEditor from "../../../components/search/filter";
-import ResultsTable from "../../../components/search/results/ResultsTable";
-import { TableState } from "../../../components/wrappers/table";
-import { decodeState, encodeState, PageState } from "../../../state";
+import type { GetServerSideProps } from "next"
+import type { NextRouter } from "next/router"
+import { withRouter } from "next/router"
+import React from "react"
+import { Alert, Container } from "reactstrap"
+import { MHDBackendClient, ResponseError } from "../../../client"
+import type { MHDFilter, ParsedMHDCollection } from "../../../client/derived"
+import type { TMHDCollection, TMHDPreFilter } from "../../../client/rest"
+import ColumnEditor from "../../../components/search/columns/ColumnEditor"
+import FilterEditor from "../../../components/search/filter"
+import ResultsTable from "../../../components/search/results/ResultsTable"
+import type { TableState } from "../../../components/wrappers/table"
+import type { PageState } from "../../../state"
+import { decodeState, encodeState } from "../../../state"
 
 interface MHDCollectionSearchProps{
     router: NextRouter;
@@ -32,14 +34,14 @@ class MHDCollectionSearch extends React.Component<MHDCollectionSearchProps, MHDC
 
     state: MHDCollectionSearchState = ((): MHDCollectionSearchState => {
         // find the collection
-        const collection = MHDBackendClient.getInstance().parseCollection(this.props.collection);
+        const collection = MHDBackendClient.getInstance().parseCollection(this.props.collection)
 
         // HACK: Decode the search state manually cause new URL() doesn't work
-        let search = this.props.router.asPath;
+        let search = this.props.router.asPath
         if (search.indexOf("?") != -1) {
-            search = search.split("?")[1];
+            search = search.split("?")[1]
         } else {
-            search = "";
+            search = ""
         }
 
         const state = decodeState(search) ?? {
@@ -53,41 +55,41 @@ class MHDCollectionSearch extends React.Component<MHDCollectionSearchProps, MHDC
 
         // add the collection
         return { ...state, collection }
-    })();
+    })()
 
-    private generateURLParams = ({collection, ...state}: MHDCollectionSearchState): string => {
-        return encodeState(state);
+    private generateURLParams = ({ collection, ...state }: MHDCollectionSearchState): string => {
+        return encodeState(state)
     }
 
     /** called when new filters are set in the filter editor */
     private setFilters = (filters: MHDFilter[], pre_filter?: TMHDPreFilter) => {
-        this.setState({ filters, pre_filter });
+        this.setState({ filters, pre_filter })
     }
 
     /** called when new columns are set in the column editor */
     private setColumns = (columns: string[]) => {
-        this.setState({ columns });
+        this.setState({ columns })
     }
 
     /** called when the results state is updated */
-    private setResultsState = ({ page, per_page, widths}: TableState) => {
-        this.setState({ page, per_page, widths });
+    private setResultsState = ({ page, per_page, widths }: TableState) => {
+        this.setState({ page, per_page, widths })
     }
 
     componentDidUpdate(prevProps: MHDCollectionSearchProps, prevState: MHDCollectionSearchState) {
-        const oldParams = this.generateURLParams(prevState);
-        const newParams = this.generateURLParams(this.state);
+        const oldParams = this.generateURLParams(prevState)
+        const newParams = this.generateURLParams(this.state)
         if (oldParams !== newParams) {
             // TODO: This should be:
             // this.props.router.replace(`?${newParams}`);
             // but NextJS doesn't like that at all
-            this.props.router.replace(`/collection/${this.state.collection.slug}?${newParams}`);
+            this.props.router.replace(`/collection/${this.state.collection.slug}?${newParams}`)
         }
     }
 
     render() {
-        const { filters, pre_filter, columns, page, per_page, widths, collection } = this.state;
-        const { results_loading_delay } = this.props;
+        const { filters, pre_filter, columns, page, per_page, widths, collection } = this.state
+        const { results_loading_delay } = this.props
 
         return (
             <main>
@@ -126,21 +128,21 @@ class MHDCollectionSearch extends React.Component<MHDCollectionSearchProps, MHDC
                     </Container>
                 </section>
             </main>
-        );
+        )
     }
 
 }
 
-export default withRouter(MHDCollectionSearch);
+export default withRouter(MHDCollectionSearch)
 
 
 export const getServerSideProps: GetServerSideProps = async function ({ params: { slug } }) {
-    let collection: TMHDCollection;
+    let collection: TMHDCollection
     try {
-        collection = await MHDBackendClient.getInstance().fetchCollection(slug as string);
+        collection = await MHDBackendClient.getInstance().fetchCollection(slug as string)
     } catch(e) {
-        if (!(e instanceof ResponseError) || !e.isNotFound) throw e;
-        return { notFound: true};
+        if (!(e instanceof ResponseError) || !e.isNotFound) throw e
+        return { notFound: true }
     }
 
     return {

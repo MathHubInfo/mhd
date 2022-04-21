@@ -1,11 +1,13 @@
-import { faAngleDown, faAngleUp } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { Component, CSSProperties } from "react";
-import { DragDropContext, Draggable, DraggingStyle, Droppable, DropResult, NotDraggingStyle } from "react-beautiful-dnd";
-import { Button, Card, CardText, Col, Collapse, Row } from "reactstrap";
-import { ParsedMHDCollection } from "../../../client/derived";
+import { faAngleDown, faAngleUp } from "@fortawesome/free-solid-svg-icons"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import type { CSSProperties } from "react"
+import React, { Component } from "react"
+import type { DraggingStyle, DropResult, NotDraggingStyle } from "react-beautiful-dnd"
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd"
+import { Button, Card, CardText, Col, Collapse, Row } from "reactstrap"
+import type { ParsedMHDCollection } from "../../../client/derived"
 
-import styles from "./ColumnEditor.module.css"; // Import css modules stylesheet as styles
+import styles from "./ColumnEditor.module.css" // Import css modules stylesheet as styles
 
 interface ColumnEditorProps {
     /** the current collection */
@@ -39,12 +41,12 @@ export default class ColumnEditor extends Component<ColumnEditorProps, ColumnEdi
     state: ColumnEditorState = {
         expanded: false,
         selected: this.props.columns.slice(),
-        applied: false
-    };
+        applied: false,
+    }
 
     /** toggles the expansion of this editor */
     private toggleExpansionState = () => {
-        this.setState(({expanded}) => ({ expanded: !expanded}));
+        this.setState(({ expanded }) => ({ expanded: !expanded }))
     }
 
     /** resets the editor to the 'lastSelected' state and collapses it */
@@ -64,54 +66,54 @@ export default class ColumnEditor extends Component<ColumnEditorProps, ColumnEdi
 
     /** applies all column to the parent  */
     private applyColumns = () => {
-        const { selected } = this.state;
-        this.props.onColumnsApply(selected);
-        this.setState({ applied: true });
+        const { selected } = this.state
+        this.props.onColumnsApply(selected)
+        this.setState({ applied: true })
     }
 
     /** gets the list of available columns */
     private getAvailable = () => {
-        return this.props.collection.propertySlugs.filter(n => !this.state.selected.includes(n));
+        return this.props.collection.propertySlugs.filter(n => !this.state.selected.includes(n))
     }
 
     /** gets a name of property slugs based on display names */
     private getPropertyNamesFromSlugs = (slugs: string[]): string[] => {
-        const { collection } = this.props;
-        return slugs.map(s => collection.nameMap.get(s)!);
+        const { collection } = this.props
+        return slugs.map(s => collection.nameMap.get(s)!)
     }
 
     /** handles dragging ending */
     private handleDragEnd = (result: DropResult) => {
         // there was no destination => nothing to be dropped
-        if (!result.destination) { return; }
+        if (!result.destination) { return }
 
         // if we dropped it exactly where we were, we don't have to do anything
         if (result.source.droppableId === result.destination.droppableId && 
             result.source.index === result.destination.index) { 
-            return; 
+            return 
         }
 
-        const newSelected = Array.from(this.state.selected);
+        const newSelected = Array.from(this.state.selected)
         if (result.source.droppableId === "selected") {
-            newSelected.splice(result.source.index, 1);
+            newSelected.splice(result.source.index, 1)
         }
         if (result.destination.droppableId === "selected") {
-            newSelected.splice(result.destination.index, 0, result.draggableId);
+            newSelected.splice(result.destination.index, 0, result.draggableId)
         }
-        this.setState({ selected: newSelected, applied: false });
+        this.setState({ selected: newSelected, applied: false })
     }
 
     componentDidMount() {
-        this.applyColumns();
+        this.applyColumns()
     }
 
     render() {
-        const { expanded, selected, applied } = this.state;
+        const { expanded, selected, applied } = this.state
 
-        const selectedNames = this.getPropertyNamesFromSlugs(selected);
+        const selectedNames = this.getPropertyNamesFromSlugs(selected)
 
-        const available = this.getAvailable();
-        const availableNames = this.getPropertyNamesFromSlugs(available);
+        const available = this.getAvailable()
+        const availableNames = this.getPropertyNamesFromSlugs(available)
 
         return (
             <Row>
@@ -143,7 +145,7 @@ export default class ColumnEditor extends Component<ColumnEditorProps, ColumnEdi
                     </Collapse>
                 </Col>
             </Row>
-        );
+        )
     }
 }
 
@@ -183,7 +185,7 @@ class DroppableArea extends Component<DroppableAreaProps> {
                     </div>
                 )}
             </Droppable>
-        );
+        )
     }
 }
 
@@ -191,7 +193,7 @@ function getListStyle(isDraggingOver: boolean): CSSProperties {
     return {
         background: isDraggingOver ? "rgba(25, 113, 127, 0.15)" : "rgba(25, 113, 127, 0.05)",
         display: "flex",
-        overflow: "auto"
+        overflow: "auto",
     }
 }
 
@@ -211,7 +213,7 @@ interface DraggableColumnProps {
  */
 class DraggableColumn extends Component<DraggableColumnProps> {
     render() {
-        const { item, name, index } = this.props;
+        const { item, name, index } = this.props
 
         return(
             <Draggable draggableId={item} index={index}>
@@ -230,13 +232,13 @@ class DraggableColumn extends Component<DraggableColumnProps> {
                     </div>
                 )}
             </Draggable>
-        );
+        )
     }
 }
 
 function getItemStyle(isDragging: boolean, draggableStyle: DraggingStyle | NotDraggingStyle): CSSProperties {
     return {
         userSelect: "none",
-        ...draggableStyle // styles we need to apply on draggables
+        ...draggableStyle, // styles we need to apply on draggables
     }
 }

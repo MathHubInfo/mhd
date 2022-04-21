@@ -1,10 +1,10 @@
-import type { GetServerSideProps } from "next";
-import React from "react";
-import LaTeX from "react-latex";
-import { Col, Container, Row } from "reactstrap";
-import { MHDBackendClient, ResponseError } from "../../../client";
-import { TMHDCollection } from "../../../client/rest";
-import MHDMain from "../../../components/common/MHDMain";
+import type { GetServerSideProps } from "next"
+import React from "react"
+import LaTeX from "react-latex"
+import { Col, Container, Row } from "reactstrap"
+import { MHDBackendClient, ResponseError } from "../../../client"
+import type { TMHDCollection } from "../../../client/rest"
+import MHDMain from "../../../components/common/MHDMain"
 
 interface AboutPageProps {
     collection: TMHDCollection,
@@ -34,16 +34,16 @@ export default function AboutPage({ collection: { displayName, description, meta
                 </Col>
             </Row>
         </Container>
-    </MHDMain>;
+    </MHDMain>
 }
 
 export const getServerSideProps: GetServerSideProps = async function ({ params: { slug } }) {
-    let collection: TMHDCollection;
+    let collection: TMHDCollection
     try {
-        collection = await MHDBackendClient.getInstance().fetchCollection(slug as string);
+        collection = await MHDBackendClient.getInstance().fetchCollection(slug as string)
     } catch(e) {
-        if (!(e instanceof ResponseError) || !e.isNotFound) throw e;
-        return { notFound: true};
+        if (!(e instanceof ResponseError) || !e.isNotFound) throw e
+        return { notFound: true }
     }
 
     return {

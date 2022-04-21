@@ -1,14 +1,14 @@
-import { AppProps } from "next/app";
-import Head from "next/head";
+import type { AppProps } from "next/app"
+import Head from "next/head"
 
 // load the required fonts
-import "typeface-cormorant-garamond";
-import "typeface-cormorant-unicase";
-import "typeface-montserrat";
+import "typeface-cormorant-garamond"
+import "typeface-cormorant-unicase"
+import "typeface-montserrat"
 
 // load custom styles
-import "../css/bootstrapMHD.scss";
-import "katex/dist/katex.min.css";
+import "../css/bootstrapMHD.scss"
+import "katex/dist/katex.min.css"
 
 // load font-awesome
 import "@fortawesome/fontawesome-svg-core/styles.css"
@@ -20,15 +20,15 @@ config.autoAddCss = false
 // local imports
 //
 
-import * as React from "react";
-import Image from "next/image";
-import { default as Link } from "next/link";
-import { Col, Container, Row, Navbar, NavbarBrand, NavbarToggler, Collapse, Nav, NavItem, NavLink } from "reactstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGithub } from "@fortawesome/free-brands-svg-icons";import eu_logo from "../images/logos/eu.svg";
-import fau_logo from "../images/logos/fau_logo.png";
-import kwarc_logo from "../images/logos/kwarc_logo.png";
-import odk_logo from "../images/logos/opendreamkit_logo.png";
+import * as React from "react"
+import Image from "next/image"
+import { default as Link } from "next/link"
+import { Col, Container, Row, Navbar, NavbarBrand, NavbarToggler, Collapse, Nav, NavItem, NavLink } from "reactstrap"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faGithub } from "@fortawesome/free-brands-svg-icons";import eu_logo from "../images/logos/eu.svg"
+import fau_logo from "../images/logos/fau_logo.png"
+import kwarc_logo from "../images/logos/kwarc_logo.png"
+import odk_logo from "../images/logos/opendreamkit_logo.png"
 
 
 export default function MHDApp({ Component, pageProps }: AppProps<{}>) {
@@ -71,11 +71,11 @@ class MHDHeader extends React.Component<{}, MHDHeaderState> {
     }
 
     private toggle = () => {
-        this.setState(({ isOpen }: MHDHeaderState) => ({ isOpen: !isOpen }));
+        this.setState(({ isOpen }: MHDHeaderState) => ({ isOpen: !isOpen }))
     }
 
     render() {
-        const { isOpen } = this.state;
+        const { isOpen } = this.state
         return (
             <Navbar color="light" light expand="md">
                 <NavbarBrand href="/">MathDataHub - your dataset, but FAIR</NavbarBrand>
@@ -93,7 +93,7 @@ class MHDHeader extends React.Component<{}, MHDHeaderState> {
                     </Nav>
                 </Collapse>
             </Navbar>
-        );
+        )
     }
 }
 
@@ -115,7 +115,7 @@ function MHDFooter() {
                 </Row>
             </Container>
         </footer>
-    );
+    )
 }
 
 function LogoLink(props: { url: string; pic: any; alt: string, width: number, height: number }) {
@@ -127,5 +127,5 @@ function LogoLink(props: { url: string; pic: any; alt: string, width: number, he
             style={{ margin: "0.5em 1.5em" }}>
             <Image src={props.pic} width={props.width} height={props.height} alt={props.alt} />
         </a>
-    );
+    )
 }

@@ -1,34 +1,34 @@
-import React from "react";
-import { Tooltip } from "reactstrap";
-import LaTeX from "react-latex";
+import React from "react"
+import { Tooltip } from "reactstrap"
+import LaTeX from "react-latex"
 
-import { TMHDProperty } from "../../client/rest";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
+import type { TMHDProperty } from "../../client/rest"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons"
 
 
 export default class PropertyInfoButton extends React.Component<{prop: TMHDProperty}> {
     render() {
-        const {url, description} = this.props.prop;
+        const { url, description } = this.props.prop
         return <InfoButton href={url || undefined}>
             <LaTeX>{description || "No description provided"}</LaTeX>
-        </InfoButton>;
+        </InfoButton>
     }
 }
 class InfoButton extends React.Component<{href?: string}, {isOpen: boolean}> {
     state = {
-        isOpen: false
+        isOpen: false,
     }
 
     private toggleOpen = () => {
-        this.setState(({ isOpen }) => ({isOpen: !isOpen}))
+        this.setState(({ isOpen }) => ({ isOpen: !isOpen }))
     }
 
     private onClick = (evt: React.MouseEvent<HTMLAnchorElement>) => {
-        evt.stopPropagation();
+        evt.stopPropagation()
     }
 
-    private buttonRef = React.createRef<HTMLAnchorElement>();
+    private buttonRef = React.createRef<HTMLAnchorElement>()
 
     componentDidMount() {
         // HACK HACK HACK HACK HACK HACK HACK
@@ -37,12 +37,12 @@ class InfoButton extends React.Component<{href?: string}, {isOpen: boolean}> {
         // The first time the render() is called, buttonRef.current will be null. 
         // It will be populated immediatly after the element has been mounted on the page. 
         // We force a re-render here to make sure that the tooltip-ref is not null. 
-        this.forceUpdate();
+        this.forceUpdate()
     }
 
     render() {
-        const { children, href } = this.props;
-        const { isOpen } = this.state;
+        const { children, href } = this.props
+        const { isOpen } = this.state
 
         return <>
             <a href={href || "#!" } target={href && "_blank"} rel="noopener noreferrer" ref={this.buttonRef} onClick={this.onClick}>
@@ -53,6 +53,6 @@ class InfoButton extends React.Component<{href?: string}, {isOpen: boolean}> {
                      {children}
                 </Tooltip>   
             }
-        </>;
+        </>
     }
 }

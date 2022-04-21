@@ -1,8 +1,10 @@
-import React, { ChangeEvent } from "react";
-import style from "./table.module.css";
+import type { ChangeEvent } from "react"
+import React from "react"
+import style from "./table.module.css"
 
-import ColumnResizer, { ColumnResizerOptions } from "./column-resizer";
-import { Button, InputGroup, InputGroupAddon, Input } from "reactstrap";
+import type { ColumnResizerOptions } from "./column-resizer"
+import ColumnResizer from "./column-resizer"
+import { Button, InputGroup, InputGroupAddon, Input } from "reactstrap"
 
 interface TableProps<D> extends TableState {
 
@@ -58,36 +60,36 @@ export interface TableState {
  */
 export default class Table<D> extends React.Component<TableProps<D>> {
 
-    private tableRef = React.createRef<HTMLTableElement>();
-    private resizer: ColumnResizer | undefined;
+    private tableRef = React.createRef<HTMLTableElement>()
+    private resizer: ColumnResizer | undefined
 
     /**
      * Initializes or re-initalizes the resizer
      */
-    private initResizer({widths}: {widths: number[] | undefined}) {
+    private initResizer({ widths }: {widths: number[] | undefined}) {
         const opts: Partial<ColumnResizerOptions> = {
             resizeMode: "flex",
             gripInnerHtml:`<div class='${this.props.tableGripClassName || style.grip}'></div>`,
             widths,
             serialize: false,
             onResize: this.handleResizeChange,
-        };
+        }
         
         // if we already have a resizer, we need to disable it first
-        if (this.resizer) this.resizer.reset({disable: true});
+        if (this.resizer) this.resizer.reset({ disable: true })
         
-        this.resizer = new ColumnResizer(this.tableRef.current!, opts);
+        this.resizer = new ColumnResizer(this.tableRef.current!, opts)
     }
 
     componentDidMount() {
-        const {widths} = this.props;
-        this.initResizer({widths});
+        const { widths } = this.props
+        this.initResizer({ widths })
     }
 
     componentWillUnmount() {
         if (this.resizer) {
-            this.resizer.reset({disable: true});
-            this.resizer = undefined;
+            this.resizer.reset({ disable: true })
+            this.resizer = undefined
         }
     }
 
@@ -101,51 +103,51 @@ export default class Table<D> extends React.Component<TableProps<D>> {
 
     /** handles changing a page */
     private handlePageChange = (newPage: number) => {
-        this.props.onStateChange({ ...this.getTableState(), page: newPage});
+        this.props.onStateChange({ ...this.getTableState(), page: newPage })
     }
 
     /** handles changing a page */
     private handlePerPageChange = (newPerPage: number) => {
-        const state = this.getTableState();
-        const oldFirstIndex = state.per_page * state.page;
+        const state = this.getTableState()
+        const oldFirstIndex = state.per_page * state.page
         this.props.onStateChange({
             ...state,
             page: Math.floor(oldFirstIndex / newPerPage),
-            per_page: newPerPage
-        });
+            per_page: newPerPage,
+        })
     }
 
     private handleResizeChange = () => {
-        if(!this.resizer) return;
+        if(!this.resizer) return
 
-        const widths = this.resizer.tb.columns.map(x => x.getBoundingClientRect().width);
+        const widths = this.resizer.tb.columns.map(x => x.getBoundingClientRect().width)
 
-        const state = this.getTableState();
+        const state = this.getTableState()
         this.props.onStateChange({
             ...state,
             widths,
-        });
+        })
     }
 
     /** checks if two columns are identical */
     private static columnsAreEqual<D>(previous: TableColumn<D>[], current: TableColumn<D>[]) {
-        if (previous.length !== current.length) return false;
+        if (previous.length !== current.length) return false
 
         for (let i=0; i < previous.length; i++) {
-            if (previous[i].key !== current[i].key) return false;
+            if (previous[i].key !== current[i].key) return false
         }
 
-        return true;
+        return true
     }
 
     /** maps columns widths from an old state onto a new state with the new column order */
-    private static mapColumnWidths<D>({columns, widths}: TableProps<D>, {columns: ncolumns}: TableProps<D>): number[] | undefined {
-        if (widths === undefined) return undefined;
+    private static mapColumnWidths<D>({ columns, widths }: TableProps<D>, { columns: ncolumns }: TableProps<D>): number[] | undefined {
+        if (widths === undefined) return undefined
         
         return ncolumns.map(c => {
-            const idx = columns.findIndex(d => d.key === c.key);
-            if (idx === -1) return 0; // TODO: Default width
-            return widths[idx];
+            const idx = columns.findIndex(d => d.key === c.key)
+            if (idx === -1) return 0 // TODO: Default width
+            return widths[idx]
         })
     }
 
@@ -153,11 +155,11 @@ export default class Table<D> extends React.Component<TableProps<D>> {
         if(!Table.columnsAreEqual(prevProps.columns, this.props.columns)) {
 
             // compute the adjusted columns
-            const widths = Table.mapColumnWidths(prevProps, this.props);
-            this.initResizer({ widths });
+            const widths = Table.mapColumnWidths(prevProps, this.props)
+            this.initResizer({ widths })
 
             // and resize
-            this.handleResizeChange();
+            this.handleResizeChange()
         }
     }
 
@@ -165,8 +167,7 @@ export default class Table<D> extends React.Component<TableProps<D>> {
         const { columns, data, 
             page, total_pages, per_page, per_page_selection,
             tableHeadClassName, tableHeadCellClassName, tableBodyRowClassName,
-            tableFootClassName, tableFootCellClassName
-        } = this.props;
+            tableFootClassName, tableFootCellClassName } = this.props
 
         return (
             <table className="table table-bordered" ref={this.tableRef}>
@@ -174,8 +175,8 @@ export default class Table<D> extends React.Component<TableProps<D>> {
             <thead>
                 <tr className={tableHeadClassName}>
                     { columns.map((c: TableColumn<D>, idx: number) => {
-                        const { Header, key } = c;
-                        return <th className={tableHeadCellClassName} key={(key || idx)}><Header column={c} /></th>;
+                        const { Header, key } = c
+                        return <th className={tableHeadCellClassName} key={(key || idx)}><Header column={c} /></th>
                     })}
                 </tr>
             </thead>
@@ -184,11 +185,11 @@ export default class Table<D> extends React.Component<TableProps<D>> {
                 { data.map((row: D, idx: number) => <tr key={idx} className={tableBodyRowClassName}>
                     {
                         columns.map((c: TableColumn<D>, idx2: number) => {
-                            const { Cell, key, tableBodyRowCellClassName: columnCellClassName } = c;
+                            const { Cell, key, tableBodyRowCellClassName: columnCellClassName } = c
 
                             return <td key={key || idx2} className={columnCellClassName}>
                                 <Cell column={c} data={row} />
-                            </td>;
+                            </td>
                         })
                     }
                 </tr>)}
@@ -213,7 +214,7 @@ export default class Table<D> extends React.Component<TableProps<D>> {
                 </tr>
             </tfoot>
         </table>
-        );
+        )
     }
 }
 
@@ -223,18 +224,18 @@ interface TablePerPageSelectorProps extends Pick<TableProps<any>, "per_page" | "
 
 class TableTablePerPageSelector extends React.Component<TablePerPageSelectorProps> {
     private handlePerPageChange = (event: ChangeEvent<HTMLSelectElement>) => {
-        const newPerPage = this.props.per_page_selection[event.target.selectedIndex];
-        this.props.onChange(newPerPage);
+        const newPerPage = this.props.per_page_selection[event.target.selectedIndex]
+        this.props.onChange(newPerPage)
     }
     render() {
-        const { per_page, per_page_selection } = this.props;
-        return <div style={{textAlign: "center"}}>
+        const { per_page, per_page_selection } = this.props
+        return <div style={{ textAlign: "center" }}>
             <Input type="select" onChange={this.handlePerPageChange as any} value={"" + per_page}>
                 { per_page_selection.map(pp => {
                     return <option key={pp} value={"" + pp}>{pp}</option>
                 })}
             </Input>
-        </div>;
+        </div>
     }
 }
 
@@ -244,16 +245,16 @@ interface TablePageSelectorProps extends Pick<TableProps<any>, "page" | "total_p
 
 class TablePageSelector extends React.Component<TablePageSelectorProps> {
     private navigatePrevPage = () => {
-        this.props.onChange(this.props.page - 1);
+        this.props.onChange(this.props.page - 1)
     }
     private navigateNextPage = () => {
-        this.props.onChange(this.props.page + 1);
+        this.props.onChange(this.props.page + 1)
     }
     render() {
-        const { page, total_pages } = this.props;
+        const { page, total_pages } = this.props
 
-        const has_prev_page = page > 0;
-        const has_next_page = page + 1 < total_pages;
+        const has_prev_page = page > 0
+        const has_next_page = page + 1 < total_pages
 
         return <InputGroup>
             <InputGroupAddon addonType="prepend">
@@ -262,13 +263,13 @@ class TablePageSelector extends React.Component<TablePageSelectorProps> {
                     <Button disabled>&lt;&lt;</Button>
                 }
             </InputGroupAddon>
-            <Input disabled style={{textAlign: "center"}} value={`${page + 1} / ${total_pages}`} />
+            <Input disabled style={{ textAlign: "center" }} value={`${page + 1} / ${total_pages}`} />
             <InputGroupAddon addonType="prepend">
                 { has_next_page ? 
                     <Button onClick={this.navigateNextPage}>&gt;&gt;</Button> :
                     <Button disabled>&gt;&gt;</Button>
                 }
             </InputGroupAddon>
-        </InputGroup>;
+        </InputGroup>
     }
 }
