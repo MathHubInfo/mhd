@@ -1,5 +1,5 @@
 declare module "react-latex" {
-    import React from 'react';
+    import React from "react"
 
     type ErrorHandling = "error" | "warn" | "ignore";
     type StrictHandler = (errorCode: string, errorMsg: string, token: any) => ErrorHandling | undefined;

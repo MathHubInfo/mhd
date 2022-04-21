@@ -1,13 +1,13 @@
-declare module 'column-resizer' {
+declare module "column-resizer" {
     interface ColumnResizerOptions {
-        resizeMode: 'fit' | 'flex' | 'overflow';
+        resizeMode: "fit" | "flex" | "overflow";
         draggingClass: string;
         gripInnerHtml: string;
         liveDrag: boolean;
         minWidth: number;
         headerOnly: boolean;
-        hoverCursor: 'col-resize';
-        dragCursor: 'col-resize';
+        hoverCursor: "col-resize";
+        dragCursor: "col-resize";
         flush: boolean;
         marginLeft: string | null;
         marginRight: string | null;

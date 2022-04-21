@@ -1,30 +1,31 @@
-import React from 'react';
-import Codec, { TCellProps, TValidationResult } from '../codec';
+import React from "react"
+import type { TCellProps, TValidationResult } from "../codec"
+import Codec from "../codec"
 
 export default class StandardJSON extends Codec<any, null> {
-    readonly slug: string = "StandardJSON";
-    readonly ordered: boolean | '+' | '-' = false;
+    readonly slug: string = "StandardJSON"
+    readonly ordered: boolean | "+" | "-" = false
 
-    readonly cellComponent = StandardJSONCell;
+    readonly cellComponent = StandardJSONCell
 
-    _filterViewerComponent = null;
-    _filterEditorComponent = null;
+    _filterViewerComponent = null
+    _filterEditorComponent = null
 
     parseFilterValue(value: string | null) {
-        return null;
+        return null
     }
 
     cleanFilterValue(value: null, lastValue?: string): TValidationResult {
-        return { valid: false };
+        return { valid: false }
     }
 }
 
 class StandardJSONCell extends React.Component<TCellProps<StandardJSON, any, null>> {
     render() {
-        const { value } = this.props;
-        if (value === null) return null;
+        const { value } = this.props
+        if (value === null) return null
         
         
-        return JSON.stringify(value);
+        return JSON.stringify(value)
     }
 }

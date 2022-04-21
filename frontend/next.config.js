@@ -1,11 +1,14 @@
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-  enabled: process.env.ANALYZE === 'true',
+const withBundleAnalyzer = require("@next/bundle-analyzer")({
+  enabled: process.env.ANALYZE === "true",
 })
 
 
 module.exports = withBundleAnalyzer({
   experimental: {
-    outputStandalone: true
+    outputStandalone: true,
+  },
+  eslint: {
+    dirs: ["."], 
   },
   async rewrites() {
     return [

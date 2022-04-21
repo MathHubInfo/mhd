@@ -1,6 +1,6 @@
-import Codec from "../codecs/codec";
-import { TableColumn } from "../components/wrappers/table";
-import { TMHDCollection, TMHDPreFilter, TMHDProperty } from './rest';
+import type Codec from "../codecs/codec"
+import type { TableColumn } from "../components/wrappers/table"
+import type { TMHDCollection, TMHDPreFilter, TMHDProperty } from "./rest"
 
 /**
  * A parsed collection with all derived information needed by any component anywhere

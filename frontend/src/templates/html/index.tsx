@@ -1,9 +1,9 @@
 /**
  * a custom utility module to parse a string into a set of react dom elements
  */
-import * as React from "react";
+import * as React from "react"
 
-import { ELEMENT_NODE, createNodes, TEXT_NODE } from "./dom";
+import { ELEMENT_NODE, createNodes, TEXT_NODE } from "./dom"
 
 // a react element
 export type TReactElement = React.ReactElement<{}>;
@@ -31,41 +31,41 @@ export interface IHTMLReactParserOptions {
  */
 export default function renderHTML(html: string, options?: IHTMLReactParserOptions): TReactElement[] {
     // and parse the fragment
-    return parseNodes(createNodes(html), options || {});
+    return parseNodes(createNodes(html), options || {})
 }
 
 function parseNodes(nodes: TNodeList, options: IHTMLReactParserOptions, keyPrefix?: string): TReactElement[] {
     const results = nodeList2Array(nodes).map((node, index) =>
         handleNode(node, (keyPrefix || "") + index.toString(), options),
-    );
+    )
 
-    return results.filter(node => !!node) as TReactElement[];
+    return results.filter(node => !!node) as TReactElement[]
 }
 
 function handleNode(node: Node, key: string, options: IHTMLReactParserOptions): TReactElement | null {
     // call the hook if we have one
     if (options && options.replace) {
-        const replacement = options.replace(node, (nodes: TNodeList) => parseNodes(nodes, options, `${key} `));
-        if (replacement) return replacement;
+        const replacement = options.replace(node, (nodes: TNodeList) => parseNodes(nodes, options, `${key} `))
+        if (replacement) return replacement
     }
 
     // else switch by type of node
-    if (node.nodeType === ELEMENT_NODE) return handleElement(node as Element, key, options);
-    else if (node.nodeType === TEXT_NODE) return handleText(node as Text, key);
-    else return null;
+    if (node.nodeType === ELEMENT_NODE) return handleElement(node as Element, key, options)
+    else if (node.nodeType === TEXT_NODE) return handleText(node as Text, key)
+    else return null
 }
 
 // handles converting a normal html element to a react node
 function handleElement(element: Element, key: string, options: IHTMLReactParserOptions): TReactElement | null {
     // parse all the children
-    const children = parseNodes(element.childNodes, options, `${key} `);
+    const children = parseNodes(element.childNodes, options, `${key} `)
 
     // handle all the attributes
-    const attributes = handleAttributes(element);
-    attributes.key = key;
+    const attributes = handleAttributes(element)
+    attributes.key = key
 
     // and create the element
-    return React.createElement(element.tagName.toLowerCase(), attributes, ...children);
+    return React.createElement(element.tagName.toLowerCase(), attributes, ...children)
 }
 
 // #region "Attribute lists"
@@ -227,7 +227,7 @@ const REACT_KNOWN_ATTRIBUTES: Record<string, string> = {
     "results": "results",
     "security": "security",
     "unselectable": "unselectable",
-};
+}
 
 // List of boolean attributes in react
 const REACT_BOOLEAN_ATTRIBUTES = [
@@ -255,38 +255,38 @@ const REACT_BOOLEAN_ATTRIBUTES = [
     "seamless",
     "selected",
     "itemscope",
-];
+]
 
 // #endregion
 
 function handleAttributes(element: Element): { [name: string]: {} } {
     // bail out if the element has no attributes
-    if (!element.hasAttributes()) return {};
+    if (!element.hasAttributes()) return {}
 
     // create a dictonary
-    const attribs = element.attributes;
-    let attribName: string;
-    let attribValue: string | {};
+    const attribs = element.attributes
+    let attribName: string
+    let attribValue: string | {}
 
     // and create an attribute dictonary
-    const theAttributes: { [name: string]: string | {} } = {};
+    const theAttributes: { [name: string]: string | {} } = {}
 
     for (let i = 0; i < attribs.length; i += 1) {
         // get the name of the attribute if we know it
-        attribName = attribs[i].name.toLowerCase();
-        attribName = REACT_KNOWN_ATTRIBUTES[attribName] || attribName;
+        attribName = attribs[i].name.toLowerCase()
+        attribName = REACT_KNOWN_ATTRIBUTES[attribName] || attribName
 
         // parse out the value if we know it
-        attribValue = attribs[i].value;
-        if (attribName === "style") attribValue = handleStyleAttribute(attribValue as string);
-        else if (REACT_BOOLEAN_ATTRIBUTES.indexOf(attribName) !== -1) attribValue = true;
+        attribValue = attribs[i].value
+        if (attribName === "style") attribValue = handleStyleAttribute(attribValue as string)
+        else if (REACT_BOOLEAN_ATTRIBUTES.indexOf(attribName) !== -1) attribValue = true
 
         // and set the property
-        theAttributes[attribName] = attribValue;
+        theAttributes[attribName] = attribValue
     }
 
     // and return it
-    return theAttributes;
+    return theAttributes
 }
 
 // handles converting the style attribute to a proper react value
@@ -297,37 +297,37 @@ function handleStyleAttribute(styleString: string) {
         let [property, value] = stylePropertyValue
             .split(/^([^:]+):/)
             .filter((_, i) => i > 0)
-            .map(item => item.trim().toLowerCase());
+            .map(item => item.trim().toLowerCase())
 
         // skip undefined properties!
-        if (property === undefined) return styleObject;
+        if (property === undefined) return styleObject
 
         // convert the property name into the correct React format
         // remove all hyphens and convert the letter immediately after each hyphen to upper case
         // additionally don't uppercase any -ms- prefix
         // e.g. -ms-style-property = msStyleProperty
         //      -webkit-style-property = WebkitStyleProperty
-        property = property.replace(/^-ms-/, "ms-").replace(/-(.)/g, (_, character) => character.toUpperCase());
+        property = property.replace(/^-ms-/, "ms-").replace(/-(.)/g, (_, character) => character.toUpperCase())
 
         // add the new style property and value to the style object
-        styleObject[property] = value;
+        styleObject[property] = value
 
-        return styleObject;
-    }, {});
+        return styleObject
+    }, {})
 }
 
 // handles converting a text node to a react element
 function handleText(text: Text, key: string): TReactElement | null {
-    return <React.Fragment key={key}>{text.nodeValue}</React.Fragment>;
+    return <React.Fragment key={key}>{text.nodeValue}</React.Fragment>
 }
 
 // turns a NodeList into an array of nodes
 function nodeList2Array(nodeList: TNodeList): Node[] {
-    const nodes: Node[] = [];
+    const nodes: Node[] = []
 
-    for (let i = 0; i < nodeList.length; i += 1) nodes.push(nodeList[i]);
+    for (let i = 0; i < nodeList.length; i += 1) nodes.push(nodeList[i])
 
-    return nodes;
+    return nodes
 }
 
 /**

@@ -14,4 +14,4 @@ module.exports = {
         "no-unused-vars": ["error", { varsIgnorePattern: "^_", args: "none", ignoreRestSiblings: true, vars: "all" }],
         "@typescript-eslint/consistent-type-imports": ["error", { prefer: "type-imports", disallowTypeAnnotations: true }],
     },
-};
+}

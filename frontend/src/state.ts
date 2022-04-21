@@ -1,6 +1,6 @@
-import { TableState } from "./components/wrappers/table";
-import { MHDFilter } from "./client/derived";
-import { TMHDPreFilter } from "./client/rest";
+import type { TableState } from "./components/wrappers/table"
+import type { MHDFilter } from "./client/derived"
+import type { TMHDPreFilter } from "./client/rest"
 
 // TODO: pre_filter in the url
 export interface PageState extends TableState {
@@ -18,91 +18,91 @@ export interface PageState extends TableState {
 }
 
 function valueToString(value: any) {
-    if (value === undefined) value = null;
-    return JSON.stringify(value);
+    if (value === undefined) value = null
+    return JSON.stringify(value)
 }
 
 function stringToValue(value: string): any {
-    const v = JSON.parse(value);
-    return v === null ? undefined : v;
+    const v = JSON.parse(value)
+    return v === null ? undefined : v
 }
 
 /**
  * (Potentially lossy) encoding of state into the URL
  */
 export function encodeState(state: PageState) {
-    return Object.entries({...state, widths: undefined}).map(
+    return Object.entries({ ...state, widths: undefined }).map(
         ([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(valueToString(v))}`
-    ).join('&');
+    ).join("&")
 }
 
-const ALL_STATE_PROPS = ['per_page', 'page', 'filters', 'columns', 'widths'];
+const ALL_STATE_PROPS = ["per_page", "page", "filters", "columns", "widths"]
 
 /**
  * Decodes some part of the state from the url
  * @param state
  */
 export function decodeState(state: string): PageState | undefined {
-    if (state === "") return;
+    if (state === "") return
 
     // decode the url keys as JSON valuys
-    const sobj: Record<string, any> = {};
+    const sobj: Record<string, any> = {}
     try {
-        state.split('&').forEach(e => {
-            const uc = e.split('=');
-            if (uc.length !== 2) return;
+        state.split("&").forEach(e => {
+            const uc = e.split("=")
+            if (uc.length !== 2) return
             
             // only accept these keys
-            const key = decodeURIComponent(uc[0]);
-            if (ALL_STATE_PROPS.indexOf(key) === -1) return;
+            const key = decodeURIComponent(uc[0])
+            if (ALL_STATE_PROPS.indexOf(key) === -1) return
             
-            const value = decodeURIComponent(uc[1]);
-            sobj[key] = stringToValue(value);
-        });
+            const value = decodeURIComponent(uc[1])
+            sobj[key] = stringToValue(value)
+        })
     } catch(_) {
-        return;
+        return
     }
 
     // ensure that the state is valid
-    if (!validateState(sobj)) return;
+    if (!validateState(sobj)) return
 
-    return sobj;
+    return sobj
 }
 
 function validateState(candidate: Record<string, any>): candidate is PageState {
-    const { per_page, page, filters, columns, widths, ...extra} = candidate;
+    const { per_page, page, filters, columns, widths, ...extra } = candidate
     if(Object.keys(extra).length !== 0) return false // extra properties
 
-    if (!isInteger(per_page)) return false;
-    if (!isInteger(page)) return false;
-    if (!Array.isArray(filters) || !filters.every(isFilter)) return false;
-    if (!Array.isArray(columns) || !columns.every(isString)) return false;
+    if (!isInteger(per_page)) return false
+    if (!isInteger(page)) return false
+    if (!Array.isArray(filters) || !filters.every(isFilter)) return false
+    if (!Array.isArray(columns) || !columns.every(isString)) return false
 
-    return widths === undefined || (Array.isArray(widths) && widths.every(isNonNegative));
+    return widths === undefined || (Array.isArray(widths) && widths.every(isNonNegative))
 }
 
 function isBoolean(candidate: any): candidate is boolean {
-    return typeof candidate === 'boolean';
+    return typeof candidate === "boolean"
 }
 
 function isNonNegative(candidate: any): candidate is number {
-    return typeof candidate === "number" && isFinite(candidate) && candidate >= 0;
+    return typeof candidate === "number" && isFinite(candidate) && candidate >= 0
 }
 
 function isInteger(candidate: any): candidate is number {
-    return typeof candidate === "number" && isFinite(candidate) && (candidate % 1 === 0);
+    return typeof candidate === "number" && isFinite(candidate) && (candidate % 1 === 0)
 }
 
 function isString(candidate: any): candidate is string {
-    return typeof candidate === 'string';
+    return typeof candidate === "string"
 }
 
 function isFilter(candidate: any): candidate is MHDFilter {
-    const { slug, value, uid, initial, ...extra } = candidate;
+    const { slug, value, uid, initial, ...extra } = candidate
 
-    if(Object.keys(extra).length !== 0) return false;
-    if (!isString(slug)) return false;
-    if (!isInteger(uid)) return false;
-    if (!isBoolean(initial)) return false;
-    return value == null || typeof value === 'string';
+    if(Object.keys(extra).length !== 0) return false
+    if (!isString(slug)) return false
+    if (!isInteger(uid)) return false
+    if (!isBoolean(initial)) return false
+    return value == null || typeof value === "string"
 }

@@ -1,8 +1,8 @@
-import React from 'react';
-import { TMHDProperty, TMHDItem } from "../client/rest";
-import { Badge } from "reactstrap";
-import { TableColumn, CellComponentProps } from "../components/wrappers/table";
-import PropertyInfoButton from "../components/common/PropertyInfoButton";
+import React from "react"
+import type { TMHDProperty, TMHDItem } from "../client/rest"
+import { Badge } from "reactstrap"
+import type { TableColumn, CellComponentProps } from "../components/wrappers/table"
+import PropertyInfoButton from "../components/common/PropertyInfoButton"
 
 type ReactComponent<T> = React.ComponentClass<T> | React.SFC<T>;
 
@@ -72,7 +72,7 @@ export default abstract class Codec<ElementType = any, FilterType = string> {
     abstract readonly slug: string;
 
     /** how can elements of this codec be meaningfully ordered? */
-    abstract readonly ordered: boolean | '+' | '-' ; // true, + => ascending, - => descending, false => not orderable
+    abstract readonly ordered: boolean | "+" | "-" ; // true, + => ascending, - => descending, false => not orderable
 
     /**
      * Component used for rendering cells of this value
@@ -84,11 +84,11 @@ export default abstract class Codec<ElementType = any, FilterType = string> {
      * @param property 
      */
     makeReactTableColumn(property: TMHDProperty): TableColumn<TMHDItem<any>> {
-        const Component = this.cellComponent;
+        const Component = this.cellComponent
         return {
             key: property.slug,
             Header: () => <>{property.displayName}<PropertyInfoButton prop={property}/></>,
-            Cell: ({data}: CellComponentProps<TMHDItem<any>>) => <Component value={data[property.slug]} codec={this} />,
+            Cell: ({ data }: CellComponentProps<TMHDItem<any>>) => <Component value={data[property.slug]} codec={this} />,
         }
     }
 
@@ -111,7 +111,7 @@ export default abstract class Codec<ElementType = any, FilterType = string> {
     protected abstract readonly _filterViewerComponent: ReactComponent<TFilterViewerProps<any, ElementType, FilterType>> | null;
 
     filterViewerComponent(): ReactComponent<TFilterViewerProps<any, ElementType, FilterType>> {
-        return this._filterViewerComponent || UnsupportedFilterViewer;
+        return this._filterViewerComponent || UnsupportedFilterViewer
     }
 
     /**
@@ -120,35 +120,35 @@ export default abstract class Codec<ElementType = any, FilterType = string> {
     protected abstract readonly _filterEditorComponent: ReactComponent<TFilterEditorProps<any, ElementType, FilterType>> | null;
 
     filterEditorComponent(): ReactComponent<TFilterEditorProps<any, ElementType, FilterType>> {
-        return this._filterEditorComponent || UnsupportedFilterEditor;
+        return this._filterEditorComponent || UnsupportedFilterEditor
     }
 }
 
 
 export class Fallback extends Codec<any, null> {
     constructor(public readonly slug: string) {
-        super();
+        super()
     }
 
-    readonly ordered: boolean = false;
+    readonly ordered: boolean = false
 
-    readonly cellComponent = FallbackCell;
+    readonly cellComponent = FallbackCell
 
-    readonly _filterViewerComponent = null;
-    readonly _filterEditorComponent = null;
+    readonly _filterViewerComponent = null
+    readonly _filterEditorComponent = null
 
     parseFilterValue() {
-        return null;
+        return null
     }
 
     cleanFilterValue(value: null, lastValue?: string): TValidationResult {
-        return { valid: false, message: 'Unknown codec' };
+        return { valid: false, message: "Unknown codec" }
     }
 }
 
 class FallbackCell extends React.Component<TCellProps<any, any, null>> {
     render() {
-        const { children, codec } = this.props;
+        const { children, codec } = this.props
         
         return <>
             { children }
@@ -159,20 +159,20 @@ class FallbackCell extends React.Component<TCellProps<any, any, null>> {
 
 class UnsupportedFilterViewer<ElementType, FilterType> extends React.Component<TFilterViewerProps<any, ElementType, FilterType>> {
     render() {
-        const { children, codec } = this.props;
+        const { children, codec } = this.props
         return <>
             { children }
             <Badge color="danger">Filters for {codec.slug} is not supported</Badge>;
-        </>;
+        </>
     }
 }
 
 class UnsupportedFilterEditor<ElementType, FilterType> extends React.Component<TFilterEditorProps<any, ElementType, FilterType>> {
     render() {
-        const { children, codec } = this.props;
+        const { children, codec } = this.props
         return <>
             { children }
             <Badge color="danger">Filters for {codec.slug} is not supported</Badge>;
-        </>;
+        </>
     }
 }
