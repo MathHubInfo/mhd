@@ -3,7 +3,7 @@
  */
 import * as React from "react";
 
-import { ELEMENT_NODE, ParseHTML, TEXT_NODE } from "./dom";
+import { ELEMENT_NODE, createNodes, TEXT_NODE } from "./dom";
 
 // a react element
 export type TReactElement = React.ReactElement<{}>;
@@ -25,13 +25,13 @@ export interface IHTMLReactParserOptions {
 }
 
 /**
- * Parses a string into a set of React Elements
+ * parses a string into a set of React Elements
  * @param html String of html to parse
  * @param options Options to use during parsing
  */
-export default function Parse(html: string, options?: IHTMLReactParserOptions): TReactElement[] {
+export default function renderHTML(html: string, options?: IHTMLReactParserOptions): TReactElement[] {
     // and parse the fragment
-    return parseNodes(ParseHTML(html), options || {});
+    return parseNodes(createNodes(html), options || {});
 }
 
 function parseNodes(nodes: TNodeList, options: IHTMLReactParserOptions, keyPrefix?: string): TReactElement[] {

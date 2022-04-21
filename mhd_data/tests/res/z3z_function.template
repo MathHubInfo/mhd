@@ -1,0 +1,87 @@
+{% apply pagetitle %}
+    Item <code>{{ item._id }}</code> with some html in the page title. 
+{% endapply %}
+
+{% apply texttitle %}
+    You can define what occurs in the <title> tag of the page too.
+    It gets automatically escaped.
+{% endapply %}
+
+<h3>Custom Template Rendering</h3>
+
+<p>
+    This page is usually pre-filled with item-specific properties.
+    However in this case, a manual template is provided.
+    It can be found in <code>mhd_data/tests/res/z3z_function.template</code>.
+</p>
+
+<p>
+    This template can contain any kind of html.
+    It can also access variables using  <a href="https://nightlycommit.github.io/twing/templates.html"><code>Twing</code> Syntax</a>.
+</p>
+
+<p>
+    {{ math( "$ x^n + y^n = z^n $" ) }} works anywhere too
+</p>
+
+
+<h4>Context</h4>
+
+<p>
+    The template receives the following context variables:
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+
+        <tr>
+            <td>item</td>
+            <td>JSON representing the item being represented</td>
+            <td><code>{{ item | json_encode }}</code></td>
+        </tr>
+        <tr>
+            <td>collection</td>
+            <td>JSON representing the collection the item is in</td>
+            <td><code>{{ collection | json_encode }}</code></td>
+        </tr>
+    </table>
+</p>
+
+<h4>Rendering Propertys</h4>
+
+<p>
+    You can use the present tag to present a specific property.
+    For example invertability: {{ present("invertible")}}
+</p>
+
+<p>
+    You can use the present tag to present a specific property.
+    For example invertability: {{ present("invertible")}}
+</p>
+
+
+<h4>Emulating the Default Template</h4>
+
+<p>
+    You can also iterate over all of them and produce something like the default template:
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Property</th>
+            <th>Value</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for prop in collection.properties %}
+            <tr>
+                <td><code>{{ prop.slug }}</code> {{ info( prop.slug ) }}</td>
+                <td>{{ present( prop.slug ) }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

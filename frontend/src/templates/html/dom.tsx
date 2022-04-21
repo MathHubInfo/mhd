@@ -6,7 +6,7 @@ const parser = new DOMParser();
  * Parses a string containing html into a list of nodes
  * @param code String containing html
  */
-export function ParseHTML(code: string): NodeListOf<Node> {
+export function createNodes(code: string): NodeListOf<Node> {
     // parse a new html document from a string
     const newDocument = parser.parseFromString(`<div>${code}</div>`, "text/html") as HTMLDocument;
 
@@ -21,7 +21,7 @@ export function ParseHTML(code: string): NodeListOf<Node> {
 
 /** createElement creates a new element */
 export function createElement(name: string): Element {
-    const nodes = ParseHTML("<div />")[0];
+    const nodes = createNodes("<div />")[0];
     return nodes.ownerDocument.createElement(name);
 }
 
@@ -31,7 +31,7 @@ const serializer = new XMLSerializer();
  * Gets the outer html for a node
  * @param node Node to get outer html from
  */
-export function OuterHTML(node: Node): string {
+export function outerHTML(node: Node): string {
     return serializer.serializeToString(node);
 }
 

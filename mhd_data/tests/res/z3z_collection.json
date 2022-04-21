@@ -3,6 +3,9 @@
     "slug": "z3zFunctions",
     "description": "Functions from $\\mathbb{Z}/3\\mathbb{Z}$ onto itself. ",
     "url": "https://github.com/MathHubInfo/mhd#z3z-functions",
+    "template": {
+        "file": "z3z_function.template"
+    },
     "metadata": {
         "uri": "https://mathhub.com/examples/?Z3ZFunction"
     },
