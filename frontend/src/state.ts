@@ -14,7 +14,7 @@ export interface PageState extends TableState {
     columns: string[];
 
     /** the widths of each of the columns */
-    widths: string[] | undefined;
+    widths: number[] | undefined;
 }
 
 function valueToString(value: any) {
