@@ -106,6 +106,14 @@ export default abstract class Codec<ElementType = any, FilterType = string> {
     abstract parseFilterValue(value: string | null): FilterType;
 
     /**
+     * determines if a property with this codec should be hidden from the filter list
+     * By default hides every property iff it does not have an associated _filterViewerComponent 
+     */
+    hiddenFromFilterList(property: TMHDProperty): boolean {
+        return !this._filterViewerComponent || !this._filterEditorComponent
+    }
+
+    /**
      * A component that is used for rendering a filter
      */
     protected abstract readonly _filterViewerComponent: ReactComponent<TFilterViewerProps<any, ElementType, FilterType>> | null;
@@ -162,7 +170,7 @@ class UnsupportedFilterViewer<ElementType, FilterType> extends React.Component<T
         const { children, codec } = this.props
         return <>
             { children }
-            <Badge color="danger">Filters for {codec.slug} is not supported</Badge>;
+            <Badge color="danger">Filters for {codec.slug} is not supported</Badge>
         </>
     }
 }
@@ -172,7 +180,7 @@ class UnsupportedFilterEditor<ElementType, FilterType> extends React.Component<T
         const { children, codec } = this.props
         return <>
             { children }
-            <Badge color="danger">Filters for {codec.slug} is not supported</Badge>;
+            <Badge color="danger">Filters for {codec.slug} is not supported</Badge>
         </>
     }
 }

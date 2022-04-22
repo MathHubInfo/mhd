@@ -105,19 +105,21 @@ type TFilterAction = {
     
     /** renders the available filters */
     private renderAvailable() {
-        const { collection: { properties } } = this.props
+        const { collection: { properties, codecMap } } = this.props
         return(
             <div>
                 <h5>Available conditions</h5>
                 <div className={styles.searchFilter}>
                     <div className={styles.filterBox}>
                         <ul className="fa-ul">
-                            {properties.map((p) => 
-                                <li key={p.slug}
-                                    onClick={() => this.handleFilterAction({ action: "add", slug: p.slug })}>
-                                    <FontAwesomeIcon icon={faPlus} listItem />
-                                    {p.displayName} {<PropertyInfoButton prop={p} />}
-                                </li>
+                            {properties
+                                .filter(p => !codecMap.get(p.slug).hiddenFromFilterList(p))
+                                .map((p) => 
+                                    <li key={p.slug}
+                                        onClick={() => this.handleFilterAction({ action: "add", slug: p.slug })}>
+                                        <FontAwesomeIcon icon={faPlus} listItem />
+                                        {p.displayName} {<PropertyInfoButton prop={p} />}
+                                    </li>
                             )}
                         </ul>
                     </div>
