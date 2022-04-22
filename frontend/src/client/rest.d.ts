@@ -40,7 +40,7 @@ export interface TMHDProperty {
 }
 
 /** an item in a collection */
-export type TMHDItem<P extends {}> = P & {"_id": string};
+export type TMHDItem<P extends {}> = P & {"_id": string}
 
 /** a paged Django Rest Framework Response */
 export interface TDRFPagedResponse<T> {

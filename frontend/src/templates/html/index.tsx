@@ -6,10 +6,10 @@ import * as React from "react"
 import { ELEMENT_NODE, createNodes, TEXT_NODE } from "./dom"
 
 // a react element
-export type TReactElement = React.ReactElement<{}>;
+export type TReactElement = React.ReactElement<{}>
 
 // a collection of nodes
-export type TNodeList = Node[] | NodeListOf<Node> | NodeList;
+export type TNodeList = Node[] | NodeListOf<Node> | NodeList
 
 /**
  * Options to be passed to IHTMLReactParserOptions

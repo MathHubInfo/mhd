@@ -5,7 +5,7 @@ import stringHash from "string-hash"
 
 // re-export ColumnResizerOptions
 import type { ColumnResizerOptions as ColumnResizerOptionsOrg } from "column-resizer"
-export type ColumnResizerOptions = ColumnResizerOptionsOrg;
+export type ColumnResizerOptions = ColumnResizerOptionsOrg
 
 /**
  * A column-resizer subclass that overwrites a bunch of stuff

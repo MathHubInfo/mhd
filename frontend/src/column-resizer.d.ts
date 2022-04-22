@@ -23,7 +23,7 @@ declare module "column-resizer" {
         onResize: (() => void) | null;
     }
     export default class ColumnResizer {
-        constructor(tb: HTMLTableElement, options: Partial<ColumnResizerOptions>);
+        constructor(tb: HTMLTableElement, options: Partial<ColumnResizerOptions>)
         tb: HTMLTableElement & {columns: HTMLTableHeaderCellElement[]}
         reset(options: Partial<ColumnResizerOptions>): ColumnResizerOptions
         createStyle(element: HTMLElement, css: string): void

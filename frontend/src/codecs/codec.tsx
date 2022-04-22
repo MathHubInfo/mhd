@@ -4,7 +4,7 @@ import { Badge } from "reactstrap"
 import type { TableColumn, CellComponentProps } from "../components/wrappers/table"
 import PropertyInfoButton from "../components/common/PropertyInfoButton"
 
-type ReactComponent<T> = React.ComponentClass<T> | React.SFC<T>;
+type ReactComponent<T> = React.ComponentClass<T> | React.SFC<T>
 
 export interface TCellProps<CodecType extends Codec<ElementType, FilterType>, ElementType, FilterType> {
     /** the value of this cell (if any) */
@@ -26,7 +26,7 @@ export type TValidationResult = {
 
     /** the validated and cleaned value */
     value: string;
-};
+}
 
 
 export interface TFilterViewerProps<CodecType extends Codec<ElementType, FilterType>, ElementType, FilterType> {
@@ -69,15 +69,15 @@ export interface TFilterEditorProps<CodecType extends Codec<ElementType, FilterT
 export default abstract class Codec<ElementType = any, FilterType = string> {
 
     /** the slug of this codec */
-    abstract readonly slug: string;
+    abstract readonly slug: string
 
     /** how can elements of this codec be meaningfully ordered? */
-    abstract readonly ordered: boolean | "+" | "-" ; // true, + => ascending, - => descending, false => not orderable
+    abstract readonly ordered: boolean | "+" | "-" // true, + => ascending, - => descending, false => not orderable
 
     /**
      * Component used for rendering cells of this value
      */
-    abstract readonly cellComponent: ReactComponent<TCellProps<any, ElementType, FilterType>>;
+    abstract readonly cellComponent: ReactComponent<TCellProps<any, ElementType, FilterType>>
 
     /**
      * Makes a React-Table Column for an instatiation of this codec
@@ -103,7 +103,7 @@ export default abstract class Codec<ElementType = any, FilterType = string> {
      * parses the filter value from a string or returns the default. 
      * Implementation by sub-class may not assume that the value is valid. 
      */
-    abstract parseFilterValue(value: string | null): FilterType;
+    abstract parseFilterValue(value: string | null): FilterType
 
     /**
      * determines if a property with this codec should be hidden from the filter list
@@ -116,7 +116,7 @@ export default abstract class Codec<ElementType = any, FilterType = string> {
     /**
      * A component that is used for rendering a filter
      */
-    protected abstract readonly _filterViewerComponent: ReactComponent<TFilterViewerProps<any, ElementType, FilterType>> | null;
+    protected abstract readonly _filterViewerComponent: ReactComponent<TFilterViewerProps<any, ElementType, FilterType>> | null
 
     filterViewerComponent(): ReactComponent<TFilterViewerProps<any, ElementType, FilterType>> {
         return this._filterViewerComponent || UnsupportedFilterViewer
@@ -125,7 +125,7 @@ export default abstract class Codec<ElementType = any, FilterType = string> {
     /**
      * A component that is used for rendering the editor
      */
-    protected abstract readonly _filterEditorComponent: ReactComponent<TFilterEditorProps<any, ElementType, FilterType>> | null;
+    protected abstract readonly _filterEditorComponent: ReactComponent<TFilterEditorProps<any, ElementType, FilterType>> | null
 
     filterEditorComponent(): ReactComponent<TFilterEditorProps<any, ElementType, FilterType>> {
         return this._filterEditorComponent || UnsupportedFilterEditor

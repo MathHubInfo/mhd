@@ -10,7 +10,10 @@ module.exports = {
         "object-curly-newline": ["error", { ImportDeclaration: "never", ExportDeclaration: "never" }],
         "quote-props": ["error", "consistent-as-needed"],
         "comma-dangle": ["error", "always-multiline"],
-        "semi": ["error", "never"],
+
+        "@typescript-eslint/semi": ["error", "never"],
+        "semi": ["off"],
+
         "no-unused-vars": ["error", { varsIgnorePattern: "^_", args: "none", ignoreRestSiblings: true, vars: "all" }],
         "@typescript-eslint/consistent-type-imports": ["error", { prefer: "type-imports", disallowTypeAnnotations: true }],
     },
