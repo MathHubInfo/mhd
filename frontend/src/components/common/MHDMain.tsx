@@ -2,7 +2,7 @@ import React from "react"
 import { Row, Col, Container } from "reactstrap"
 import styles from "./MHDMain.module.css"
 import Head from "next/head"
-import { isProduction } from "../../controller"
+import { appTitle, isProduction } from "../../controller"
 
 interface MHDMainProps {
     /** title of the current page */
@@ -92,7 +92,7 @@ export class MHDMainHead extends React.Component<MHDMainHeadProps> {
 
         return (
             <section className={`${styles.search}`}>
-                <Head><title>{ pageTitle ? `${pageTitle} | MathDataHub` : "MathDataHub"}</title></Head>
+                <Head><title>{ pageTitle ? `${pageTitle} | ${appTitle}` : appTitle}</title></Head>
                 <Container>
                     { head }
                     <Row>

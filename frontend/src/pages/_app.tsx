@@ -29,7 +29,7 @@ import { faGithub } from "@fortawesome/free-brands-svg-icons"; import eu_logo fr
 import fau_logo from "../images/logos/fau_logo.png"
 import kwarc_logo from "../images/logos/kwarc_logo.png"
 import odk_logo from "../images/logos/opendreamkit_logo.png"
-import { About, Debug, DjangoAdmin, Index, isProduction, isSingleCollectionMode, singleCollection } from "../controller"
+import { About, appBranding, appTitle, Debug, DjangoAdmin, Index, isProduction, isSingleCollectionMode, singleCollection } from "../controller"
 
 
 export default function MHDApp({ Component, pageProps }: AppProps<{}>) {
@@ -46,8 +46,8 @@ export default function MHDApp({ Component, pageProps }: AppProps<{}>) {
             <link rel="mask-icon" href="/img/fav/safari-pinned-tab.svg" color="#ef6d4b" />
 
             {/* Manifest and title */}
-            <meta name="apple-mobile-web-app-title" content="MathDataHub" />
-            <meta name="application-name" content="MathDataHub" />
+            <meta name="apple-mobile-web-app-title" content={appTitle} />
+            <meta name="application-name" content={appTitle} />
             <meta name="msapplication-TileColor" content="#da532c" />
             <meta name="theme-color" content="#ffffff" />
         </Head>
@@ -79,7 +79,7 @@ class MHDHeader extends React.Component<{}, MHDHeaderState> {
         const { isOpen } = this.state
         return (
             <Navbar color="light" light expand="md">
-                <NavbarBrand href={Index()}>MathDataHub - your dataset, but FAIR</NavbarBrand>
+                <NavbarBrand href={Index()}>{appBranding}</NavbarBrand>
                 <NavbarToggler onClick={this.toggle} />
                 <Collapse isOpen={isOpen} navbar>
                     <Nav className="ml-auto" navbar>

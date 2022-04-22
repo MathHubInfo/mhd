@@ -3,6 +3,9 @@
  * It takes into account SINGLE_COLLECTION_MODE
  */
 
+export const appTitle = process.env.NEXT_PUBLIC_APP_TITLE
+export const appBranding = process.env.NEXT_PUBLIC_APP_BRANDING
+
 export const isProduction = process.env.NODE_ENV === "production"
 
 export const singleCollection = process.env.NEXT_PUBLIC_SINGLE_COLLECTION_MODE ?? ""
