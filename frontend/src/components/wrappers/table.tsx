@@ -170,7 +170,7 @@ export default class Table<D> extends React.Component<TableProps<D>> {
             tableFootClassName, tableFootCellClassName } = this.props
 
         return (
-            <table className="table table-bordered" ref={this.tableRef}>
+            <table className={`table table-bordered ${style.table}`} ref={this.tableRef}>
         
             <thead>
                 <tr className={tableHeadClassName}>

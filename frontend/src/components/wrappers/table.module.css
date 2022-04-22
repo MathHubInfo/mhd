@@ -12,3 +12,7 @@
 	z-index:88;
 	cursor:col-resize;
 }
+
+.table {
+	white-space: nowrap;
+}
