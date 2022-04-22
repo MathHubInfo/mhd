@@ -5,10 +5,11 @@ import LaTeX from "react-latex"
 import { Button, Col, ListGroup, ListGroupItem, Row } from "reactstrap"
 import { MHDBackendClient } from "../../client"
 import MHDMain from "../../components/common/MHDMain"
+import { CollectionIndex, Home, homePerPage, isSingleCollectionMode } from "../../controller"
 
 type HomeProps = InferGetServerSidePropsType<typeof getServerSideProps>
 
-export default function Home({ page, collections: { results, num_pages } }: HomeProps) {
+export default function Page({ page, collections: { results, num_pages } }: HomeProps) {
     const leftHead = <p>
         Select a collection to start browsing.
     </p>
@@ -18,7 +19,7 @@ export default function Home({ page, collections: { results, num_pages } }: Home
         <ListGroup>
             {results.map(c => (
                 <ListGroupItem key={c.slug}>
-                    <Link href={`/collection/${c.slug}/`}>
+                    <Link href={CollectionIndex(c.slug)}>
                         <a>
                             <LaTeX>{c.displayName}</LaTeX>
                         </a>
@@ -29,9 +30,9 @@ export default function Home({ page, collections: { results, num_pages } }: Home
     </>
 
     const buttons = <>
-        {(page - 1 >= 1) ? <Link href={`/home/${page - 1}`} passHref><Button>Previous</Button></Link> : <Button disabled>Previous</Button>}
+        {(page - 1 >= 1) ? <Link href={Home(page - 1)} passHref><Button>Previous</Button></Link> : <Button disabled>Previous</Button>}
         &nbsp;
-        {(page + 1 <= num_pages) ? <Link href={`/home/${page + 1}`} passHref><Button>Next</Button></Link> : <Button disabled>Next</Button>}
+        {(page + 1 <= num_pages) ? <Link href={Home(page + 1)} passHref><Button>Next</Button></Link> : <Button disabled>Next</Button>}
     </>
 
     const head = <Row>
@@ -42,13 +43,13 @@ export default function Home({ page, collections: { results, num_pages } }: Home
     return <MHDMain title="Pick a dataset" textTitle="" head={head} leftHead={leftHead} buttons={buttons} rightHead={rightHead} />
 }
 
-
-const PER_PAGE = 10 // TODO: Make this configurable on the top level!
 export const getServerSideProps: GetServerSideProps = async function({ params: { no } }) {
+    if (isSingleCollectionMode) return { notFound: true } // hide in single_collection mode
+
     const pageNo = parseInt(no as string, 10)
     if (isNaN(pageNo)) return { notFound: true }
 
-    const collections = await MHDBackendClient.getInstance().fetchCollections(pageNo, PER_PAGE)
+    const collections = await MHDBackendClient.getInstance().fetchCollections(pageNo, homePerPage)
     
     return {
         props: { page: pageNo, collections },

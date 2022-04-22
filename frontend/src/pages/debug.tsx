@@ -2,6 +2,7 @@ import type { GetStaticProps } from "next"
 import React from "react"
 import type { CellComponentProps, TableColumn, TableState } from "../components/wrappers/table"
 import Table from "../components/wrappers/table"
+import { isProduction } from "../controller"
 
 // TODO: Consider making this page debug only
 
@@ -106,6 +107,6 @@ export default class DebugComponent extends React.Component<{}, DebugTableState>
 }
 
 export const getStaticProps: GetStaticProps = async function (context) {
-    if (process.env.NODE_ENV !== "development") return { notFound: true }
+    if (isProduction) return { notFound: true }
     return { props: {} }
 }

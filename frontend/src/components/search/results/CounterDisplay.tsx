@@ -3,6 +3,7 @@ import React from "react"
 import { MHDBackendClient } from "../../../client"
 import type { ParsedMHDCollection, MHDFilter } from "../../../client/derived"
 import type { TMHDPreFilter } from "../../../client/rest"
+import { isProduction } from "../../../controller"
 
 interface CounterDisplayProps {
     /** the current collection (if any) */
@@ -65,7 +66,7 @@ export default class CounterDisplay extends React.Component<CounterDisplayProps,
         try {
             count = await MHDBackendClient.getInstance().fetchItemCount(this.props.collection, this.props.pre_filter, this.props.filters)
         } catch (e) {
-            if (process.env.NODE_ENV !== "production") console.error(e)
+            if (!isProduction) console.error(e)
         }
 
         // for introducing a dummy delay of 2 seconds, uncomment the following line

@@ -8,6 +8,7 @@ import type { TableColumn, TableState } from "../../wrappers/table"
 import Table from "../../wrappers/table"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons"
+import { isProduction, Item } from "../../../controller"
 
 interface ResultsTableProps extends TableState {
     /** the current collection */
@@ -99,7 +100,7 @@ export default class ResultsTable extends Component<ResultsTableProps, ResultsTa
         try {
             results = await MHDBackendClient.getInstance().fetchItems(collection, columns, pre_filter, filters, page + 1, per_page)
         } catch (e) {
-            if (process.env.NODE_ENV !== "production") console.error(e)
+            if (!isProduction) console.error(e)
         }
 
         // for introducing a dummy delay of 2 seconds, uncomment the following line
@@ -190,7 +191,7 @@ class ItemLink extends React.Component<{collection: ParsedMHDCollection, uuid: s
     render() {
         const { collection, uuid } = this.props
         return (
-            <Link href={`/item/${collection.slug}/${uuid}/`}>
+            <Link href={Item(collection.slug, uuid)}>
                 <a target="_blank">
                     <FontAwesomeIcon icon={faInfoCircle} transform="shrink-4 up-3"/>
                 </a>

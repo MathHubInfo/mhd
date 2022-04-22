@@ -10,8 +10,7 @@ interface AboutPageProps {
     collection: TMHDCollection,
 }
 
-export default function AboutPage({ collection: { displayName, description, metadata } }: AboutPageProps) {
-    // TODO: Title
+export default function ProvenancePAGE({ collection: { displayName, description, metadata } }: AboutPageProps) {
     return <MHDMain title={<LaTeX>{displayName}</LaTeX>} textTitle={displayName}>
         <Container>
             <Row>

@@ -10,6 +10,7 @@ import Link from "next/link"
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faCommentDots } from "@fortawesome/free-regular-svg-icons"
+import { CollectionProvenance, isProduction } from "../../../controller"
 interface FilterEditorProps {
 
     /** the current collection (if any) */
@@ -89,7 +90,7 @@ export default class FilterEditor extends React.Component<FilterEditorProps, Fil
         const buttons = <>
                 { collection.metadata &&
                 <p>
-                    <Link href={`/collection/${collection.slug}/about`} passHref>
+                    <Link href={CollectionProvenance(collection.slug)} passHref>
                         <a target="_blank" rel="noopener noreferrer">
                             <FontAwesomeIcon transform="shrink-2" icon={faCommentDots} />&nbsp;
                             More about this dataset
@@ -123,7 +124,7 @@ function PreFilterCountDisplay({ filter: { description, count }, collection }: {
 
 function TotalCountDisplay({ collection: { count } }: {collection: TMHDCollection}) {
     if (count === null) {
-        if (process.env.NODE_ENV === "development") {
+        if (!isProduction) {
             return <Alert color="warning">No collection count available. Run <code style={{ fontSize: ".75rem" }}>python manage.py update_count</code> to update it.</Alert>
         }
         return null

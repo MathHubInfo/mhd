@@ -9,6 +9,7 @@ import MHDMain from "../../../components/common/MHDMain"
 import PropertyInfoButton from "../../../components/common/PropertyInfoButton"
 import TemplateManager from "../../../templates"
 import renderHTML from "../../../templates/html"
+import { isProduction, Item } from "../../../controller"
 
 interface TemplateContext<T> {
     collection: TMHDCollection;
@@ -29,9 +30,9 @@ export default function ItemPage<T>({ collection, item, html, isDefault }: MHDIt
 }
 
 function DevelopmentInfo<T>({ isDefault, collection, item, html }: MHDItemViewProps<T>) {
-    if(process.env.NODE_ENV !== "development") return null // hide in production!
+    if(isProduction) return null // hide in production!
 
-    const target = `/item/${collection.slug}/${item._id}`
+    const target = Item(collection.slug, item._id)
     if (typeof html !== "string") {
         return <Alert color="info">
             <b>Development Mode Hint: </b>

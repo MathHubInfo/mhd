@@ -12,6 +12,7 @@ import ResultsTable from "../../../components/search/results/ResultsTable"
 import type { TableState } from "../../../components/wrappers/table"
 import type { PageState } from "../../../state"
 import { decodeState, encodeState } from "../../../state"
+import { CollectionIndex } from "../../../controller"
 
 interface MHDCollectionSearchProps{
     router: NextRouter;
@@ -83,7 +84,7 @@ class MHDCollectionSearch extends React.Component<MHDCollectionSearchProps, MHDC
             // TODO: This should be:
             // this.props.router.replace(`?${newParams}`);
             // but NextJS doesn't like that at all
-            this.props.router.replace(`/collection/${this.state.collection.slug}?${newParams}`)
+            this.props.router.replace(`${CollectionIndex(this.state.collection.slug)}?${newParams}`)
         }
     }
 

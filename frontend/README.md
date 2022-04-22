@@ -16,12 +16,14 @@ yarn install
 Frontend routes can be found under `src/pages/` in standard NextJS fashion.
 These are:
 
-- `/`, `/home/[no]`: an overview page of all existing collections
+- `/home/[no]`: an overview page of all existing collections
 - `/about/`: a generic about page
 - `/debug/`: a debug page (development mode only)
 - `/collection/[slug]`: a search page for the given collection if it exists, an error page otherwise
-- `/collection/[slug]/about`: an info page about a specific collection
+- `/collection/[slug]/provenance`: an provenance page about a specific collection
 - `/item/[slug]/[uuid]`: a details page for the specific item
+
+The `/` page by default redirects to `/home/1`, to show the first page of collections.
 
 If furthermore expects the backend routes to be available:
 
@@ -29,6 +31,28 @@ If furthermore expects the backend routes to be available:
 - `/api/admin/`: the admin page (also proxied to the backend)
 
 From a user perspective the frontend and backend are served under the same url. 
+
+## Configuration
+
+The frontend makes uses of [NextJS Environment Variables](https://nextjs.org/docs/basic-features/environment-variables#loading-environment-variables).
+The variables, and default values, are documented in the `.env` file.
+Local settings should be stored in `.env.local`.
+
+### Single Collection Mode
+
+A special frontend setting is the so-called __Single Collection Mode__. 
+This can be configured in `.env.local` and makes the frontend appear as if it only knows about a single collection.
+It can be configured by providing the slug of the collection in `.env` or `.env.local`.
+The URLS then change as follows:
+
+- `/home/[no]`: not supported
+- `/about/`: a generic about page
+- `/debug/`: a debug page (development mode only)
+- `/`: a search page for the selected collection
+- `/provenance`: provenance page about the selected collection
+- `/item/[uuid]`: a details page about the selected item
+
+The API routes remain unchanged.
 
 ## Development
 

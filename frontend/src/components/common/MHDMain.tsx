@@ -2,31 +2,32 @@ import React from "react"
 import { Row, Col, Container } from "reactstrap"
 import styles from "./MHDMain.module.css"
 import Head from "next/head"
+import { isProduction } from "../../controller"
 
 interface MHDMainProps {
     /** title of the current page */
-    title: React.ReactNode;
+    title: React.ReactNode
 
     /** textual title to use, defaults to title */
-    textTitle?: string;
+    textTitle?: string
 
     /** head displayed on top of other elements */
-    head? : React.ReactNode | React.ReactNode[];
+    head? : React.ReactNode | React.ReactNode[]
 
     /** use a wide head */
-    wide?: boolean;
+    wide?: boolean
 
     /** children in the left head */
-    leftHead?: React.ReactNode | React.ReactNode[];
+    leftHead?: React.ReactNode | React.ReactNode[]
 
     /** buttons for the header */
-    buttons?: React.ReactNode | React.ReactNode[];
+    buttons?: React.ReactNode | React.ReactNode[]
 
     /** children in the right head */
-    rightHead?: React.ReactNode | React.ReactNode[];
+    rightHead?: React.ReactNode | React.ReactNode[]
 
     /** children at the bottom */
-    children?: React.ReactNode | React.ReactNode[];
+    children?: React.ReactNode | React.ReactNode[]
 }
 
 /**
@@ -56,7 +57,7 @@ export class MHDMainHead extends React.Component<MHDMainHeadProps> {
         this.checkReceivedTitle()
     }
     private readonly checkReceivedTitle = () => {
-        if (process.env.NODE_ENV !== "development") return
+        if (isProduction) return
 
         const { textTitle, title } = this.props
         if (typeof title !== "string" && !textTitle) {
