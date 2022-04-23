@@ -249,6 +249,9 @@ python manage.py upsert_collection mhd_data/tests/res/ab_collection.json
 python manage.py insert_data mhd_data/tests/res/ab_data.json --collection "ab" -f "basis,k,n,S,R" -p mhd_data/tests/res/ab_provenance.json
 ```
 
+### Math Data Workshop
+
+The first batch of [dataset examples](https://github.com/OpenDreamKit/MathDataWorkshop/tree/master/collections) was collected at the [OpenDreamKit workshop on data in mathematics](https://opendreamkit.org/2019/08/17/WorkshopOnDataInMathematics/). 
 
 
 ### Using (Materialized) Views
