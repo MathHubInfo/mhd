@@ -3,29 +3,25 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import * as React from "react"
 import { Button, Card, CardText, Col, Collapse, Row } from "reactstrap"
 import { MHDBackendClient } from "../../../client"
-import type { MHDFilter } from "../../../client/derived"
+import type { MHDFilter, ParsedMHDCollection } from "../../../client/derived"
 import type { TMHDCollection, TMHDPreFilter } from "../../../client/rest"
 import type { Exporter } from "../../../exporters"
-import ExporterManager from "../../../exporters/manager"
 
 interface ExportersProps {
-    exporters: string[]
-    collection: TMHDCollection,
+    collection: ParsedMHDCollection,
     pre_filter: TMHDPreFilter,
     filters: MHDFilter[],
 }
 
-export default function Exporters<T>({ collection, filters, pre_filter, exporters }: ExportersProps) {
+export default function Exporters<T>({ collection, filters, pre_filter }: ExportersProps) {
 
     const keyFor = (exporter: Exporter<T>) => {
         return exporter.hashExport(collection.slug, filters, pre_filter)
     }
 
     const [expanded, setExpanded] = React.useState(false)
-
-    const manager = ExporterManager.getInstance()
-    const instances = exporters.map(s => manager.get(s)).filter(e => e !== undefined)
-    if(instances.length === 0) return null
+    
+    if(collection.exporterInstances.length === 0) return null
 
     return <Row>
         <Col>
@@ -36,7 +32,7 @@ export default function Exporters<T>({ collection, filters, pre_filter, exporter
             <Collapse isOpen={expanded}>
                 <Card body>
                     <CardText tag="div">{
-                        exporters.map(s => manager.get(s)).filter(e => e !== undefined).map(exporter => {
+                        collection.exporterInstances.map(exporter => {
                             return <ExporterButton
                                 key={keyFor(exporter)}
                                 exporter={exporter}

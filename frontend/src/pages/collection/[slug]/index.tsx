@@ -116,7 +116,6 @@ class MHDCollectionSearch extends React.Component<MHDCollectionSearchProps, MHDC
                         {
                             (filters !== null) && 
                             <Exporters
-                                exporters={["json"]}
                                 collection={collection}
                                 filters={filters}
                                 pre_filter={pre_filter}

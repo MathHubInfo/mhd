@@ -1,15 +1,16 @@
 import CodecManager from "../codecs"
 import type Codec from "../codecs/codec"
 import type { TableColumn } from "../components/wrappers/table"
+import ExporterManager from "../exporters/manager"
 import type { MHDFilter, ParsedMHDCollection } from "./derived"
 import type { TDRFPagedResponse, TMHDCollection, TMHDItem, TMHDPreFilter, TMHDProperty } from "./rest"
 
 export class MHDBackendClient {
     /**
      * @param base_url the Base URL for all API requests
-     * @param manager interface to all known codecs
+     * @param codec_manager interface to all known codecs
      */
-    constructor(public base_url: string, public manager: CodecManager) { }
+    constructor(public base_url: string, public codec_manager: CodecManager, public exporter_manager: ExporterManager) { }
 
     private static instance: MHDBackendClient
     static getInstance(): MHDBackendClient {
@@ -17,7 +18,7 @@ export class MHDBackendClient {
             return MHDBackendClient.instance
         }
         const base_url = (typeof window === "undefined") ? process.env.DJANGO_URL + "/api" : "/api"
-        MHDBackendClient.instance = new MHDBackendClient(base_url, CodecManager.getInstance())
+        MHDBackendClient.instance = new MHDBackendClient(base_url, CodecManager.getInstance(), ExporterManager.getInstance())
         return MHDBackendClient.instance
     }
 
@@ -82,7 +83,7 @@ export class MHDBackendClient {
             propMap.set(slug, p)
             nameMap.set(slug, p.displayName)
 
-            const c = this.manager.getWithFallback(codec)
+            const c = this.codec_manager.getWithFallback(codec)
             codecMap.set(slug, c)
             
             columnMap.set(slug, c.makeReactTableColumn(p))
@@ -90,8 +91,10 @@ export class MHDBackendClient {
             return p.slug
         })
 
+        const exporterInstances = collection.exporters.map(slug => this.exporter_manager.get(slug)).filter(x => x !== undefined)
+
         const defaultPreFilter = (collection.preFilters.length > 0) ? collection.preFilters[0] : undefined
-        return { propMap, nameMap, propertySlugs, codecMap, columnMap, defaultPreFilter, ...collection }
+        return { propMap, nameMap, propertySlugs, exporterInstances, codecMap, columnMap, defaultPreFilter, ...collection }
     }
 
     /** Fetches information about a set of collection items */

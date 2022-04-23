@@ -5,6 +5,7 @@ export interface TMHDCollection {
     slug: string;
     displayName: string;
     flag_large_collection: boolean;
+    exporters: string[];
 
     description: string;
     url: string | null;

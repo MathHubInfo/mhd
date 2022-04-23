@@ -16,7 +16,10 @@ export interface ParsedMHDCollection extends TMHDCollection {
     defaultPreFilter?: TMHDPreFilter,
 
     /* the slugs of all properties */
-    propertySlugs: string[]
+    propertySlugs: string[],
+
+    /** all of the exporter instances */
+    exporterInstances: Exporter[],
 
     /** list of the instantiated codecs for this renderer */
     codecMap: Map<string, Codec<any, any>>
