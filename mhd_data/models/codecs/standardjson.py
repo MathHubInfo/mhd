@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ...fields.json import SmartJSONField
+from django.db import models
 from ..codec import Codec
 
 from typing import TYPE_CHECKING
@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 class StandardJSON(Codec):
     """ Codec that stores its value as JSON """
 
-    value: Any = SmartJSONField()
+    value: Any = models.JSONField()
 
     operators = ()
     operator_type = None

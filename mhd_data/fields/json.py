@@ -16,7 +16,11 @@ if TYPE_CHECKING:
 
 
 class DumbJSONField(models.TextField):
-    """ A dumb JSONField that stores it's value as encoded text"""
+    """
+        A dumb JSONField that stores it's value as encoded text
+        Should not be used
+        Use the builtin JSONField instead
+    """
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         # default is blank = True, to allow empty inputs
@@ -129,11 +133,21 @@ if connection.vendor == 'postgresql':
     from django.db.models import JSONField
 
     class SmartJSONField(JSONField):
-        """ posgres-aware version of a JSONField """
+        """
+            posgres-aware version of a JSONField
+            Should not be used
+
+            Use the builtin JSONField instead
+        """
         using_postgres = True
 else:
     class SmartJSONField(DumbJSONField):
-        """ non-postgres-aware version of a JSONField """
+        """
+            non-postgres-aware version of a JSONField
+            Should not be used
+
+            Use the builtin JSONField instead
+        """
         using_postgres = False
 
 __all__ = ['DumbJSONField', 'SmartJSONField']
