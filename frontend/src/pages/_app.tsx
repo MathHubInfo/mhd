@@ -21,15 +21,12 @@ config.autoAddCss = false
 //
 
 import * as React from "react"
-import Image from "next/image"
 import { default as Link } from "next/link"
 import { Col, Container, Row, Navbar, NavbarBrand, NavbarToggler, Collapse, Nav, NavItem, NavLink, Alert } from "reactstrap"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faGithub } from "@fortawesome/free-brands-svg-icons"; import eu_logo from "../images/logos/eu.svg"
-import fau_logo from "../images/logos/fau_logo.png"
-import kwarc_logo from "../images/logos/kwarc_logo.png"
-import odk_logo from "../images/logos/opendreamkit_logo.png"
-import { About, appBranding, appTitle, Debug, DjangoAdmin, Index, isProduction, isSingleCollectionMode, singleCollection } from "../controller"
+import { faGithub } from "@fortawesome/free-brands-svg-icons"
+
+import { AboutExternal, AboutInternal, appBranding, appTitle, Debug, DjangoAdmin, Index, isProduction, singleCollection } from "../controller"
 
 
 export default function MHDApp({ Component, pageProps }: AppProps<{}>) {
@@ -51,9 +48,10 @@ export default function MHDApp({ Component, pageProps }: AppProps<{}>) {
             <meta name="msapplication-TileColor" content="#da532c" />
             <meta name="theme-color" content="#ffffff" />
         </Head>
+
         <header><MHDHeader /></header>
         <Component {...pageProps} />
-        <footer><MHDFooter /></footer>
+        {!isProduction && <DevFooter />}
     </>
 }
 
@@ -77,6 +75,10 @@ class MHDHeader extends React.Component<{}, MHDHeaderState> {
 
     render() {
         const { isOpen } = this.state
+
+        const aboutInternal = AboutInternal()
+        const aboutExternal = AboutExternal()
+
         return (
             <Navbar color="light" light expand="md">
                 <NavbarBrand href={Index()}>{appBranding}</NavbarBrand>
@@ -84,7 +86,18 @@ class MHDHeader extends React.Component<{}, MHDHeaderState> {
                 <Collapse isOpen={isOpen} navbar>
                     <Nav className="ml-auto" navbar>
                         <NavItem>
-                            <NavLink tag={Link} href={About()} target="_blank" rel="noopener noreferrer">About</NavLink>
+                            { aboutInternal && 
+                                <Link href={aboutInternal} passHref>
+                                    <NavLink as="a">
+                                        About
+                                    </NavLink>
+                                </Link>
+                            }
+                            { aboutExternal &&
+                                <NavLink href={aboutExternal} className={"item-link"}>
+                                    About
+                                </NavLink>
+                            }
                         </NavItem>
                         <NavItem>
                             <NavLink href="https://github.com/MathHubInfo/mhd" className={"item-link"} target="_blank" rel="noopener noreferrer">
@@ -102,42 +115,18 @@ class MHDHeader extends React.Component<{}, MHDHeaderState> {
 // FOOTER
 //
 
-function MHDFooter() {
-    return (
-        <footer>
-            <Container>
-                <Row style={{ textAlign: "center", marginTop: "5em" }}>
-                    <Col>
-                        <LogoLink url="https://kwarc.info/" pic={kwarc_logo} alt="KWARC research group" width={80} height={80} />
-                        <LogoLink url="https://fau.de/" pic={fau_logo} alt="FAU Erlangen-Nürnberg" width={220} height={43} />
-                        <LogoLink url="https://opendreamkit.org/" pic={odk_logo} alt="OpenDreamKit" width={71} height={95} />
-                        <LogoLink url="https://europa.eu/" pic={eu_logo} alt="EU" width={90} height={60} />
-                    </Col>
-                </Row>
-                {!isProduction && <Row style={{ textAlign: "center", marginTop: "1em" }}><DevFooter /></Row>}
-            </Container>
-        </footer>
-    )
-}
-
 function DevFooter() {
-    return <Col>
-        <Alert color="info">
-            Running in Development {isSingleCollectionMode && <>(Single Collection Mode <code>{singleCollection}</code>)</>} <br />
-            <Link href={Debug()} passHref><a>Debug Page</a></Link>{" / "}
-            <Link href={DjangoAdmin()} passHref><a>Django Admin</a></Link>
-        </Alert>
-    </Col>
-}
-
-function LogoLink(props: { url: string; pic: any; alt: string, width: number, height: number }) {
-    return (
-        <a
-            href={props.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ margin: "0.5em 1.5em" }}>
-            <Image src={props.pic} width={props.width} height={props.height} alt={props.alt} />
-        </a>
-    )
+    return <footer>
+        <Container>
+            <Row style={{ textAlign: "center", marginTop: "1em" }}>
+                <Col>
+                    <Alert color="info">
+                        Running in Development {singleCollection === null && <>(Single Collection Mode <code>{singleCollection}</code>)</>} <br />
+                        <Link href={Debug()} passHref><a>Debug Page</a></Link>{" / "}
+                        <Link href={DjangoAdmin()} passHref><a>Django Admin</a></Link>
+                    </Alert>
+                </Col>
+            </Row>
+        </Container>
+    </footer>
 }

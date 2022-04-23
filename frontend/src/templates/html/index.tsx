@@ -29,7 +29,7 @@ export interface IHTMLReactParserOptions {
  * @param html String of html to parse
  * @param options Options to use during parsing
  */
-export default function renderHTML(html: string, options?: IHTMLReactParserOptions): TReactElement[] {
+export default function renderHTMLAsReact(html: string, options?: IHTMLReactParserOptions): TReactElement[] {
     // and parse the fragment
     return parseNodes(createNodes(html), options || {})
 }

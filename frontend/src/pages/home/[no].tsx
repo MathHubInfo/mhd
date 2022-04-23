@@ -5,7 +5,7 @@ import LaTeX from "react-latex"
 import { Button, Col, ListGroup, ListGroupItem, Row } from "reactstrap"
 import { MHDBackendClient } from "../../client"
 import MHDMain from "../../components/common/MHDMain"
-import { CollectionIndex, Home, homePerPage, isSingleCollectionMode } from "../../controller"
+import { CollectionIndex, Home, homePerPage, singleCollection } from "../../controller"
 
 type HomeProps = InferGetServerSidePropsType<typeof getServerSideProps>
 
@@ -44,7 +44,7 @@ export default function Page({ page, collections: { results, num_pages } }: Home
 }
 
 export const getServerSideProps: GetServerSideProps = async function({ params: { no } }) {
-    if (isSingleCollectionMode) return { notFound: true } // hide in single_collection mode
+    if (singleCollection === null) return { notFound: true } // hide in single_collection mode
 
     const pageNo = parseInt(no as string, 10)
     if (isNaN(pageNo)) return { notFound: true }

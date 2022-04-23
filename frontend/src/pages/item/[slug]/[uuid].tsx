@@ -8,7 +8,7 @@ import type { TMHDCollection, TMHDItem } from "../../../client/rest"
 import MHDMain from "../../../components/common/MHDMain"
 import PropertyInfoButton from "../../../components/common/PropertyInfoButton"
 import TemplateManager from "../../../templates"
-import renderHTML from "../../../templates/html"
+import renderHTMLAsReact from "../../../templates/html"
 import { isProduction, Item } from "../../../controller"
 
 interface TemplateContext<T> {
@@ -60,7 +60,7 @@ function CustomItemPage<T>({ html, collection, item, isDefault }: MHDItemViewPro
     const children = manager.render(html, { collection, item }, record)
 
     const [titlestring] = record.get("pagetitle") ?? [null]
-    const pagetitle = typeof titlestring === "string" ? <>{renderHTML(titlestring)}</> : `Item ${item._id}`
+    const pagetitle = typeof titlestring === "string" ? <>{renderHTMLAsReact(titlestring)}</> : `Item ${item._id}`
     
     const [textTitle] = record.get("texttitle") ?? [undefined]
 

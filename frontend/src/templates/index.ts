@@ -3,7 +3,7 @@ import React from "react"
 import { TwingEnvironment, TwingFilter, TwingFunction, TwingLoaderArray } from "twing"
 import type { TwingCallableArgument } from "twing/dist/types/lib/callable-wrapper"
 import type { TNodeList, TReactElement } from "./html"
-import renderHTML from "./html"
+import renderHTMLAsReact from "./html"
 import { createElement, ELEMENT_NODE, outerHTML } from "./html/dom"
 
 const DEFAULT_TEMPLATE_NAME = "index.twig"
@@ -120,7 +120,7 @@ export default class TemplateManager<C extends {args: Array<any>}> {
      * @returns 
      */
     render(html: string, context: Omit<C, "args">, records?: Map<string, Array<string>>): Array<ReactElement<{}>> {
-        return renderHTML(html, {
+        return renderHTMLAsReact(html, {
             replace: (domNode: Node, callback: (nodes: TNodeList) => TReactElement[]) => {
                 if (domNode.nodeType != ELEMENT_NODE) return null
                 
