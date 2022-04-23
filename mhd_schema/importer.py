@@ -4,7 +4,7 @@ import os
 
 from django.db.models import QuerySet
 
-from mhd_schema.models import Collection, Property, PreFilter
+from mhd_schema.models import Collection, Exporter, Property, PreFilter
 from mhd_data.models import CodecManager
 
 from tqdm import tqdm
@@ -13,11 +13,13 @@ import logging
 
 from typing import Optional, Any
 
+
 class SchemaImporter(object):
     """ Represents the process of an import """
 
     logger: logging.Logger
-    def __init__(self, data: Any = None, root_path : str = "", quiet: bool = False):
+
+    def __init__(self, data: Any = None, root_path: str = "", quiet: bool = False):
         self.logger = logging.getLogger('mhd.schemaimporter')
         self.logger.setLevel(logging.WARN if quiet else logging.DEBUG)
         self.root_path = root_path
@@ -47,6 +49,13 @@ class SchemaImporter(object):
 
         for p in data['properties']:
             self._validate_property(p)
+
+        if 'exporters' in data:
+            if not isinstance(data['exporters'], list):
+                raise SchemaValidationError(
+                    'Key \'exporters\' is not a list. ')
+            for e in data['exporters']:
+                self._validate_exporter(e)
 
         if 'preFilters' in k:
             if not isinstance(data['preFilters'], list):
@@ -87,6 +96,11 @@ class SchemaImporter(object):
         if CodecManager.find_codec(data['codec']) is None:
             raise SchemaValidationError(
                 'Property {0!r} has unknown codec {1!r}'.format(slug, data['codec']))
+
+    def _validate_exporter(self, exporter: Any) -> None:
+        if not isinstance(exporter, str):
+            raise SchemaValidationError(
+                'Exporter value {} is not a string. '.format(exporter))
 
     def _validate_pre_filter(self, data: Any) -> None:
         for k in ['name', 'condition']:
@@ -137,15 +151,18 @@ class SchemaImporter(object):
         url = self.data.get('url', None)
         metadata = self.data.get('metadata', None)
         properties = self.data['properties']
+        exporters = self.data.get('exporters', None) or []
         preFilters = self.data.get('preFilters', None) or []
         template = self.data.get('template', None)
 
         if isinstance(template, dict):
             template_file = template.get('file', '')
             try:
-                template = open(os.path.join(self.root_path, template_file), 'r').read()
+                template = open(os.path.join(
+                    self.root_path, template_file), 'r').read()
             except FileNotFoundError:
-                raise SchemaImportError(f'Template file: {template_file} not found')
+                raise SchemaImportError(
+                    f'Template file: {template_file} not found')
 
         # if we do not want to update
         # check if the collection already exists and raise an error
@@ -163,6 +180,22 @@ class SchemaImporter(object):
         })
         self.logger.info('{1!s} collection {0!r}'.format(
             slug, 'Created' if created else 'Updated'))
+
+        # remove previous exporters from the set
+        # and remove them from the db if they do not exist
+        for exporter in collection.exporters.all():
+            if exporter.collection_set.count() == 1:
+                exporter.delete()
+            else:
+                collection.exporters.remove(exporter)
+
+        # create all the exporters
+        for slug in exporters:
+            x, _ = Exporter.objects.get_or_create(slug=slug)
+            collection.exporters.add(x)
+
+        self.logger.info(
+            'Registered {1} exporter(s) for {0!r}'.format(slug, len(exporters)))
 
         # Delete all the previous pre-filters
         collection.prefilter_set.all().delete()
@@ -228,7 +261,8 @@ class SchemaImporter(object):
         url = prop.get('url', None)
 
         # Check if the property already exists
-        prop_set: Optional[QuerySet[Property]] = collection.property_set.filter(slug=slug)
+        prop_set: Optional[QuerySet[Property]
+                           ] = collection.property_set.filter(slug=slug)
         if prop_set:
             if not update:
                 raise SchemaImportError(

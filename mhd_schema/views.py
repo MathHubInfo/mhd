@@ -5,7 +5,7 @@ from rest_framework import response, serializers, viewsets
 
 from mhd_data.models import CodecManager
 
-from .models import Collection
+from .models import Collection, Exporter
 from django.http import Http404
 from rest_framework import response, serializers, viewsets
 
@@ -51,11 +51,16 @@ class PreFieldFieldSerializer(serializers.ModelSerializer):
         model = PreFilter
         fields = ['description', 'condition', 'count']
 
+class ExporterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Exporter
+        fields = ['slug']
+
 
 class CollectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Collection
-        fields = ['displayName', 'slug', 'description', 'url', 'metadata', 'properties', 'preFilters', 'flag_large_collection', 'count', 'template']
+        fields = ['displayName', 'slug', 'description', 'url', 'metadata', 'properties', 'exporters', 'preFilters', 'flag_large_collection', 'count', 'template']
 
     properties = serializers.SerializerMethodField()
     def get_properties(self, obj: Collection) -> PropertySerializer:
@@ -66,6 +71,11 @@ class CollectionSerializer(serializers.ModelSerializer):
     def get_preFilters(self, obj: Collection) -> PreFieldFieldSerializer:
         pre_filters = obj.prefilter_set.order_by('id')
         return PreFieldFieldSerializer(pre_filters, many=True, context=self.context).data
+
+    exporters = serializers.SerializerMethodField()
+    def get_exporters(self, obj: Collection) -> ExporterSerializer:
+        exporters = obj.exporters.order_by('id')
+        return [exporter.slug for exporter in exporters]
 
 
 class CollectionViewSet(viewsets.ReadOnlyModelViewSet):

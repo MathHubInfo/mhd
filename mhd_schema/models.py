@@ -51,6 +51,8 @@ class Collection(ModelWithMetadata):
         help_text="Custom template for rendering this collection", null=True, blank=True, default=None
     )
 
+    exporters = models.ManyToManyField("Exporter", help_text="List of enabled exporters for this collection")
+
     def update_count(self) -> Optional[int]:
         """ Updates the count of items in this collection iff it is not frozen """
 
@@ -247,6 +249,16 @@ class CollectionNotEmpty(Exception):
     that is not empty """
     pass
 
+class Exporter(models.Model):
+    """ Information about an exporter """
+
+    class Meta:
+        ordering = ['slug']
+
+    slug: str = models.SlugField(unique=True, help_text="Slug of the exporter")
+
+    def __str__(self):
+        return "Exporter {0:d} ({1!r})".format(self.pk, self.slug)
 
 class Property(ModelWithMetadata):
     """ Information about a specific property """

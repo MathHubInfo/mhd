@@ -17,7 +17,6 @@ class CollectionInline(admin.TabularInline):
     model = models.Collection.property_set.through
     extra = 1
 
-
 @admin.register(models.Collection)
 class CollectionAdmin(admin.ModelAdmin):
     def prop_size(self, obj: models.Collection) -> int:
@@ -29,9 +28,13 @@ class CollectionAdmin(admin.ModelAdmin):
     search_fields = ['displayName', 'slug']
 
     inlines = [
-        PropertyInline, PreFilterInline,
+        PropertyInline, PreFilterInline
     ]
 
+@admin.register(models.Exporter)
+class ExporterAdmin(admin.ModelAdmin):
+    list_display = ['slug']
+    search_fields = ['slug']
 
 @admin.register(models.Property)
 class PropertyAdmin(admin.ModelAdmin):

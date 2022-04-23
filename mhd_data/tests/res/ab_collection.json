@@ -2,6 +2,7 @@
     "displayName": "Additive Bases",
     "slug": "ab",
     "description": "This is the full collection of extremal additive bases of up to $25$ elements.",
+    "exporters": ["json"],
     "metadata": {
         "schemaTheoryURL": 
         "https://gl.mathhub.info/ODK/mbgen/blob/master/source/additive_bases_schema.mmt",
