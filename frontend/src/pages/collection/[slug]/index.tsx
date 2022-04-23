@@ -13,6 +13,7 @@ import type { TableState } from "../../../components/wrappers/table"
 import type { PageState } from "../../../state"
 import { decodeState, encodeState } from "../../../state"
 import { CollectionIndex } from "../../../controller"
+import Exporters from "../../../components/search/results/Exporter"
 
 interface MHDCollectionSearchProps{
     router: NextRouter;
@@ -110,6 +111,15 @@ class MHDCollectionSearch extends React.Component<MHDCollectionSearchProps, MHDC
                                 collection={collection}
                                 columns={columns}
                                 onColumnsApply={this.setColumns}
+                            />
+                        }
+                        {
+                            (filters !== null) && 
+                            <Exporters
+                                exporters={["json", "noexist"]}
+                                collection={collection}
+                                filters={filters}
+                                pre_filter={pre_filter}
                             />
                         }
                         {
