@@ -1,5 +1,6 @@
 import type { Exporter } from "."
 import { JSONExporter } from "./json"
+import { SageCVTExporter } from "./sage-cvt"
 
 export default class ExporterManager {
     private static instance: ExporterManager
@@ -7,6 +8,7 @@ export default class ExporterManager {
         if (!ExporterManager.instance) {
             const instance = new ExporterManager()
             instance.register(new JSONExporter())
+            instance.register(new SageCVTExporter())
 
             ExporterManager.instance = instance
         }
