@@ -50,6 +50,7 @@ ENV DJANGO_DB_PORT ""
 RUN DJANGO_SECRET_KEY=setup python manage.py collectstatic --noinput
 
 WORKDIR /app/frontend/
+COPY --from=frontend /app/frontend/content ./content
 COPY --from=frontend /app/frontend/public ./public
 COPY --from=frontend /app/frontend/package.json ./package.json
 
