@@ -1,8 +1,8 @@
 # MathDataHub
 
-![Frontend Tests](https://github.com/MathHubInfo/mhd/actions/workflows/frontend/badge.svg)
-![Backend Tests](https://github.com/MathHubInfo/mhd/actions/workflows/backend.yml/badge.svg)
-![Docker Build](https://github.com/MathHubInfo/mhd/actions/workflows/docker_build/badge.svg)
+[![Frontend Tests](https://github.com/MathHubInfo/mhd/actions/workflows/frontend.yml/badge.svg)](https://github.com/MathHubInfo/mhd/actions/workflows/frontend.yml)
+[![Backend Tests](https://github.com/MathHubInfo/mhd/actions/workflows/backend.yml/badge.svg)](https://github.com/MathHubInfo/mhd/actions/workflows/backend.yml)
+[![Docker Build](https://github.com/MathHubInfo/mhd/actions/workflows/docker_build.yml/badge.svg)](https://github.com/MathHubInfo/mhd/actions/workflows/docker_build.yml)
 
 MathDataHub is a system to provide universal infrastructure for Mathematical Data.
 See the paper [Towards a Unified Mathematical Data Infrastructure: Database and Interface Generation](https://kwarc.info/people/mkohlhase/papers/cicm19-MDH.pdf)
