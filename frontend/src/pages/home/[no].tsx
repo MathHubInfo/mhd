@@ -44,7 +44,7 @@ export default function Page({ page, collections: { results, num_pages } }: Home
 }
 
 export const getServerSideProps: GetServerSideProps = async function({ params: { no } }) {
-    if (singleCollection === null) return { notFound: true } // hide in single_collection mode
+    if (singleCollection !== null) return { notFound: true } // hide in single_collection mode
 
     const pageNo = parseInt(no as string, 10)
     if (isNaN(pageNo)) return { notFound: true }
