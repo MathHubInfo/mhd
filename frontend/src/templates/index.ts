@@ -63,7 +63,7 @@ export default class TemplateManager<C extends {args: Array<any>}> {
      * @param context Context to render the template in
      * @returns 
      */
-    async prepare(template: string, context: any): Promise<string> {
+    async prepare(template: string, context: Omit<C, "args">): Promise<string> {
         // TODO: we should cache the loader, and see if that throws any errors.
         // It is unclear how many loaders should be cached, and when the caching should be pruned.
         const loader = new TwingLoaderArray({ [DEFAULT_TEMPLATE_NAME]: template })

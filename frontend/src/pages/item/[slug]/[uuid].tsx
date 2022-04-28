@@ -10,12 +10,16 @@ import PropertyInfoButton from "../../../components/common/PropertyInfoButton"
 import TemplateManager from "../../../templates"
 import renderHTMLAsReact from "../../../templates/html"
 import { isProduction, Item } from "../../../controller"
+import { RenderCodec } from "../../../codecs/codec"
+import type { ParsedMHDCollection } from "../../../client/derived"
 
 interface TemplateContext<T> {
-    collection: TMHDCollection;
+    collection: ParsedMHDCollection;
     item: TMHDItem<T>;
 }
-interface MHDItemViewProps<T> extends TemplateContext<T> {
+interface MHDItemViewProps<T> {
+    collection: TMHDCollection;
+    item: TMHDItem<T>;
     html?: string;
     isDefault?: boolean;
 }
@@ -57,7 +61,8 @@ function DevelopmentInfo<T>({ isDefault, collection, item, html }: MHDItemViewPr
 
 function CustomItemPage<T>({ html, collection, item, isDefault }: MHDItemViewProps<T> & { html: string }) {
     const record = new Map<string, string[]>()
-    const children = manager.render(html, { collection, item }, record)
+    const pCollection = MHDBackendClient.getInstance().parseCollection(collection)
+    const children = manager.render(html, { collection: pCollection, item }, record)
 
     const [titlestring] = record.get("pagetitle") ?? [null]
     const pagetitle = typeof titlestring === "string" ? <>{renderHTMLAsReact(titlestring)}</> : `Item ${item._id}`
@@ -76,18 +81,12 @@ function CustomItemPage<T>({ html, collection, item, isDefault }: MHDItemViewPro
 }
 
 function DefaultItemPage<T>({ collection, item, html, isDefault }: MHDItemViewProps<T>) {
-
     const pCollection = MHDBackendClient.getInstance().parseCollection(collection)
-
     // render rows for the main table
     const rows = collection.properties.map(p => {
-        const codec = pCollection.codecMap.get(p.slug)
-        if (!codec) return null
-
-        const Cell = codec.cellComponent
         return <tr key={p.slug}>
-            <td>{p.displayName}<PropertyInfoButton prop={p} /></td>
-            <td><Cell value={item[p.slug]} codec={codec} /></td>
+            <td>{p.displayName}<Info property={p.slug} collection={pCollection} /></td>
+            <td><Present property={p.slug} collection={pCollection} item={item}></Present></td>
         </tr>
     })
 
@@ -114,20 +113,15 @@ function DefaultItemPage<T>({ collection, item, html, isDefault }: MHDItemViewPr
 
 /** Present presents a property on the page using the appropriate component */
 function Present<T>({ property, collection, item }: TemplateContext<T> & { property: string }) {
-    const pCollection = MHDBackendClient.getInstance().parseCollection(collection)
-
-    const codec = pCollection.codecMap.get(property)
+    const codec = collection.codecMap.get(property)
     if (!codec) return <Alert color="warning">Codec for property <code style={{ fontSize: ".75rem" }}>{property}</code> on collection <code style={{ fontSize: ".75rem" }}>{collection.slug}</code> not found.</Alert>
-    const Cell = codec.cellComponent
 
-    return <Cell value={item[property]} codec={codec} />
+    return <RenderCodec value={item[property]} codec={codec} />
 }
 
 /** Info renders information about a specific property */
-function Info({ property, collection }: { collection: TMHDCollection, property: string }) {
-    const pCollection = MHDBackendClient.getInstance().parseCollection(collection)
-
-    const prop = pCollection.propMap.get(property)
+function Info({ property, collection }: { collection: ParsedMHDCollection, property: string }) {
+    const prop = collection.propMap.get(property)
     if (!prop) return <Alert color="warning">Unknown property <code style={{ fontSize: ".75rem" }}>{property}</code> on collection <code style={{ fontSize: ".75rem" }}>{collection.slug}</code>.</Alert>
 
     return <PropertyInfoButton prop={prop} />
@@ -158,12 +152,15 @@ manager.registerRecordingFilter("texttitle")
 
 
 export const getServerSideProps: GetServerSideProps = async function ({ params: { slug, uuid }, query: { default: dflt } }) {
-    const [collection, item] = await MHDBackendClient.getInstance().fetchCollectionAndItem(slug as string, uuid as string)
+    const client = MHDBackendClient.getInstance()
+
+    const [collection, item] = await client.fetchCollectionAndItem(slug as string, uuid as string)
+    const pCollection = client.parseCollection(collection)
 
     const isDefault = dflt === "1"
 
     const template = collection.template
-    const html = template ? (await manager.prepare(template, { collection, item })) : null
+    const html = template ? (await manager.prepare(template, { collection:pCollection, item })) : null
     return {
         props: { collection, item, html, isDefault },
     }

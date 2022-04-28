@@ -3,6 +3,7 @@ import type { TMHDProperty, TMHDItem } from "../client/rest"
 import { Badge } from "reactstrap"
 import type { TableColumn, CellComponentProps } from "../components/wrappers/table"
 import PropertyInfoButton from "../components/common/PropertyInfoButton"
+import { isProduction } from "../controller"
 
 type ReactComponent<T> = React.ComponentClass<T> | React.SFC<T>
 
@@ -84,11 +85,10 @@ export default abstract class Codec<ElementType = any, FilterType = string> {
      * @param property 
      */
     makeReactTableColumn(property: TMHDProperty): TableColumn<TMHDItem<any>> {
-        const Component = this.cellComponent
         return {
             key: property.slug,
             Header: () => <>{property.displayName}<PropertyInfoButton prop={property}/></>,
-            Cell: ({ data }: CellComponentProps<TMHDItem<any>>) => <Component value={data[property.slug]} codec={this} />,
+            Cell: ({ data }: CellComponentProps<TMHDItem<any>>) => <RenderCodec value={data[property.slug]} codec={this} />,
         }
     }
 
@@ -183,4 +183,29 @@ class UnsupportedFilterEditor<ElementType, FilterType> extends React.Component<T
             <Badge color="danger">Filters for {codec.slug} is not supported</Badge>
         </>
     }
+}
+
+/**
+ * RenderCodec renders a codec instance safely, catching errors appropriatly
+ */
+export class RenderCodec<C extends Codec<E, F>, E, F> extends React.Component<TCellProps<C, E, F>> {
+    state = { hasError: false }
+    static getDerivedStateFromError(error: Error) {
+        return { hasError: true }
+    }
+    componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+        if(isProduction) return
+        
+        console.error("error rendering codec", error, errorInfo)
+    }
+    render() {
+        const { codec, value } = this.props
+        if(this.state.hasError) {
+            return <Badge color="danger">Error rendering {codec.slug}</Badge>
+        }
+    
+        const Component = codec.cellComponent
+        return <Component codec={codec} value={value} />
+    }
+
 }
