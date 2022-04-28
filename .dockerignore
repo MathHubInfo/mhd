@@ -1,5 +1,4 @@
 frontend/build/
-frontend/src/config/
 frontend/node_modules/
 frontend/.next
 
