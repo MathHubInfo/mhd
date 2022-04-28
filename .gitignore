@@ -13,3 +13,6 @@ db.sqlite3
 .pytest_cache
 
 mhd/local_settings.py
+
+# local collection data
+data/
