@@ -80,7 +80,7 @@ echo "DATABASES = { 'default': { 'ENGINE': 'django.db.backends.postgresql', 'NAM
     >> mhd/local_settings.py
 
 # every time you need to start the database, run:
-docker run --rm -it -p 127.0.0.1:5432:5432 -e POSTGRES_HOST_AUTH_METHOD=trust -e POSTGRES_DB=postgres -e POSTGRES_USER=postgres -v pgdata:/var/lib/postgresql/data postgres
+docker run --rm -it -p 127.0.0.1:5432:5432 -e POSTGRES_HOST_AUTH_METHOD=trust -e POSTGRES_DB=postgres -e POSTGRES_USER=postgres -v pgdata:/var/lib/postgresql/data --shm-size=1g postgres
 ```
 
 ## Database structure
