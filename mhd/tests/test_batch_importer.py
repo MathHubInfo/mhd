@@ -17,7 +17,8 @@ TEXT_SAMPLES = [
     'Hello, world',
     'Hello \\ World',
     '"Hello world"',
-    "'Hello world'"
+    "'Hello world'",
+    "hello\nworld",
 ]
 
 INTEGER_SAMPLES = [

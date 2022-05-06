@@ -29,7 +29,7 @@ def make_pgsql_serializer(typ: str) -> Callable[[Any], str]:
     elif typ in TIME_TYPES:
         return _pgsql_encode_time
     elif typ == 'json':
-        return _pgsq_encode_json
+        return _pgsql_encode_json
     elif typ == 'jsonb':
         return _pgsq_encode_jsonb
     elif typ == 'uuid':
@@ -101,17 +101,14 @@ def _pgsql_encode_boolean(b: Optional[bool])->str:
 #########################
 
 CHARS_TYPES = ('character varying', 'varchar', 'character', 'char', 'text')
+CHARS_ESCAPES = ('"', "\t", "\n", "\\", "\r")
 def _pqsql_encode_chars(s: Optional[str]) -> str:
     # if we provided nothing, return null
     if s is None:
         return CSV_NULL
-
+    
     return s.translate(
-        s.maketrans({
-            '"': '\\"',
-            '\t': '\\t',
-            '\\': '\\\\',
-        })
+        s.maketrans({ C : "\\" + C for C in CHARS_ESCAPES })
     )
 
 #########################
@@ -144,3 +141,4 @@ def _pgsq_encode_uuid(u: Optional[Any]) -> str:
         return CSV_NULL
 
     return str(u)
+
