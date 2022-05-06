@@ -1,7 +1,7 @@
 from django.test import TestCase
 import json
 
-from mhd_tests.models import JSONArrayFieldModel, SmartJSONFieldModel, TextFieldModel, SmartNDArrayOneModel
+from mhd_tests.models import JSONArrayFieldModel, SmartJSONFieldModel, SmartNDArrayTwoModel, TextFieldModel, SmartNDArrayOneModel
 from mhd_tests.utils import db
 
 from ..utils.batch_importer import CopyFromImporter, BulkCreateImporter
@@ -29,9 +29,16 @@ INTEGER_SAMPLES = [
     -757645513
 ]
 
-INTEGER_ARRAY_SAMPLES = [
+INTEGER_1D_ARRAY_SAMPLES = [
     [],
 ] + [[n] for n in INTEGER_SAMPLES] + [[n, n, n] for n in INTEGER_SAMPLES]
+
+INTEGER_2D_ARRAY_SAMPLES = [
+    [],
+    [[1, 2, 3], [4, 5, 6]],
+#    [[], []],
+]
+
 
 JSON_SAMPLES = [
     True,
@@ -90,11 +97,20 @@ class InsertionTest(TestCase):
     @db.skipUnlessPostgres
     def test_copyfrom_integer_array(self):
         importer = CopyFromImporter(quiet = False)
-        self._insert_and_compare(importer, SmartNDArrayOneModel, INTEGER_ARRAY_SAMPLES)
+        self._insert_and_compare(importer, SmartNDArrayOneModel, INTEGER_1D_ARRAY_SAMPLES)
 
     def test_bulkcreate_integer_array(self):
         importer = BulkCreateImporter(quiet=False)
-        self._insert_and_compare(importer, SmartNDArrayOneModel, INTEGER_ARRAY_SAMPLES)
+        self._insert_and_compare(importer, SmartNDArrayOneModel, INTEGER_1D_ARRAY_SAMPLES)
+
+    @db.skipUnlessPostgres
+    def test_copyfrom_integer_2darray(self):
+        importer = CopyFromImporter(quiet = False)
+        self._insert_and_compare(importer, SmartNDArrayTwoModel, INTEGER_2D_ARRAY_SAMPLES)
+
+    def test_bulkcreate_integer_2darray(self):
+        importer = BulkCreateImporter(quiet=False)
+        self._insert_and_compare(importer, SmartNDArrayTwoModel, INTEGER_2D_ARRAY_SAMPLES)
 
     @db.skipUnlessPostgres
     def test_copyfrom_json_array(self):

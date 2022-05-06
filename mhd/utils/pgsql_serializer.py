@@ -10,18 +10,17 @@ from datetime import datetime
 CSV_NULL = '\\N'
 CSV_NULL_ESCAPED = "E'\\N'"
 
-ary_typ = re.compile(r'^(.*)\[(?:\d+)?\]$')
+ARY_TYP_REGEX = re.compile(r'^(.*)\[(?:\d+)?\]$')
 
 
-def make_pgsql_serializer(typ: str) -> Callable[[Any], str]:
+def make_pgsql_serializer(typ: str, is_nested: bool = False) -> Callable[[Any], str]:
     """ Creates a serializer for the given postgres type
         That is, it returns a function taking a python
         value representing the type and returning a string
         to be written inside a CSV file """
-    ary = ary_typ.match(typ)
+    ary = ARY_TYP_REGEX.match(typ)
     if ary:
-        s = make_pgsql_serializer(ary.group(1))
-        return lambda v: _pgsql_encode_ary(v, s)
+        return lambda v: _pgsql_encode_ary(v, ary.group(1))
     elif typ in NUMERIC_TYPES:
         return _pgsql_encode_numeric
     elif typ in BOOLEAN_TYPES:
@@ -31,9 +30,9 @@ def make_pgsql_serializer(typ: str) -> Callable[[Any], str]:
     elif typ in TIME_TYPES:
         return _pgsql_encode_time
     elif typ == 'json':
-        return _pgsql_encode_json
+        return lambda v: _pgsql_encode_json(v, is_nested)
     elif typ == 'jsonb':
-        return _pgsq_encode_jsonb
+        return lambda v: _pgsq_encode_jsonb(v, is_nested)
     elif typ == 'uuid':
         return _pgsq_encode_uuid
 
@@ -44,24 +43,12 @@ def make_pgsql_serializer(typ: str) -> Callable[[Any], str]:
 #########################
 
 
-def _pgsql_encode_ary(v: List[Any], enc: Callable[..., str]) -> str:
+def _pgsql_encode_ary(v: List[Any], subtype: str) -> str:
     if v is None:
         return CSV_NULL
 
-    data = map(_pgsql_surround, map(enc, v))
-
-    return '{' + ','.join(data) + '}'
-
-
-def _pgsql_surround(v: str) -> str:
-    """ Surrounds a value in an array literal """
-    return '"{}"'.format(v.translate(
-        v.maketrans({
-            '"': '\\\\"',
-            '\t': '\\\\t',
-            '\\': '\\\\',
-        })
-    ))
+    sub = make_pgsql_serializer(subtype, is_nested=True)
+    return '{' + ','.join(map(sub, v)) + '}'
 
 #########################
 # Numeric Types
@@ -138,20 +125,40 @@ def _pgsql_encode_time(dt: Optional[datetime]) -> str:
 
     return dt.isoformat()
 
+
 #########################
 # JSON Types
 #########################
+JSON_ESCAPES = ('\\')
 
 
-def _pgsql_encode_json(j: Any) -> str:
-    return json.dumps(j).replace('\\', '\\\\')
+def _pgsql_encode_json(j: Any, is_nested: bool) -> str:
+    # perform a normal json encoding
+    s = json.dumps(j)
+    s = s.translate(
+        s.maketrans({C: "\\" + C for C in JSON_ESCAPES})
+    )
+
+    # if we're not nested, we're done!
+    if not is_nested:
+        return s
+
+    # FIXME: I don't know why this particular encoding
+    # But this seems to work
+    return '"{}"'.format(s.translate(
+        s.maketrans({
+            '"': '\\\\"',
+            '\t': '\\\\t',
+            '\\': '\\\\',
+        })
+    ))
 
 
-def _pgsq_encode_jsonb(jb):
+def _pgsq_encode_jsonb(jb, is_nested: bool):
     try:
-        return _pgsql_encode_json(jb.adapted)
+        return _pgsql_encode_json(jb.adapted, is_nested)
     except AttributeError:
-        return _pgsql_encode_json(jb)
+        return _pgsql_encode_json(jb, is_nested)
 
 #########################
 # UUID Types
