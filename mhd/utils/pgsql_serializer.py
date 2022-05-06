@@ -11,6 +11,8 @@ CSV_NULL = '\\N'
 CSV_NULL_ESCAPED = "E'\\N'"
 
 ary_typ = re.compile(r'^(.*)\[(?:\d+)?\]$')
+
+
 def make_pgsql_serializer(typ: str) -> Callable[[Any], str]:
     """ Creates a serializer for the given postgres type
         That is, it returns a function taking a python
@@ -41,6 +43,7 @@ def make_pgsql_serializer(typ: str) -> Callable[[Any], str]:
 # Array Types
 #########################
 
+
 def _pgsql_encode_ary(v: List[Any], enc: Callable[..., str]) -> str:
     if v is None:
         return CSV_NULL
@@ -48,6 +51,7 @@ def _pgsql_encode_ary(v: List[Any], enc: Callable[..., str]) -> str:
     data = map(_pgsql_surround, map(enc, v))
 
     return '{' + ','.join(data) + '}'
+
 
 def _pgsql_surround(v: str) -> str:
     """ Surrounds a value in an array literal """
@@ -63,10 +67,14 @@ def _pgsql_surround(v: str) -> str:
 # Numeric Types
 #########################
 
+
 p_inf = float("inf")
 n_inf = float("-inf")
 
-NUMERIC_TYPES = ('smallint', 'integer', 'bigint', 'decimal', 'numeric', 'real', 'double precision', 'smallserial', 'serial', 'bigserial')
+NUMERIC_TYPES = ('smallint', 'integer', 'bigint', 'decimal', 'numeric',
+                 'real', 'double precision', 'smallserial', 'serial', 'bigserial')
+
+
 def _pgsql_encode_numeric(n: Optional[Union[float, int]]) -> str:
     """ Escapes a number for use with postgres """
 
@@ -87,8 +95,11 @@ def _pgsql_encode_numeric(n: Optional[Union[float, int]]) -> str:
 # Boolean Types
 #########################
 
+
 BOOLEAN_TYPES = ('boolean',)
-def _pgsql_encode_boolean(b: Optional[bool])->str:
+
+
+def _pgsql_encode_boolean(b: Optional[bool]) -> str:
     """ Escapes a boolean for use with postgres """
 
     if b is None:
@@ -100,21 +111,27 @@ def _pgsql_encode_boolean(b: Optional[bool])->str:
 # Character Types
 #########################
 
+
 CHARS_TYPES = ('character varying', 'varchar', 'character', 'char', 'text')
 CHARS_ESCAPES = ('"', "\t", "\n", "\\", "\r")
+
+
 def _pqsql_encode_chars(s: Optional[str]) -> str:
     # if we provided nothing, return null
     if s is None:
         return CSV_NULL
-    
+
     return s.translate(
-        s.maketrans({ C : "\\" + C for C in CHARS_ESCAPES })
+        s.maketrans({C: "\\" + C for C in CHARS_ESCAPES})
     )
+
 
 #########################
 # Time Types
 #########################
 TIME_TYPES = ('timestamp with time zone',)
+
+
 def _pgsql_encode_time(dt: Optional[datetime]) -> str:
     if dt is None:
         return CSV_NULL
@@ -124,8 +141,11 @@ def _pgsql_encode_time(dt: Optional[datetime]) -> str:
 #########################
 # JSON Types
 #########################
+
+
 def _pgsql_encode_json(j: Any) -> str:
-    return json.dumps(j).replace('\\','\\\\')
+    return json.dumps(j).replace('\\', '\\\\')
+
 
 def _pgsq_encode_jsonb(jb):
     try:
@@ -136,9 +156,10 @@ def _pgsq_encode_jsonb(jb):
 #########################
 # UUID Types
 #########################
+
+
 def _pgsq_encode_uuid(u: Optional[Any]) -> str:
     if u is None:
         return CSV_NULL
 
     return str(u)
-
