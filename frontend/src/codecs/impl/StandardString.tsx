@@ -1,5 +1,5 @@
 import React from "react"
-import type { TValidationResult, TCellProps } from "../codec"
+import type { TValidationResult, TPresenterProps } from "../codec"
 import Codec from "../codec"
 
 export default class StandardString extends Codec<string, null> {
@@ -18,9 +18,13 @@ export default class StandardString extends Codec<string, null> {
     cleanFilterValue(value: null, lastValue?: string): TValidationResult {
         return { valid: false }
     }
+
+    toClipboardValue(value: string): string | null {
+        return value.toString()
+    }
 }
 
-class StandardStringCell extends React.Component<TCellProps<StandardString, string, null>> {
+class StandardStringCell extends React.Component<TPresenterProps<StandardString, string, null>> {
     render() {
         const { value } = this.props
         return value

@@ -1,5 +1,5 @@
 import React from "react"
-import type { TCellProps, TValidationResult } from "../codec"
+import type { TPresenterProps, TValidationResult } from "../codec"
 import Codec from "../codec"
 
 export default class StandardJSON extends Codec<any, null> {
@@ -18,9 +18,13 @@ export default class StandardJSON extends Codec<any, null> {
     cleanFilterValue(value: null, lastValue?: string): TValidationResult {
         return { valid: false }
     }
+
+    toClipboardValue(value: any): string | null {
+        return JSON.stringify(value)
+    }
 }
 
-class StandardJSONCell extends React.Component<TCellProps<StandardJSON, any, null>> {
+class StandardJSONCell extends React.Component<TPresenterProps<StandardJSON, any, null>> {
     render() {
         const { value } = this.props
         if (value === null) return null

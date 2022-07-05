@@ -1,5 +1,5 @@
 import React from "react"
-import type { TCellProps, TValidationResult } from "../codec"
+import type { TPresenterProps, TValidationResult } from "../codec"
 import Codec from "../codec"
 
 export default class ListAsArray<T> extends Codec<Array<T>, null> {
@@ -24,9 +24,9 @@ export default class ListAsArray<T> extends Codec<Array<T>, null> {
     }
 }
 
-class ListAsArrayCell<T> extends React.Component<TCellProps<ListAsArray<T>, Array<T>, null>> {
+class ListAsArrayCell<T> extends React.Component<TPresenterProps<ListAsArray<T>, Array<T>, null>> {
     render() {
-        const { codec, value } = this.props
+        const { codec, value, context, hasCopyButton } = this.props
         if (value === null) return null
 
         const Cell = codec.elementCodec.cellComponent
@@ -34,7 +34,7 @@ class ListAsArrayCell<T> extends React.Component<TCellProps<ListAsArray<T>, Arra
         const separator = (i: number) => (i < value.length-1 ? ", " : "")
         
         return <>[
-            {value.map((x, i) => <React.Fragment key={i}><Cell key={i} codec={codec.elementCodec} value={x}/>{separator(i)}</React.Fragment>)}
+            {value.map((x, i) => <React.Fragment key={i}><Cell context={context} hasCopyButton={hasCopyButton} key={i} codec={codec.elementCodec} value={x}/>{separator(i)}</React.Fragment>)}
         ]
         </>
     }

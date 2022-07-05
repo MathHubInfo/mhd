@@ -1,6 +1,6 @@
 import type { ChangeEvent, KeyboardEvent, CSSProperties } from "react"
 import React from "react"
-import type { TFilterViewerProps, TFilterEditorProps, TValidationResult, TCellProps } from "../codec"
+import type { TFilterViewerProps, TFilterEditorProps, TValidationResult, TPresenterProps } from "../codec"
 import Codec from "../codec"
 import styles from "./StandardInt.module.css"
 
@@ -41,9 +41,13 @@ export default class StandardInt extends Codec<number, string> {
             }),
         }
     }
+
+    toClipboardValue(value: number): string | null {
+        return value.toString()
+    }
 }
 
-class StandardIntCell extends React.Component<TCellProps<StandardInt, number, string>> {
+class StandardIntCell extends React.Component<TPresenterProps<StandardInt, number, string>> {
     render() {
         const { value } = this.props
         if (value === null) return null

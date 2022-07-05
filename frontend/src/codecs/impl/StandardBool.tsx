@@ -1,5 +1,5 @@
 import React from "react"
-import type { TFilterViewerProps, TFilterEditorProps, TValidationResult, TCellProps } from "../codec"
+import type { TFilterViewerProps, TFilterEditorProps, TValidationResult, TPresenterProps } from "../codec"
 import Codec from "../codec"
 import { ButtonGroup, Button } from "reactstrap"
 import styles from "./StandardBool.module.css"
@@ -24,7 +24,7 @@ export default class StandardBool extends Codec<boolean, boolean> {
     }
 }
 
-class StandardBoolCell extends React.Component<TCellProps<StandardBool, boolean, boolean>> {
+class StandardBoolCell extends React.Component<TPresenterProps<StandardBool, boolean, boolean>> {
     render() {
         const { value } = this.props
         if (value === null) return null

@@ -1,5 +1,5 @@
 import React from "react"
-import type { TValidationResult, TCellProps } from "../codec"
+import type { TValidationResult, TPresenterProps } from "../codec"
 import Codec from "../codec"
 import Sparse6toEdgeList from "./utils/Sparse6"
 import D3ForceGraph from "../../components/wrappers/d3graph"
@@ -18,9 +18,13 @@ export default class GraphAsSparse6 extends Codec<string, null> {
     cleanFilterValue(value: null, lastValue?: string): TValidationResult {
         return { valid: false }
     }
+
+    toClipboardValue(value: string): string {
+        return value
+    }
 }
 
-class GraphAsSparse6Cell extends React.Component<TCellProps<GraphAsSparse6, string, null>> {
+class GraphAsSparse6Cell extends React.Component<TPresenterProps<GraphAsSparse6, string, null>> {
     static MAX_RENDER_ORDER = 20
     render() {
         const { value } = this.props

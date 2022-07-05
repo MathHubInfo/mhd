@@ -1,5 +1,5 @@
 import React from "react"
-import type { TValidationResult, TCellProps } from "../codec"
+import type { TValidationResult, TPresenterProps } from "../codec"
 import Codec from "../codec"
 
 export default class CoveringRelationAsDigraph6 extends Codec<string, null> {
@@ -20,7 +20,7 @@ export default class CoveringRelationAsDigraph6 extends Codec<string, null> {
     }
 }
 
-class CoveringRelationAsDigraph6Cell extends React.Component<TCellProps<CoveringRelationAsDigraph6, string, null>> {
+class CoveringRelationAsDigraph6Cell extends React.Component<TPresenterProps<CoveringRelationAsDigraph6, string, null>> {
     render() {
         // const { value } = this.props;
         return "(Hasse Diagram)"

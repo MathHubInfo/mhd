@@ -1,5 +1,5 @@
 import React from "react"
-import type { TCellProps, TValidationResult } from "../codec"
+import type { TPresenterProps, TValidationResult } from "../codec"
 import Codec from "../codec"
 import { chunkArray } from "../../utils"
 
@@ -21,7 +21,7 @@ export default class FactorizationAsSparseArray extends Codec<Array<number>, nul
     }
 }
 
-class FactorizationAsSparseArrayCell extends React.Component<TCellProps<FactorizationAsSparseArray, Array<number>, null>> {
+class FactorizationAsSparseArrayCell extends React.Component<TPresenterProps<FactorizationAsSparseArray, Array<number>, null>> {
     render() {
         const { value } = this.props
         if (value === null) return null

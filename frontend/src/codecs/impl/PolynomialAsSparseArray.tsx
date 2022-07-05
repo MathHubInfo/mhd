@@ -1,8 +1,11 @@
 import React from "react"
-import type { TCellProps, TValidationResult } from "../codec"
+import type { TPresenterProps, TValidationResult } from "../codec"
 import Codec from "../codec"
 import { chunkArray } from "../../utils"
 
+/**
+ * Represents a polynomial a1 * x^b1 + a2 * x^b2 + ... as an array [..., b2, a2, b1, a1]
+ */
 export default class PolynomialAsSparseArray extends Codec<Array<number>, null> {
     readonly slug: string = "PolynomialAsSparseArray"
 
@@ -21,7 +24,7 @@ export default class PolynomialAsSparseArray extends Codec<Array<number>, null> 
     }
 }
 
-class PolynomialAsSparseArrayCell extends React.Component<TCellProps<PolynomialAsSparseArray, Array<number>, null>> {
+class PolynomialAsSparseArrayCell extends React.Component<TPresenterProps<PolynomialAsSparseArray, Array<number>, null>> {
     render() {
         const { value } = this.props
         if (value === null) return null

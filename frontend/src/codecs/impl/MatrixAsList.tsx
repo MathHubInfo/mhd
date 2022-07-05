@@ -1,5 +1,5 @@
 import React from "react"
-import type { TCellProps, TValidationResult } from "../codec"
+import type { TPresenterProps, TValidationResult } from "../codec"
 import Codec from "../codec"
 import { chunkArray } from "../../utils"
 import styles from "./MatrixAsList.module.css"
@@ -26,7 +26,7 @@ export default class MatrixAsList<T> extends Codec<Array<T>, null> {
     }
 }
 
-class MatrixAsListCell<T> extends React.Component<TCellProps<MatrixAsList<T>, Array<T>, null>> {
+class MatrixAsListCell<T> extends React.Component<TPresenterProps<MatrixAsList<T>, Array<T>, null>> {
     render() {
         const { value, codec } = this.props
         if (value === null) return null
@@ -35,7 +35,7 @@ class MatrixAsListCell<T> extends React.Component<TCellProps<MatrixAsList<T>, Ar
             <table className={styles.displayMatrix}>{
                 chunkArray(value, codec.columns).map((r, index) =>
                     <tr key={index}>{
-                        r.map((e, i) => <td key={index + ":" + i}>{e}</td>)
+                        r.map((e, i) => <td key={`${index}:${i}`}>{e as any as React.ReactNode}</td>)
                     }</tr>
                 )
             }</table>

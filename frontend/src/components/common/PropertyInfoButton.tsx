@@ -15,7 +15,7 @@ export default class PropertyInfoButton extends React.Component<{prop: TMHDPrope
         </InfoButton>
     }
 }
-class InfoButton extends React.Component<{href?: string}, {isOpen: boolean}> {
+class InfoButton extends React.Component<{href?: string, children: React.ReactNode}, {isOpen: boolean}> {
     state = {
         isOpen: false,
     }

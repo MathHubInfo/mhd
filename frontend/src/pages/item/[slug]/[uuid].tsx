@@ -10,7 +10,7 @@ import PropertyInfoButton from "../../../components/common/PropertyInfoButton"
 import TemplateManager from "../../../templates"
 import renderHTMLAsReact from "../../../templates/html"
 import { isProduction, Item } from "../../../controller"
-import { RenderCodec } from "../../../codecs/codec"
+import { CellRenderContext, RenderCodec } from "../../../codecs/codec"
 import type { ParsedMHDCollection } from "../../../client/derived"
 
 interface TemplateContext<T> {
@@ -116,7 +116,7 @@ function Present<T>({ property, collection, item }: TemplateContext<T> & { prope
     const codec = collection.codecMap.get(property)
     if (!codec) return <Alert color="warning">Codec for property <code style={{ fontSize: ".75rem" }}>{property}</code> on collection <code style={{ fontSize: ".75rem" }}>{collection.slug}</code> not found.</Alert>
 
-    return <RenderCodec value={item[property]} codec={codec} />
+    return <RenderCodec context={CellRenderContext.Details} value={item[property]} codec={codec} />
 }
 
 /** Info renders information about a specific property */
