@@ -4,7 +4,7 @@ import style from "./table.module.css"
 
 import type { ColumnResizerOptions } from "./column-resizer"
 import ColumnResizer from "./column-resizer"
-import { Button, InputGroup, InputGroupAddon, Input } from "reactstrap"
+import { Button, InputGroup, Input } from "reactstrap"
 
 interface TableProps<D> extends TableState {
 
@@ -257,19 +257,15 @@ class TablePageSelector extends React.Component<TablePageSelectorProps> {
         const has_next_page = page + 1 < total_pages
 
         return <InputGroup>
-            <InputGroupAddon addonType="prepend">
                 { has_prev_page ?
                     <Button onClick={this.navigatePrevPage}>&lt;&lt;</Button> : 
                     <Button disabled>&lt;&lt;</Button>
                 }
-            </InputGroupAddon>
-            <Input disabled style={{ textAlign: "center" }} value={`${page + 1} / ${total_pages}`} />
-            <InputGroupAddon addonType="prepend">
+                <Input disabled style={{ textAlign: "center" }} value={`${page + 1} / ${total_pages}`} />
                 { has_next_page ? 
                     <Button onClick={this.navigateNextPage}>&gt;&gt;</Button> :
                     <Button disabled>&gt;&gt;</Button>
                 }
-            </InputGroupAddon>
         </InputGroup>
     }
 }

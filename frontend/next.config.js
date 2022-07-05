@@ -5,9 +5,7 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
 const singleCollection = process.env.NEXT_PUBLIC_SINGLE_COLLECTION_MODE
 
 module.exports = withBundleAnalyzer({
-  experimental: {
-    outputStandalone: true,
-  },
+  output: "standalone",
   eslint: {
     dirs: ["."], 
   },
