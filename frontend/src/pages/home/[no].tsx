@@ -2,8 +2,9 @@ import type { GetServerSideProps, InferGetServerSidePropsType } from "next"
 import { default as Link } from "next/link"
 import React from "react"
 import LaTeX from "react-latex"
-import { Button, Col, ListGroup, ListGroupItem, Row } from "reactstrap"
+import { Button, Col, ListGroup, ListGroupItem, ListGroupItemHeading, ListGroupItemText, Row } from "reactstrap"
 import { MHDBackendClient } from "../../client"
+import { TMHDCollection } from "../../client/rest"
 import MHDMain from "../../components/common/MHDMain"
 import { CollectionIndex, Home, homePerPage, singleCollection } from "../../controller"
 
@@ -17,13 +18,23 @@ export default function Page({ page, collections: { results, num_pages } }: Home
     const rightHead = <>
         <p />
         <ListGroup>
-            {results.map(c => (
+            {results.map((c: TMHDCollection) => (
                 <ListGroupItem key={c.slug}>
-                    <Link href={CollectionIndex(c.slug)}>
-                        <a>
-                            <LaTeX>{c.displayName}</LaTeX>
-                        </a>
-                    </Link>
+                    <ListGroupItemHeading>
+                        <Link href={CollectionIndex(c.slug)}>
+                            <a>
+                                <LaTeX>{c.displayName}</LaTeX>
+                            </a>
+                        </Link>
+                        {c.count && <>
+                            &nbsp; <small>({c.count} items)</small>
+                        </>}
+                    </ListGroupItemHeading>
+                    <ListGroupItemText>
+                            {c.metadata?.authors && <>
+                                by <b>{c.metadata?.authors}</b>
+                            </>}
+                    </ListGroupItemText>
                 </ListGroupItem>
             ))}
         </ListGroup>
