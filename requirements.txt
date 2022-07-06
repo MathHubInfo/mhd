@@ -4,4 +4,4 @@ pre-js-py==1.2.0
 django-cors-headers==3.11.0
 tqdm==4.63.1
 psycopg2cffi==2.9.0
-ujson==5.2.0
+ujson==5.4.0
