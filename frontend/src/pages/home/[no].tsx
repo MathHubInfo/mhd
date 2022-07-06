@@ -4,7 +4,7 @@ import React from "react"
 import LaTeX from "react-latex"
 import { Button, Col, ListGroup, ListGroupItem, ListGroupItemHeading, ListGroupItemText, Row } from "reactstrap"
 import { MHDBackendClient } from "../../client"
-import { TMHDCollection } from "../../client/rest"
+import type { TMHDCollection } from "../../client/rest"
 import MHDMain from "../../components/common/MHDMain"
 import { CollectionIndex, Home, homePerPage, singleCollection } from "../../controller"
 
