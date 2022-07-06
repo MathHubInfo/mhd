@@ -39,10 +39,10 @@ class FactorizationAsSparseArrayCell extends React.Component<TPresenterProps<Fac
                     factor = ""
                 
                 if (a[1] > 0 && i > 0)
-                    factor = "+" + factor
+                    factor = "·" + factor
 
-                if (exp === 0) return <span key={i}>{factor}</span>
-                if (exp === 1) return <span key={i}>{factor} x</span>
+                if (exp === 0) return null
+                if (exp === 1) return <span key={i}>{factor}</span>
                 else return <span key={i}>{factor} x<sup>{exp}</sup></span>
             }
         )
