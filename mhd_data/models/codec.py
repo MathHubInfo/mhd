@@ -82,13 +82,13 @@ class Codec(models.Model):
         """ Gets the name of this codec """
         return cls.__name__
 
-    # A database field containing the value, overwritten by subclass
-    value: Any = None
+    # Name of database fields containing the values
+    value_fields = ['value']
 
     @classmethod
     def get_value_fields(cls) -> List[Field]:
         """ gets the value field of this model """
-        return [cls._meta.get_field('value')]
+        return [cls._meta.get_field(n) for n in cls.value_fields]
 
     # A DRF serializer field (if any) corresponding to the value object
     # may be omitted iff 'value' can be directly serialized from / to json

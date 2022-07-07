@@ -163,7 +163,7 @@ class DataImporter(object):
         prop_id = prop.id
         model = prop.codec_model
         populate_values = model.populate_values
-        value_columns = [m.name for m in model.get_value_fields()]
+        value_columns = prop.codec_model.value_fields
         provenance_id = self.provenance
 
         lift = (lambda v: [v]) if len(value_columns) == 1 else (lambda v: v)

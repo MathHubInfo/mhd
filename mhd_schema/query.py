@@ -166,7 +166,7 @@ class QueryBuilder(object):
             virtual_table = self._prop_table(prop)
             cid_field = self._prop_cid(prop)
 
-            value_names = [m.name for m in prop.codec_model.get_value_fields()]
+            value_names = prop.codec_model.value_fields
 
             for (i, value_name) in enumerate(value_names):
                 SQL += ', {}.{} as {}'.format(virtual_table,
