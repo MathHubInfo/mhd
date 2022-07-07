@@ -17,7 +17,32 @@ See [frontend/README.md](frontend/README.md) for more details.
 
 **This code and in particular the documentation are still a work-in-progress**
 
-## Code Structure
+## Contents
+
+### This document
+
+1. Code structure
+2. Development
+    1. Local Postgres instance for testing
+3. Database structure
+4. Management commands
+5. Codec catalog
+6. URL structure
+    1. Main querying syntax
+7. Tests & code style
+8. Adding a new codec
+    1. Backend
+    2. Frontend
+9. Data Examples
+    1. Z3Z Functions
+    2. Additive Bases
+    3. Math Data Workshop
+10. Deployment
+11. License
+
+### Other documents
+
+## Code structure
 
 The top-level structure of this repository consists of a standard [Django](https://www.djangoproject.com/) project.
 There are six apps:
@@ -101,7 +126,7 @@ See also [Built-in commands](https://docs.djangoproject.com/en/dev/ref/django-ad
 - `flush_collection`: Flushes all items associated to a collection
 - `update_count`: Updates the total number of elements in each collection
 
-## MDDL Codec Catalog
+## Codec catalog
 
 This project also contains the master list of codecs.
 This is currently implemented inside the `mddl_catalog` app, but may migrate elsewhere in the future.
@@ -126,7 +151,7 @@ python manage.py dumpdata mddl_catalog.CodecCatalogItem > mddl_catalog/fixture.j
 
 To load data enti
 
-## URL Structure
+## URL structure
 
 This Code Exposes the following urls:
 
@@ -139,7 +164,7 @@ This Code Exposes the following urls:
 - `/api/admin/` -- Admin interface
   - `/api/admin/static/` -- staticfiles used for the admin interface
 
-### Main Querying Syntax
+### Main querying syntax
 
 To Query for items, the `/query/$collection/` API can be used.
 To Query only for the count of items, use `/query/$collection/count` instead.
@@ -190,7 +215,7 @@ LITERAL = a literal, e.g true, false, a number, a string, or a list of other lit
 
 In addition round brackets can be used for grouping.
 
-## Tests & Code Style
+## Tests & code style
 
 For the backend, tests for every important feature exist, and are run by GitHub Actions on every commit.
 Note that tests are run both on `sqlite` and `postgres`.
@@ -213,7 +238,7 @@ This enforces [PEP8](https://pep8.readthedocs.io)-compliance except for maximum 
 Additionally, a test-only app exists with specific models only used during testing.
 To manually enable for local development add `USE_TEST_APP = True` to `mhd/local_settings.py`.
 
-## Adding A New Codec
+## Adding a new codec
 
 ### Backend
 
@@ -254,7 +279,7 @@ python manage.py insert_data mhd_data/tests/res/ab_data.json --collection "ab" -
 The first batch of [dataset examples](https://github.com/OpenDreamKit/MathDataWorkshop/tree/master/collections) was collected at the [OpenDreamKit workshop on data in mathematics](https://opendreamkit.org/2019/08/17/WorkshopOnDataInMathematics/). 
 
 
-### Using (Materialized) Views
+## Using (materialized) views
 
 With large collections, performance can be slow.
 To enhance performance we can make use of (materialized) views.
