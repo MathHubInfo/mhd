@@ -21,26 +21,29 @@ See [frontend/README.md](frontend/README.md) for more details.
 
 ### This document
 
-1. Code structure
-2. Development
-    1. Local Postgres instance for testing
-3. Database structure
-4. Management commands
-5. Codec catalog
-6. URL structure
-    1. Main querying syntax
-7. Tests & code style
-8. Adding a new codec
-    1. Backend
-    2. Frontend
-9. Data Examples
-    1. Z3Z Functions
-    2. Additive Bases
-    3. Math Data Workshop
-10. Deployment
-11. License
+1. [Code structure](https://github.com/MathHubInfo/mhd/blob/main/README.md#code-structure)
+2. [Development](https://github.com/MathHubInfo/mhd/blob/main/README.md#development)
+    1. [Local Postgres instance for testing](https://github.com/MathHubInfo/mhd/blob/main/README.md#local-postgres-instance-for-testing)
+3. [Database structure](https://github.com/MathHubInfo/mhd/blob/main/README.md#database-structure)
+4. [Management commands](https://github.com/MathHubInfo/mhd/blob/main/README.md#management-commands)
+5. [Codec catalog](https://github.com/MathHubInfo/mhd/blob/main/README.md#codec-catalog)
+6. [URL structure](https://github.com/MathHubInfo/mhd/blob/main/README.md#url-structure)
+    1. [Main querying syntax](https://github.com/MathHubInfo/mhd/blob/main/README.md#main-querying-syntax)
+7. [Tests & code style](https://github.com/MathHubInfo/mhd/blob/main/README.md#tests--code-style)
+8. [Adding a new codec](https://github.com/MathHubInfo/mhd/blob/main/README.md#adding-a-new-codec)
+    1. [Backend](https://github.com/MathHubInfo/mhd/blob/main/README.md#backend)
+    2. [Frontend](https://github.com/MathHubInfo/mhd/blob/main/README.md#frontend)
+9. [Data Examples](https://github.com/MathHubInfo/mhd/blob/main/README.md#data-examples)
+    1. [Z3Z Functions](https://github.com/MathHubInfo/mhd/blob/main/README.md#z3z-functions)
+    2. [Additive Bases](https://github.com/MathHubInfo/mhd/blob/main/README.md#additive-bases)
+    3. [Math Data Workshop](https://github.com/MathHubInfo/mhd/blob/main/README.md#math-data-workshop)
+10. [Using (materialized) views](https://github.com/MathHubInfo/mhd/blob/main/README.md#using-materialized-views)
+11. [Deployment](https://github.com/MathHubInfo/mhd/blob/main/README.md#deployment)
+12. [License](https://github.com/MathHubInfo/mhd/blob/main/README.md#deployment)
 
 ### Other documents
+
+* [Frontend documentation](https://github.com/MathHubInfo/mhd/blob/main/frontend/README.md)
 
 ## Code structure
 
