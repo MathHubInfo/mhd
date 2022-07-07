@@ -117,16 +117,6 @@ class Codec(models.Model):
         return cls.get_serializer_field().to_internal_value(value)
 
     @classmethod
-    def populate_db_value(cls: Type[Codec], value: Any) -> Any:
-        """
-            Called to turn a python value of this codec into a raw
-            database object to be used by the annotator.
-        """
-
-        valuefield = cls.get_value_field()
-        return valuefield.get_prep_value(value)
-
-    @classmethod
     def serialize_value(cls: Type[Codec], value: Any, database: bool = True) -> Any:
         """
             Called by the data serializer to turn a database or python
