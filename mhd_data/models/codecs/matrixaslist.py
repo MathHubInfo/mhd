@@ -15,7 +15,7 @@ def MatrixAsListCodec(elementCodec: Type[Codec], rows: int, columns: int) -> tup
     """ A Codec Operator for Matrices as list """
 
     class CodecClass():
-        value = SmartNDArrayField(typ=elementCodec.get_value_field(), dim=1)
+        value = SmartNDArrayField(typ=elementCodec.get_value_fields()[0], dim=1)
 
     return CodecClass, 'MatrixAsList_{}_{}_{}'.format(elementCodec.get_codec_name(), rows, columns)
 

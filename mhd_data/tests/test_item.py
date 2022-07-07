@@ -30,7 +30,7 @@ class ItemTest(TestCase):
         # annotating a single property correctly
         item = Item.objects.get(id="00000000-0000-4000-a000-000000000000")
         prop = Property.objects.get(slug="f0")
-        self.assertEqual(item._annotate_property(prop), 0)
+        self.assertEqual(item._annotate_property(prop), [0])
 
     def test_item_api(self) -> None:
         item = Item.objects.get(id="00000000-0000-4000-a000-000000000000")

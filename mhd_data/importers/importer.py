@@ -33,7 +33,7 @@ class DataImporter(object):
     collection: Collection
     properties: Iterable[Property]
 
-    def __init__(self, collection: Collection, properties: Iterable[Property], quiet: bool=False, batch_size: Optional[int]=None, write_sql=None):
+    def __init__(self, collection: Collection, properties: Iterable[Property], quiet: bool = False, batch_size: Optional[int] = None, write_sql=None):
         """ Creates a new data importer for the given collection and properties """
         self.logger = logging.getLogger('mhd.dataimporter')
         self.logger.setLevel(logging.WARN if quiet else logging.DEBUG)
@@ -59,7 +59,7 @@ class DataImporter(object):
                 raise ImportValidationError(
                     'Property {} is not a part of collection {}'.format(p.slug, self.collection.slug))
 
-    def __call__(self, update: bool=False) -> List[str]:
+    def __call__(self, update: bool = False) -> List[str]:
         """
             Imports all data available to this DataImporter.
             Returns a list of all items by UUIDS
@@ -89,7 +89,8 @@ class DataImporter(object):
                 'Finished import of {} item(s)'.format(len(uuids)))
 
         self.collection.invalidate_count()
-        self.logger.info('Invalidated collection count, run "python manage.py update_count" to update it. ')
+        self.logger.info(
+            'Invalidated collection count, run "python manage.py update_count" to update it. ')
 
         return uuid_list
 
@@ -161,19 +162,22 @@ class DataImporter(object):
         column = self.get_chunk_column(chunk, prop, idx)
         prop_id = prop.id
         model = prop.codec_model
-        populate_value = model.populate_value
+        populate_values = model.populate_values
+        value_columns = [m.name for m in model.get_value_fields()]
         provenance_id = self.provenance
+
+        lift = (lambda v: [v]) if len(value_columns) == 1 else (lambda v: v)
 
         # Create each of the property values and populate them from the literal ones
         # in the column
         values = [
             [
                 uuid4(),
-                populate_value(value),
                 uuid,
                 prop_id,
                 provenance_id,
-                True
+                True,
+                *populate_values(*lift(value)),
             ]
             for (uuid, value) in zip(tqdm(uuids, leave=False), column)
         ]
@@ -181,8 +185,16 @@ class DataImporter(object):
             len(values), prop.slug, self.collection.slug))
 
         # insert them into the db
-        self.batch(model, ['id', 'value', 'item_id', 'prop_id', 'provenance_id', 'active'], filter(
-            lambda v: v[1] is not None, values), len(values))
+        self.batch(
+            model,
+            ['id', 'item_id', 'prop_id', 'provenance_id', 'active', *value_columns],
+            filter(
+                # Do not insert values that are only none
+                lambda v: not all(x is None for x in v[5:]),
+                values,
+            ),
+            len(values),
+        )
         self.logger.info('Collection {2!r}: Property {1!r}: {0!r} Value(s) saved in database'.format(
             len(values), prop.slug, self.collection.slug))
 

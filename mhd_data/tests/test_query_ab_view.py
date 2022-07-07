@@ -43,7 +43,7 @@ class ABCollectionWithViewTest(TestCase):
         """ Checks that the underlying query uses a view """
 
         queryset, _ = self.collection.query()
-        self.assertEqual(queryset.query.sql, """SELECT id, "property_value_basis", "property_cid_basis", "property_value_k", "property_cid_k", "property_value_n", "property_cid_n", "property_value_S", "property_cid_S", "property_value_R", "property_cid_R" FROM mhd_view_ab""")
+        self.assertEqual(queryset.query.sql, """SELECT id, "property_value_basis_0", "property_cid_basis", "property_value_k_0", "property_cid_k", "property_value_n_0", "property_cid_n", "property_value_S_0", "property_cid_S", "property_value_R_0", "property_cid_R" FROM mhd_view_ab""")
 
     def test_data_exists(self) -> None:
         """ Checks that a query for all items returns the right data """

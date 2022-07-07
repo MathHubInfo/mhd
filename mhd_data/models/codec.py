@@ -13,7 +13,7 @@ from functools import lru_cache
 
 from mhd.utils import get_standard_serializer_field
 
-from typing import TYPE_CHECKING, TypeAlias, Iterable, Type, Optional, Any
+from typing import TYPE_CHECKING, TypeAlias, Iterable, Type, Optional, Any, List
 
 if TYPE_CHECKING:
     from django.db.models import Field
@@ -22,7 +22,8 @@ if TYPE_CHECKING:
     from uuid import UUID
 
     SQL: TypeAlias = str
-    SQLWithParams: TypeAlias = tuple[SQL, list[int | str]]  # an sql query with parameters
+    # an sql query with parameters
+    SQLWithParams: TypeAlias = tuple[SQL, list[int | str]]
 
 
 class CodecManager(models.Manager):
@@ -37,7 +38,7 @@ class CodecManager(models.Manager):
         return tuple(filter(lambda clz: issubclass(clz, Codec), apps.get_models()))
 
     @staticmethod
-    def collect_operators(codecs: Optional[Iterable[Type[Codec]]]=None) -> Iterable[str]:
+    def collect_operators(codecs: Optional[Iterable[Type[Codec]]] = None) -> Iterable[str]:
         """ Returns a set containing all know operators """
 
         if codecs is None:
@@ -60,6 +61,7 @@ class CodecManager(models.Manager):
                 return c
 
         return None
+
 
 class Codec(models.Model):
     """ An abstract class for each codec """
@@ -84,56 +86,77 @@ class Codec(models.Model):
     value: Any = None
 
     @classmethod
-    def get_value_field(cls) -> Field:
+    def get_value_fields(cls) -> List[Field]:
         """ gets the value field of this model """
-        return cls._meta.get_field('value')
+        return [cls._meta.get_field('value')]
 
     # A DRF serializer field (if any) corresponding to the value object
     # may be omitted iff 'value' can be directly serialized from / to json
     # (e.g. when using integers)
-    _serializer_field: Optional[SerializerField] = None
+    _serializer_fields: Optional[List[SerializerField]] = None
 
     @classmethod
-    def get_serializer_field(cls) -> SerializerField:
+    def get_serializer_fields(cls) -> SerializerField:
         """ Gets the serializer field of a class """
 
         # if the user defined one, return it
-        if cls._serializer_field is not None:
-            return cls._serializer_field
+        if cls._serializer_fields is not None:
+            return cls._serializer_fields
 
-        cls._serializer_field = get_standard_serializer_field(cls._meta.get_field('value'))
-        return cls._serializer_field
+        cls._serializer_fields = [
+            get_standard_serializer_field(f) for f in cls.get_value_fields()
+        ]
+        return cls._serializer_fields
 
     @classmethod
-    def populate_value(cls: Type[Codec], value: Optional[Any]) -> Any:
+    def populate_values(cls: Type[Codec], *values: List[Optional[Any]]) -> List[Any]:
         """
             Called to turn a serialized value (usually from the importer)
             into a python object to be assigned to a property.
         """
 
-        if value is None:
-            return None
+        sfields = cls.get_serializer_fields()
 
-        return cls.get_serializer_field().to_internal_value(value)
+        return [
+            None if (value is None) else sfield.to_internal_value(value)
+            for (value, sfield) in zip(values, sfields)
+        ]
 
     @classmethod
-    def serialize_value(cls: Type[Codec], value: Any, database: bool = True) -> Any:
+    def serialize_values(cls: Type[Codec], *values: List[Any], database: bool = True) -> List[Any]:
         """
             Called by the data serializer to turn a database or python
             value of this codec into a json-serialized value of this codec.
         """
 
-        if value is None:
-            return None
+        vfields = cls.get_value_fields()
+        sfields = cls.get_serializer_fields()
+        results = [None] * len(vfields)
 
-        # if the value field has a 'from_db_value' we should call it first
-        # because our value was not yet parsed
-        vfield = cls.get_value_field()
-        if database and hasattr(vfield, 'from_db_value'):
-            value = vfield.from_db_value(value, None, connection=connection)
+        print(cls, "values", values)
 
-        # call the default serializer field with .to_representation
-        return cls.get_serializer_field().to_representation(value)
+        for (i, (vfield, sfield, value)) in enumerate(zip(vfields, sfields, values)):
+            if value is None:
+                continue
+
+            # if the value field has a 'from_db_value' we should call it first
+            # because our value was not yet parsed
+            if database and hasattr(vfield, 'from_db_value'):
+                value = vfield.from_db_value(
+                    value, None, connection=connection)
+
+            # call the default serializer field with .to_representation
+            results[i] = sfield.to_representation(value)
+
+        return results
+
+    @classmethod
+    def serialize_value(cls: Type[Codec], value: List[Any], database: bool = True) -> Any:
+        if len(cls.get_value_fields()) != 1:
+            raise Exception(
+                'cannot call serialize_value: more than one value field')
+
+        return cls.serialize_values(value, database=database)[0]
 
     # A list of supported operators
     operators: Iterable[str] = ()
@@ -141,6 +164,7 @@ class Codec(models.Model):
     # if not None, the query builder will enforce that the operand is of this class
     # using the method is_valid_operand below
     operator_type: Optional[Type[object]] = None
+
     @classmethod
     def is_valid_operand(cls: Type[Codec], literal: Any) -> bool:
         """ Checks if the provided literal is a valid argument to operator (left || right) on """
@@ -178,7 +202,8 @@ class Codec(models.Model):
 
         return "{} {} {}".format(db_column1, operator, db_column2), []
 
-    id: UUID = models.UUIDField(primary_key=True, default=uuid4, editable=False)
+    id: UUID = models.UUIDField(
+        primary_key=True, default=uuid4, editable=False)
 
     item: Item = models.ForeignKey(
         Item, on_delete=models.CASCADE, help_text="Item this this cell represents")
@@ -188,9 +213,10 @@ class Codec(models.Model):
     provenance: Provenance = models.ForeignKey(
         Provenance, on_delete=models.CASCADE, help_text="Provenance of this cell")
 
-    active: bool = models.BooleanField(default=True, help_text="Is this item active")
+    active: bool = models.BooleanField(
+        default=True, help_text="Is this item active")
     superseeded_by: Optional[Codec] = models.ForeignKey('self', on_delete=models.SET_NULL,
-                                       null=True, blank=True, help_text="Cell this value is superseeded by")
+                                                        null=True, blank=True, help_text="Cell this value is superseeded by")
 
 
 __all__ = ["Codec", "CodecManager"]

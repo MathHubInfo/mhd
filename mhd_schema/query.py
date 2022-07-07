@@ -11,9 +11,11 @@ from typing import TYPE_CHECKING, TypeAlias, Type, Any, Optional, Iterable
 if TYPE_CHECKING:
 
     SQL: TypeAlias = str
-    SQLWithParams: TypeAlias = tuple[SQL, list[int | str]]  # an sql query with parameters
+    # an sql query with parameters
+    SQLWithParams: TypeAlias = tuple[SQL, list[int | str]]
 
-    FilterAST: TypeAlias = Any  # the type used by filter annotations, for now just 'FilterAST'
+    # the type used by filter annotations, for now just 'FilterAST'
+    FilterAST: TypeAlias = Any
 
 
 class QueryBuilder(object):
@@ -26,15 +28,19 @@ class QueryBuilder(object):
         self.collection = collection  # type: Collection
 
         # and create a filter builder
-        self.filter_builder = FilterBuilder(self.collection)  # type: FilterBuilder
+        self.filter_builder = FilterBuilder(
+            self.collection)  # type: FilterBuilder
 
     @staticmethod
     def _prop_table(prop: Property) -> str:
         return '"T_{}"'.format(prop.slug)
 
     @staticmethod
-    def _prop_value(prop: Property) -> str:
-        return '"property_value_{}"'.format(prop.slug)
+    def _prop_value(prop: Property, index: int, sql: bool = True) -> str:
+        if sql:
+            return '"property_value_{}_{}"'.format(prop.slug, index)
+        else:
+            return 'property_value_{}_{}'.format(prop.slug, index)
 
     @staticmethod
     def _prop_cid(prop: Property) -> str:
@@ -64,8 +70,8 @@ class QueryBuilder(object):
         # FROM (
         #     SELECT I.id as id,
 
-        #     T_prop1.value as prop1_value, T_prop1.id as prop1_cid,
-        #     T_prop2.value as prop2_value, T_prop2.id as prop2_cid
+        #     T_prop1.value_0 as prop1_value_0, T_prop1.value_1 as prop1_value_1, T_prop1.id as prop1_cid,
+        #     T_prop2.value_0 as prop2_value_0,  T_prop2.value_1 as prop2_value_1, T_prop2.id as prop2_cid
 
         #     FROM mhd_data_item as I
 
@@ -97,13 +103,13 @@ class QueryBuilder(object):
         if not count_query:
             SQL += 'SELECT id'
             for prop in properties:
-                value_field = self._prop_value(prop)
-                cid_field = self._prop_cid(prop)
 
-                SQL += ', {}, {}'.format(
-                    value_field,
-                    cid_field
-                )
+                SQL += ', '
+                for i in range(len(prop.codec_model.get_value_fields())):
+                    SQL += '{}, '.format(self._prop_value(prop, i))
+
+                cid_field = self._prop_cid(prop)
+                SQL += '{}'.format(cid_field)
         else:
             SQL += 'SELECT COUNT(*)'
 
@@ -158,10 +164,13 @@ class QueryBuilder(object):
 
         for prop in self.collection.properties():
             virtual_table = self._prop_table(prop)
-            value_field = self._prop_value(prop)
             cid_field = self._prop_cid(prop)
 
-            SQL += ', {}.value as {}'.format(virtual_table, value_field)
+            value_names = [m.name for m in prop.codec_model.get_value_fields()]
+
+            for (i, value_name) in enumerate(value_names):
+                SQL += ', {}.{} as {}'.format(virtual_table,
+                                              value_name, self._prop_value(prop, i))
             SQL += ', {}.id as {}'.format(virtual_table, cid_field)
 
         # from the item table
@@ -227,7 +236,7 @@ class QueryBuilder(object):
             raise QueryBuilderError('Unknown property {}'.format(oslug))
 
         return '{} {}'.format(
-            self._prop_value(property_dict[oslug]),
+            self._prop_value(property_dict[oslug], 0),  # TODO: Do this better
             order
         )
 
@@ -326,7 +335,8 @@ class FilterBuilder(object):
 
         prop, codec, column = self._resolve_codec(
             tree['right']['name'], op)
-        lit = codec.populate_value(self._process_literal(tree['left']))
+        lit = codec.populate_values(self._process_literal(tree['left']))[
+            0]  # TODO: Support more than one
         if not codec.is_valid_operand(lit):
             raise FilterBuilderError(
                 '{} is not a valid operand for codec {}'.format(lit, codec.get_codec_name()))
@@ -336,7 +346,8 @@ class FilterBuilder(object):
         op = tree['operator']
         prop, codec, column = self._resolve_codec(
             tree['left']['name'], op)
-        lit = codec.populate_value(self._process_literal(tree['right']))
+        lit = codec.populate_values(self._process_literal(tree['right']))[
+            0]  # TODO: Support more than one
         if not codec.is_valid_operand(lit):
             raise FilterBuilderError(
                 '{} is not a valid operand for codec {}'.format(lit, codec.get_codec_name()))
@@ -374,7 +385,8 @@ class FilterBuilder(object):
             raise FilterBuilderError("Codec {} does not support operator {}".format(
                 codec.get_codec_name(), op))
 
-        return prop, codec, QueryBuilder._prop_value(p)
+        # TODO: Support more than one
+        return prop, codec, QueryBuilder._prop_value(p, 0)
 
     def _process_literal(self, tree: FilterAST) -> Any:
         """ Parses a literal into a python value """
