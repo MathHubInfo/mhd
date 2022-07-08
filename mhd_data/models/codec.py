@@ -172,6 +172,23 @@ class Codec(models.Model):
             return True
         return isinstance(literal, cls.operator_type)
 
+    # Next we need to know how to sort values of this type inside the sql.
+    @classmethod
+    def order_clause(cls: Type[Codec], prop: Property, mode: str) -> str:
+        """
+            Called to generate an SQL ORDER BY clause for the given property.
+            mode indicates ascending ('+'), descending ('-') or default ('').
+        """
+
+        from mhd_schema.query import QueryBuilder
+
+        SQL = []
+        for index in range(len(cls.value_fields)):
+            SQL.append(QueryBuilder._prop_value(prop, index))
+            SQL.append('DESC' if mode == '-' else 'ASC')
+
+        return ' '.join(SQL)
+
     # Next, the implementation of operating on codec values. There are three supported
     # kind of operations, operating with a literal (constant) on the left, the right and
     # comparing two different properties of the same codec.

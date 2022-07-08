@@ -15,7 +15,7 @@ from .models import Collection, Property, PreFilter
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from typing import Any, Optional
+    from typing import Optional, List
     from mhd_data.models import Codec
     from django.http import HttpRequest
     from rest_framework.response import Response
@@ -86,13 +86,13 @@ class CollectionViewSet(viewsets.ReadOnlyModelViewSet):
 
 class CodecSerializer(serializers.Serializer):
     name = serializers.SerializerMethodField()
-    db_type = serializers.SerializerMethodField()
+    db_types = serializers.SerializerMethodField()
 
     def get_name(self, obj: Codec) -> Codec:
         return obj.get_codec_name()
 
-    def get_db_type(self, obj: Codec) -> str:
-        return obj._meta.get_field('value').get_internal_type()
+    def get_db_types(self, obj: Codec) -> List[str]:
+        return [f.get_internal_type() for f in obj.get_value_fields()]
 
 
 class CodecViewSet(viewsets.ViewSet):

@@ -49,6 +49,8 @@ class Z3ZCollectionTest(TestCase):
             got_qs = got[0]
         else:
             got_qs = got
+        print("got", got_qs.query.sql)
+        print("expected", expected_query.strip())
         expected_query = expected_query.strip()
         print(got_qs.query.sql)
         self.assertEqual(got_qs.query.sql, expected_query,

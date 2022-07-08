@@ -8,7 +8,9 @@ from . import models
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
+    from typing import List
     from mhd_schema.models import Property
+    from django.http import HttpRequest
 
 
 @admin.register(models.Item)
@@ -37,7 +39,10 @@ class CodecAdmin(admin.ModelAdmin):
     item_link.admin_order_field = 'item__id'
     item_link.short_description = 'Item'
 
-    list_display = ['id', 'item_link', 'prop_link',
-                    'value', 'active', 'superseeded_by']
+    def get_list_display(self, request: HttpRequest) -> List[str]:
+        return ['id', 'item_link', 'prop_link', *self.model.value_fields, 'active', 'superseeded_by']
+
     list_filter = ['active', 'prop']
-    search_fields = ['value']
+
+    def get_search_fields(self, request: HttpRequest) -> List[str]:
+        return self.model.value_fields

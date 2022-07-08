@@ -215,17 +215,13 @@ class QueryBuilder(object):
         if len(order) == 0:
             raise QueryBuilderError('Order string received empty property')
 
-        # +{prop} => order ascendingly
+        mode = ''
         if oslug[0] == '+':
-            order = 'ASC'
+            mode = '+'
             oslug = oslug[1:]
-        # -{prop} => order descendingly
         elif oslug[0] == '-':
-            order = 'DESC'
+            mode = '-'
             oslug = oslug[1:]
-        # {prop} => order ascendingly
-        else:
-            order = 'ASC'
 
         oslug = oslug.strip()
         if len(oslug) == 0:
@@ -235,10 +231,9 @@ class QueryBuilder(object):
         if not oslug in property_dict:
             raise QueryBuilderError('Unknown property {}'.format(oslug))
 
-        return '{} {}'.format(
-            self._prop_value(property_dict[oslug], 0),  # TODO: Do this better
-            order
-        )
+        # build the order clause from the prop
+        prop = property_dict[oslug]
+        return prop.codec_model.order_clause(prop, mode)
 
 
 class FilterBuilder(object):
