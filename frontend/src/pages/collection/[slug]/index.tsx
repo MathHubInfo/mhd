@@ -53,6 +53,7 @@ class MHDCollectionSearch extends React.Component<MHDCollectionSearchProps, MHDC
             page: 0,
             per_page: 20,
             widths: undefined,
+            order: "",
         }
 
         // add the collection
@@ -69,8 +70,8 @@ class MHDCollectionSearch extends React.Component<MHDCollectionSearchProps, MHDC
     }
 
     /** called when new columns are set in the column editor */
-    private setColumns = (columns: string[]) => {
-        this.setState({ columns })
+    private setColumns = (columns: string[], order: string) => {
+        this.setState({ columns, order })
     }
 
     /** called when the results state is updated */
@@ -90,7 +91,7 @@ class MHDCollectionSearch extends React.Component<MHDCollectionSearchProps, MHDC
     }
 
     render() {
-        const { filters, pre_filter, columns, page, per_page, widths, collection } = this.state
+        const { filters, pre_filter, columns, page, per_page, widths, collection, order } = this.state
         const { results_loading_delay } = this.props
 
         return (
@@ -110,6 +111,7 @@ class MHDCollectionSearch extends React.Component<MHDCollectionSearchProps, MHDC
                             <ColumnEditor
                                 collection={collection}
                                 columns={columns}
+                                order={order}
                                 onColumnsApply={this.setColumns}
                             />
                         }
@@ -119,6 +121,7 @@ class MHDCollectionSearch extends React.Component<MHDCollectionSearchProps, MHDC
                                 collection={collection}
                                 filters={filters}
                                 pre_filter={pre_filter}
+                                order={order}
                             />
                         }
                         {
@@ -128,6 +131,7 @@ class MHDCollectionSearch extends React.Component<MHDCollectionSearchProps, MHDC
                                     filters={filters}
                                     pre_filter={pre_filter}
                                     columns={columns}
+                                    order={order}
                                     page={page}
                                     per_page={per_page}
                                     widths={widths}

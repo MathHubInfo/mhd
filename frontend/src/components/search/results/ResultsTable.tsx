@@ -17,6 +17,9 @@ interface ResultsTableProps extends TableState {
     /** the current filters */
     filters: MHDFilter[];
 
+    /** order of columns to search */
+    order: string;
+
     /** pre-filter */
     pre_filter?: TMHDPreFilter;
 
@@ -93,12 +96,12 @@ export default class ResultsTable extends Component<ResultsTableProps, ResultsTa
             })
         }, this.props.results_loading_delay)
 
-        const { collection, columns, pre_filter, filters, page, per_page } = this.props
+        const { collection, columns, pre_filter, filters, order, page, per_page } = this.props
 
         // fetch the results with appropriate errors
         let results: TDRFPagedResponse<TMHDItem<{}>> = { count: 0, next: null, previous: null, num_pages: -1, results: [] }
         try {
-            results = await MHDBackendClient.getInstance().fetchItems(collection, columns, pre_filter, filters, page + 1, per_page)
+            results = await MHDBackendClient.getInstance().fetchItems(collection, columns, pre_filter, filters, page + 1, per_page, order)
         } catch (e) {
             if (!isProduction) console.error(e)
         }
@@ -128,12 +131,12 @@ export default class ResultsTable extends Component<ResultsTableProps, ResultsTa
     }
 
     /** computes a hash of the properties that influence data fetching */
-    private static computeDataUpdateHash({ filters, pre_filter, collection, columns, page, per_page }: ResultsTableProps): string {
-        return MHDBackendClient.hashFetchItems(collection, columns, pre_filter, filters, page, per_page)
+    private static computeDataUpdateHash({ filters, pre_filter, collection, columns, order, page, per_page }: ResultsTableProps): string {
+        return MHDBackendClient.hashFetchItems(collection, columns, pre_filter, filters, order, page, per_page)
     }
 
-    private static computeResetHash({ collection, filters, pre_filter }: ResultsTableProps): string {
-        return MHDBackendClient.hashFetchItems(collection, [], pre_filter, filters, 1, 1)
+    private static computeResetHash({ collection, filters, pre_filter, order }: ResultsTableProps): string {
+        return MHDBackendClient.hashFetchItems(collection, [], pre_filter, filters, order, 1, 1)
     }
     
     componentDidUpdate(prevProps: ResultsTableProps, prevState: ResultsTableState) {

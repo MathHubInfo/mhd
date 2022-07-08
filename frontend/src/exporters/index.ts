@@ -21,7 +21,7 @@ export abstract class Exporter<T> {
     private running = false
 
     /** exports the given collection into a blob */
-    async export(client: MHDBackendClient, slug: string, filters: MHDFilter[], pre_filter: TMHDPreFilter, onStep: (progress: number) => boolean): Promise<Blob> {
+    async export(client: MHDBackendClient, slug: string, filters: MHDFilter[], pre_filter: TMHDPreFilter, order: string, onStep: (progress: number) => boolean): Promise<Blob> {
         if (this.running) throw new Error("Exporter already running")
         this.running = true
 
@@ -46,7 +46,7 @@ export abstract class Exporter<T> {
                     throw new Error("User asked to cancel")
                 }
     
-                const page = await client.fetchItems<T>(collection, collection.propertySlugs, pre_filter, filters, index, per_page)
+                const page = await client.fetchItems<T>(collection, collection.propertySlugs, pre_filter, filters, index, per_page, order)
                 this.add(page.results, index)
                 
                 // if we have more pages, go to the next page

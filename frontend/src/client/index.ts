@@ -98,7 +98,7 @@ export class MHDBackendClient {
     }
 
     /** Fetches information about a set of collection items */
-    async fetchItems<T extends {}>(collection: ParsedMHDCollection, properties: string[], pre_filter: TMHDPreFilter | undefined, filters: MHDFilter[], page_number = 1, per_page = 100, order?: string[]): Promise<TDRFPagedResponse<TMHDItem<T>>> {
+    async fetchItems<T extends {}>(collection: ParsedMHDCollection, properties: string[], pre_filter: TMHDPreFilter | undefined, filters: MHDFilter[], page_number = 1, per_page = 100, order: string): Promise<TDRFPagedResponse<TMHDItem<T>>> {
         // Build the filter params
         const params = {
             filter: MHDBackendClient.buildFilter(pre_filter, filters),
@@ -113,12 +113,13 @@ export class MHDBackendClient {
     }
 
     /** hashes the parameters to the fetchItems function */
-    static hashFetchItems(collection: ParsedMHDCollection, properties: string[], pre_filter: TMHDPreFilter | undefined, filters: MHDFilter[], page_number = 1, per_page = 100): string {
+    static hashFetchItems(collection: ParsedMHDCollection, properties: string[], pre_filter: TMHDPreFilter | undefined, filters: MHDFilter[], order: string, page_number = 1, per_page = 100): string {
         const hash = {
             collection: collection.slug,
             pre_filter: pre_filter,
             filters: filters.filter(f => f.value !== null),
             properties: properties,
+            order: order,
             page_number: page_number,
             per_page: per_page,
         }
@@ -154,11 +155,18 @@ export class MHDBackendClient {
     }
 
     /** builds a sort order string to pass to the backend */
-    static buildSortOrder(collection: ParsedMHDCollection, properties: string[], order: string[] | undefined): string {
-        const propName = (n: string) => (n.startsWith("+") || n.startsWith("-")) ? n.substring(1) : n
+    static buildSortOrder(collection: ParsedMHDCollection, properties: string[], order: string): string {
+        const propName = (n: string) => (n.startsWith("+") || n.startsWith("-")) ? n.substring(1) : n // function to extract the property name
+
+        const sorder = order.split(",") // array containing the final order
+        
+        // add properties which have not been ordered
+        const unordered = new Set(collection.propertySlugs)
+        sorder.forEach(n => unordered.delete(propName(n)))
+        unordered.forEach(e => sorder.push(e))
         
         // find all the properties that we want to filter by in the appropriate order
-        return (order || collection.propertySlugs)
+        return sorder
             .filter(n => properties.includes(propName(n))) // filter by queries properties
             .filter(n => collection.propMap.has(propName(n))) // filter by known properties
             .filter(n => collection.codecMap.get(propName(n))!.ordered) // filter by orderable properties

@@ -4,7 +4,7 @@ import type { CSSProperties } from "react"
 import React, { Component } from "react"
 import type { DraggingStyle, DropResult, NotDraggingStyle } from "react-beautiful-dnd"
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd"
-import { Button, Card, CardText, Col, Collapse, Row } from "reactstrap"
+import { Button, Card, CardText, Col, Collapse, FormGroup, Input, Label, Row } from "reactstrap"
 import type { ParsedMHDCollection } from "../../../client/derived"
 
 import styles from "./ColumnEditor.module.css" // Import css modules stylesheet as styles
@@ -15,9 +15,12 @@ interface ColumnEditorProps {
 
     /** the initially selected columns */
     columns: string[];
+    
+    /** the initially selected order */
+    order: string;
 
     /** called when the columns are applied by the user */
-    onColumnsApply: (newColumns: string[]) => void;
+    onColumnsApply: (newColumns: string[], order: string) => void;
 }
 
 interface ColumnEditorState {
@@ -29,6 +32,9 @@ interface ColumnEditorState {
 
     /** have the changed been applied */
     applied: boolean;
+
+    /** the current order */
+    order: string;
 }
 
 /**
@@ -42,6 +48,7 @@ export default class ColumnEditor extends Component<ColumnEditorProps, ColumnEdi
         expanded: false,
         selected: this.props.columns.slice(),
         applied: false,
+        order: this.props.order,
     }
 
     /** toggles the expansion of this editor */
@@ -66,8 +73,8 @@ export default class ColumnEditor extends Component<ColumnEditorProps, ColumnEdi
 
     /** applies all column to the parent  */
     private applyColumns = () => {
-        const { selected } = this.state
-        this.props.onColumnsApply(selected)
+        const { selected, order } = this.state
+        this.props.onColumnsApply(selected, order)
         this.setState({ applied: true })
     }
 
@@ -103,12 +110,16 @@ export default class ColumnEditor extends Component<ColumnEditorProps, ColumnEdi
         this.setState({ selected: newSelected, applied: false })
     }
 
+    private handleOrder = (event: React.ChangeEvent<HTMLInputElement>) => {
+        this.setState({ order: event.target.value, applied: false })
+    }
+
     componentDidMount() {
         this.applyColumns()
     }
 
     render() {
-        const { expanded, selected, applied } = this.state
+        const { expanded, selected, applied, order } = this.state
 
         const selectedNames = this.getPropertyNamesFromSlugs(selected)
 
@@ -120,7 +131,7 @@ export default class ColumnEditor extends Component<ColumnEditorProps, ColumnEdi
                 <Col>
                     <Button color="link" onClick={this.toggleExpansionState}>
                         <FontAwesomeIcon icon={expanded ? faAngleUp : faAngleDown} />
-                        <span>Choose columns</span>
+                        <span>Choose columns &amp; sort</span>
                     </Button>
                     <Collapse isOpen={expanded}>
                         <Card body>
@@ -130,7 +141,15 @@ export default class ColumnEditor extends Component<ColumnEditorProps, ColumnEdi
                                     <DroppableArea id="available" caption="Available columns" items={available} names={availableNames} />
                                 </DragDropContext>
                             </CardText>
-                            
+
+                            <CardText tag="div">
+                                <FormGroup>
+                                    <Label for="order">Custom Sort</Label>
+                                    <Input id="order" value={order} onChange={this.handleOrder}></Input>
+                                    E.g. <code>+label,-invertible</code> to first sort ascending by label, then descending by invertible.
+                                </FormGroup>
+                            </CardText>
+
                             <CardText tag="div">
                                 <Button color="secondary" onClick={this.resetToLastSelected}>Reset</Button>
                                 &nbsp;
@@ -138,9 +157,6 @@ export default class ColumnEditor extends Component<ColumnEditorProps, ColumnEdi
                                 &nbsp;
                                 <Button color="primary" onClick={this.applyColumns} disabled={applied}>Apply</Button>
                             </CardText>
-                            
-
-                            
                         </Card>
                     </Collapse>
                 </Col>

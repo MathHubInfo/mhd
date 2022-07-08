@@ -10,10 +10,11 @@ import type { Exporter } from "../../../exporters"
 interface ExportersProps {
     collection: ParsedMHDCollection,
     pre_filter: TMHDPreFilter,
+    order: string,
     filters: MHDFilter[],
 }
 
-export default function Exporters<T>({ collection, filters, pre_filter }: ExportersProps) {
+export default function Exporters<T>({ collection, filters, pre_filter, order }: ExportersProps) {
 
     const keyFor = (exporter: Exporter<T>) => {
         return exporter.hashExport(collection.slug, filters, pre_filter)
@@ -39,6 +40,7 @@ export default function Exporters<T>({ collection, filters, pre_filter }: Export
                                 collection={collection}
                                 pre_filter={pre_filter}
                                 filters={filters}
+                                order={order}
                             />
                         })
                     }</CardText>
@@ -52,6 +54,7 @@ interface ExporterButtonProps<T> {
     exporter: Exporter<T>
     collection: TMHDCollection,
     pre_filter: TMHDPreFilter,
+    order: string,
     filters: MHDFilter[]
 }
 interface ExporterButtonState {
@@ -76,13 +79,13 @@ export class ExporterButton<T> extends React.Component<ExporterButtonProps<T>, E
             progress: 0,
             finished: false,
         }, async () => {
-            const { collection: { slug }, filters, pre_filter, exporter } = this.props
+            const { collection: { slug }, filters, pre_filter, order, exporter } = this.props
             const client = MHDBackendClient.getInstance()
             
             let blob: Blob
             let error: any
             try {
-                blob = await exporter.export(client, slug, filters, pre_filter, this.updateProgress)          
+                blob = await exporter.export(client, slug, filters, pre_filter, order, this.updateProgress,)          
             } catch(e) {
                 error = e
             }

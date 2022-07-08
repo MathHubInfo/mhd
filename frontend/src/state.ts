@@ -13,6 +13,9 @@ export interface PageState extends TableState {
     /** the set of selected columns */
     columns: string[];
 
+    /** the order of the results */
+    order: string;
+
     /** the widths of each of the columns */
     widths: number[] | undefined;
 }
@@ -36,7 +39,7 @@ export function encodeState(state: PageState) {
     ).join("&")
 }
 
-const ALL_STATE_PROPS = ["per_page", "page", "filters", "columns", "widths"]
+const ALL_STATE_PROPS = ["per_page", "page", "filters", "columns", "widths", "order"]
 
 /**
  * Decodes some part of the state from the url
@@ -63,6 +66,9 @@ export function decodeState(state: string): PageState | undefined {
         return
     }
 
+    // for backward compatibility, ensure that there is an order property!
+    sobj["order"] = sobj["order"] ?? ""
+
     // ensure that the state is valid
     if (!validateState(sobj)) return
 
@@ -70,13 +76,14 @@ export function decodeState(state: string): PageState | undefined {
 }
 
 function validateState(candidate: Record<string, any>): candidate is PageState {
-    const { per_page, page, filters, columns, widths, ...extra } = candidate
+    const { per_page, page, filters, columns, widths, order, ...extra } = candidate
     if(Object.keys(extra).length !== 0) return false // extra properties
 
     if (!isInteger(per_page)) return false
     if (!isInteger(page)) return false
     if (!Array.isArray(filters) || !filters.every(isFilter)) return false
     if (!Array.isArray(columns) || !columns.every(isString)) return false
+    if (!isOrder(order)) return false
 
     return widths === undefined || (Array.isArray(widths) && widths.every(isNonNegative))
 }
@@ -105,4 +112,8 @@ function isFilter(candidate: any): candidate is MHDFilter {
     if (!isInteger(uid)) return false
     if (!isBoolean(initial)) return false
     return value == null || typeof value === "string"
+}
+
+function isOrder(candidate: any): candidate is string {
+    return isString(candidate)
 }
