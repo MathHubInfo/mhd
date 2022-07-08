@@ -166,7 +166,7 @@ class DataImporter(object):
         value_columns = prop.codec_model.value_fields
         provenance_id = self.provenance
 
-        lift = (lambda v: [v]) if len(value_columns) == 1 else (lambda v: v)
+        lift = (lambda v: [v]) if len(value_columns) == 1 else (lambda v: v if (v is not None) else [None]*len(value_columns))
 
         # Create each of the property values and populate them from the literal ones
         # in the column

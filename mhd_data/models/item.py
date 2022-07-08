@@ -111,7 +111,7 @@ class SemanticItemSerializer(serializers.Serializer):
                 ],
                 database=self.database
             )
-            semantic[p.slug] = values[0] if len(values) == 1 else values
+            semantic[p.slug] = values[0] if values is not None and len(values) == 1 else values
         return semantic
 
     def to_internal_value(self, item: Item) -> None:

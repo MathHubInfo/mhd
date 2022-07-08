@@ -42,6 +42,14 @@
             "metadata": {
                 "uri": "https://mathhub.com/examples/?Z3ZFunction?invertible"
             }
+        },
+        {
+            "slug": "label",
+            "displayName": "Label",
+            "codec": "GraphLabel",
+            "metadata": {
+                "uri": "https://mathhub.com/examples/?Z3ZFunction?label"
+            }
         }
     ]
 }

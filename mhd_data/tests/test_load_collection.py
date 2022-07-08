@@ -21,6 +21,7 @@ Z3Z_DATA_PATH = AssetPath(__file__, "res", "z3z_data.json")
 Z3Z_ALL_PATH = AssetPath(__file__, "res", "z3z_query_all.json")
 Z3Z_ALL_ASSET = LoadJSONAsset(Z3Z_ALL_PATH)
 
+
 class LoadCollectionTest(TestCase):
     def test_no_simulate_arg(self) -> None:
         """ Checks that calling 'load_collection' without a simulate argument works """
@@ -29,9 +30,9 @@ class LoadCollectionTest(TestCase):
         with mock.patch.object(uuid, 'uuid4', uuid4_mock):
             call_command(
                 'load_collection',
-                Z3Z_COLLECTION_PATH, # schema
-                Z3Z_DATA_PATH, # data
-                Z3Z_PROVENANCE_PATH, # provenance
+                Z3Z_COLLECTION_PATH,  # schema
+                Z3Z_DATA_PATH,  # data
+                Z3Z_PROVENANCE_PATH,  # provenance
                 quiet=True,
                 simulate=False,
                 batch_size=None
@@ -50,9 +51,9 @@ class LoadCollectionTest(TestCase):
             with mock.patch.object(uuid, 'uuid4', uuid4_mock):
                 call_command(
                     'load_collection',
-                    Z3Z_COLLECTION_PATH, # schema
-                    Z3Z_DATA_PATH, # data
-                    Z3Z_PROVENANCE_PATH, # provenance
+                    Z3Z_COLLECTION_PATH,  # schema
+                    Z3Z_DATA_PATH,  # data
+                    Z3Z_PROVENANCE_PATH,  # provenance
                     quiet=True,
                     simulate=True,
                     batch_size=None

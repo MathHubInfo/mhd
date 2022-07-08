@@ -123,7 +123,7 @@ class Codec(models.Model):
         ]
 
     @classmethod
-    def serialize_values(cls: Type[Codec], *values: List[Any], database: bool = True) -> List[Any]:
+    def serialize_values(cls: Type[Codec], *values: List[Any], database: bool = True) -> Optional[List[Any]]:
         """
             Called by the data serializer to turn a database or python
             value of this codec into a json-serialized value of this codec.
@@ -133,11 +133,11 @@ class Codec(models.Model):
         sfields = cls.get_serializer_fields()
         results = [None] * len(vfields)
 
-        print(cls, "values", values)
-
+        defined = False
         for (i, (vfield, sfield, value)) in enumerate(zip(vfields, sfields, values)):
             if value is None:
                 continue
+            defined = True
 
             # if the value field has a 'from_db_value' we should call it first
             # because our value was not yet parsed
@@ -148,15 +148,20 @@ class Codec(models.Model):
             # call the default serializer field with .to_representation
             results[i] = sfield.to_representation(value)
 
+        # if all values are None, return None!
+        if not defined:
+            return None
+
         return results
 
     @classmethod
-    def serialize_value(cls: Type[Codec], value: List[Any], database: bool = True) -> Any:
+    def serialize_value(cls: Type[Codec], value: List[Any], database: bool = True) -> Optional[Any]:
         if len(cls.get_value_fields()) != 1:
             raise Exception(
                 'cannot call serialize_value: more than one value field')
 
-        return cls.serialize_values(value, database=database)[0]
+        values = cls.serialize_values(value, database=database)
+        return values[0] if values is not None else None
 
     # A list of supported operators
     operators: Iterable[str] = ()
@@ -184,10 +189,12 @@ class Codec(models.Model):
 
         SQL = []
         for index in range(len(cls.value_fields)):
-            SQL.append(QueryBuilder._prop_value(prop, index))
-            SQL.append('DESC' if mode == '-' else 'ASC')
+            SQL.append('{} {}'.format(
+                QueryBuilder._prop_value(prop, index),
+                'DESC' if mode == '-' else 'ASC',
+            ))
 
-        return ' '.join(SQL)
+        return ', '.join(SQL)
 
     # Next, the implementation of operating on codec values. There are three supported
     # kind of operations, operating with a literal (constant) on the left, the right and

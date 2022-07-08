@@ -4,188 +4,215 @@
         "f0": 0,
         "f1": 0,
         "f2": 0,
-        "invertible": false
+        "invertible": false,
+        "label": ["f", [1]]
     },
     {
         "_id": "00000000-0000-4000-a000-000000000001",
         "f0": 0,
         "f1": 0,
         "f2": 1,
-        "invertible": false
+        "invertible": false,
+        "label": ["f", [2]]
     },
     {
         "_id": "00000000-0000-4000-a000-000000000002",
         "f0": 0,
         "f1": 0,
         "f2": 2,
-        "invertible": false
+        "invertible": false,
+        "label": ["f", [3]]
     },
     {
         "_id": "00000000-0000-4000-a000-000000000003",
         "f0": 0,
         "f1": 1,
         "f2": 0,
-        "invertible": false
+        "invertible": false,
+        "label": ["f", [4]]
     },
     {
         "_id": "00000000-0000-4000-a000-000000000004",
         "f0": 0,
         "f1": 1,
         "f2": 1,
-        "invertible": false
+        "invertible": false,
+        "label": ["f", [5]]
     },
     {
         "_id": "00000000-0000-4000-a000-000000000005",
         "f0": 0,
         "f1": 1,
         "f2": 2,
-        "invertible": true
+        "invertible": true,
+        "label": ["f", [6]]
     },
     {
         "_id": "00000000-0000-4000-a000-000000000006",
         "f0": 0,
         "f1": 2,
         "f2": 0,
-        "invertible": false
+        "invertible": false,
+        "label": ["f", [7]]
     },
     {
         "_id": "00000000-0000-4000-a000-000000000007",
         "f0": 0,
         "f1": 2,
         "f2": 1,
-        "invertible": true
+        "invertible": true,
+        "label": ["f", [8]]
     },
     {
         "_id": "00000000-0000-4000-a000-000000000008",
         "f0": 0,
         "f1": 2,
         "f2": 2,
-        "invertible": false
+        "invertible": false,
+        "label": null
     },
     {
         "_id": "00000000-0000-4000-a000-000000000009",
         "f0": 1,
         "f1": 0,
         "f2": 0,
-        "invertible": false
+        "invertible": false,
+        "label": null
     },
     {
         "_id": "00000000-0000-4000-a000-00000000000a",
         "f0": 1,
         "f1": 0,
         "f2": 1,
-        "invertible": false
+        "invertible": false,
+        "label": null
     },
     {
         "_id": "00000000-0000-4000-a000-00000000000b",
         "f0": 1,
         "f1": 0,
         "f2": 2,
-        "invertible": true
+        "invertible": true,
+        "label": null
     },
     {
         "_id": "00000000-0000-4000-a000-00000000000c",
         "f0": 1,
         "f1": 1,
         "f2": 0,
-        "invertible": false
+        "invertible": false,
+        "label": null
     },
     {
         "_id": "00000000-0000-4000-a000-00000000000d",
         "f0": 1,
         "f1": 1,
         "f2": 1,
-        "invertible": false
+        "invertible": false,
+        "label": null
     },
     {
         "_id": "00000000-0000-4000-a000-00000000000e",
         "f0": 1,
         "f1": 1,
         "f2": 2,
-        "invertible": false
+        "invertible": false,
+        "label": null
     },
     {
         "_id": "00000000-0000-4000-a000-00000000000f",
         "f0": 1,
         "f1": 2,
         "f2": 0,
-        "invertible": true
+        "invertible": true,
+        "label": null
     },
     {
         "_id": "00000000-0000-4000-a000-000000000010",
         "f0": 1,
         "f1": 2,
         "f2": 1,
-        "invertible": false
+        "invertible": false,
+        "label": null
     },
     {
         "_id": "00000000-0000-4000-a000-000000000011",
         "f0": 1,
         "f1": 2,
         "f2": 2,
-        "invertible": false
+        "invertible": false,
+        "label": null
     },
     {
         "_id": "00000000-0000-4000-a000-000000000012",
         "f0": 2,
         "f1": 0,
         "f2": 0,
-        "invertible": false
+        "invertible": false,
+        "label": null
     },
     {
         "_id": "00000000-0000-4000-a000-000000000013",
         "f0": 2,
         "f1": 0,
         "f2": 1,
-        "invertible": true
+        "invertible": true,
+        "label": null
     },
     {
         "_id": "00000000-0000-4000-a000-000000000014",
         "f0": 2,
         "f1": 0,
         "f2": 2,
-        "invertible": false
+        "invertible": false,
+        "label": null
     },
     {
         "_id": "00000000-0000-4000-a000-000000000015",
         "f0": 2,
         "f1": 1,
         "f2": 0,
-        "invertible": true
+        "invertible": true,
+        "label": null
     },
     {
         "_id": "00000000-0000-4000-a000-000000000016",
         "f0": 2,
         "f1": 1,
         "f2": 1,
-        "invertible": false
+        "invertible": false,
+        "label": null
     },
     {
         "_id": "00000000-0000-4000-a000-000000000017",
         "f0": 2,
         "f1": 1,
         "f2": 2,
-        "invertible": false
+        "invertible": false,
+        "label": null
     },
     {
         "_id": "00000000-0000-4000-a000-000000000018",
         "f0": 2,
         "f1": 2,
         "f2": 0,
-        "invertible": null
+        "invertible": null,
+        "label": null
     },
     {
         "_id": "00000000-0000-4000-a000-000000000019",
         "f0": 2,
         "f1": 2,
         "f2": 1,
-        "invertible": null
+        "invertible": null,
+        "label": null
     },
     {
         "_id": "00000000-0000-4000-a000-00000000001a",
         "f0": 2,
         "f1": 2,
         "f2": 2,
-        "invertible": null
+        "invertible": null,
+        "label": null
     }
 ]

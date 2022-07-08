@@ -11,3 +11,5 @@ from .listasarray import *
 
 from .graphassparse6 import GraphAsSparse6
 from .coveringrelationasdigraph6 import CoveringRelationAsDigraph6
+
+from .graphlabel import GraphLabel

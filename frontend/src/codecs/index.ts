@@ -11,6 +11,7 @@ import GraphAsSparse6 from "./impl/GraphAsSparse6"
 import CoveringRelationAsDigraph6 from "./impl/CoveringRelationAsDigraph6"
 import PolynomialAsSparseArray from "./impl/PolynomialAsSparseArray"
 import FactorizationAsSparseArray from "./impl/FactorizationAsSparseArray"
+import GraphLabel from "./impl/GraphLabel"
 
 /**
  * Manages all known codecs
@@ -32,6 +33,7 @@ export default class CodecManager {
         this.register(new MatrixAsList(new StandardInt(), 3, 3))
         this.register(new ListAsArray(new StandardInt()))
         this.register(new ListAsArray(new StandardJSON()))
+        this.register(new GraphLabel())
     }
 
     /** registers a codec with this codec manager */

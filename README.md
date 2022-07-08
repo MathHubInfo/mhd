@@ -259,7 +259,7 @@ After setting up the project (see Project Structure and Setup), run the followin
 
 ```bash
 python manage.py upsert_collection mhd_data/tests/res/z3z_collection.json
-python manage.py insert_data mhd_data/tests/res/z3z_data.json --collection "z3zFunctions" -f "f0,f1,f2,invertible" -p mhd_data/tests/res/z3z_provenance.json
+python manage.py insert_data mhd_data/tests/res/z3z_data.json --collection "z3zFunctions" -f "f0,f1,f2,invertible,label" -p mhd_data/tests/res/z3z_provenance.json
 ```
 
 Here is an example of a query URL:
