@@ -2,7 +2,7 @@ import type { PageState } from "./state"
 import { encodeState, decodeState } from "./state"
 
 const states: PageState[] = [
-    { filters: [], columns: ["test"], widths: undefined, page: 1, per_page: 20, order: 'stuff' },
+    { filters: [], columns: ["test"], widths: undefined, page: 1, per_page: 20, order: "stuff" },
 ]
 
 it("encode and decode specific states", () => {
