@@ -16,7 +16,7 @@ interface ColumnEditorProps {
 
     /** the initially selected columns */
     columns: string[];
-    
+
     /** the initially selected order */
     order: string;
 
@@ -98,9 +98,9 @@ export default class ColumnEditor extends Component<ColumnEditorProps, ColumnEdi
         if (!result.destination) { return }
 
         // if we dropped it exactly where we were, we don't have to do anything
-        if (result.source.droppableId === result.destination.droppableId && 
-            result.source.index === result.destination.index) { 
-            return 
+        if (result.source.droppableId === result.destination.droppableId &&
+            result.source.index === result.destination.index) {
+            return
         }
         const newSelected = Array.from(this.state.selected)
         if (result.source.droppableId === "selected") {
@@ -128,42 +128,61 @@ export default class ColumnEditor extends Component<ColumnEditorProps, ColumnEdi
         const available = this.getAvailable()
         const availableNames = this.getPropertyNamesFromSlugs(available)
 
-        return (
-            <Row>
-                <Col>
-                    <Button color="link" onClick={this.toggleExpansionState}>
-                        <FontAwesomeIcon icon={expanded ? faAngleUp : faAngleDown} />
-                        <span>Choose columns &amp; sort</span>
-                    </Button>
-                    <Collapse isOpen={expanded}>
-                        <Card body>
-                            <CardText tag="div">
-                                <DragDropContext onDragEnd={this.handleDragEnd}>
-                                    <DroppableArea id="selected" caption="Selected columns" items={selected} names={selectedNames} />
-                                    <DroppableArea id="available" caption="Available columns" items={available} names={availableNames} />
-                                </DragDropContext>
-                            </CardText>
+        return <Row>
+            <Col>
+                <Button color="link" onClick={this.toggleExpansionState}>
+                    <FontAwesomeIcon icon={expanded ? faAngleUp : faAngleDown} />
+                    <span>Choose columns &amp; sort</span>
+                </Button>
+                <Collapse isOpen={expanded}>
+                    <Card body>
+                        <CardText tag="div">
+                            <div>
+                                <h5>Choose Columns To Display</h5>
+                                Drag and Drop between <code>Selected Columns</code> and <code>Available Columns</code> to determine which columns are displayed.
+                                By default all columns are displayed.
+                            </div>
 
-                            <CardText tag="div">
-                                <FormGroup>
-                                    <Label>Custom Sort</Label>
-                                    <Sortable collection={this.props.collection} onChange={this.handleOrder} value={order} />
-                                    E.g. <code>+label,-invertible</code> to first sort ascending by label, then descending by invertible.
-                                </FormGroup>
-                            </CardText>
+                            <DragDropContext onDragEnd={this.handleDragEnd}>
+                                <DroppableArea id="selected" caption="Selected columns" items={selected} names={selectedNames} />
+                                <DroppableArea id="available" caption="Available columns" items={available} names={availableNames} />
+                            </DragDropContext>
+                        </CardText>
 
-                            <CardText tag="div">
-                                <Button color="secondary" onClick={this.resetToLastSelected}>Reset</Button>
-                                &nbsp;
-                                <Button color="secondary" onClick={this.resetToDefaults}>Defaults</Button>
-                                &nbsp;
-                                <Button color="primary" onClick={this.applyColumns} disabled={applied}>Apply</Button>
-                            </CardText>
-                        </Card>
-                    </Collapse>
-                </Col>
-            </Row>
-        )
+                        <CardText tag="hr" />
+
+                        <CardText tag="div">
+                            <div>
+                                <h5>Sort Results</h5>
+                                Type and use the autocomplete to determine in which order the results should be displayed.
+                                Click on a column (or use the keyboard) to remove it.
+                                Each column can be displayed <code>Ascending</code> or <code>Descending</code>.
+                                By default results are displayed in a consistent unspecified order.
+                            </div>
+                            <FormGroup>
+                                <Label className={styles.droppableCaption}>Custom Sort</Label>
+                                <Sortable collection={this.props.collection} onChange={this.handleOrder} value={order} />
+                            </FormGroup>
+                        </CardText>
+
+                        <hr />
+
+                        <CardText tag="div">
+                            <div>
+                                <h5>Save &amp; Apply</h5>
+                                Click to reset settings to their last state, reset to defaults or apply changes.
+                            </div>
+
+                            <Button color="secondary" onClick={this.resetToLastSelected}>Reset</Button>
+                            &nbsp;
+                            <Button color="secondary" onClick={this.resetToDefaults}>Defaults</Button>
+                            &nbsp;
+                            <Button color="primary" onClick={this.applyColumns} disabled={applied}>Apply</Button>
+                        </CardText>
+                    </Card>
+                </Collapse>
+            </Col>
+        </Row>
     }
 }
 
@@ -218,7 +237,7 @@ function getListStyle(isDraggingOver: boolean): CSSProperties {
 interface DraggableColumnProps {
     /** the index of the column */
     index: number;
-    
+
     /** item this column represents, used for all ids */
     item: string;
 
@@ -233,7 +252,7 @@ class DraggableColumn extends Component<DraggableColumnProps> {
     render() {
         const { item, name, index } = this.props
 
-        return(
+        return (
             <Draggable draggableId={item} index={index}>
                 {(provided, snapshot) => (
                     <div

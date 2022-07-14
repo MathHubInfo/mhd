@@ -1,5 +1,7 @@
 import * as React from "react"
+import type { TagComponentProps } from "react-tag-autocomplete"
 import { default as ReactTags } from "react-tag-autocomplete"
+import { Button } from "reactstrap"
 import { MHDBackendClient } from "../../../client"
 import type { ParsedMHDCollection } from "../../../client/derived"
 import styles from "./sortable.module.css"
@@ -36,10 +38,10 @@ function makeTagFromID(id: string, { propMap, codecMap }: ParsedMHDCollection): 
 
     let name = prop.displayName
     if (tMod === "+") {
-        name += " (ASC)"
+        name += " (Ascending)"
     }
     if (tMod === "-") {
-        name += " (DESC)"
+        name += " (Descending)"
     }
 
     return { id, name }
@@ -135,6 +137,17 @@ export default class Sortable extends React.Component<SortableProps, SortableSta
             
             onAddition={this.onAddition}
             onDelete={this.onDelete}
+
+            tagComponent={TagComponent as any}
         />
+    }
+}
+
+class TagComponent extends React.Component<TagComponentProps> {
+    render() {
+        const { tag, onDelete } = this.props
+        return <Button outline size="sm" onClick={onDelete} style={{ margin: 5 }}>
+            {tag.name}
+        </Button>
     }
 }
