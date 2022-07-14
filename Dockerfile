@@ -24,6 +24,13 @@ RUN yarn install --frozen-lockfile --production
 RUN yarn build --no-lint
 
 FROM base as final
+ARG DJANGO_SECRET_KEY=something-insecure
+ENV DJANGO_DB_ENGINE "django.db.backends.sqlite3"
+ENV DJANGO_DB_NAME "/data/mhd.db"
+ENV DJANGO_DB_USER ""
+ENV DJANGO_DB_PASSWORD ""
+ENV DJANGO_DB_HOST ""
+ENV DJANGO_DB_PORT ""
 
 # Install Django App, configure settings and copy over djano app
 ADD manage.py /app/
@@ -38,13 +45,13 @@ ADD mviews/ /app/mviews/
 ### ALL THE CONFIGURATION
 
 ENV DJANGO_SETTINGS_MODULE "mhd.docker_settings"
-ENV DJANGO_SECRET_KEY ""
-ENV DJANGO_DB_ENGINE "django.db.backends.sqlite3"
-ENV DJANGO_DB_NAME "/data/mhd.db"
-ENV DJANGO_DB_USER ""
-ENV DJANGO_DB_PASSWORD ""
-ENV DJANGO_DB_HOST ""
-ENV DJANGO_DB_PORT ""
+ENV DJANGO_SECRET_KEY $DJANGO_SECRET_KEY
+ENV DJANGO_DB_ENGINE $DJANGO_DB_ENGINE
+ENV DJANGO_DB_NAME $DJANGO_DB_NAME
+ENV DJANGO_DB_USER $DJANGO_DB_USER
+ENV DJANGO_DB_PASSWORD $DJANGO_DB_PASSWORD
+ENV DJANGO_DB_HOST $DJANGO_DB_HOST
+ENV DJANGO_DB_PORT $DJANGO_DB_PORT
 
 # Copy over static files
 RUN DJANGO_SECRET_KEY=setup python manage.py collectstatic --noinput
@@ -54,7 +61,7 @@ COPY --from=frontend /app/frontend/content ./content
 COPY --from=frontend /app/frontend/public ./public
 COPY --from=frontend /app/frontend/package.json ./package.json
 
-# Automatically leverage output traces to reduce image size 
+# Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=frontend /app/frontend/.next/standalone ./
 COPY --from=frontend /app/frontend/.next/static ./.next/static
