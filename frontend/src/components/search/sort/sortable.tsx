@@ -32,11 +32,14 @@ function parseTagID(id: string): [string, string] {
     return ["", id]
 } 
 
-function makeTagFromID(id: string, { propMap }: ParsedMHDCollection): Tag | undefined {
+function makeTagFromID(id: string, { propMap, codecMap }: ParsedMHDCollection): Tag | undefined {
     const [tMod, tID] = parseTagID(id)
-    let name = propMap.get(tID)?.displayName
-    if (typeof name !== "string") return undefined
 
+    const prop = propMap.get(tID)
+    const codec = codecMap.get(tID)
+    if (!prop || !codec.ordered) return undefined
+
+    let name = prop.displayName
     if (tMod === "+") {
         name += " (ASC)"
     }
@@ -48,6 +51,7 @@ function makeTagFromID(id: string, { propMap }: ParsedMHDCollection): Tag | unde
 }
 
 type SortableProps = {
+    id?: string;
     collection: ParsedMHDCollection,
 
     value: string,
@@ -76,7 +80,7 @@ export default class Sortable extends React.Component<SortableProps, SortableSta
             makeTagFromID(slug, collection), 
             makeTagFromID(`+${slug}`, collection),
             makeTagFromID(`-${slug}`, collection),
-        ])
+        ]).filter(tag => typeof tag !== "undefined")
 
         return {
             tags,
@@ -111,11 +115,19 @@ export default class Sortable extends React.Component<SortableProps, SortableSta
             qMod === "" ||tMod === qMod
         )
     }
+
+    componentDidMount() {
+
+    }
+
     render() {
+        const { id } = this.props
         const { tags, suggestions } = this.state
         return <ReactTags
             classNames={CLASS_NAMES}
-            
+            id={id}
+            minQueryLength={1}
+
             tags={tags}
             suggestions={suggestions}
             suggestionsFilter={this.suggestionsFilter}

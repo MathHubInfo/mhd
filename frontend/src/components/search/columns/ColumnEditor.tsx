@@ -146,7 +146,7 @@ export default class ColumnEditor extends Component<ColumnEditorProps, ColumnEdi
 
                             <CardText tag="div">
                                 <FormGroup>
-                                    <Label for="order">Custom Sort</Label>
+                                    <Label>Custom Sort</Label>
                                     <Sortable collection={this.props.collection} onChange={this.handleOrder} value={order} />
                                     E.g. <code>+label,-invertible</code> to first sort ascending by label, then descending by invertible.
                                 </FormGroup>
