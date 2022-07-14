@@ -4,8 +4,9 @@ import type { CSSProperties } from "react"
 import React, { Component } from "react"
 import type { DraggingStyle, DropResult, NotDraggingStyle } from "react-beautiful-dnd"
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd"
-import { Button, Card, CardText, Col, Collapse, FormGroup, Input, Label, Row } from "reactstrap"
+import { Button, Card, CardText, Col, Collapse, FormGroup, Label, Row } from "reactstrap"
 import type { ParsedMHDCollection } from "../../../client/derived"
+import Sortable from "../sort/sortable"
 
 import styles from "./ColumnEditor.module.css" // Import css modules stylesheet as styles
 
@@ -60,6 +61,7 @@ export default class ColumnEditor extends Component<ColumnEditorProps, ColumnEdi
     private resetToLastSelected = () => {
         this.setState({
             selected: this.props.columns.slice(0),
+            order: this.props.order,
             applied: true,
         })
     }
@@ -67,6 +69,7 @@ export default class ColumnEditor extends Component<ColumnEditorProps, ColumnEdi
     private resetToDefaults = () => {
         this.setState({
             selected: this.props.collection.propertySlugs.slice(),
+            order: "",
             applied: false,
         })
     }
@@ -99,7 +102,6 @@ export default class ColumnEditor extends Component<ColumnEditorProps, ColumnEdi
             result.source.index === result.destination.index) { 
             return 
         }
-
         const newSelected = Array.from(this.state.selected)
         if (result.source.droppableId === "selected") {
             newSelected.splice(result.source.index, 1)
@@ -110,8 +112,8 @@ export default class ColumnEditor extends Component<ColumnEditorProps, ColumnEdi
         this.setState({ selected: newSelected, applied: false })
     }
 
-    private handleOrder = (event: React.ChangeEvent<HTMLInputElement>) => {
-        this.setState({ order: event.target.value, applied: false })
+    private handleOrder = (order: string) => {
+        this.setState({ order, applied: false })
     }
 
     componentDidMount() {
@@ -145,7 +147,7 @@ export default class ColumnEditor extends Component<ColumnEditorProps, ColumnEdi
                             <CardText tag="div">
                                 <FormGroup>
                                     <Label for="order">Custom Sort</Label>
-                                    <Input id="order" value={order} onChange={this.handleOrder}></Input>
+                                    <Sortable collection={this.props.collection} onChange={this.handleOrder} value={order} />
                                     E.g. <code>+label,-invertible</code> to first sort ascending by label, then descending by invertible.
                                 </FormGroup>
                             </CardText>
