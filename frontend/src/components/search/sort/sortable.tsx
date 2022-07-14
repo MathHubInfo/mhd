@@ -1,5 +1,6 @@
 import * as React from "react"
 import { default as ReactTags } from "react-tag-autocomplete"
+import { MHDBackendClient } from "../../../client"
 import type { ParsedMHDCollection } from "../../../client/derived"
 import styles from "./sortable.module.css"
 
@@ -26,14 +27,8 @@ type Tag = {
     name: string;
 }
 
-function parseTagID(id: string): [string, string] {
-    if (id.startsWith("+")) return ["+", id.substring(1)]
-    if (id.startsWith("-")) return ["-", id.substring(1)]
-    return ["", id]
-} 
-
 function makeTagFromID(id: string, { propMap, codecMap }: ParsedMHDCollection): Tag | undefined {
-    const [tMod, tID] = parseTagID(id)
+    const { mod: tMod, id: tID } = MHDBackendClient.parseSortPart(id)
 
     const prop = propMap.get(tID)
     const codec = codecMap.get(tID)
@@ -65,7 +60,6 @@ type SortableState = {
 
 export default class Sortable extends React.Component<SortableProps, SortableState> {
 
-    // this initial state will be deserialized from props!
     state = {
         tags: [],
         suggestions: [],
@@ -88,16 +82,26 @@ export default class Sortable extends React.Component<SortableProps, SortableSta
         }
     }
 
+    /** turns a list of tags into a seralized tstae */
     private static tagsToOrder(tags: Array<Tag>): string {
         return tags.map(t => t.id).join(",")
     }
 
+    /**
+     * Called when a new tag is added to the list
+     * @param tag 
+     */
     private readonly onAddition = (tag: Tag) => {
         const tags = [].concat(this.state.tags, tag)
         this.props.onChange(
             Sortable.tagsToOrder(tags)
         )
     }
+
+    /**
+     * Called when an item is removed from the list
+     * @param index 
+     */
     private readonly onDelete = (index: number) => {
         const tags = this.state.tags.slice(0)
         tags.splice(index, 1)
@@ -106,18 +110,14 @@ export default class Sortable extends React.Component<SortableProps, SortableSta
         )
     }
     private readonly suggestionsFilter = (tag: Tag, query: string) => {
-        const [tMod, tID] = parseTagID(tag.id)
-        const [qMod, qID] = parseTagID(query)
+        const { mod: tMod, id: tID } = MHDBackendClient.parseSortPart(tag.id)
+        const { mod: qMod, id: qID } = MHDBackendClient.parseSortPart(query)
         
         return (
             tag.name.startsWith(qID) || tID.startsWith(qID)
         ) && (
             qMod === "" ||tMod === qMod
         )
-    }
-
-    componentDidMount() {
-
     }
 
     render() {

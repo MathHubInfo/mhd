@@ -156,20 +156,18 @@ export class MHDBackendClient {
 
     /** builds a sort order string to pass to the backend */
     static buildSortOrder(collection: ParsedMHDCollection, properties: string[], order: string): string {
-        const propName = (n: string) => (n.startsWith("+") || n.startsWith("-")) ? n.substring(1) : n // function to extract the property name
-
         const sorder = order.split(",") // array containing the final order
         
         // add properties which have not been ordered
         const unordered = new Set(collection.propertySlugs)
-        sorder.forEach(n => unordered.delete(propName(n)))
+        sorder.forEach(n => unordered.delete(this.parseSortPart(n).id))
         unordered.forEach(e => sorder.push(e))
         
         // find all the properties that we want to filter by in the appropriate order
         return sorder
-            .filter(n => properties.includes(propName(n))) // filter by queries properties
-            .filter(n => collection.propMap.has(propName(n))) // filter by known properties
-            .filter(n => collection.codecMap.get(propName(n))!.ordered) // filter by orderable properties
+            .filter(n => properties.includes(MHDBackendClient.parseSortPart(n).id)) // filter by queries properties
+            .filter(n => collection.propMap.has(MHDBackendClient.parseSortPart(n).id)) // filter by known properties
+            .filter(n => collection.codecMap.get(MHDBackendClient.parseSortPart(n).id)!.ordered) // filter by orderable properties
             .map(n => {
                 if(n.startsWith("+") || n.startsWith("-")) return n
                 const order = collection.codecMap.get(n)!.ordered
@@ -177,6 +175,17 @@ export class MHDBackendClient {
                 return `${sign}${n}`
             })
             .join(",")
+    }
+    
+    /**
+     * Parses a part of a sort string into a modifier ("+", "-" or "") and an underlying property id
+     * @param prop  Property inside the sort string to parse
+     * @returns 
+     */
+    static parseSortPart(prop: string): {mod: string, id: string} {
+        if (prop.startsWith("+")) return { mod: "+", id: prop.substring(1) }
+        if (prop.startsWith("-")) return { mod: "-", id: prop.substring(1) }
+        return { mod: "", id: prop }
     }
 }
 
