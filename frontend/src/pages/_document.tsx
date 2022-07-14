@@ -25,7 +25,7 @@ export default class MyDocument extends Document<{ footer: string | null }>{
       <Html>
         <Head />
         <body>
-          <Main />å
+          <Main />
           <NextScript />
           {footer && renderHTMLAsReact(footer)}
         </body>
