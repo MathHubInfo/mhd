@@ -1,12 +1,10 @@
-import React, { useId } from "react"
+import React from "react"
 import type { TMHDProperty, TMHDItem } from "../client/rest"
-import { Badge, Button, Tooltip } from "reactstrap"
+import { Badge } from "reactstrap"
 import type { TableColumn, CellComponentProps } from "../components/wrappers/table"
 import PropertyInfoButton from "../components/common/PropertyInfoButton"
 import { isProduction } from "../controller"
-import { CopyToClipboard } from "react-copy-to-clipboard"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faCopy } from "@fortawesome/free-regular-svg-icons"
+import { CopyButton } from "../components/wrappers/share"
 
 type ReactComponent<T> = React.ComponentClass<T> | React.FunctionComponent<T>
 
@@ -275,25 +273,8 @@ export class RenderCodec<C extends Codec<E, F>, E, F> extends React.Component<TC
             <Component context={context} hasCopyButton={hasCopyButton} codec={codec} value={value} />
             {hasCopyButton && <>
                 &nbsp;
-                <FancyCopyButton text={text} onCopy={this.onCopy} copied={copied} />
+                <CopyButton text={text} onCopy={this.onCopy} copied={copied} />
             </>}
         </>
     }
 }
-
-
-function FancyCopyButton(props: { text: string, copied: boolean, onCopy: () => void, }) {
-    const id = useId()
-    const escaped = id.replace(/\W/g, m => "\\" + m.charCodeAt(0).toString(16) + " ")
-    return <>
-        <CopyToClipboard text={props.text} onCopy={props.onCopy}>
-            <Button size="sm" id={id}>
-                <FontAwesomeIcon icon={faCopy} />
-            </Button>
-        </CopyToClipboard>
-        <Tooltip placement="right" isOpen={props.copied} target={escaped}>
-            Copied To Clipboard!
-        </Tooltip>
-    </>
-
-} 

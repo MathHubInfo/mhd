@@ -7,10 +7,10 @@ import FilterSelector from "./FilterSelector"
 import LaTeX from "react-latex"
 import type { TMHDPreFilter, TMHDCollection } from "../../../client/rest"
 import Link from "next/link"
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faCommentDots } from "@fortawesome/free-regular-svg-icons"
 import { CollectionProvenance, isProduction } from "../../../controller"
+import { ShareThisPage } from "../../wrappers/share"
 interface FilterEditorProps {
 
     /** the current collection (if any) */
@@ -99,6 +99,8 @@ export default class FilterEditor extends React.Component<FilterEditorProps, Fil
                 </p>
                 }
             <Button onClick={this.applyFilters} disabled={applied}>Display results</Button>
+            &nbsp;
+            <ShareThisPage />
         </>
 
         const rightHead = <Row>
