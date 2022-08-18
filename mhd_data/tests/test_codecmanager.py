@@ -36,9 +36,9 @@ class CodecManagerTest(TestCase):
 
         # not finding existing codec
         self.assertIsNone(CodecManager.find_codec("mhd_data_standardint"),
-                         msg="does not the StandardInt codec by table name")
+                          msg="does not the StandardInt codec by table name")
         self.assertIsNone(CodecManager.find_codec("standardint"),
-                        msg="does not the StandardInt codec by normalized name")
+                          msg="does not the StandardInt codec by normalized name")
 
         # non-existing codec
         self.assertIsNone(CodecManager.find_codec(
@@ -73,16 +73,16 @@ class CodecManagerTest(TestCase):
         """ Checks that generating operations on StandardInt works properly """
 
         # operate left
-        olsql, olargs = StandardInt.operate_left(123, "<=", "T_f1")
+        olsql, olargs = StandardInt.operate_left(123, "<=", ["T_f1"])
         self.assertEqual(olsql, "%s <= T_f1")
         self.assertListEqual(olargs, [123])
 
         # operate right
-        olsql, olargs = StandardInt.operate_right("T_f1", "<=", 123)
+        olsql, olargs = StandardInt.operate_right(["T_f1"], "<=", 123)
         self.assertEqual(olsql, "T_f1 <= %s")
         self.assertListEqual(olargs, [123])
 
         # operate both
-        bsql, bargs = StandardInt.operate_both("T_f1", "<=", "T_f2")
+        bsql, bargs = StandardInt.operate_both(["T_f1"], "<=", ["T_f2"])
         self.assertEqual(bsql, "T_f1 <= T_f2")
         self.assertListEqual(bargs, [])

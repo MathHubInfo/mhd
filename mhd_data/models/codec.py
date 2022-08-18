@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from django.apps import apps
 from django.db import models, connection
+from rest_framework.exceptions import ValidationError
 
 from mhd_provenance.models import Provenance
 from mhd_schema.models import Property
@@ -13,7 +14,7 @@ from functools import lru_cache
 
 from mhd.utils import get_standard_serializer_field
 
-from typing import TYPE_CHECKING, TypeAlias, Iterable, Type, Optional, Any, List
+from typing import TYPE_CHECKING, TypeAlias, Iterable, Type, Optional, Any, List, Union, Tuple
 
 if TYPE_CHECKING:
     from django.db.models import Field
@@ -96,7 +97,7 @@ class Codec(models.Model):
     _serializer_fields: Optional[List[SerializerField]] = None
 
     @classmethod
-    def get_serializer_fields(cls) -> SerializerField:
+    def get_serializer_fields(cls: Type[Codec]) -> SerializerField:
         """ Gets the serializer field of a class """
 
         # if the user defined one, return it
@@ -167,11 +168,14 @@ class Codec(models.Model):
     operators: Iterable[str] = ()
 
     # if not None, the query builder will enforce that the operand is of this class
-    # using the method is_valid_operand below
+    # using the method is_valid_operand below.
+    #
+    # For more than a single value field, the user should leave this as None or provide a custom implementation.
     operator_type: Optional[Type[object]] = None
 
     @classmethod
     def is_valid_operand(cls: Type[Codec], literal: Any) -> bool:
+        # TODO: This isn't supported for more than one value yet
         """ Checks if the provided literal is a valid argument to operator (left || right) on """
         if cls.operator_type is None:
             return True
@@ -209,20 +213,41 @@ class Codec(models.Model):
     # user controlled.
 
     @classmethod
-    def operate_left(cls: Type[Codec], literal: Any, operator: str, db_column: str) -> SQLWithParams:
+    def operate_left(cls: Type[Codec], literal: Any, operator: str, db_columns: List[str]) -> SQLWithParams:
         """ Implements literal <operator> db_column """
 
-        return "%s {} {}".format(operator, db_column), [cls.serialize_value(literal)]
+        if len(db_columns) != 1:
+            from mhd_schema.query import FilterBuilderError
+            raise FilterBuilderError(
+                "operate_left not supported for codec {}: More than one value column".format(cls.get_codec_name()))
+        db_column = db_columns[0]
+
+        serialized = cls.serialize_value(cls.populate_values(literal)[0])
+        return "%s {} {}".format(operator, db_column), [serialized]
 
     @classmethod
-    def operate_right(cls: Type[Codec], db_column: str, operator: str, literal: Any) -> SQLWithParams:
+    def operate_right(cls: Type[Codec], db_columns: List[str], operator: str, literal: Any) -> SQLWithParams:
         """ Implements db_column <operator> literal """
 
-        return "{} {} %s".format(db_column, operator), [cls.serialize_value(literal)]
+        if len(db_columns) != 1:
+            from mhd_schema.query import FilterBuilderError
+            raise FilterBuilderError(
+                "operate_right not supported for codec {}: More than one value column".format(cls.get_codec_name()))
+        db_column = db_columns[0]
+
+        serialized = cls.serialize_value(cls.populate_values(literal)[0])
+        return "{} {} %s".format(db_column, operator), [serialized]
 
     @classmethod
-    def operate_both(cls: Type[Codec], db_column1: str, operator: str, db_column2: str) -> SQLWithParams:
+    def operate_both(cls: Type[Codec], db_columns1: List[str], operator: str, db_columns2: List[str]) -> SQLWithParams:
         """ Implements db_column1 <operator> db_column2 """
+
+        if len(db_columns1) != 1 or len(db_columns2) != 1:
+            from mhd_schema.query import FilterBuilderError
+            raise FilterBuilderError(
+                "operate_both not supported for codec {}: More than one value column".format(cls.get_codec_name()))
+        db_column1 = db_columns1[0]
+        db_column2 = db_columns2[0]
 
         return "{} {} {}".format(db_column1, operator, db_column2), []
 

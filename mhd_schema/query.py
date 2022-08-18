@@ -328,25 +328,23 @@ class FilterBuilder(object):
     def _process_left(self, tree: FilterAST) -> SQLWithParams:
         op = tree['operator']
 
-        prop, codec, column = self._resolve_codec(
+        prop, codec, columns = self._resolve_codec(
             tree['right']['name'], op)
-        lit = codec.populate_values(self._process_literal(tree['left']))[
-            0]  # TODO: Support more than one
-        if not codec.is_valid_operand(lit):
+        lit = self._process_literal(tree['left'])
+        if not codec.is_valid_operand(codec.populate_values(lit)[0]):
             raise FilterBuilderError(
                 '{} is not a valid operand for codec {}'.format(lit, codec.get_codec_name()))
-        return codec.operate_left(lit, op, column)
+        return codec.operate_left(lit, op, columns)
 
     def _process_right(self, tree: FilterAST) -> SQLWithParams:
         op = tree['operator']
-        prop, codec, column = self._resolve_codec(
+        prop, codec, columns = self._resolve_codec(
             tree['left']['name'], op)
-        lit = codec.populate_values(self._process_literal(tree['right']))[
-            0]  # TODO: Support more than one
-        if not codec.is_valid_operand(lit):
+        lit = self._process_literal(tree['right'])
+        if not codec.is_valid_operand(codec.populate_values(lit)[0]):
             raise FilterBuilderError(
                 '{} is not a valid operand for codec {}'.format(lit, codec.get_codec_name()))
-        return codec.operate_right(column, op, lit)
+        return codec.operate_right(columns, op, lit)
 
     def _process_both(self, tree: FilterAST) -> SQLWithParams:
         op = tree['operator']
@@ -354,16 +352,16 @@ class FilterBuilder(object):
         lvalue = tree['left']['name']
         rvalue = tree['right']['name']
 
-        propL, codecL, columnL = self._resolve_codec(lvalue, op)
-        propR, codecR, columnR = self._resolve_codec(rvalue, op)
+        propL, codecL, columnsL = self._resolve_codec(lvalue, op)
+        propR, codecR, columnsR = self._resolve_codec(rvalue, op)
 
         if codecL is not codecR:
             raise FilterBuilderError(
                 "Cannot compare properties {} and {}: Distinct codecs are not supported. ".format(lvalue, rvalue))
 
-        return codecL.operate_both(columnL, op, columnR)
+        return codecL.operate_both(columnsL, op, columnsR)
 
-    def _resolve_codec(self, slug: str, op: str) -> tuple[Property, Type[Codec], str]:
+    def _resolve_codec(self, slug: str, op: str) -> tuple[Property, Type[Codec], List[str]]:
         """ Returns a triple (property, codec, column) for a given identifier """
 
         # Find the matching property
@@ -375,13 +373,18 @@ class FilterBuilder(object):
         if prop is None:
             raise FilterBuilderError("Unknown property {}".format(slug))
 
+        # determine the codec
         codec = prop.codec_model
         if op not in codec.operators:
             raise FilterBuilderError("Codec {} does not support operator {}".format(
                 codec.get_codec_name(), op))
 
-        # TODO: Support more than one
-        return prop, codec, QueryBuilder._prop_value(p, 0)
+        # and make a columns object
+        columns = [QueryBuilder._prop_value(
+            p, i) for i in range(len(codec.get_value_fields()))]
+
+        # and return!
+        return prop, codec, columns
 
     def _process_literal(self, tree: FilterAST) -> Any:
         """ Parses a literal into a python value """
