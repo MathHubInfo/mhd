@@ -331,7 +331,7 @@ class FilterBuilder(object):
         prop, codec, columns = self._resolve_codec(
             tree['right']['name'], op)
         lit = self._process_literal(tree['left'])
-        if not codec.is_valid_operand(codec.populate_values(lit)[0]):
+        if not codec.is_valid_operand(lit):
             raise FilterBuilderError(
                 '{} is not a valid operand for codec {}'.format(lit, codec.get_codec_name()))
         return codec.operate_left(lit, op, columns)
@@ -341,7 +341,7 @@ class FilterBuilder(object):
         prop, codec, columns = self._resolve_codec(
             tree['left']['name'], op)
         lit = self._process_literal(tree['right'])
-        if not codec.is_valid_operand(codec.populate_values(lit)[0]):
+        if not codec.is_valid_operand(lit):
             raise FilterBuilderError(
                 '{} is not a valid operand for codec {}'.format(lit, codec.get_codec_name()))
         return codec.operate_right(columns, op, lit)

@@ -175,11 +175,17 @@ class Codec(models.Model):
 
     @classmethod
     def is_valid_operand(cls: Type[Codec], literal: Any) -> bool:
-        # TODO: This isn't supported for more than one value yet
-        """ Checks if the provided literal is a valid argument to operator (left || right) on """
+        """ Checks if the provided literal is a valid argument to operator (left || right) """
         if cls.operator_type is None:
             return True
-        return isinstance(literal, cls.operator_type)
+        if len(cls.get_value_fields()) != 1:
+            from mhd_schema.query import FilterBuilderError
+            raise FilterBuilderError(
+                "is_valid_operand not supported for codec {}: More than one value column".format(cls.get_codec_name()))
+        try:
+            return isinstance(cls.populate_values(literal)[0], cls.operator_type)
+        except ValidationError:
+            return False
 
     # Next we need to know how to sort values of this type inside the sql.
     @classmethod

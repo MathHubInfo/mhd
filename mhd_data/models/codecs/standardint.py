@@ -5,6 +5,7 @@ from django.db import models
 from ..codec import Codec
 
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -20,4 +21,9 @@ class StandardInt(Codec):
     @classmethod
     def is_valid_operand(cls, literal: Any) -> bool:
         """ Checks that the argument is a valid operand """
+        try:
+            literal =  cls.populate_values(literal)[0]
+        except ValidationError:
+            return False
+
         return isinstance(literal, int) and not isinstance(literal, bool)
