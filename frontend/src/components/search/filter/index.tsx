@@ -118,20 +118,20 @@ export default class FilterEditor extends React.Component<FilterEditorProps, Fil
 }
 
 class HiddenBadge extends React.Component<{}, { hover: boolean }> {
-    state = { hover: false };
+    state = { hover: false }
 
     private readonly onToggle = () => {
         this.setState(({ hover }) => ({ hover: !hover }))
     }
     render() {
-        const { hover } = this.state;
+        const { hover } = this.state
         return <p>
             <Badge id="hiddenBage">Unlisted</Badge>
             <Tooltip placement="right" isOpen={hover} target="hiddenBage" toggle={this.onToggle}>
                 This collection is not shown on the front page.
                 Only share the link with people you trust.
             </Tooltip>
-        </p>;
+        </p>
     }
 }
 
