@@ -18,15 +18,17 @@ export default class GraphLabel extends Codec<[string, [number]], null> {
     cleanFilterValue(value: null, lastValue?: string): TValidationResult {
         return { valid: false, message: "Filtering for GraphLabel not supported" }
     }
+
+    toClipboardValue(value: [string, [number]]): string {
+        if (value === null) return null
+
+        return `${value[0]}[${value[1].map(n => n.toString()).join(",")}]`
+    }
 }
 
 class GraphLabelCell extends React.Component<TPresenterProps<GraphLabel, [string, [number]], null>> {
     render() {
-        const { value } = this.props
-        if (value === null) return null
-        
-        const [label, params] = value
-
-        return <>{label}[{params.map(p => p.toString()).join(", ")}]</>
+        const { value, codec } = this.props
+        return <>{codec.toClipboardValue(value)}</>
     }
 }
