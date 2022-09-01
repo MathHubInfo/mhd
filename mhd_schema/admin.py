@@ -24,7 +24,7 @@ class CollectionAdmin(admin.ModelAdmin):
     prop_size.short_description = '# of Properties'
     prop_size.admin_order_field = 'property'
 
-    list_display = ['displayName', 'slug', 'prop_size', 'viewName']
+    list_display = ['displayName', 'hidden', 'slug', 'prop_size', 'viewName']
     search_fields = ['displayName', 'slug']
 
     inlines = [

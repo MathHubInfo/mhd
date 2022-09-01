@@ -1,5 +1,5 @@
 import React from "react"
-import { Button, Row, Alert } from "reactstrap"
+import { Badge, Button, Row, Alert, Tooltip } from "reactstrap"
 import type { MHDFilter, ParsedMHDCollection } from "../../../client/derived"
 import { MHDMainHead } from "../../common/MHDMain"
 import CounterDisplay from "../results/CounterDisplay"
@@ -72,11 +72,12 @@ export default class FilterEditor extends React.Component<FilterEditorProps, Fil
         const { applied, filters, pre_filter } = this.state
 
         const leftHead = <>
+            {collection.hidden && <HiddenBadge />}
             <p><LaTeX>{collection.description}</LaTeX></p>
             {pre_filter ?
                 <PreFilterCountDisplay filter={pre_filter} collection={collection} /> :
                 <TotalCountDisplay collection={collection} />
-             }
+            }
             <p>
                 <CounterDisplay
                     collection={collection}
@@ -88,7 +89,7 @@ export default class FilterEditor extends React.Component<FilterEditorProps, Fil
         </>
 
         const buttons = <>
-                { collection.metadata &&
+            {collection.metadata &&
                 <p>
                     <Link href={CollectionProvenance(collection.slug)} passHref>
                         <a target="_blank" rel="noopener noreferrer">
@@ -97,7 +98,7 @@ export default class FilterEditor extends React.Component<FilterEditorProps, Fil
                         </a>
                     </Link>
                 </p>
-                }
+            }
             <Button onClick={this.applyFilters} disabled={applied}>Display results</Button>
             &nbsp;
             <ShareThisPage />
@@ -110,11 +111,31 @@ export default class FilterEditor extends React.Component<FilterEditorProps, Fil
                 onFilterUpdate={this.setFilters} />
         </Row>
 
-        return <MHDMainHead title={<LaTeX>{collection.displayName}</LaTeX>} textTitle={collection.displayName} leftHead={leftHead} buttons={buttons} rightHead={rightHead} />
+        return <MHDMainHead title={<>
+            <LaTeX>{collection.displayName}</LaTeX>
+        </>} textTitle={collection.displayName} leftHead={leftHead} buttons={buttons} rightHead={rightHead} />
     }
 }
 
-function PreFilterCountDisplay({ filter: { description, count }, collection }: {filter: TMHDPreFilter, collection: TMHDCollection}) {
+class HiddenBadge extends React.Component<{}, { hover: boolean }> {
+    state = { hover: false };
+
+    private readonly onToggle = () => {
+        this.setState(({ hover }) => ({ hover: !hover }))
+    }
+    render() {
+        const { hover } = this.state;
+        return <p>
+            <Badge id="hiddenBage">Unlisted</Badge>
+            <Tooltip placement="right" isOpen={hover} target="hiddenBage" toggle={this.onToggle}>
+                This collection is not shown on the front page.
+                Only share the link with people you trust.
+            </Tooltip>
+        </p>;
+    }
+}
+
+function PreFilterCountDisplay({ filter: { description, count }, collection }: { filter: TMHDPreFilter, collection: TMHDCollection }) {
     return <Alert color="info">
         <b>Pre-Filter active: </b>
         <LaTeX>{description}</LaTeX> {
@@ -124,7 +145,7 @@ function PreFilterCountDisplay({ filter: { description, count }, collection }: {
     </Alert>
 }
 
-function TotalCountDisplay({ collection: { count } }: {collection: TMHDCollection}) {
+function TotalCountDisplay({ collection: { count } }: { collection: TMHDCollection }) {
     if (count === null) {
         if (!isProduction) {
             return <Alert color="warning">No collection count available. Run <code style={{ fontSize: ".75rem" }}>python manage.py update_count</code> to update it.</Alert>

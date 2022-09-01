@@ -2,6 +2,7 @@
     "displayName": "Functions on $\\mathbb{Z}/3\\mathbb{Z}$",
     "slug": "z3zFunctions",
     "flag_large_collection": false, 
+    "hidden": false,
     "description": "Functions from $\\mathbb{Z}/3\\mathbb{Z}$ onto itself. ",
     "url": "https://github.com/MathHubInfo/mhd#z3z-functions",
     "metadata": {

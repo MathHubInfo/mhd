@@ -60,7 +60,7 @@ class ExporterSerializer(serializers.ModelSerializer):
 class CollectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Collection
-        fields = ['displayName', 'slug', 'description', 'url', 'metadata', 'properties', 'exporters', 'preFilters', 'flag_large_collection', 'count', 'template']
+        fields = ['displayName', 'slug', 'hidden', 'description', 'url', 'metadata', 'properties', 'exporters', 'preFilters', 'flag_large_collection', 'count', 'template']
 
     properties = serializers.SerializerMethodField()
     def get_properties(self, obj: Collection) -> PropertySerializer:
@@ -82,6 +82,21 @@ class CollectionViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Collection.objects.all().order_by('displayName')
     serializer_class = CollectionSerializer
     lookup_field = 'slug'
+
+    def _filter_list(self, queryset):
+        return queryset.filter(hidden = False)
+
+    def list(self, request, *args, **kwargs):
+        queryset = self._filter_list(self.get_queryset())
+        queryset = self.filter_queryset(queryset)
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return response.Response(serializer.data)
 
 
 class CodecSerializer(serializers.Serializer):

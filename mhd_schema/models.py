@@ -33,6 +33,8 @@ class Collection(ModelWithMetadata):
     displayName: str = models.TextField(help_text="Name of this collection")
     slug: str = models.SlugField(
         help_text="Identifier of this collection", unique=True)
+    hidden: bool = models.BooleanField(
+        help_text="Hide the collection from the home page", default=False)
 
     description: str = models.TextField(
         help_text="A human-readable description of this collection")

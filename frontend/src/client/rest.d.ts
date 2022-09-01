@@ -3,6 +3,7 @@
 /** a MathDataHub Collection */
 export interface TMHDCollection {
     slug: string;
+    hidden: boolean;
     displayName: string;
     flag_large_collection: boolean;
     exporters: string[];
