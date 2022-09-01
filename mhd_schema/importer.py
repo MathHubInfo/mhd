@@ -41,6 +41,10 @@ class SchemaImporter(object):
                 raise SchemaValidationError(
                     'Key {0!r} is not a string. '.format(k))
 
+        if 'hidden' in data and not isinstance(data['hidden'], bool):
+            raise SchemaValidationError(
+                'Key {0!r} is not a boolean. '.format('hidden'))
+
         if not isinstance(data['properties'], list):
             raise SchemaValidationError(
                 'Key \'properties\' is not a list of properties. ')
@@ -146,6 +150,7 @@ class SchemaImporter(object):
 
         # read all the data from the existing data
         slug = self.data['slug']
+        hidden = self.data.get('hidden', False)
         displayName = self.data['displayName']
         description = self.data.get('description', None)
         url = self.data.get('url', None)
@@ -172,6 +177,7 @@ class SchemaImporter(object):
 
         # create or update the collection
         collection, created = Collection.objects.update_or_create(slug=slug, defaults={
+            'hidden': hidden,
             'displayName': displayName,
             'description': description,
             'url': url,

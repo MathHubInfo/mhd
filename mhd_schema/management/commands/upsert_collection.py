@@ -25,7 +25,7 @@ class Command(BaseCommand):
         parser.add_argument('--quiet', '-q', action='store_true',
                             help="Do not produce any output in case of success")
         parser.add_argument('--simulate', '-s', action='store_true',
-                    help="Simulate all database operations by wrapping them in a transaction and rolling it back at the end of the command. ")
+                            help="Simulate all database operations by wrapping them in a transaction and rolling it back at the end of the command. ")
 
     @with_simulate_arg
     def handle(self, *args: Any, **kwargs: Any) -> None:
