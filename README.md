@@ -319,6 +319,20 @@ python manage.py collection_view --sync --enable collection_slug
 **WARNING**: When views are not syncronized, it is possible for query results to give invalid results or break entirely. 
 In particular, when updating or amending a collection, it is recommended to first disable the view for the respective collection and re-enabling it once the update is complete.
 
+## Unlisted Collections
+
+It is possible for collections to be inside the system, but not listed on the front page.
+This can help to e.g. share collections before they are final.
+By default, every collection is listed.
+
+You can use either `Django Admin` or the following `manage.py` command to list and unlist a collection.
+
+```bash
+python manage.py collection_list --list collection_slug
+python manage.py collection_list --unlist collection_slug
+```
+
+
 ## Deployment
 
 ![Docker Image](https://github.com/MathHubInfo/mhd/actions/workflows/docker/badge.svg)
