@@ -32,6 +32,8 @@ class PolynomialAsSparseArrayCell extends React.Component<TPresenterProps<Polyno
         
         return chunkArray(value, 2).reverse().map(
             (a, i) => {
+                // TODO: This rendering should use MathML!
+
                 let factor = a[1].toString()
                 var exp = a[0]
 
