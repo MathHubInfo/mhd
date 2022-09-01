@@ -68,7 +68,7 @@ export default class ColumnEditor extends Component<ColumnEditorProps, ColumnEdi
 
     private resetToDefaults = () => {
         this.setState({
-            selected: this.props.collection.propertySlugs.slice(),
+            selected: this.props.collection.defaultPropertySlugs.slice(),
             order: "",
             applied: false,
         })

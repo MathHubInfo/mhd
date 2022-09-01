@@ -15,6 +15,9 @@ export interface ParsedMHDCollection extends TMHDCollection {
     /** the default pre-filter */
     defaultPreFilter?: TMHDPreFilter,
 
+    /* the slugs of all the default properties */
+    defaultPropertySlugs: string[],
+    
     /* the slugs of all properties */
     propertySlugs: string[],
 

@@ -33,6 +33,8 @@ export interface TMHDProperty {
     slug: string;
     displayName: string;
 
+    default: boolean;
+
     description: string;
     url: string | null;
 

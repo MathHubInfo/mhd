@@ -45,7 +45,7 @@ class PropertyAdmin(admin.ModelAdmin):
     collection_size.short_description = '# of Collections'
     collection_size.admin_order_field = 'collections'
 
-    list_display = ['displayName', 'slug', 'collection_size']
+    list_display = ['displayName', 'slug', 'default', 'collection_size']
     list_filter = ['collections']
     search_fields = ['displayName', 'slug']
 

@@ -91,10 +91,12 @@ export class MHDBackendClient {
             return p.slug
         })
 
+        const defaultPropertySlugs = propertySlugs.filter(s => propMap.get(s).default)
+
         const exporterInstances = collection.exporters.map(slug => this.exporter_manager.get(slug)).filter(x => x !== undefined)
 
         const defaultPreFilter = (collection.preFilters.length > 0) ? collection.preFilters[0] : undefined
-        return { propMap, nameMap, propertySlugs, exporterInstances, codecMap, columnMap, defaultPreFilter, ...collection }
+        return { propMap, nameMap, propertySlugs, defaultPropertySlugs, exporterInstances, codecMap, columnMap, defaultPreFilter, ...collection }
     }
 
     /** Fetches information about a set of collection items */

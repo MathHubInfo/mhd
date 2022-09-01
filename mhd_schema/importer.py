@@ -93,6 +93,10 @@ class SchemaImporter(object):
                 raise SchemaValidationError(
                     'Property {0!r}, Key {1} is not a string or undefined. '.format(slug, k))
 
+        if 'default' in data and not isinstance(data['default'], bool):
+                raise SchemaValidationError(
+                    'Property {0!r}, Key {1} is not a boolean. '.format(slug, 'default'))
+
         if 'metadata' in data and not isinstance(data['metadata'], dict):
             raise SchemaValidationError(
                 'Property {0!r}, Key \'metadata\' is not a dict. '.format(slug))
@@ -238,6 +242,7 @@ class SchemaImporter(object):
 
             {
                 'displayName': string,
+                'default': bool # optional
                 'slug': string,
                 'metadata': {} # any JSON, optional
                 'codec': string
@@ -259,6 +264,7 @@ class SchemaImporter(object):
 
         # read all the values
         slug = prop['slug']
+        default = prop.get('default', True)
         displayName = prop['displayName']
         metadata = prop.get('metadata', None)
         codec = prop['codec']
@@ -279,6 +285,7 @@ class SchemaImporter(object):
 
             p = prop_set.first()
             assert p is not None
+            p.default = default
             p.description = description
             p.url = url
             p.save()
@@ -287,7 +294,7 @@ class SchemaImporter(object):
 
         # Create the property unless it already exists
         created_prop: Property = Property.objects.create(
-            slug=slug, displayName=displayName, description=description, url=url, codec=codec, metadata=metadata)
+            slug=slug, displayName=displayName, default=default, description=description, url=url, codec=codec, metadata=metadata)
         created_prop.collections.add(collection)
         created_prop.save()
 

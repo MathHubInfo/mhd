@@ -21,6 +21,7 @@
         {
             "slug": "f0",
             "displayName": "f(0)",
+            "default": true,
             "codec": "StandardInt",
             "description": "Value at $f = 0$",
             "url": "https://mathhub.com/examples/?Z3ZFunction?f0",
@@ -31,6 +32,7 @@
         {
             "slug": "f1",
             "displayName": "f(1)",
+            "default": true,
             "codec": "StandardInt",
             "description": "Value at $f = 1$",
             "url": "https://mathhub.com/examples/?Z3ZFunction?f1",
@@ -41,6 +43,7 @@
         {
             "slug": "f2",
             "displayName": "f(2)",
+            "default": true,
             "codec": "StandardInt",
             "description": "Value at $f = 2$",
             "url": "https://mathhub.com/examples/?Z3ZFunction?f2",

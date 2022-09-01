@@ -15,6 +15,7 @@
         {
             "slug": "f0",
             "displayName": "f(0)",
+            "default": false,
             "codec": "StandardInt",
             "description": "Value at $f = 0$",
             "url": "https://mathhub.com/examples/?Z3ZFunction?f0",
@@ -25,6 +26,7 @@
         {
             "slug": "f1",
             "displayName": "f(1)",
+            "default": true,
             "codec": "StandardInt",
             "description": "Value at $f = 1$",
             "url": "https://mathhub.com/examples/?Z3ZFunction?f2",
@@ -35,6 +37,7 @@
         {
             "slug": "f2",
             "displayName": "f(2)",
+            "default": false,
             "description": "Value at $f = 2$",
             "url": "https://mathhub.com/examples/?Z3ZFunction?f2",
             "codec": "StandardInt",
@@ -44,6 +47,7 @@
         },
         {
             "slug": "invertible",
+            "default": true,
             "displayName": "Invertible",
             "codec": "StandardBool",
             "description": "",

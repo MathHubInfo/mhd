@@ -275,6 +275,8 @@ class Property(ModelWithMetadata):
     displayName: str = models.TextField(help_text="Display Name for this property")
     slug: str = models.SlugField(help_text="Identifier of this Collection")
 
+    default: bool = models.BooleanField(default=True, help_text="Show property by default in frontend interface")
+
     description: str = models.TextField(
         default="", help_text="A human-readable description of this property")
     url: Optional[str] = models.URLField(

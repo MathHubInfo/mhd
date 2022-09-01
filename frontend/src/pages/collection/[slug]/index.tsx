@@ -49,7 +49,7 @@ class MHDCollectionSearch extends React.Component<MHDCollectionSearchProps, MHDC
         const state = decodeState(search) ?? {
             filters: [],
             pre_filter: collection.defaultPreFilter,
-            columns: collection.propertySlugs.slice(),
+            columns: collection.defaultPropertySlugs.slice(),
             page: 0,
             per_page: 20,
             widths: undefined,
