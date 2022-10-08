@@ -21,8 +21,8 @@ export default function ProvenancePAGE({ collection: { displayName, description,
                             <a href={metadata.schemaTheoryURL}>Schema theory</a>
                         }
                     </p>
-                    <p>Authors: {metadata.authors || "N/A"}</p>
-                    <p>Size: {metadata.size || "N/A"}</p>
+                    <p>Authors: {metadata.authors ?? "N/A"}</p>
+                    <p>Size: {metadata.size ?? "N/A"}</p>
                     <ul>
                         {(metadata.references && metadata.references.length > 0) &&
                             metadata.references.map((r: any) =>

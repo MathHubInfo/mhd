@@ -7,17 +7,21 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons"
 
 
-export default class PropertyInfoButton extends React.Component<{prop: TMHDProperty}> {
+export default class PropertyInfoButton extends React.Component<{prop: TMHDProperty, large?: boolean}> {
     render() {
-        const { url, description } = this.props.prop
-        return <InfoButton href={url || undefined}>
+        const { large, prop: { url, description, metadata: _metadata } } = this.props
+        // TODO: Do something with the MMT URI here
+        // Do we want to embed it?
+        // const uri = _metadata?.uri
+        return <InfoButton href={url || undefined} large={large}>
             <LaTeX>{description || "No description provided"}</LaTeX>
         </InfoButton>
     }
 }
-class InfoButton extends React.Component<{href?: string, children: React.ReactNode}, {isOpen: boolean}> {
+class InfoButton extends React.Component<{href?: string, large?: boolean; children: React.ReactNode}, {isOpen: boolean, isMounted: boolean}> {
     state = {
         isOpen: false,
+        isMounted: false,
     }
 
     private toggleOpen = () => {
@@ -31,24 +35,19 @@ class InfoButton extends React.Component<{href?: string, children: React.ReactNo
     private buttonRef = React.createRef<HTMLAnchorElement>()
 
     componentDidMount() {
-        // HACK HACK HACK HACK HACK HACK HACK
-        // in order for the tooltip to show up, it needs to register an 'onHover' event
-        // to be able to do so, a reference to the underlying HTML element is needed. 
-        // The first time the render() is called, buttonRef.current will be null. 
-        // It will be populated immediatly after the element has been mounted on the page. 
-        // We force a re-render here to make sure that the tooltip-ref is not null. 
-        this.forceUpdate()
+        this.setState({ isMounted: true })
     }
 
     render() {
-        const { children, href } = this.props
-        const { isOpen } = this.state
+        const { children, href, large } = this.props
+        const { isOpen, isMounted } = this.state
 
         return <>
+            { large && " "}
             <a href={href || "#!" } target={href && "_blank"} rel="noopener noreferrer" ref={this.buttonRef} onClick={this.onClick}>
-                <FontAwesomeIcon icon={faQuestionCircle} transform="shrink-4 up-3" />
+                <FontAwesomeIcon icon={faQuestionCircle} transform={large ? undefined : "shrink-4 up-3" } />
             </a>
-            {this.buttonRef.current &&
+            {isMounted && this.buttonRef.current &&
                 <Tooltip placement="right" isOpen={isOpen} target={this.buttonRef.current} toggle={this.toggleOpen}>
                      {children}
                 </Tooltip>   

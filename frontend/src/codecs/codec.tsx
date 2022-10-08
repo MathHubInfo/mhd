@@ -106,7 +106,7 @@ export default abstract class Codec<ElementType = any, FilterType = string> {
     makeReactTableColumn(property: TMHDProperty): TableColumn<TMHDItem<any>> {
         return {
             key: property.slug,
-            Header: () => <>{property.displayName}<PropertyInfoButton prop={property}/></>,
+            Header: () => <>{property.displayName}<PropertyInfoButton large prop={property}/></>,
             Cell: ({ data }: CellComponentProps<TMHDItem<any>>) => <RenderCodec context={CellRenderContext.Table} value={data[property.slug]} codec={this} />,
         }
     }
