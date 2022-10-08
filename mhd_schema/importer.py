@@ -1,4 +1,5 @@
 from __future__ import annotations
+from curses import meta
 
 import os
 
@@ -281,13 +282,15 @@ class SchemaImporter(object):
                     'Property {0:s} already exists'.format(slug))
 
             self.logger.info(
-                'Skipping property {0!r} (already exists). '.format(slug))
+                'Updating property {0!r} (already exists). '.format(slug))
 
             p = prop_set.first()
             assert p is not None
+            p.displayName = displayName
             p.default = default
             p.description = description
             p.url = url
+            p.metadata = metadata
             p.save()
 
             return p, False
