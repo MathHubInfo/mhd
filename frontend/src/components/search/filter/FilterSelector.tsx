@@ -5,7 +5,7 @@ import type { TValidationResult } from "../../../codecs/codec"
 import type Codec from "../../../codecs/codec"
 import type { TMHDProperty } from "../../../client/rest"
 import styles from "./FilterSelector.module.css"
-import PropertyInfoButton from "../../common/PropertyInfoButton"
+import PropertyHover from "../../common/PropertyInfoButton"
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faPlus, faMinus, faCheck, faPen } from "@fortawesome/free-solid-svg-icons"
@@ -118,7 +118,7 @@ type TFilterAction = {
                                     <li key={p.slug}
                                         onClick={() => this.handleFilterAction({ action: "add", slug: p.slug })}>
                                         <FontAwesomeIcon icon={faPlus} listItem />
-                                        {p.displayName} {<PropertyInfoButton prop={p} />}
+                                        {p.displayName} {<PropertyHover prop={p} />}
                                     </li>
                             )}
                         </ul>

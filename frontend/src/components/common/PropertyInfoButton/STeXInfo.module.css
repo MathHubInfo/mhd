@@ -1,0 +1,7 @@
+.Tooltip :global(.tooltip-inner) {
+    min-width: 520px;
+}
+
+.Tooltip hr {
+    font-size: 10px; line-height: 1.2;
+}

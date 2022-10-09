@@ -2,7 +2,7 @@ import React from "react"
 import type { TMHDProperty, TMHDItem } from "../client/rest"
 import { Badge } from "reactstrap"
 import type { TableColumn, CellComponentProps } from "../components/wrappers/table"
-import PropertyInfoButton from "../components/common/PropertyInfoButton"
+import PropertyHover from "../components/common/PropertyInfoButton"
 import { isProduction } from "../controller"
 import { CopyButton } from "../components/wrappers/share"
 
@@ -106,7 +106,7 @@ export default abstract class Codec<ElementType = any, FilterType = string> {
     makeReactTableColumn(property: TMHDProperty): TableColumn<TMHDItem<any>> {
         return {
             key: property.slug,
-            Header: () => <>{property.displayName}<PropertyInfoButton large prop={property}/></>,
+            Header: () => <>{property.displayName}<PropertyHover large prop={property}/></>,
             Cell: ({ data }: CellComponentProps<TMHDItem<any>>) => <RenderCodec context={CellRenderContext.Table} value={data[property.slug]} codec={this} />,
         }
     }

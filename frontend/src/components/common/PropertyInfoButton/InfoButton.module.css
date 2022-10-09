@@ -1,0 +1,14 @@
+.InfoButton {
+    z-index: 1000;
+}
+.Tooltip :global(.tooltip-inner) {
+    max-width: 100%;
+
+    color: #000000;
+    background: #FFFFFF;
+    border: 1px solid black;
+}
+
+.Tooltip :global(.tooltip.show) {
+    opacity: 1;
+}

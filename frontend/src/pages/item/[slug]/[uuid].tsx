@@ -6,7 +6,7 @@ import { Alert, Col, Container, Row, Table } from "reactstrap"
 import { MHDBackendClient } from "../../../client"
 import type { TMHDCollection, TMHDItem } from "../../../client/rest"
 import MHDMain from "../../../components/common/MHDMain"
-import PropertyInfoButton from "../../../components/common/PropertyInfoButton"
+import PropertyHover from "../../../components/common/PropertyInfoButton"
 import TemplateManager from "../../../templates"
 import renderHTMLAsReact from "../../../templates/html"
 import { isProduction, Item } from "../../../controller"
@@ -124,7 +124,7 @@ function Info({ property, collection }: { collection: ParsedMHDCollection, prope
     const prop = collection.propMap.get(property)
     if (!prop) return <Alert color="warning">Unknown property <code style={{ fontSize: ".75rem" }}>{property}</code> on collection <code style={{ fontSize: ".75rem" }}>{collection.slug}</code>.</Alert>
 
-    return <PropertyInfoButton prop={prop} />
+    return <PropertyHover prop={prop} />
 }
 
 interface ManagerContext extends TemplateContext<any> {
