@@ -5,6 +5,15 @@ import ExporterManager from "../exporters/manager"
 import type { MHDFilter, ParsedMHDCollection } from "./derived"
 import type { TDRFPagedResponse, TMHDCollection, TMHDItem, TMHDPreFilter, TMHDProperty } from "./rest"
 
+/** TCollectionPredicate is a predicate on a collection */
+export type TCollectionPredicate = {
+    /** the set of applied filters */
+    filters: MHDFilter[];
+
+    /** selected pre-filter */
+    pre_filter?: TMHDPreFilter;
+}
+
 export class MHDBackendClient {
     /**
      * @param base_url the Base URL for all API requests
@@ -100,10 +109,10 @@ export class MHDBackendClient {
     }
 
     /** Fetches information about a set of collection items */
-    async fetchItems<T extends {}>(collection: ParsedMHDCollection, properties: string[], pre_filter: TMHDPreFilter | undefined, filters: MHDFilter[], page_number = 1, per_page = 100, order: string): Promise<TDRFPagedResponse<TMHDItem<T>>> {
+    async fetchItems<T extends {}>(collection: ParsedMHDCollection, properties: string[], query: TCollectionPredicate, order: string, page_number = 1, per_page = 100): Promise<TDRFPagedResponse<TMHDItem<T>>> {
         // Build the filter params
         const params = {
-            filter: MHDBackendClient.buildFilter(pre_filter, filters),
+            filter: MHDBackendClient.buildQuery(query),
             properties: properties.join(","),
             page: page_number.toString(),
             per_page: per_page.toString(),
@@ -115,11 +124,11 @@ export class MHDBackendClient {
     }
 
     /** hashes the parameters to the fetchItems function */
-    static hashFetchItems(collection: ParsedMHDCollection, properties: string[], pre_filter: TMHDPreFilter | undefined, filters: MHDFilter[], order: string, page_number = 1, per_page = 100): string {
+    static hashFetchItems(collection: ParsedMHDCollection, properties: string[], query: TCollectionPredicate, order: string, page_number = 1, per_page = 100): string {
         const hash = {
             collection: collection.slug,
-            pre_filter: pre_filter,
-            filters: filters.filter(f => f.value !== null),
+            pre_filter: query.pre_filter,
+            filters: query.filters.filter(f => f.value !== null),
             properties: properties,
             order: order,
             page_number: page_number,
@@ -129,10 +138,10 @@ export class MHDBackendClient {
     }
 
     /** Fetches the number of items in a collection */
-    async fetchItemCount(collection: ParsedMHDCollection, pre_filter: TMHDPreFilter | undefined, filters: MHDFilter[]): Promise<number> {
+    async fetchItemCount(collection: ParsedMHDCollection, query: TCollectionPredicate): Promise<number> {
         // Build the filter params
         const params = {
-            filter: MHDBackendClient.buildFilter(pre_filter, filters),
+            filter: MHDBackendClient.buildQuery(query),
         }
 
         // fetch the results
@@ -141,19 +150,19 @@ export class MHDBackendClient {
     }
 
     /** hashes the parameters to the fetchItemCount function */
-    static hashFetchItemCount(collection: ParsedMHDCollection, pre_filter: TMHDPreFilter | undefined, filters: MHDFilter[]): string {
+    static hashFetchItemCount(collection: ParsedMHDCollection, query: TCollectionPredicate): string {
         const hash = {
             collection: collection.slug,
-            pre_filter: pre_filter,
-            filters: filters.filter(f => f.value !== null),
+            pre_filter: query.pre_filter,
+            filters: query.filters.filter(f => f.value !== null),
         }
         return JSON.stringify(hash)
     }
 
     /** give a set of filters, build a filter URL */
-    static buildFilter(pre_filter: TMHDPreFilter | undefined, filters: MHDFilter[]): string {
-        const filterAry = filters.filter(f => f.value !== null).map(f => `(${f.slug}${f.value})`)
-        return (pre_filter ? [`(${pre_filter.condition})`, ...filterAry] : filterAry).join("&&")
+    static buildQuery(query: TCollectionPredicate): string {
+        const filterAry = query.filters.filter(f => f.value !== null).map(f => `(${f.slug}${f.value})`)
+        return (query.pre_filter ? [`(${query.pre_filter.condition})`, ...filterAry] : filterAry).join("&&")
     }
 
     /** builds a sort order string to pass to the backend */

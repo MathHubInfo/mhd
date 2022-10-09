@@ -11,30 +11,25 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faCommentDots } from "@fortawesome/free-regular-svg-icons"
 import { CollectionProvenance, isProduction } from "../../../controller"
 import { ShareThisPage } from "../../wrappers/share"
+import type { TCollectionPredicate } from "../../../client"
 interface FilterEditorProps {
 
     /** the current collection (if any) */
     collection: ParsedMHDCollection;
 
-    /** the filters currently set */
-    filters: MHDFilter[];
-
-    /** the user-selected pre-filter (if any) */
-    pre_filter?: TMHDPreFilter
+    /** the current query */
+    query: TCollectionPredicate,
 
     /** callback when filters are applied  */
-    onFilterApply: (filters: MHDFilter[], pre_filter?: TMHDPreFilter) => void;
+    onQueryApply: (query: TCollectionPredicate) => void;
 
     /** timeout under which to not show the loading indicator */
     results_loading_delay: number;
 }
 
 interface FilterEditorStateProps {
-    /** the currently selected filters (maybe not applied yet) */
-    filters: MHDFilter[],
-
-    /** pre_filter selected by the user  */
-    pre_filter?: TMHDPreFilter,
+    /** the current query by the user */
+    query: TCollectionPredicate;
 
     /** have the current filters been applied? */
     applied: boolean;
@@ -47,19 +42,19 @@ interface FilterEditorStateProps {
 export default class FilterEditor extends React.Component<FilterEditorProps, FilterEditorStateProps> {
 
     state: FilterEditorStateProps = {
-        filters: this.props.filters,
-        pre_filter: this.props.pre_filter,
+        query: this.props.query,
         applied: false,
     }
 
     /** stores a new list of filters in state */
     setFilters = async (filters: MHDFilter[]) => {
-        this.setState({ filters: filters, applied: false })
+        const { query: { pre_filter } } = this.state
+        this.setState({ query: { filters, pre_filter }, applied: false })
     }
 
     /* Applies the filters and passes them to the parent */
     applyFilters = () => {
-        this.props.onFilterApply(this.state.filters, this.state.pre_filter)
+        this.props.onQueryApply(this.props.query)
         this.setState({ applied: true })
     }
 
@@ -69,7 +64,8 @@ export default class FilterEditor extends React.Component<FilterEditorProps, Fil
 
     render() {
         const { collection, results_loading_delay } = this.props
-        const { applied, filters, pre_filter } = this.state
+        const { applied, query } = this.state
+        const { pre_filter } = query
 
         const leftHead = <>
             {collection.hidden && <HiddenBadge />}
@@ -81,8 +77,7 @@ export default class FilterEditor extends React.Component<FilterEditorProps, Fil
             <p>
                 <CounterDisplay
                     collection={collection}
-                    pre_filter={pre_filter}
-                    filters={filters}
+                    query={query}
                     results_loading_delay={results_loading_delay}
                 />
             </p>
@@ -106,7 +101,7 @@ export default class FilterEditor extends React.Component<FilterEditorProps, Fil
 
         const rightHead = <Row>
             <FilterSelector
-                initialFilters={this.props.filters}
+                initialFilters={this.props.query.filters}
                 collection={this.props.collection}
                 onFilterUpdate={this.setFilters} />
         </Row>

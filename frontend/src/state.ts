@@ -1,14 +1,11 @@
 import type { TableState } from "./components/wrappers/table"
 import type { MHDFilter } from "./client/derived"
-import type { TMHDPreFilter } from "./client/rest"
+import type { TCollectionPredicate } from "./client"
 
 // TODO: pre_filter in the url
 export interface PageState extends TableState {
-    /** the set of applied filters */
-    filters: MHDFilter[];
-
-    /** selected pre-filter */
-    pre_filter?: TMHDPreFilter;
+    /** the query */
+    query: TCollectionPredicate;
 
     /** the set of selected columns */
     columns: string[];
@@ -34,6 +31,9 @@ function stringToValue(value: string): any {
  * (Potentially lossy) encoding of state into the URL
  */
 export function encodeState(state: PageState) {
+    const copy = { ...state } as any
+    copy.filters = copy.query.filters
+    delete copy["query"]
     return Object.entries({ ...state, widths: undefined }).map(
         ([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(valueToString(v))}`
     ).join("&")
@@ -66,6 +66,12 @@ export function decodeState(state: string): PageState | undefined {
         return
     }
 
+    // lift out the query parameters
+    sobj["query"] = {
+        filters: sobj["filters"],
+    }
+    delete sobj["filters"]
+
     // for backward compatibility, ensure that there is an order property!
     sobj["order"] = sobj["order"] ?? ""
 
@@ -76,16 +82,23 @@ export function decodeState(state: string): PageState | undefined {
 }
 
 function validateState(candidate: Record<string, any>): candidate is PageState {
-    const { per_page, page, filters, columns, widths, order, ...extra } = candidate
+    const { per_page, page, query, columns, widths, order, ...extra } = candidate
     if(Object.keys(extra).length !== 0) return false // extra properties
 
     if (!isInteger(per_page)) return false
     if (!isInteger(page)) return false
-    if (!Array.isArray(filters) || !filters.every(isFilter)) return false
     if (!Array.isArray(columns) || !columns.every(isString)) return false
     if (!isOrder(order)) return false
 
-    return widths === undefined || (Array.isArray(widths) && widths.every(isNonNegative))
+    if (!(widths === undefined || (Array.isArray(widths) && widths.every(isNonNegative)))) return false
+
+    // check that the query object exists and has a "filters" property
+    if (typeof query !== "object") return false
+    const { filters, ...extraquery } = query
+    if(Object.keys(extraquery).length !== 0) return false // extra properties
+    if (!Array.isArray(filters) || !query.filters.every(isFilter)) return false
+
+    return true
 }
 
 function isBoolean(candidate: any): candidate is boolean {

@@ -1,18 +1,16 @@
 import React from "react"
 
+import type { TCollectionPredicate } from "../../../client"
 import { MHDBackendClient } from "../../../client"
-import type { ParsedMHDCollection, MHDFilter } from "../../../client/derived"
-import type { TMHDPreFilter } from "../../../client/rest"
+import type { ParsedMHDCollection } from "../../../client/derived"
 import { isProduction } from "../../../controller"
 
 interface CounterDisplayProps {
     /** the current collection (if any) */
     collection: ParsedMHDCollection;
 
-    pre_filter?: TMHDPreFilter;
-
-    /** current filters */
-    filters: MHDFilter[];
+    /** the query being run */
+    query: TCollectionPredicate;
 
     /** timeout under which to not show the loading indicator */
     results_loading_delay: number;
@@ -64,7 +62,7 @@ export default class CounterDisplay extends React.Component<CounterDisplayProps,
         // fallback to 'NaN' when an error occurs, and log the error during development
         let count = NaN
         try {
-            count = await MHDBackendClient.getInstance().fetchItemCount(this.props.collection, this.props.pre_filter, this.props.filters)
+            count = await MHDBackendClient.getInstance().fetchItemCount(this.props.collection, this.props.query)
         } catch (e) {
             if (!isProduction) console.error(e)
         }
@@ -89,12 +87,12 @@ export default class CounterDisplay extends React.Component<CounterDisplayProps,
 
     componentDidUpdate(prevProps: CounterDisplayProps, prevState: CounterDisplayState) {
         // compute old hash
-        const { filters: prevFilter, pre_filter: prevPreFilter, collection: prevCollection } = prevProps
-        const oldHash = MHDBackendClient.hashFetchItemCount(prevCollection, prevPreFilter, prevFilter)
+        const { query: prevQuery, collection: prevCollection } = prevProps
+        const oldHash = MHDBackendClient.hashFetchItemCount(prevCollection, prevQuery)
 
         // compute new hash
-        const { filters: newFilter, pre_filter: newPreFilter, collection: newCollection } = this.props
-        const newHash = MHDBackendClient.hashFetchItemCount(newCollection, newPreFilter, newFilter)
+        const { query: newQuery, collection: newCollection } = this.props
+        const newHash = MHDBackendClient.hashFetchItemCount(newCollection, newQuery)
 
         // if we have different hashes, we need to re-count
         if (oldHash !== newHash) {

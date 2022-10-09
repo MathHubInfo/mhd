@@ -2,22 +2,22 @@ import { faAngleDown, faAngleUp } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import * as React from "react"
 import { Button, Card, CardText, Col, Collapse, Row } from "reactstrap"
+import type { TCollectionPredicate } from "../../../client"
 import { MHDBackendClient } from "../../../client"
-import type { MHDFilter, ParsedMHDCollection } from "../../../client/derived"
-import type { TMHDCollection, TMHDPreFilter } from "../../../client/rest"
+import type { ParsedMHDCollection } from "../../../client/derived"
+import type { TMHDCollection } from "../../../client/rest"
 import type { Exporter } from "../../../exporters"
 
 interface ExportersProps {
     collection: ParsedMHDCollection,
-    pre_filter: TMHDPreFilter,
+    query: TCollectionPredicate,
     order: string,
-    filters: MHDFilter[],
 }
 
-export default function Exporters<T>({ collection, filters, pre_filter, order }: ExportersProps) {
+export default function Exporters<T>({ collection, query, order }: ExportersProps) {
 
     const keyFor = (exporter: Exporter<T>) => {
-        return exporter.hashExport(collection.slug, filters, pre_filter)
+        return exporter.hashExport(collection.slug, query)
     }
 
     const [expanded, setExpanded] = React.useState(false)
@@ -38,8 +38,7 @@ export default function Exporters<T>({ collection, filters, pre_filter, order }:
                                 key={keyFor(exporter)}
                                 exporter={exporter}
                                 collection={collection}
-                                pre_filter={pre_filter}
-                                filters={filters}
+                                query={query}
                                 order={order}
                             />
                         })
@@ -53,9 +52,8 @@ export default function Exporters<T>({ collection, filters, pre_filter, order }:
 interface ExporterButtonProps<T> {
     exporter: Exporter<T>
     collection: TMHDCollection,
-    pre_filter: TMHDPreFilter,
+    query: TCollectionPredicate,
     order: string,
-    filters: MHDFilter[]
 }
 interface ExporterButtonState {
     started: boolean;
@@ -79,13 +77,13 @@ export class ExporterButton<T> extends React.Component<ExporterButtonProps<T>, E
             progress: 0,
             finished: false,
         }, async () => {
-            const { collection: { slug }, filters, pre_filter, order, exporter } = this.props
+            const { collection: { slug }, query, order, exporter } = this.props
             const client = MHDBackendClient.getInstance()
             
             let blob: Blob
             let error: any
             try {
-                blob = await exporter.export(client, slug, filters, pre_filter, order, this.updateProgress,)          
+                blob = await exporter.export(client, slug, query, order, this.updateProgress,)          
             } catch(e) {
                 error = e
             }

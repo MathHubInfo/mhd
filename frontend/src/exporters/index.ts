@@ -1,6 +1,6 @@
-import type { MHDBackendClient } from "../client"
-import type { MHDFilter, ParsedMHDCollection } from "../client/derived"
-import type { TMHDItem, TMHDPreFilter } from "../client/rest"
+import type { MHDBackendClient, TCollectionPredicate } from "../client"
+import type { ParsedMHDCollection } from "../client/derived"
+import type { TMHDItem } from "../client/rest"
 
 export abstract class Exporter<T> {
     abstract readonly slug: string
@@ -8,12 +8,12 @@ export abstract class Exporter<T> {
     abstract readonly defaultExtension: string
 
     /** hashExport hashes parameter for an export */
-    hashExport(slug: string, filters: MHDFilter[], pre_filter: TMHDPreFilter): string {
+    hashExport(slug: string, query: TCollectionPredicate): string {
         const hash = {
             exporter: this.slug,
             slug: slug,
-            filters: filters,
-            pre_filter: pre_filter,
+            filters: query.filters,
+            pre_filter: query.pre_filter,
         }
         return JSON.stringify(hash)
     }
@@ -21,7 +21,7 @@ export abstract class Exporter<T> {
     private running = false
 
     /** exports the given collection into a blob */
-    async export(client: MHDBackendClient, slug: string, filters: MHDFilter[], pre_filter: TMHDPreFilter, order: string, onStep: (progress: number) => boolean): Promise<Blob> {
+    async export(client: MHDBackendClient, slug: string, query: TCollectionPredicate, order: string, onStep: (progress: number) => boolean): Promise<Blob> {
         if (this.running) throw new Error("Exporter already running")
         this.running = true
 
@@ -30,7 +30,7 @@ export abstract class Exporter<T> {
 
         // compute the total number of items
         const per_page = 100
-        const total = await client.fetchItemCount(collection, pre_filter, filters)
+        const total = await client.fetchItemCount(collection, query)
         const total_pages = Math.ceil(total / per_page)
 
         // start the exporter
@@ -46,7 +46,7 @@ export abstract class Exporter<T> {
                     throw new Error("User asked to cancel")
                 }
     
-                const page = await client.fetchItems<T>(collection, collection.propertySlugs, pre_filter, filters, index, per_page, order)
+                const page = await client.fetchItems<T>(collection, collection.propertySlugs, query, order, index, per_page)
                 this.add(page.results, index)
                 
                 // if we have more pages, go to the next page

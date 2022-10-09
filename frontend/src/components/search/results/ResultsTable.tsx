@@ -1,7 +1,8 @@
 import React, { Component } from "react"
+import type { TCollectionPredicate } from "../../../client"
 import { MHDBackendClient } from "../../../client"
-import type { MHDFilter, ParsedMHDCollection } from "../../../client/derived"
-import type { TDRFPagedResponse, TMHDItem, TMHDPreFilter } from "../../../client/rest"
+import type { ParsedMHDCollection } from "../../../client/derived"
+import type { TDRFPagedResponse, TMHDItem } from "../../../client/rest"
 import { Row, Col, Spinner } from "reactstrap"
 import Link from "next/link"
 import type { TableColumn, TableState } from "../../wrappers/table"
@@ -14,14 +15,11 @@ interface ResultsTableProps extends TableState {
     /** the current collection */
     collection: ParsedMHDCollection;
 
-    /** the current filters */
-    filters: MHDFilter[];
+    /** query for the query */
+    query: TCollectionPredicate;
 
     /** order of columns to search */
     order: string;
-
-    /** pre-filter */
-    pre_filter?: TMHDPreFilter;
 
     /** the selected columns */
     columns: string[];
@@ -96,12 +94,12 @@ export default class ResultsTable extends Component<ResultsTableProps, ResultsTa
             })
         }, this.props.results_loading_delay)
 
-        const { collection, columns, pre_filter, filters, order, page, per_page } = this.props
+        const { collection, columns, query, order, page, per_page } = this.props
 
         // fetch the results with appropriate errors
         let results: TDRFPagedResponse<TMHDItem<{}>> = { count: 0, next: null, previous: null, num_pages: -1, results: [] }
         try {
-            results = await MHDBackendClient.getInstance().fetchItems(collection, columns, pre_filter, filters, page + 1, per_page, order)
+            results = await MHDBackendClient.getInstance().fetchItems(collection, columns, query, order, page + 1, per_page)
         } catch (e) {
             if (!isProduction) console.error(e)
         }
@@ -131,12 +129,12 @@ export default class ResultsTable extends Component<ResultsTableProps, ResultsTa
     }
 
     /** computes a hash of the properties that influence data fetching */
-    private static computeDataUpdateHash({ filters, pre_filter, collection, columns, order, page, per_page }: ResultsTableProps): string {
-        return MHDBackendClient.hashFetchItems(collection, columns, pre_filter, filters, order, page, per_page)
+    private static computeDataUpdateHash({ query, collection, columns, order, page, per_page }: ResultsTableProps): string {
+        return MHDBackendClient.hashFetchItems(collection, columns, query, order, page, per_page)
     }
 
-    private static computeResetHash({ collection, filters, pre_filter, order }: ResultsTableProps): string {
-        return MHDBackendClient.hashFetchItems(collection, [], pre_filter, filters, order, 1, 1)
+    private static computeResetHash({ collection, query, order }: ResultsTableProps): string {
+        return MHDBackendClient.hashFetchItems(collection, [], query, order, 1, 1)
     }
     
     componentDidUpdate(prevProps: ResultsTableProps, prevState: ResultsTableState) {

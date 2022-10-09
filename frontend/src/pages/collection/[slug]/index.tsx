@@ -3,9 +3,10 @@ import type { NextRouter } from "next/router"
 import { withRouter } from "next/router"
 import React from "react"
 import { Alert, Container } from "reactstrap"
+import type { TCollectionPredicate } from "../../../client"
 import { MHDBackendClient, ResponseError } from "../../../client"
-import type { MHDFilter, ParsedMHDCollection } from "../../../client/derived"
-import type { TMHDCollection, TMHDPreFilter } from "../../../client/rest"
+import type { ParsedMHDCollection } from "../../../client/derived"
+import type { TMHDCollection } from "../../../client/rest"
 import ColumnEditor from "../../../components/search/columns/ColumnEditor"
 import FilterEditor from "../../../components/search/filter"
 import ResultsTable from "../../../components/search/results/ResultsTable"
@@ -47,8 +48,10 @@ class MHDCollectionSearch extends React.Component<MHDCollectionSearchProps, MHDC
         }
 
         const state = decodeState(search) ?? {
-            filters: [],
-            pre_filter: collection.defaultPreFilter,
+            query: {
+                filters: [],
+                pre_filter: collection.defaultPreFilter,
+            },
             columns: collection.defaultPropertySlugs.slice(),
             page: 0,
             per_page: 20,
@@ -65,8 +68,8 @@ class MHDCollectionSearch extends React.Component<MHDCollectionSearchProps, MHDC
     }
 
     /** called when new filters are set in the filter editor */
-    private setFilters = (filters: MHDFilter[], pre_filter?: TMHDPreFilter) => {
-        this.setState({ filters, pre_filter })
+    private setQuery = (query: TCollectionPredicate) => {
+        this.setState({ query: { ...query } })
     }
 
     /** called when new columns are set in the column editor */
@@ -91,7 +94,7 @@ class MHDCollectionSearch extends React.Component<MHDCollectionSearchProps, MHDC
     }
 
     render() {
-        const { filters, pre_filter, columns, page, per_page, widths, collection, order } = this.state
+        const { query, columns, page, per_page, widths, collection, order } = this.state
         const { results_loading_delay } = this.props
 
         return (
@@ -99,15 +102,14 @@ class MHDCollectionSearch extends React.Component<MHDCollectionSearchProps, MHDC
                 {collection.flag_large_collection && <Alert color="warning">This collection is very large and queries might be slow. </Alert>}
                 <FilterEditor
                     collection={collection}
-                    filters={filters}
-                    pre_filter={pre_filter}
-                    onFilterApply={this.setFilters}
+                    query={query}
+                    onQueryApply={this.setQuery}
                     results_loading_delay={results_loading_delay}
                 />
                 <section>
                     <Container>
                         {
-                            (filters !== null) && 
+                            (query.filters !== null) && 
                             <ColumnEditor
                                 collection={collection}
                                 columns={columns}
@@ -116,20 +118,18 @@ class MHDCollectionSearch extends React.Component<MHDCollectionSearchProps, MHDC
                             />
                         }
                         {
-                            (filters !== null) && 
+                            (query.filters !== null) && 
                             <Exporters
                                 collection={collection}
-                                filters={filters}
-                                pre_filter={pre_filter}
+                                query={query}
                                 order={order}
                             />
                         }
                         {
-                            (filters !== null) && (columns !== null) &&
+                            (query.filters !== null) && (columns !== null) &&
                                 <ResultsTable
                                     collection={collection}
-                                    filters={filters}
-                                    pre_filter={pre_filter}
+                                    query={query}
                                     columns={columns}
                                     order={order}
                                     page={page}
