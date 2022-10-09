@@ -10,6 +10,8 @@ import Table from "../../wrappers/table"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons"
 import { isProduction, Item } from "../../../controller"
+import { PropertyHeaderContext } from "./PropertyHeader"
+import { CollectionExporter } from "../../../exporters"
 
 interface ResultsTableProps extends TableState {
     /** the current collection */
@@ -166,24 +168,27 @@ export default class ResultsTable extends Component<ResultsTableProps, ResultsTa
 
     render() {
         const { total_pages, columns, data, loading } = this.state
+        const { collection, query, order } = this.props
 
         return (
-            <Row>
-                <Col>
-                    {!loading && <Table
-                        total_pages={total_pages}
-                        per_page_selection={[10, 25, 50, 100]}
-                        columns={columns}
-                        data={data}
-                        onStateChange={this.handleTableStateUpdate}
-                        
-                        page={this.props.page}
-                        per_page={this.props.per_page}
-                        widths={this.props.widths}
-                    />}
-                    {loading && <Spinner color="primary" />}
-                </Col>
-            </Row>
+            <PropertyHeaderContext.Provider value={{ collection, query, order }}>
+                <Row>
+                    <Col>
+                        {!loading && <Table
+                            total_pages={total_pages}
+                            per_page_selection={[10, 25, 50, 100]}
+                            columns={columns}
+                            data={data}
+                            onStateChange={this.handleTableStateUpdate}
+                            
+                            page={this.props.page}
+                            per_page={this.props.per_page}
+                            widths={this.props.widths}
+                        />}
+                        {loading && <Spinner color="primary" />}
+                    </Col>
+                </Row>
+            </PropertyHeaderContext.Provider>
         )
     }
 }

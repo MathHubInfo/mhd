@@ -1,8 +1,8 @@
-import { Exporter } from "."
+import { CollectionExporter } from "."
 import type { ParsedMHDCollection } from "../client/derived"
 import type { TMHDItem } from "../client/rest"
 
-export class JSONExporter<T> extends Exporter<T> {
+export class JSONExporter<T> extends CollectionExporter<T> {
     readonly slug = "json"
     readonly displayName = "JSON"
     readonly defaultExtension = "json"

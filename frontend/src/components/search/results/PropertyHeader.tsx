@@ -1,69 +1,61 @@
-import { faAngleDown, faAngleUp } from "@fortawesome/free-solid-svg-icons"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import * as React from "react"
-import { Button, Card, CardText, Col, Collapse, Row } from "reactstrap"
-import type { TCollectionPredicate } from "../../../client"
-import { MHDBackendClient } from "../../../client"
-import type { ParsedMHDCollection } from "../../../client/derived"
-import type { TMHDCollection } from "../../../client/rest"
-import type { CollectionExporter } from "../../../exporters"
+import { Button } from "reactstrap"
+import { MHDBackendClient, TCollectionPredicate } from "../../../client"
+import type { TMHDCollection, TMHDProperty } from "../../../client/rest"
+import CodecManager from "../../../codecs"
+import type { CodecExporter } from "../../../exporters"
+import PropertyHover from "../../common/PropertyInfoButton"
 
-interface ExportersProps {
-    collection: ParsedMHDCollection,
-    query: TCollectionPredicate,
-    order: string,
+type PropertyHeaderContextual = {
+    collection: TMHDCollection;
+    query: TCollectionPredicate;
+    order: string;
+}
+type PropertyHeaderProps = {
+    property: TMHDProperty;
 }
 
-export default function Exporters<T>({ collection, query, order }: ExportersProps) {
+export const PropertyHeaderContext = React.createContext<PropertyHeaderContextual>(undefined!);
 
-    const keyFor = (exporter: CollectionExporter<T>) => {
-        return exporter.hashExport(collection.slug, query)
+export default class PropertyHeader extends React.Component<PropertyHeaderProps> {
+    render() {
+        const { property } = this.props
+        const { exporters } = CodecManager.getInstance().get(property.codec)
+        return <PropertyHeaderContext.Consumer>{
+            ({ collection, query, order }) => <>
+                {property.displayName}
+                
+                <PropertyHover large prop={property}/>
+                    {exporters.map(e =>
+                    <PropertyExportButton 
+                        key={e.slug}
+
+                        exporter={e}
+                        collection={collection}
+                        property={property}
+
+                        query={query}
+                        order={order}
+                    />
+                )}
+            </>
+        }</PropertyHeaderContext.Consumer>
     }
-
-    const [expanded, setExpanded] = React.useState(false)
-    
-    if(collection.exporterInstances.length === 0) return null
-
-    return <Row>
-        <Col>
-            <Button color="link" onClick={() => setExpanded(!expanded)}>
-                <FontAwesomeIcon icon={expanded ? faAngleUp : faAngleDown} />
-                <span>Exports</span>
-            </Button>
-            <Collapse isOpen={expanded}>
-                <Card body>
-                    <CardText tag="div">{
-                        collection.exporterInstances.map(exporter => {
-                            return <ExporterButton
-                                key={keyFor(exporter)}
-                                exporter={exporter}
-                                collection={collection}
-                                query={query}
-                                order={order}
-                            />
-                        })
-                    }</CardText>
-                </Card>
-            </Collapse>  
-        </Col>
-    </Row>
 }
 
-interface ExporterButtonProps<T> {
-    exporter: CollectionExporter<T>
-    collection: TMHDCollection,
-    query: TCollectionPredicate,
-    order: string,
+type PropertyExportButtonProps<T> = PropertyHeaderContextual & PropertyHeaderProps & {
+    exporter: CodecExporter<T>
 }
-interface ExporterButtonState {
+interface PropertyExportButtonState {
     started: boolean;
     progress: number;
     finished: boolean;
     error?: any;
 }
 
-export class ExporterButton<T> extends React.Component<ExporterButtonProps<T>, ExporterButtonState> {
-    state: ExporterButtonState = {
+
+class PropertyExportButton<T> extends React.Component<PropertyExportButtonProps<T>, PropertyExportButtonState> {
+    state: PropertyExportButtonState = {
         started: false,
         progress: 0,
         finished: false,
@@ -77,13 +69,13 @@ export class ExporterButton<T> extends React.Component<ExporterButtonProps<T>, E
             progress: 0,
             finished: false,
         }, async () => {
-            const { collection: { slug }, query, order, exporter } = this.props
+            const { collection: { slug }, query, property, order, exporter } = this.props
             const client = MHDBackendClient.getInstance()
             
             let blob: Blob
             let error: any
             try {
-                blob = await exporter.export(client, slug, query, order, this.updateProgress,)          
+                blob = await exporter.export(client, slug, property.slug, query, order, this.updateProgress,)          
             } catch(e) {
                 error = e
             }

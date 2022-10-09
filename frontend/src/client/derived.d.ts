@@ -1,5 +1,6 @@
 import type Codec from "../codecs/codec"
 import type { TableColumn } from "../components/wrappers/table"
+import type { CollectionExporter } from "../exporters"
 import type { TMHDCollection, TMHDPreFilter, TMHDProperty } from "./rest"
 
 /**
@@ -22,7 +23,7 @@ export interface ParsedMHDCollection extends TMHDCollection {
     propertySlugs: string[],
 
     /** all of the exporter instances */
-    exporterInstances: Exporter[],
+    exporterInstances: CollectionExporter[],
 
     /** list of the instantiated codecs for this renderer */
     codecMap: Map<string, Codec<any, any>>

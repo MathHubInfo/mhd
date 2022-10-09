@@ -18,7 +18,6 @@ export function displayLink(uri: string) : string {
 export async function fetchFragment(uri: string): Promise<string> {
     if (!Enabled) return ""
 
-    console.log(FragementEndpoint + uri)
     const result = await fetch(FragementEndpoint + uri).then(r => r.text())
 
     const fragment = parseHTMLNodes(result)

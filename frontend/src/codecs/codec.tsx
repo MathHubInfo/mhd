@@ -2,9 +2,11 @@ import React from "react"
 import type { TMHDProperty, TMHDItem } from "../client/rest"
 import { Badge } from "reactstrap"
 import type { TableColumn, CellComponentProps } from "../components/wrappers/table"
-import PropertyHover from "../components/common/PropertyInfoButton"
 import { isProduction } from "../controller"
 import { CopyButton } from "../components/wrappers/share"
+import type { CodecExporter } from "../exporters"
+import PropertyHeader from "../components/search/results/PropertyHeader"
+import { TCollectionPredicate } from "../client"
 
 type ReactComponent<T> = React.ComponentClass<T> | React.FunctionComponent<T>
 
@@ -94,6 +96,9 @@ export default abstract class Codec<ElementType = any, FilterType = string> {
     /** how can elements of this codec be meaningfully ordered? */
     abstract readonly ordered: boolean | "+" | "-" // true, + => ascending, - => descending, false => not orderable
 
+    /** the list of exporters for this codec */
+    readonly exporters: Array<CodecExporter<ElementType>> = []
+
     /**
      * Component used for rendering cells of this value
      */
@@ -106,7 +111,7 @@ export default abstract class Codec<ElementType = any, FilterType = string> {
     makeReactTableColumn(property: TMHDProperty): TableColumn<TMHDItem<any>> {
         return {
             key: property.slug,
-            Header: () => <>{property.displayName}<PropertyHover large prop={property}/></>,
+            Header: () => <PropertyHeader property={property} />,
             Cell: ({ data }: CellComponentProps<TMHDItem<any>>) => <RenderCodec context={CellRenderContext.Table} value={data[property.slug]} codec={this} />,
         }
     }
