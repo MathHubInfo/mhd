@@ -84,6 +84,12 @@ export default class Table<D> extends React.Component<TableProps<D>> {
     componentDidMount() {
         const { widths } = this.props
         this.initResizer({ widths })
+
+        // trigger a re-initialization with the correct widths
+        // to compensate for overflow etc!
+        if (typeof widths !== "undefined") return
+        const nwidths = this.resizer.tb.columns.map(x => x.getBoundingClientRect().width)
+        this.initResizer({ widths: nwidths })
     }
 
     componentWillUnmount() {
@@ -157,9 +163,6 @@ export default class Table<D> extends React.Component<TableProps<D>> {
             // compute the adjusted columns
             const widths = Table.mapColumnWidths(prevProps, this.props)
             this.initResizer({ widths })
-
-            // and resize
-            this.handleResizeChange()
         }
     }
 
