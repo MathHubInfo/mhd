@@ -2,7 +2,7 @@ import type { ParsedMHDCollection } from "../../client/derived"
 import type { TMHDProperty } from "../../client/rest"
 import CodecExporter from "."
 
-/** Exports text as string */
+/* TextExporter exports string-based codecs as newline-delimited text */
 export class TextExporter extends CodecExporter<string>{
     readonly slug = "text"
     readonly displayName = "Plain Text"

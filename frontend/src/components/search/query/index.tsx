@@ -12,23 +12,23 @@ import { faCommentDots } from "@fortawesome/free-regular-svg-icons"
 import { CollectionProvenance, isProduction } from "../../../controller"
 import { ShareThisPage } from "../../wrappers/share"
 import type { TCollectionPredicate } from "../../../client"
-interface FilterEditorProps {
 
+interface QueryEditorProps {
     /** the current collection (if any) */
     collection: ParsedMHDCollection;
 
-    /** the current query */
+    /* the applied query */
     query: TCollectionPredicate,
 
-    /** callback when filters are applied  */
+    /* callback when the query is updated */
     onQueryApply: (query: TCollectionPredicate) => void;
 
-    /** timeout under which to not show the loading indicator */
+    /** timeout after which not to */
     results_loading_delay: number;
 }
 
-interface FilterEditorStateProps {
-    /** the current query by the user */
+interface QueryEditorState {
+    /** the current query being edited */
     query: TCollectionPredicate;
 
     /** have the current filters been applied? */
@@ -36,24 +36,24 @@ interface FilterEditorStateProps {
 }
 
 /**
- * Shows an editor filters, along with a preview for the number of elements found. 
- * Notifies the parent via onFilterApply whenever the user manually applies the filters or when the page loads. 
-*/
-export default class FilterEditor extends React.Component<FilterEditorProps, FilterEditorStateProps> {
+ * QueryEditor shows an editor for queries.
+ * This takes a collection, and shows an editor to update it.
+ */
+export default class QueryEditor extends React.Component<QueryEditorProps, QueryEditorState> {
 
-    state: FilterEditorStateProps = {
+    state: QueryEditorState = {
         query: this.props.query,
         applied: false,
     }
 
     /** stores a new list of filters in state */
-    setFilters = async (filters: MHDFilter[]) => {
+    private readonly setFilters = async (filters: MHDFilter[]) => {
         const { query: { pre_filter } } = this.state
         this.setState({ query: { filters, pre_filter }, applied: false })
     }
 
     /* Applies the filters and passes them to the parent */
-    applyFilters = () => {
+    private readonly applyFilters = () => {
         this.props.onQueryApply(this.props.query)
         this.setState({ applied: true })
     }

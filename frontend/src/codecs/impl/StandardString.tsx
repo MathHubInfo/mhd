@@ -1,5 +1,5 @@
 import React from "react"
-import type { CodecExporter } from "../../exporters"
+import type CodecExporter from "../../exporters/codecs"
 import type { TValidationResult, TPresenterProps } from "../codec"
 import Codec from "../codec"
 import { TextExporter } from "../../exporters/codecs/text"

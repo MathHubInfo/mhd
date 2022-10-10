@@ -8,7 +8,7 @@ import { MHDBackendClient, ResponseError } from "../../../client"
 import type { ParsedMHDCollection } from "../../../client/derived"
 import type { TMHDCollection } from "../../../client/rest"
 import ColumnEditor from "../../../components/search/columns/ColumnEditor"
-import FilterEditor from "../../../components/search/filter"
+import QueryEditor from "../../../components/search/query"
 import ResultsTable from "../../../components/search/results/ResultsTable"
 import type { TableState } from "../../../components/wrappers/table"
 import type { PageState } from "../../../state"
@@ -100,7 +100,7 @@ class MHDCollectionSearch extends React.Component<MHDCollectionSearchProps, MHDC
         return (
             <main>
                 {collection.flag_large_collection && <Alert color="warning">This collection is very large and queries might be slow. </Alert>}
-                <FilterEditor
+                <QueryEditor
                     collection={collection}
                     query={query}
                     onQueryApply={this.setQuery}

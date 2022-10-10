@@ -3,27 +3,6 @@ import { MHDBackendClient } from "../client"
 import type { ParsedMHDCollection } from "../client/derived"
 import type { TMHDItem } from "../client/rest"
 
-/** accumulate performs an async accumulation function */
-async function accumulate<V, R>(
-    start: () => Promise<{acc: V, total: number}>,
-    step: (acc: V, index: number, progress: number) => Promise<{acc: V, done: boolean }>, 
-    finalize: (acc: V, done: boolean) => Promise<R>,
-): Promise<R> {
-    let { acc, total } = await start()
-    let index = 0
-    let done = false
-    let result: R
-    try {
-        while(!done) {
-            ({ done, acc } = await step(acc, index, index / total))
-            index++
-        }
-    } finally {
-        result = await finalize(acc, done)
-    }
-    return result
-}
-
 export abstract class ClientSideExporter<Flags, Accumulator, Result, Page = Array<TMHDItem<unknown>>> {
     abstract readonly slug: string
     abstract readonly displayName: string
@@ -54,36 +33,45 @@ export abstract class ClientSideExporter<Flags, Accumulator, Result, Page = Arra
             Promise.resolve(slug_or_collection)
 
         // fetch the entire collection and count
-        const [ collection, total ] = await Promise.all([
+        const [ collection, count ] = await Promise.all([
             collectionPromise,
             client.fetchItemCount({ slug }, query),
         ])
-        
-        return accumulate<Accumulator, Result>(
-            async () => {
-                if(!onStep(0)) return null
-                return { acc: await this.initAcc(flags, collection), total: Math.ceil(total / this.PER_PAGE) }
-            },
-            async (acc: Accumulator, index: number, progress: number) => {
+
+        const total = count / this.PER_PAGE
+        let acc = await this.initAcc(flags, collection)
+
+        let index = 0
+        let done = false
+        let result: Result
+        try {
+            while(!done) {
+                const progress = index / total
                 if (!onStep(progress)) {
                     throw new Error("User asked to cancel")
                 }
-                
-                const { results: items, next } = await client.fetchItems<unknown>(collection, collection.propertySlugs, query, order, index + 1, this.PER_PAGE)
-                const page = this.getPage(items, flags)
+
+                const { results, next } = await client.fetchItems<unknown>(
+                    collection,
+                    collection.propertySlugs,
+                    query,
+                    order,
+                    index + 1, // indexes in fetchItems are 1-based!
+                    this.PER_PAGE,
+                )
+                const page = this.getPage(results, flags)
                 
                 acc = await this.updateAcc(page, index, acc, flags, collection)
-                return { acc, done: !next }
-            },
-            async (acc: Accumulator, done: boolean) => {
-                const result = await this.getResult(acc, done, flags)
-                if (result === null) throw new Error("getResult returned null")
-                if (done) {
-                    onStep(1)
-                }
-                return result
+                done = !next
+                index++
             }
-        )
+        } finally {
+            result = await this.getResult(acc, done, flags)
+            if (done) {
+                onStep(1)
+            }
+        }
+        return result
     }
 
     /** hashRun hashes the parameters of the run function */
