@@ -6,7 +6,6 @@ import { isProduction } from "../controller"
 import { CopyButton } from "../components/wrappers/share"
 import type { CodecExporter } from "../exporters"
 import PropertyHeader from "../components/search/results/PropertyHeader"
-import { TCollectionPredicate } from "../client"
 
 type ReactComponent<T> = React.ComponentClass<T> | React.FunctionComponent<T>
 
@@ -97,7 +96,7 @@ export default abstract class Codec<ElementType = any, FilterType = string> {
     abstract readonly ordered: boolean | "+" | "-" // true, + => ascending, - => descending, false => not orderable
 
     /** the list of exporters for this codec */
-    readonly exporters: Array<CodecExporter<ElementType>> = []
+    readonly exporters: Array<CodecExporter<ElementType, unknown>> = []
 
     /**
      * Component used for rendering cells of this value

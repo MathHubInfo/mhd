@@ -1,5 +1,5 @@
-import type { CollectionExporter } from "."
-import { JSONExporter } from "./json"
+import type CollectionExporter from "./collection/"
+import { JSONExporter } from "./collection/json"
 
 export default class ExporterManager {
     private static instance: ExporterManager

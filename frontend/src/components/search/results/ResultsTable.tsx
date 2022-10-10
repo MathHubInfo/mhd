@@ -11,7 +11,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons"
 import { isProduction, Item } from "../../../controller"
 import { PropertyHeaderContext } from "./PropertyHeader"
-import { CollectionExporter } from "../../../exporters"
 
 interface ResultsTableProps extends TableState {
     /** the current collection */

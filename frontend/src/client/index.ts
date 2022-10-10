@@ -14,6 +14,8 @@ export type TCollectionPredicate = {
     pre_filter?: TMHDPreFilter;
 }
 
+type CollectionLike = Pick<ParsedMHDCollection, "slug">
+
 export class MHDBackendClient {
     /**
      * @param base_url the Base URL for all API requests
@@ -112,11 +114,11 @@ export class MHDBackendClient {
     async fetchItems<T extends {}>(collection: ParsedMHDCollection, properties: string[], query: TCollectionPredicate, order: string, page_number = 1, per_page = 100): Promise<TDRFPagedResponse<TMHDItem<T>>> {
         // Build the filter params
         const params = {
-            filter: MHDBackendClient.buildQuery(query),
             properties: properties.join(","),
             page: page_number.toString(),
             per_page: per_page.toString(),
             order: MHDBackendClient.buildSortOrder(collection, properties, order),
+            ...MHDBackendClient.buildParameters(query),
         }
 
         // fetch the results
@@ -124,9 +126,9 @@ export class MHDBackendClient {
     }
 
     /** hashes the parameters to the fetchItems function */
-    static hashFetchItems(collection: ParsedMHDCollection, properties: string[], query: TCollectionPredicate, order: string, page_number = 1, per_page = 100): string {
+    static hashFetchItems({ slug }: CollectionLike, properties: string[], query: TCollectionPredicate, order: string, page_number = 1, per_page = 100): string {
         const hash = {
-            collection: collection.slug,
+            collection: slug,
             pre_filter: query.pre_filter,
             filters: query.filters.filter(f => f.value !== null),
             properties: properties,
@@ -138,35 +140,34 @@ export class MHDBackendClient {
     }
 
     /** Fetches the number of items in a collection */
-    async fetchItemCount(collection: ParsedMHDCollection, query: TCollectionPredicate): Promise<number> {
-        // Build the filter params
-        const params = {
-            filter: MHDBackendClient.buildQuery(query),
-        }
+    async fetchItemCount({ slug }: CollectionLike, query: TCollectionPredicate): Promise<number> {
+        // build the parameters
+        const params = MHDBackendClient.buildParameters(query)
 
         // fetch the results
-        const res = await this.fetchJSON<TDRFPagedResponse<{count: number}>>(`/query/${collection.slug}/count/`, params)
+        const res = await this.fetchJSON<TDRFPagedResponse<{count: number}>>(`/query/${slug}/count/`, params)
         return res.count
     }
 
     /** hashes the parameters to the fetchItemCount function */
-    static hashFetchItemCount(collection: ParsedMHDCollection, query: TCollectionPredicate): string {
+    static hashFetchItemCount({ slug }: CollectionLike, query: TCollectionPredicate): string {
         const hash = {
-            collection: collection.slug,
+            collection: slug,
             pre_filter: query.pre_filter,
             filters: query.filters.filter(f => f.value !== null),
         }
         return JSON.stringify(hash)
     }
 
-    /** give a set of filters, build a filter URL */
-    static buildQuery(query: TCollectionPredicate): string {
+    /** give a query build parameters to send to it */
+    private static buildParameters(query: TCollectionPredicate): { filter: string } {
         const filterAry = query.filters.filter(f => f.value !== null).map(f => `(${f.slug}${f.value})`)
-        return (query.pre_filter ? [`(${query.pre_filter.condition})`, ...filterAry] : filterAry).join("&&")
+        const filter = (query.pre_filter ? [`(${query.pre_filter.condition})`, ...filterAry] : filterAry).join("&&")
+        return { filter }
     }
 
     /** builds a sort order string to pass to the backend */
-    static buildSortOrder(collection: ParsedMHDCollection, properties: string[], order: string): string {
+    private static buildSortOrder(collection: ParsedMHDCollection, properties: string[], order: string): string {
         const sorder = order.split(",") // array containing the final order
         
         // add properties which have not been ordered

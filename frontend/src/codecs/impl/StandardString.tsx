@@ -2,7 +2,7 @@ import React from "react"
 import type { CodecExporter } from "../../exporters"
 import type { TValidationResult, TPresenterProps } from "../codec"
 import Codec from "../codec"
-import { TextExporter } from "../exporters/text"
+import { TextExporter } from "../../exporters/codecs/text"
 
 export default class StandardString extends Codec<string, null> {
     readonly slug: string = "StandardString"

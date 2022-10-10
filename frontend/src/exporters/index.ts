@@ -1,163 +1,98 @@
 import type { TCollectionPredicate } from "../client"
-import type { MHDBackendClient } from "../client"
+import { MHDBackendClient } from "../client"
 import type { ParsedMHDCollection } from "../client/derived"
-import type { TMHDItem, TMHDProperty } from "../client/rest"
+import type { TMHDItem } from "../client/rest"
 
-/** A CollectionExporter represents an exporter for an entire collection */
-export abstract class CollectionExporter<T> {
-    abstract readonly slug: string
-    abstract readonly displayName: string
-    abstract readonly defaultExtension: string
-
-    /** hashExport hashes parameter for an export */
-    hashExport(slug: string, query: TCollectionPredicate): string {
-        const hash = {
-            exporter: this.slug,
-            slug: slug,
-            filters: query.filters,
-            pre_filter: query.pre_filter,
+/** accumulate performs an async accumulation function */
+async function accumulate<V, R>(
+    start: () => Promise<{acc: V, total: number}>,
+    step: (acc: V, index: number, progress: number) => Promise<{acc: V, done: boolean }>, 
+    finalize: (acc: V, done: boolean) => Promise<R>,
+): Promise<R> {
+    let { acc, total } = await start()
+    let index = 0
+    let done = false
+    let result: R
+    try {
+        while(!done) {
+            ({ done, acc } = await step(acc, index, index / total))
+            index++
         }
-        return JSON.stringify(hash)
+    } finally {
+        result = await finalize(acc, done)
     }
-
-    private running = false
-
-    /** exports the given collection into a blob */
-    async export(client: MHDBackendClient, slug: string, query: TCollectionPredicate, order: string, onStep: (progress: number) => boolean): Promise<Blob> {
-        if (this.running) throw new Error("Exporter already running")
-        this.running = true
-
-        // grab the collection
-        const collection = client.parseCollection(await client.fetchCollection(slug))
-
-        // compute the total number of items
-        const per_page = 100
-        const total = await client.fetchItemCount(collection, query)
-        const total_pages = Math.ceil(total / per_page)
-
-        // start the exporter
-        const open = await this.open(collection, total, per_page)
-        if (!open) throw new Error("exporter.open returned false")
-
-        try {
-            // iterate over the pages
-            // TODO: Update a progress bar?
-            let index = 1
-            while(true) {
-                if (!onStep(index / total_pages)) {
-                    throw new Error("User asked to cancel")
-                }
-    
-                const page = await client.fetchItems<T>(collection, collection.propertySlugs, query, order, index, per_page)
-                this.add(page.results, index)
-                
-                // if we have more pages, go to the next page
-                if(!page.next) break
-                index++
-            }
-
-            // and finalize the exporter
-            onStep(1)
-
-            const result = await this.close(false)
-            this.running = false
-            return result 
-        } catch(e) {
-            // something went wrong: close all resources
-            this.close(true)
-            this.running = false
-            throw e
-        }
-    }
-
-    /** init initializes this exporter to create a new page */
-    protected abstract open(collection: ParsedMHDCollection, count: number, per_page: number): Promise<boolean>
-
-    /** add adds the specified number of items from this page */
-    protected abstract add(items: TMHDItem<T>[], page_number: number): Promise<boolean>
-
-    /** close generates a blob and releases all resources */
-    protected abstract close(aborted: boolean): Promise<Blob | undefined>
+    return result
 }
 
-
-/** A CodecExporter represents an exporter for a specific codec */
-export abstract class CodecExporter<T> {
+export abstract class ClientSideExporter<Flags, Accumulator, Result, Page = Array<TMHDItem<unknown>>> {
     abstract readonly slug: string
     abstract readonly displayName: string
     abstract readonly defaultExtension: string
 
-    /** hashExport hashes parameter for an export */
-    hashExport(slug: string, prop: string, query: TCollectionPredicate): string {
-        const hash = {
-            exporter: this.slug,
-            slug: slug,
-            prop: prop,
-            filters: query.filters,
-            pre_filter: query.pre_filter,
-        }
-        return JSON.stringify(hash)
-    }
+    /** initAcc initializes the accumulator */
+    protected abstract initAcc(flags: Flags, collection: ParsedMHDCollection): Promise<Accumulator | null>
 
-    private running = false
+    /** getPage gets the page for a set of items */
+    protected abstract getPage(items: Array<TMHDItem<unknown>>, flags: Flags): Page
 
-    /** exports the given collection into a blob */
-    async export(client: MHDBackendClient, slug: string, prop: string, query: TCollectionPredicate, order: string, onStep: (progress: number) => boolean): Promise<Blob> {
-        if (this.running) throw new Error("Exporter already running")
-        this.running = true
+    /** updateAcc updates the accumulator for a given state */
+    protected abstract updateAcc(page: Page, index: number, acc: Accumulator, flags: Flags, collection: ParsedMHDCollection): Promise<Accumulator | null>
 
-        // grab the collection
-        const collection = client.parseCollection(await client.fetchCollection(slug))
-        const property = collection.propMap.get(prop)
-        console.log(collection, prop, property)
-        if (!property) throw new Error("property not found")
+    /** finalizeAcc finalizes the accumulator */
+    protected abstract getResult(acc: Accumulator, done: boolean, flags: Flags): Promise<Result | null>
 
-        // compute the total number of items
-        const per_page = 100
-        const total = await client.fetchItemCount(collection, query)
-        const total_pages = Math.ceil(total / per_page)
+    protected readonly PER_PAGE = 1000
 
-        // start the exporter
-        const open = await this.open(collection, property, total, per_page)
-        if (!open) throw new Error("exporter.open returned false")
+    /** run runs this ClientSideExporter */
+    async run(flags: Flags, slug_or_collection: string | ParsedMHDCollection, query: TCollectionPredicate, order: string, onStep: (progress: number) => boolean): Promise<Result> {
+        const client = MHDBackendClient.getInstance()
 
-        try {
-            // iterate over the pages
-            // TODO: Update a progress bar?
-            let index = 1
-            while(true) {
-                if (!onStep(index / total_pages)) {
+        // make a promise for the entire collection
+        const slug = typeof slug_or_collection === "string" ? slug_or_collection : slug_or_collection.slug
+        const collectionPromise = typeof slug_or_collection === "string" ?
+            client.fetchCollection(slug_or_collection).then(c => client.parseCollection(c)) :
+            Promise.resolve(slug_or_collection)
+
+        // fetch the entire collection and count
+        const [ collection, total ] = await Promise.all([
+            collectionPromise,
+            client.fetchItemCount({ slug }, query),
+        ])
+        
+        return accumulate<Accumulator, Result>(
+            async () => {
+                if(!onStep(0)) return null
+                return { acc: await this.initAcc(flags, collection), total: Math.ceil(total / this.PER_PAGE) }
+            },
+            async (acc: Accumulator, index: number, progress: number) => {
+                if (!onStep(progress)) {
                     throw new Error("User asked to cancel")
                 }
-    
-                const page = await client.fetchItems<T>(collection, [prop], query, order, index, per_page)
-                this.add(page.results.map(value => value[prop]), index)
                 
-                // if we have more pages, go to the next page
-                if(!page.next) break
-                index++
+                const { results: items, next } = await client.fetchItems<unknown>(collection, collection.propertySlugs, query, order, index + 1, this.PER_PAGE)
+                const page = this.getPage(items, flags)
+                
+                acc = await this.updateAcc(page, index, acc, flags, collection)
+                return { acc, done: !next }
+            },
+            async (acc: Accumulator, done: boolean) => {
+                const result = await this.getResult(acc, done, flags)
+                if (result === null) throw new Error("getResult returned null")
+                if (done) {
+                    onStep(1)
+                }
+                return result
             }
-
-            // and finalize the exporter
-            onStep(1)
-
-            const result = await this.close(false)
-            this.running = false
-            return result 
-        } catch(e) {
-            // something went wrong: close all resources
-            this.close(true)
-            this.running = false
-            throw e
-        }
+        )
     }
 
-    /** init initializes this exporter to create a new page */
-    protected abstract open(collection: ParsedMHDCollection, property: TMHDProperty, count: number, per_page: number): Promise<boolean>
-
-    /** add adds the specified number of items from this page */
-    protected abstract add(values: Array<T>, page_number: number): Promise<boolean>
-
-    /** close generates a blob and releases all resources */
-    protected abstract close(aborted: boolean): Promise<Blob | undefined>
+    /** hashRun hashes the parameters of the run function */
+    hashRun(flags: Flags, slug: string, query: TCollectionPredicate, order: string): string {
+        return JSON.stringify({
+            flags: flags,
+            slug: slug,
+            query: query,
+            order: order,
+        })
+    }
 }
