@@ -1,0 +1,35 @@
+.Tabs {
+    height: 300px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    
+    padding: 5px;
+    
+    border: 1px solid #dee2e6;
+    border-top: 0px !important;
+    border-radius: 0 0 5px 5px;
+}
+
+.Buttons {
+    margin-top: 5px;
+}
+
+.ButtonBar {
+    float: right;
+}
+
+
+.droppableCaption {
+    margin-bottom: 0;
+    font-variant: small-caps;
+}
+
+.droppableArea {
+    border-radius: 0.25rem;
+    margin: -5px 0 10px 0;
+    padding: 7px 20px;
+}
+.draggableItem {
+    margin: 5px;
+    background-color: #ffffff;
+}

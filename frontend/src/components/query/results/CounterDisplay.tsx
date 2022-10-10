@@ -104,12 +104,12 @@ export default class CounterDisplay extends React.Component<CounterDisplayProps,
         const { loading, count } = this.state
         
         // TODO: Show a spinner here once the bootstrap theme is fixed
-        if(loading) return <>Matches found: <i>Loading...</i></>
+        if(loading) return <>Counting...</>
 
         // when something went wrong, display an error
-        if (isNaN(count)) return <>Matches found: <i></i></>
+        if (isNaN(count)) return <>No results</>
 
         // else return the actual count
-        return <>Matches found: <i>{count}</i></>
+        return <><i>{count}</i> result{count != 1 && "s"}</>
     }
 }

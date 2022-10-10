@@ -7,7 +7,7 @@
 /* filter box on the rhs */
 .filterBox {
   display: block;
-  height: 200px;
+  height: 250px;
   overflow: auto;
 }
 .filterBox :global(.fa-ul) {

@@ -30,16 +30,17 @@ function stringToValue(value: string): any {
 /**
  * (Potentially lossy) encoding of state into the URL
  */
-export function encodeState(state: PageState) {
-    const copy = { ...state } as any
-    copy.filters = copy.query.filters
-    delete copy["query"]
-    return Object.entries({ ...state, widths: undefined }).map(
+export function encodeState({ query: { filters }, columns, order, per_page, page }: PageState) {
+    ([
+        ["filters", filters],
+        ["columns", columns],
+        ["order", order],
+        ["per_page", per_page],
+        ["page", page],
+    ] as Array<[string, any]>).map(
         ([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(valueToString(v))}`
     ).join("&")
 }
-
-const ALL_STATE_PROPS = ["per_page", "page", "filters", "columns", "widths", "order"]
 
 /**
  * Decodes some part of the state from the url
@@ -49,36 +50,34 @@ export function decodeState(state: string): PageState | undefined {
     if (state === "") return
 
     // decode the url keys as JSON valuys
-    const sobj: Record<string, any> = {}
-    try {
-        state.split("&").forEach(e => {
-            const uc = e.split("=")
-            if (uc.length !== 2) return
-            
-            // only accept these keys
-            const key = decodeURIComponent(uc[0])
-            if (ALL_STATE_PROPS.indexOf(key) === -1) return
-            
-            const value = decodeURIComponent(uc[1])
-            sobj[key] = stringToValue(value)
-        })
-    } catch(_) {
-        return
-    }
+    const query: Record<string, any> = {}
 
-    // lift out the query parameters
-    sobj["query"] = {
-        filters: sobj["filters"],
-    }
-    delete sobj["filters"]
+    state.split("&").forEach(e => {
+        const index = e.indexOf("=")
+        if (index === -1) return
+        
+        const key = e.substring(0, index)
+        const value = e.substring(index + 1)
 
-    // for backward compatibility, ensure that there is an order property!
-    sobj["order"] = sobj["order"] ?? ""
+        try {
+            query[decodeURIComponent(key)] = stringToValue(decodeURIComponent(value))
+        } catch(_) {}
+    })
+    
+    // decode from the query object
+    const { filters, columns, order, per_page, page } = query
+    const decoded: PageState = {
+        query: { filters },
+        columns,
+        order: order ?? "",
+        per_page,
+        page,
+        widths: undefined,
+    }
 
     // ensure that the state is valid
-    if (!validateState(sobj)) return
-
-    return sobj
+    if (!validateState(decoded)) return
+    return decoded
 }
 
 function validateState(candidate: Record<string, any>): candidate is PageState {
@@ -96,7 +95,7 @@ function validateState(candidate: Record<string, any>): candidate is PageState {
     if (typeof query !== "object") return false
     const { filters, ...extraquery } = query
     if(Object.keys(extraquery).length !== 0) return false // extra properties
-    if (!Array.isArray(filters) || !query.filters.every(isFilter)) return false
+    if (!Array.isArray(filters) || !filters.every(isFilter)) return false
 
     return true
 }
@@ -118,12 +117,13 @@ function isString(candidate: any): candidate is string {
 }
 
 function isFilter(candidate: any): candidate is MHDFilter {
-    const { slug, value, uid, initial, ...extra } = candidate
+    const { slug, value, uid, inital, initialEdit, ...extra } = candidate
 
     if(Object.keys(extra).length !== 0) return false
     if (!isString(slug)) return false
-    if (!isInteger(uid)) return false
-    if (!isBoolean(initial)) return false
+    if (!isInteger(uid) && !isString(uid)) return false
+    // if (inital !== undefined && !isBoolean(inital)) return false
+    if (initialEdit !== undefined && !isBoolean(initialEdit)) return false
     return value == null || typeof value === "string"
 }
 

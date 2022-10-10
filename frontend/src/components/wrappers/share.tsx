@@ -3,6 +3,7 @@ import { CopyToClipboard } from "react-copy-to-clipboard"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faCopy } from "@fortawesome/free-regular-svg-icons"
 import { Button, Tooltip } from "reactstrap"
+import { faShare } from "@fortawesome/free-solid-svg-icons"
 
 /**
  * A button that allows sharing the URL to the current page
@@ -51,7 +52,7 @@ export class ShareThisPage extends React.Component {
         if(!onClient) return <Button disabled>Share This Page</Button>
 
         if(nativeShareSupported) return <Button onClick={this.shareNative}>Share This Page</Button>
-        return <CopyButton size="" text={location.href} title="Share This Page" copied={fallbackCopied} onCopy={this.handleCopy} />
+        return <CopyButton size="" text={location.href} title={<><FontAwesomeIcon icon={faShare} />{" "}Share This Page</>} copied={fallbackCopied} onCopy={this.handleCopy} />
     }
 }
 
@@ -61,7 +62,7 @@ export class ShareThisPage extends React.Component {
  * @param props
  * @returns 
  */
-export function CopyButton(props: { text: string, size?: string; title?: string; copied: boolean, onCopy?: () => void, }) {
+export function CopyButton(props: { text: string, size?: string; title?: string | React.ReactNode; copied: boolean, onCopy?: () => void, }) {
     const id = useId()
     const escaped = id.replace(/\W/g, m => "\\" + m.charCodeAt(0).toString(16) + " ")
     return <>

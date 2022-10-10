@@ -35,7 +35,5 @@ export interface ParsedMHDCollection extends TMHDCollection {
 /** a single instantiated filter */
 export interface MHDFilter {
     slug: string;
-    uid: number;
-    initial: boolean;
     value: string | null;
 }

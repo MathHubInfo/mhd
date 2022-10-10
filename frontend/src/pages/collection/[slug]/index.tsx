@@ -2,21 +2,23 @@ import type { GetServerSideProps } from "next"
 import type { NextRouter } from "next/router"
 import { withRouter } from "next/router"
 import React from "react"
-import { Alert, Container } from "reactstrap"
+import { Container } from "reactstrap"
 import type { TCollectionPredicate } from "../../../client"
 import { MHDBackendClient, ResponseError } from "../../../client"
 import type { ParsedMHDCollection } from "../../../client/derived"
 import type { TMHDCollection } from "../../../client/rest"
-import ColumnEditor from "../../../components/search/columns/ColumnEditor"
-import QueryEditor from "../../../components/search/query"
-import ResultsTable from "../../../components/search/results/ResultsTable"
 import type { TableState } from "../../../components/wrappers/table"
 import type { PageState } from "../../../state"
 import { decodeState, encodeState } from "../../../state"
 import { CollectionIndex } from "../../../controller"
-import Exporters from "../../../components/search/results/Exporter"
+import CollectionTitle, { CollectionFlags } from "../../../components/query/head/title"
+import CollectionInfo from "../../../components/query/head/info"
+import { MHDMainHead } from "../../../components/common/MHDMain"
+import ResultsTable from "../../../components/query/results/ResultsTable"
+import QueryEditor from "../../../components/query/editor"
+import Exporters from "../../../components/query/results/Exporter"
 
-interface MHDCollectionSearchProps{
+interface MHDCollectionSearchProps {
     router: NextRouter;
 
     /** collection that was read */
@@ -68,8 +70,8 @@ class MHDCollectionSearch extends React.Component<MHDCollectionSearchProps, MHDC
     }
 
     /** called when new filters are set in the filter editor */
-    private setQuery = (query: TCollectionPredicate) => {
-        this.setState({ query: { ...query } })
+    private setQuery = (query: TCollectionPredicate, columns: Array<string>, order: string) => {
+        this.setState({ query, columns, order })
     }
 
     /** called when new columns are set in the column editor */
@@ -99,26 +101,30 @@ class MHDCollectionSearch extends React.Component<MHDCollectionSearchProps, MHDC
 
         return (
             <main>
-                {collection.flag_large_collection && <Alert color="warning">This collection is very large and queries might be slow. </Alert>}
-                <QueryEditor
-                    collection={collection}
-                    query={query}
-                    onQueryApply={this.setQuery}
-                    results_loading_delay={results_loading_delay}
+                <MHDMainHead
+                    wide="fancy"
+
+                    title={<CollectionTitle collection={collection} />}
+                    textTitle={collection.displayName}
+                    titleRow={<CollectionFlags collection={collection} />}
+
+                    leftHead={<CollectionInfo collection={collection} />}
+                    rightHead={
+                        <QueryEditor
+                            collection={collection}
+                            query={query}
+                            order={order}
+                            columns={columns}
+                            onQueryApply={this.setQuery}
+                            results_loading_delay={results_loading_delay}
+                        />
+                    }
                 />
+
                 <section>
                     <Container>
                         {
-                            (query.filters !== null) && 
-                            <ColumnEditor
-                                collection={collection}
-                                columns={columns}
-                                order={order}
-                                onColumnsApply={this.setColumns}
-                            />
-                        }
-                        {
-                            (query.filters !== null) && 
+                            (query.filters !== null) &&
                             <Exporters
                                 collection={collection}
                                 query={query}
@@ -127,17 +133,17 @@ class MHDCollectionSearch extends React.Component<MHDCollectionSearchProps, MHDC
                         }
                         {
                             (query.filters !== null) && (columns !== null) &&
-                                <ResultsTable
-                                    collection={collection}
-                                    query={query}
-                                    columns={columns}
-                                    order={order}
-                                    page={page}
-                                    per_page={per_page}
-                                    widths={widths}
-                                    results_loading_delay={results_loading_delay}
-                                    onStateUpdate={this.setResultsState}
-                                />
+                            <ResultsTable
+                                collection={collection}
+                                query={query}
+                                columns={columns}
+                                order={order}
+                                page={page}
+                                per_page={per_page}
+                                widths={widths}
+                                results_loading_delay={results_loading_delay}
+                                onStateUpdate={this.setResultsState}
+                            />
                         }
                     </Container>
                 </section>
@@ -154,7 +160,7 @@ export const getServerSideProps: GetServerSideProps = async function ({ params: 
     let collection: TMHDCollection
     try {
         collection = await MHDBackendClient.getInstance().fetchCollection(slug as string)
-    } catch(e) {
+    } catch (e) {
         if (!(e instanceof ResponseError) || !e.isNotFound) throw e
         return { notFound: true }
     }

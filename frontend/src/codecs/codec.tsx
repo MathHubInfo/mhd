@@ -4,8 +4,8 @@ import { Badge } from "reactstrap"
 import type { TableColumn, CellComponentProps } from "../components/wrappers/table"
 import { isProduction } from "../controller"
 import { CopyButton } from "../components/wrappers/share"
-import type { CodecExporter } from "../exporters"
-import PropertyHeader from "../components/search/results/PropertyHeader"
+import type CodecExporter from "../exporters/codecs"
+import PropertyHeader from "../components/query/results/PropertyHeader"
 
 type ReactComponent<T> = React.ComponentClass<T> | React.FunctionComponent<T>
 
