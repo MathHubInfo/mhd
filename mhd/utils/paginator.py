@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 class DefaultPaginator(pagination.PageNumberPagination):
     page_size_query_param: str = "per_page"
-    max_page_size: int = 100
+    max_page_size: int = 1000
 
     def get_paginated_response(self, data: list[Any]) -> Response:
         return Response(OrderedDict([
