@@ -5423,21 +5423,6 @@ type-fest@^0.21.3:
   resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-0.21.3.tgz#d260a24b0198436e133fa26a524a6d65fa3b2e37"
   integrity sha512-t0rzBq87m3fVcduHDUFhKmyyX+9eo6WQjZvf51Ea/M0Q7+T374Jp1aUiyUl0GKxp8M/OETVHSDvmkyPgvX+X2w==
 
-typeface-cormorant-garamond@^1.1.13:
-  version "1.1.13"
-  resolved "https://registry.yarnpkg.com/typeface-cormorant-garamond/-/typeface-cormorant-garamond-1.1.13.tgz#47e18fe1362c21b9b1381453d7c53c85a3cac9b1"
-  integrity sha512-LgDoQk6uZAPzNaxCgjCO/bigbwjQymqSesqORthVvXSuy4yICLZ30IitQHYIQpOvQ4PC6B8BfNx5NSPezmLc8A==
-
-typeface-cormorant-unicase@^1.1.13:
-  version "1.1.13"
-  resolved "https://registry.yarnpkg.com/typeface-cormorant-unicase/-/typeface-cormorant-unicase-1.1.13.tgz#33101b25bc0b7a8bb3d9b4ab37a3efd081043a70"
-  integrity sha512-n9XzvsxZYNohRBW9ADapmicy4gNkA6P1denRq6z6LYhhcMWkTa9imFbYD0XumlExAV5jpoANsn6OYqkbmeSTdA==
-
-typeface-montserrat@^1.1.13:
-  version "1.1.13"
-  resolved "https://registry.yarnpkg.com/typeface-montserrat/-/typeface-montserrat-1.1.13.tgz#2a16729c174dd1a8c3fec05a851b7725412606cc"
-  integrity sha512-Pklkyj0e+K+6I/t0M6JBDBphpfJkF1k+3qd8qDnp9aVtCC7oGBQWTAcL6+5eArfGe7h73uPwyal73hEkf9YCUA==
-
 typescript@^4.7.4:
   version "4.7.4"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.7.4.tgz#1a88596d1cf47d59507a1bcdfb5b9dfe4d488235"

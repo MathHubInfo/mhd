@@ -1,11 +1,6 @@
 import type { AppProps } from "next/app"
 import Head from "next/head"
 
-// load the required fonts
-import "typeface-cormorant-garamond"
-import "typeface-cormorant-unicase"
-import "typeface-montserrat"
-
 // load custom styles
 import "../css/bootstrapMHD.scss"
 import "katex/dist/katex.min.css"
