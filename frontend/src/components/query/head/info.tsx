@@ -17,17 +17,25 @@ export default class CollectionInfo extends React.Component<CollectionInfoProps>
         const { metadata, slug, description } = this.props.collection
         return <>
             <p style={{ textAlign: "justify" }}><LaTeX>{description}</LaTeX></p>
-
             {metadata && <>
-                <Link href={CollectionProvenance(slug)} passHref>
-                    <a target="_blank" rel="noopener noreferrer">
-                        <Button>
-                            <FontAwesomeIcon transform="shrink-2" icon={faCommentDots} />&nbsp;
-                            More about this dataset
-                        </Button>
-                    </a>
-                </Link>
-                {" "}
+                <ul>
+                    {(metadata.references && metadata.references.length > 0) &&
+                        metadata.references.map((r: any) =>
+                            <li key={r.url}><a href={r.url}>{r.title}</a></li>
+                        )
+                    }
+                </ul>
+                <>
+                    <Link href={CollectionProvenance(slug)} passHref>
+                        <a target="_blank" rel="noopener noreferrer">
+                            <Button>
+                                <FontAwesomeIcon transform="shrink-2" icon={faCommentDots} />&nbsp;
+                                More about this dataset
+                            </Button>
+                        </a>
+                    </Link>
+                    {" "}
+                </>
             </>}
             <ShareThisPage />
         </>

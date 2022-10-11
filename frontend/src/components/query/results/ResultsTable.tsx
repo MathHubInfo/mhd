@@ -71,9 +71,9 @@ export default class ResultsTable extends Component<ResultsTableProps, ResultsTa
     }
 
     /** called whenever the table state is updated */
-    handleTableStateUpdate = ({ page, per_page, widths }: TableState) => {
+    handleTableStateUpdate = ({ page, per_page }: TableState) => {
         //notify the parent of the new state
-        this.props.onStateUpdate({ page, per_page, widths })
+        this.props.onStateUpdate({ page, per_page })
     }
 
     /**
@@ -182,7 +182,6 @@ export default class ResultsTable extends Component<ResultsTableProps, ResultsTa
                             
                             page={this.props.page}
                             per_page={this.props.per_page}
-                            widths={this.props.widths}
                         />}
                         {loading && <Spinner color="primary" />}
                     </Col>

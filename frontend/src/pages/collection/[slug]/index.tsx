@@ -57,7 +57,6 @@ class MHDCollectionSearch extends React.Component<MHDCollectionSearchProps, MHDC
             columns: collection.defaultPropertySlugs.slice(),
             page: 0,
             per_page: 20,
-            widths: undefined,
             order: "",
         }
 

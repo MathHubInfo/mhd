@@ -2,8 +2,6 @@ import type { ChangeEvent } from "react"
 import React from "react"
 import style from "./table.module.css"
 
-import type { ColumnResizerOptions } from "./column-resizer"
-import ColumnResizer from "./column-resizer"
 import { Button, InputGroup, Input } from "reactstrap"
 
 interface TableProps<D> extends TableState {
@@ -20,7 +18,6 @@ interface TableProps<D> extends TableState {
     total_pages: number; // the total number of pages, if known 
     per_page: number; // number of elements per-page
     per_page_selection: number[]; // available options of per-page
-    widths: number[] | undefined; // columns widths
 
     // optional css styling
     tableHeadClassName?: string
@@ -52,7 +49,6 @@ export interface CellComponentProps<D> extends ColumnHeaderComponentProps<D> {
 export interface TableState {
     per_page: number;
     page: number;
-    widths: number[] | undefined;
 }
 
 /**
@@ -60,51 +56,10 @@ export interface TableState {
  */
 export default class Table<D> extends React.Component<TableProps<D>> {
 
-    private tableRef = React.createRef<HTMLTableElement>()
-    private resizer: ColumnResizer | undefined
-
-    /**
-     * Initializes or re-initalizes the resizer
-     */
-    private initResizer({ widths }: {widths: number[] | undefined}) {
-        const opts: Partial<ColumnResizerOptions> = {
-            resizeMode: "flex",
-            gripInnerHtml:`<div class='${this.props.tableGripClassName || style.grip}'></div>`,
-            widths,
-            serialize: false,
-            onResize: this.handleResizeChange,
-        }
-        
-        // if we already have a resizer, we need to disable it first
-        if (this.resizer) this.resizer.reset({ disable: true })
-        
-        this.resizer = new ColumnResizer(this.tableRef.current!, opts)
-    }
-
-    componentDidMount() {
-        const { widths } = this.props
-        this.initResizer({ widths })
-
-        // trigger a re-initialization with the correct widths
-        // to compensate for overflow etc!
-        if (typeof widths !== "undefined") return
-        const nwidths = this.resizer.tb.columns.map(x => x.getBoundingClientRect().width)
-        this.initResizer({ widths: nwidths })
-    }
-
-    componentWillUnmount() {
-        if (this.resizer) {
-            this.resizer.reset({ disable: true })
-            this.resizer = undefined
-        }
-    }
-
-
     /** gets the current table state from the props */
     private getTableState = (): TableState => ({
         per_page: this.props.per_page,
         page: this.props.page,
-        widths: this.props.widths,
     })
 
     /** handles changing a page */
@@ -123,49 +78,6 @@ export default class Table<D> extends React.Component<TableProps<D>> {
         })
     }
 
-    private handleResizeChange = () => {
-        if(!this.resizer) return
-
-        const widths = this.resizer.tb.columns.map(x => x.getBoundingClientRect().width)
-
-        const state = this.getTableState()
-        this.props.onStateChange({
-            ...state,
-            widths,
-        })
-    }
-
-    /** checks if two columns are identical */
-    private static columnsAreEqual<D>(previous: TableColumn<D>[], current: TableColumn<D>[]) {
-        if (previous.length !== current.length) return false
-
-        for (let i=0; i < previous.length; i++) {
-            if (previous[i].key !== current[i].key) return false
-        }
-
-        return true
-    }
-
-    /** maps columns widths from an old state onto a new state with the new column order */
-    private static mapColumnWidths<D>({ columns, widths }: TableProps<D>, { columns: ncolumns }: TableProps<D>): number[] | undefined {
-        if (widths === undefined) return undefined
-        
-        return ncolumns.map(c => {
-            const idx = columns.findIndex(d => d.key === c.key)
-            if (idx === -1) return 0 // TODO: Default width
-            return widths[idx]
-        })
-    }
-
-    componentDidUpdate(prevProps: TableProps<D>) {
-        if(!Table.columnsAreEqual(prevProps.columns, this.props.columns)) {
-
-            // compute the adjusted columns
-            const widths = Table.mapColumnWidths(prevProps, this.props)
-            this.initResizer({ widths })
-        }
-    }
-
     render() {
         const { columns, data, 
             page, total_pages, per_page, per_page_selection,
@@ -173,7 +85,7 @@ export default class Table<D> extends React.Component<TableProps<D>> {
             tableFootClassName, tableFootCellClassName } = this.props
 
         return (
-            <table className={`table table-bordered ${style.table}`} ref={this.tableRef}>
+            <table className={`table table-bordered ${style.table}`}>
         
             <thead>
                 <tr className={tableHeadClassName}>

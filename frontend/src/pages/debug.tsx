@@ -29,7 +29,6 @@ export default class DebugComponent extends React.Component<{}, DebugTableState>
         table: {
             page: 0,
             per_page: 10,
-            widths: undefined,
         },
         columns: DebugComponent.columns.slice(0),
     }

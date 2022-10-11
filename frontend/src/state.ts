@@ -12,9 +12,6 @@ export interface PageState extends TableState {
 
     /** the order of the results */
     order: string;
-
-    /** the widths of each of the columns */
-    widths: number[] | undefined;
 }
 
 function valueToString(value: any) {
@@ -73,7 +70,6 @@ export function decodeState(state: string): PageState | undefined {
         order: order ?? "",
         per_page,
         page,
-        widths: undefined,
     }
 
     // ensure that the state is valid
