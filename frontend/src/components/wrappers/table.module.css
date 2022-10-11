@@ -1,18 +1,15 @@
-.grip {
-    width:20px;
-	height:15px;
-	margin-top:-3px;
-	background:gray;
-	border: 1px solid gray;
-	opacity: 0.5;
-	border-radius: 20%;
-	margin-left:-5px;
-	margin-top:-7px;
-	position:relative;
-	z-index:88;
-	cursor:col-resize;
+.ResultsTable {
+	white-space: nowrap;
+	max-width: 100%;
+    overflow-y: auto;
+}
+.Controls {
+	margin: auto;
+	width: 100%;
+	text-align: center;
+	padding: 5px;
 }
 
-.table {
-	white-space: nowrap;
+.Controls div {
+	margin-left: 5px;
 }

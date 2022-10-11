@@ -162,8 +162,8 @@ export default class QueryEditor extends React.Component<QueryEditorProps, Query
                     </Row>,
                 },
                 {
-                    id: "order",
-                    title: dirtyTitle("Order", this.state.orderDirty),
+                    id: "sort",
+                    title: dirtyTitle("Sort", this.state.orderDirty),
                     children: (query.filters !== null) && <Row>
                         <OrderEditor
                             collection={collection}

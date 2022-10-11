@@ -11,6 +11,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons"
 import { isProduction, Item } from "../../../controller"
 import { PropertyHeaderContext } from "./PropertyHeader"
+import NavTabs from "../../wrappers/navtabs"
 
 interface ResultsTableProps extends TableState {
     /** the current collection */
@@ -170,23 +171,34 @@ export default class ResultsTable extends Component<ResultsTableProps, ResultsTa
         const { collection, query, order } = this.props
 
         return (
-            <PropertyHeaderContext.Provider value={{ collection, query, order }}>
-                <Row>
-                    <Col>
-                        {!loading && <Table
-                            total_pages={total_pages}
-                            per_page_selection={[10, 25, 50, 100]}
-                            columns={columns}
-                            data={data}
-                            onStateChange={this.handleTableStateUpdate}
-                            
-                            page={this.props.page}
-                            per_page={this.props.per_page}
-                        />}
-                        {loading && <Spinner color="primary" />}
-                    </Col>
-                </Row>
-            </PropertyHeaderContext.Provider>
+            <NavTabs>{[
+                {
+                    id: "table",
+                    title: "Table",
+                    children: <PropertyHeaderContext.Provider value={{ collection, query, order }}>
+                    <Row>
+                        <Col>
+                            {!loading && <Table
+                                total_pages={total_pages}
+                                per_page_selection={[10, 25, 50, 100]}
+                                columns={columns}
+                                data={data}
+                                onStateChange={this.handleTableStateUpdate}
+                                
+                                page={this.props.page}
+                                per_page={this.props.per_page}
+                            />}
+                            {loading && <Spinner color="primary" />}
+                        </Col>
+                    </Row>
+                </PropertyHeaderContext.Provider> 
+                },
+                {
+                    id: "export",
+                    title: "Export",
+                    children: <>Not implemented yet</>
+                }
+            ]}</NavTabs>
         )
     }
 }
