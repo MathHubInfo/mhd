@@ -2,12 +2,11 @@ import React from "react"
 import type CodecExporter from "../../exporters/codecs"
 import type { TValidationResult, TPresenterProps } from "../codec"
 import Codec from "../codec"
-import { TextExporter } from "../../exporters/codecs/text"
 
 export default class StandardString extends Codec<string, null> {
     readonly slug: string = "StandardString"
     readonly ordered: boolean | "+" | "-" = true
-    readonly exporters: CodecExporter<string>[] = [new TextExporter()] 
+    readonly exporters: CodecExporter<string>[] = []
 
     readonly cellComponent = StandardStringCell
 

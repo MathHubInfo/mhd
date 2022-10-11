@@ -30,8 +30,9 @@ function stringToValue(value: string): any {
 /**
  * (Potentially lossy) encoding of state into the URL
  */
-export function encodeState({ query: { filters }, columns, order, per_page, page }: PageState) {
-    ([
+export function encodeState({ query, columns, order, per_page, page }: PageState) {
+    const { filters } = query ?? { filters: [] }
+    return ([
         ["filters", filters],
         ["columns", columns],
         ["order", order],
