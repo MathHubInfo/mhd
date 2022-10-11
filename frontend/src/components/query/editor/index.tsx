@@ -1,14 +1,15 @@
 import React from "react"
 import LaTeX from "react-latex"
-import { Alert, Button, ButtonGroup, Nav, NavItem, NavLink, Row, TabContent, TabPane } from "reactstrap"
+import { Alert, Button, ButtonGroup, Row } from "reactstrap"
 import type { TCollectionPredicate } from "../../../client"
 import type { MHDFilter, ParsedMHDCollection } from "../../../client/derived"
 import type { TMHDCollection, TMHDPreFilter } from "../../../client/rest"
+import NavTabs from "../../wrappers/navtabs"
 import CounterDisplay from "../results/CounterDisplay"
 import ColumnEditor from "./ColumnEditor"
 import FilterSelector from "./FilterSelector"
-import OrderEditor from "./OrderEditor"
 import styles from "./index.module.css"
+import OrderEditor from "./OrderEditor"
 
 interface QueryEditorProps {
     /** the current collection (if any) */
@@ -38,7 +39,7 @@ interface QueryEditorState {
 
     /** the active tab */
     activeTab: string;
-    
+
     filtersDirty: boolean;
     columnsDirty: boolean;
     orderDirty: boolean;
@@ -99,21 +100,21 @@ export default class QueryEditor extends React.Component<QueryEditorProps, Query
 
     private readonly defaultFilters = () => {
         const { collection: { defaultPropertySlugs, defaultPreFilter } } = this.props
-        
+
         const query = { filters: [], pre_filter: defaultPreFilter }
         const columns = defaultPropertySlugs.slice()
         const order = ""
-        
+
         this.setCleanState(query, columns, order)
     }
 
     private readonly setCleanState = (query: TCollectionPredicate, columns: string[], order: string) => {
         this.props.onQueryApply(query, columns, order)
-        this.setState({ 
+        this.setState({
             query,
             columns,
             order,
-            filtersDirty: false, columnsDirty: false, orderDirty: false, 
+            filtersDirty: false, columnsDirty: false, orderDirty: false,
             applied: true,
         })
     }
@@ -129,67 +130,52 @@ export default class QueryEditor extends React.Component<QueryEditorProps, Query
         const { applied, query, columns, order, activeTab } = this.state
         const { pre_filter, filters } = query
 
-        const dirtyTitle = (title: string, dirty: boolean) => dirty ? `${title} (*)`: title
+        const dirtyTitle = (title: string, dirty: boolean) => dirty ? `${title} (*)` : title
 
 
-        const tabs: Array<{id: string, title: React.ReactNode, children: React.ReactNode}> = [
-            {
-                id: "filter",
-                title: dirtyTitle("Filters", this.state.filtersDirty),
-                children: 
-                <FilterSelector
-                    filters={filters}
-                    collection={collection}
-                    onFilterUpdate={this.setFilters}
-                />,
-            },
-            {
-                id: "columns",
-                title: dirtyTitle("Columns", this.state.columnsDirty),
-                children: (query.filters !== null) &&
-                <ColumnEditor
-                    collection={collection}
-                    columns={columns}
-                    onColumnsUpdate={this.setColumns}
-                />,
-            },
-            {
-                id: "order",
-                title: dirtyTitle("Order", this.state.orderDirty),
-                children: (query.filters !== null) &&
-                <OrderEditor
-                    collection={collection}
-                    order={order}
-                    onOrderUpdate={this.setOrder}
-                />,
-            },
+        const tabs: Array<{ id: string, title: React.ReactNode, children: React.ReactNode }> = [
+
         ]
 
         return <>
-            <Nav tabs>
-                {tabs.map(tab =>
-                    <NavItem key={tab.id}>
-                        <NavLink
-                            className={(activeTab === tab.id) ? "active" : ""}
-                            onClick={this.setActiveTab.bind(this, tab.id)}
-                        >{tab.title}</NavLink>
-                    </NavItem>
-                )}
-            </Nav>
-            <TabContent activeTab={activeTab} className={styles.Tabs}>
-                {tabs.map(tab =>
-                    <TabPane key={tab.id} tabId={tab.id}>
-                        <Row>
-                            {tab.children}
-                        </Row>
-                    </TabPane>
-                )}
-            </TabContent>
-
-            
+            <NavTabs className={styles.Tabs}>{[
+                {
+                    id: "filter",
+                    title: dirtyTitle("Filters", this.state.filtersDirty),
+                    children: <Row>
+                        <FilterSelector
+                            filters={filters}
+                            collection={collection}
+                            onFilterUpdate={this.setFilters}
+                        />
+                    </Row>,
+                },
+                {
+                    id: "columns",
+                    title: dirtyTitle("Columns", this.state.columnsDirty),
+                    children: (query.filters !== null) && <Row>
+                        <ColumnEditor
+                            collection={collection}
+                            columns={columns}
+                            onColumnsUpdate={this.setColumns}
+                        />
+                    </Row>,
+                },
+                {
+                    id: "order",
+                    title: dirtyTitle("Order", this.state.orderDirty),
+                    children: (query.filters !== null) && <Row>
+                        <OrderEditor
+                            collection={collection}
+                            order={order}
+                            onOrderUpdate={this.setOrder}
+                        />
+                    </Row>
+                },
+            ]}</NavTabs>
 
             <div className={styles.Buttons}>
-                
+
                 <ButtonGroup className={styles.ButtonBar}>
                     <Button onClick={this.defaultFilters} color="warning">Defaults</Button>
                     <Button onClick={this.resetFilters} disabled={applied} color="info">Reset</Button>
