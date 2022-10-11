@@ -12,6 +12,7 @@ import CoveringRelationAsDigraph6 from "./impl/CoveringRelationAsDigraph6"
 import PolynomialAsSparseArray from "./impl/PolynomialAsSparseArray"
 import FactorizationAsSparseArray from "./impl/FactorizationAsSparseArray"
 import GraphLabel from "./impl/GraphLabel"
+import MagmaGraphCode from "./impl/MagmaGraphCode"
 
 /**
  * Manages all known codecs
@@ -34,6 +35,7 @@ export default class CodecManager {
         this.register(new ListAsArray(new StandardInt()))
         this.register(new ListAsArray(new StandardJSON()))
         this.register(new GraphLabel())
+        this.register(new MagmaGraphCode())
     }
 
     /** registers a codec with this codec manager */
