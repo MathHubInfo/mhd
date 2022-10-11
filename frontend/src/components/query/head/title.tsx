@@ -3,6 +3,7 @@ import LaTeX from "react-latex"
 import { Badge, Tooltip } from "reactstrap"
 import type { TMHDCollection } from "../../../client/rest"
 import { isProduction } from "../../../controller"
+import WithID from "../../wrappers/withid"
 
 export default class CollectionTitle extends React.Component<{ collection: TMHDCollection }> {
     render() {
@@ -27,7 +28,7 @@ class CountBadge extends React.Component<{count: number | null}> {
         const { count } = this.props
         if (count === null && !isProduction) {
             return <>
-                <HoverBadge id="countBadge" title="Unknown count" color="danger">
+                <HoverBadge title="Unknown count" color="danger">
                     No collection count available.
                     Run <code style={{ fontSize: ".75rem" }}>python manage.py update_count</code> to update it.
                 </HoverBadge>
@@ -38,7 +39,7 @@ class CountBadge extends React.Component<{count: number | null}> {
         if (count === null) return
         
         return <>
-            <HoverBadge id="" simple color="info">
+            <HoverBadge simple color="info">
                 {count} object{count != 1 && "s"}
             </HoverBadge>
             {" "}
@@ -48,7 +49,7 @@ class CountBadge extends React.Component<{count: number | null}> {
 
 class HiddenBadge extends React.Component {
     render() {
-        return <HoverBadge title="Unlisted" id="hiddenBadge" color="warning">
+        return <HoverBadge title="Unlisted" color="warning">
             This collection is not shown on the front page.
             Only share the link with people you trust.
         </HoverBadge>
@@ -57,7 +58,7 @@ class HiddenBadge extends React.Component {
 
 class LargeBadge extends React.Component {
     render() {
-        return <HoverBadge title="Unlisted" id="largeBadge" color="danger">
+        return <HoverBadge title="Unlisted" color="danger">
             This collection is very large and queries might be slow. 
         </HoverBadge>
     }
@@ -68,18 +69,18 @@ interface HoverBadgeProps {
     color?: string;
     title?: React.ReactNode;
     simple?: boolean;
-    id: string;
+    ids: [string];
     children?: React.ReactNode | React.ReactNode[];
 }
 
-class HoverBadge extends React.Component<HoverBadgeProps, { hover: boolean }> {
+const HoverBadge = WithID(class HoverBadge extends React.Component<HoverBadgeProps, { hover: boolean }> {
     state = { hover: false }
 
     private readonly onToggle = () => {
         this.setState(({ hover }) => ({ hover: !hover }))
     }
     render() {
-        const { color, title, id, children, simple } = this.props
+        const { color, title, ids: [id], children, simple } = this.props
         if (simple) {
             return <Badge color={color} id={ id }>{children}</Badge>
         }
@@ -91,4 +92,5 @@ class HoverBadge extends React.Component<HoverBadgeProps, { hover: boolean }> {
             </Tooltip>
         </>
     }
-}
+}, { unsafeQuerySelectorAllSupport: true })
+

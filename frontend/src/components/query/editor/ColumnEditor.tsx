@@ -4,6 +4,7 @@ import type { DraggingStyle, DropResult, NotDraggingStyle } from "react-beautifu
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd"
 import { Col } from "reactstrap"
 import type { ParsedMHDCollection } from "../../../client/derived"
+import WithID from "../../wrappers/withid"
 
 import styles from "./index.module.css" // Import css modules stylesheet as styles
 
@@ -23,7 +24,9 @@ interface ColumnEditorProps {
  * Notifies the caller via onColumnsApply() every time the columns are changed. 
  * Also notifies on mount. 
  */
-export default class ColumnEditor extends Component<ColumnEditorProps> {
+export class ColumnEditor extends Component<ColumnEditorProps & { ids: [string, string] }> {
+    private selectedID = () => this.props.ids[0]
+    private availableID = () => this.props.ids[1]
     private handleDragEnd = (result: DropResult) => {
         // there was no destination => nothing to be dropped
         if (!result.destination) { return }
@@ -34,10 +37,10 @@ export default class ColumnEditor extends Component<ColumnEditorProps> {
             return
         }
         const newSelected = Array.from(this.props.columns)
-        if (result.source.droppableId === "selected") {
+        if (result.source.droppableId === this.selectedID()) {
             newSelected.splice(result.source.index, 1)
         }
-        if (result.destination.droppableId === "selected") {
+        if (result.destination.droppableId === this.selectedID()) {
             newSelected.splice(result.destination.index, 0, result.draggableId)
         }
         this.props.onColumnsUpdate(newSelected)
@@ -62,12 +65,14 @@ export default class ColumnEditor extends Component<ColumnEditorProps> {
             </p>
 
             <DragDropContext onDragEnd={this.handleDragEnd}>
-                <DroppableArea id="selected" caption="Selected columns" items={columns} names={columnNames} />
-                <DroppableArea id="available" caption="Available columns" items={available} names={availableNames} />
+                <DroppableArea id={this.selectedID()} caption="Selected columns" items={columns} names={columnNames} />
+                <DroppableArea id={this.availableID()} caption="Available columns" items={available} names={availableNames} />
             </DragDropContext>
         </Col>
     }
 }
+
+export default WithID(ColumnEditor, { count: 2 })
 
 interface DroppableAreaProps {
     /** id of the area */
