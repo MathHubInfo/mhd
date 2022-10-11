@@ -6,7 +6,7 @@ import CodecExporter from "."
 export class MagmaGraphCodeExporter extends CodecExporter<string>{
     readonly slug = "magma-graph-code"
     readonly displayName = "Magma Code"
-    readonly defaultExtension = "m"
+    readonly defaultExtension = "mag"
 
     protected async open(collection: ParsedMHDCollection, property: TMHDProperty): Promise<Array<string> | null> {
         return []
@@ -23,6 +23,8 @@ export class MagmaGraphCodeExporter extends CodecExporter<string>{
     }
 
     protected async close(acc: Array<string>, aborted: boolean): Promise<Blob> {
-        return new Blob(["[\n" + acc.join(",\n") + "\n];"], { type: "text/plain" })
+        const pre = "    ";
+        const sep = ","
+        return new Blob(["export := [\n" + pre + acc.join(sep + "\n" + pre) + "\n];"], { type: "text/plain" })
     }
 }
