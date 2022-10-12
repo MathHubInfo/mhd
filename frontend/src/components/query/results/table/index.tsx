@@ -1,6 +1,6 @@
 import type { ChangeEvent } from "react"
 import React from "react"
-import style from "./table.module.css"
+import style from "./index.module.css"
 
 import { Button, InputGroup, Input } from "reactstrap"
 
