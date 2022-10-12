@@ -118,7 +118,7 @@ export default class ResultsTable extends Component<ResultsTableProps, ResultsTa
                 Cell: ({ data }: TMHDItem<any>) => <ItemLink collection={this.props.collection} uuid={data._id}/>,
                 Header: () => "",
                 width: 50,
-            } as unknown as TableColumn<any>)
+            } as unknown as TableColumn<unknown>)
 
             return {
                 last_update: time,

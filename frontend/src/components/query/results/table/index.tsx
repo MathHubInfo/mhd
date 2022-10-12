@@ -24,9 +24,6 @@ export type TableColumn<D> = {
     key: React.Key; // key used to uniquely identify this header amongst the other set of columns
     Header: React.ComponentType<ColumnHeaderComponentProps<D>> // component used to render the header
     Cell: React.ComponentType<CellComponentProps<D>> // component used to render cells in this column
-
-    // optional css styling
-    tableBodyRowCellClassName?: string;
 }
 
 export type ColumnHeaderComponentProps<D> = {
@@ -43,7 +40,7 @@ export type TableState = {
 }
 
 /**
- * The table component is a fully-controlled React-Table Component. 
+ * Table implements a fully controlled Table Component
  */
 export default class Table<D> extends React.Component<TableProps<D>> {
 
@@ -107,9 +104,9 @@ export default class Table<D> extends React.Component<TableProps<D>> {
                         {data.map((row: D, idx: number) => <tr key={idx}>
                             {
                                 columns.map((c: TableColumn<D>, idx2: number) => {
-                                    const { Cell, key, tableBodyRowCellClassName: columnCellClassName } = c
+                                    const { Cell, key } = c
 
-                                    return <td key={key || idx2} className={columnCellClassName}>
+                                    return <td key={key || idx2}>
                                         <Cell column={c} data={row} />
                                     </td>
                                 })
