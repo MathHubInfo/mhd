@@ -79,8 +79,8 @@ class MHDCollectionSearch extends React.Component<MHDCollectionSearchProps, MHDC
     }
 
     /** called when the results state is updated */
-    private setResultsState = ({ page, per_page, widths }: TableState) => {
-        this.setState({ page, per_page, widths })
+    private setResultsState = ({ page, per_page }: TableState) => {
+        this.setState({ page, per_page })
     }
 
     componentDidUpdate(prevProps: MHDCollectionSearchProps, prevState: MHDCollectionSearchState) {
@@ -95,7 +95,7 @@ class MHDCollectionSearch extends React.Component<MHDCollectionSearchProps, MHDC
     }
 
     render() {
-        const { query, columns, page, per_page, widths, collection, order } = this.state
+        const { query, columns, page, per_page, collection, order } = this.state
         const { results_loading_delay } = this.props
 
         return (
@@ -139,7 +139,6 @@ class MHDCollectionSearch extends React.Component<MHDCollectionSearchProps, MHDC
                                 order={order}
                                 page={page}
                                 per_page={per_page}
-                                widths={widths}
                                 results_loading_delay={results_loading_delay}
                                 onStateUpdate={this.setResultsState}
                             />

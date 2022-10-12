@@ -3,6 +3,7 @@
 	max-width: 100%;
     overflow-y: auto;
 }
+
 .Controls {
 	margin: auto;
 	width: 100%;
@@ -10,6 +11,10 @@
 	padding: 5px;
 }
 
-.Controls div {
+.Controls > div {
+	display: inline-block;
 	margin-left: 5px;
+}
+.Controls div, .Controls input {
+	text-align: center;
 }

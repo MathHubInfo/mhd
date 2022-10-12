@@ -18,15 +18,6 @@ interface TableProps<D> extends TableState {
     total_pages: number; // the total number of pages, if known 
     per_page: number; // number of elements per-page
     per_page_selection: number[]; // available options of per-page
-
-    // optional css styling
-    tableHeadClassName?: string
-    tableGripClassName?: string
-    tableHeadCellClassName?: string
-    tableBodyRowClassName?: string
-    tableFootClassName?: string
-    tableFootCellClassName?: string
-
 }
 
 export interface TableColumn<D> {
@@ -81,36 +72,40 @@ export default class Table<D> extends React.Component<TableProps<D>> {
     render() {
         const { columns, data,
             page, total_pages, per_page, per_page_selection,
-            tableHeadClassName, tableHeadCellClassName, tableBodyRowClassName,
-            tableFootClassName, tableFootCellClassName } = this.props
+             } = this.props
 
         const controlTable = <div className={style.Controls}>
-            <TableTablePerPageSelector
-                per_page={per_page} per_page_selection={per_page_selection}
-                onChange={this.handlePerPageChange}
-            />
-            <TablePageSelector
-                page={page} total_pages={total_pages}
-                onChange={this.handlePageChange}
-            />
+            <div>
+                <TableTablePerPageSelector
+                    per_page={per_page} per_page_selection={per_page_selection}
+                    onChange={this.handlePerPageChange}
+                />
+            </div>
+            <div>
+                <TablePageSelector
+                    page={page} total_pages={total_pages}
+                    onChange={this.handlePageChange}
+                />
+            </div>
         </div>
 
         return <>
             {controlTable}
+
             <div className={style.ResultsTable}>
                 <table className="table table-bordered">
 
                     <thead>
-                        <tr className={tableHeadClassName}>
+                        <tr>
                             {columns.map((c: TableColumn<D>, idx: number) => {
                                 const { Header, key } = c
-                                return <th className={tableHeadCellClassName} key={(key || idx)}><Header column={c} /></th>
+                                return <th key={(key || idx)}><Header column={c} /></th>
                             })}
                         </tr>
                     </thead>
 
                     <tbody>
-                        {data.map((row: D, idx: number) => <tr key={idx} className={tableBodyRowClassName}>
+                        {data.map((row: D, idx: number) => <tr key={idx}>
                             {
                                 columns.map((c: TableColumn<D>, idx2: number) => {
                                     const { Cell, key, tableBodyRowCellClassName: columnCellClassName } = c
@@ -140,13 +135,11 @@ class TableTablePerPageSelector extends React.Component<TablePerPageSelectorProp
     }
     render() {
         const { per_page, per_page_selection } = this.props
-        return <div style={{ textAlign: "center", display: "inline-block" }}>
-            <Input type="select" onChange={this.handlePerPageChange as any} value={"" + per_page}>
-                {per_page_selection.map(pp => {
-                    return <option key={pp} value={"" + pp}>{pp}</option>
-                })}
-            </Input>
-        </div>
+        return <Input type="select" onChange={this.handlePerPageChange as any} value={"" + per_page}>
+            {per_page_selection.map(pp => {
+                return <option key={pp} value={"" + pp}>{pp}</option>
+            })}
+        </Input>
     }
 }
 
@@ -167,18 +160,16 @@ class TablePageSelector extends React.Component<TablePageSelectorProps> {
         const has_prev_page = page > 0
         const has_next_page = page + 1 < total_pages
 
-        return <div style={{ display: "inline-block" }}>
-            <InputGroup>
-                {has_prev_page ?
-                    <Button onClick={this.navigatePrevPage}>&lt;&lt;</Button> :
-                    <Button disabled>&lt;&lt;</Button>
-                }
-                <Input disabled style={{ textAlign: "center" }} value={`${page + 1} / ${total_pages}`} />
-                {has_next_page ?
-                    <Button onClick={this.navigateNextPage}>&gt;&gt;</Button> :
-                    <Button disabled>&gt;&gt;</Button>
-                }
-            </InputGroup>
-        </div>
+        return <InputGroup>
+            {has_prev_page ?
+                <Button onClick={this.navigatePrevPage}>&lt;&lt;</Button> :
+                <Button disabled>&lt;&lt;</Button>
+            }
+            <Input disabled style={{ textAlign: "center" }} value={`${page + 1} / ${total_pages}`} />
+            {has_next_page ?
+                <Button onClick={this.navigateNextPage}>&gt;&gt;</Button> :
+                <Button disabled>&gt;&gt;</Button>
+            }
+        </InputGroup>
     }
 }
