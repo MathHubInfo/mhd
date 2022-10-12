@@ -6,7 +6,7 @@ import type { TMHDCollection, TMHDPreFilter, TMHDProperty } from "./rest"
 /**
  * A parsed collection with all derived information needed by any component anywhere
  */
-export interface ParsedMHDCollection extends TMHDCollection {
+export type ParsedMHDCollection = TMHDCollection & {
     /** a map from slug to slug-schema */
     propMap: Map<string, TMHDProperty>
 
@@ -33,7 +33,7 @@ export interface ParsedMHDCollection extends TMHDCollection {
 }
 
 /** a single instantiated filter */
-export interface MHDFilter {
+export type MHDFilter = {
     slug: string;
     value: string | null;
 }

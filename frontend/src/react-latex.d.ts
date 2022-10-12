@@ -5,7 +5,7 @@ declare module "react-latex" {
     type StrictHandler = (errorCode: string, errorMsg: string, token: any) => ErrorHandling | undefined
     type TrustHandler = (context: {}) => boolean 
 
-    interface LatexProps {
+    type LatexProps = {
         children?: string;
         displayMode?: boolean;
         leqno?: boolean;

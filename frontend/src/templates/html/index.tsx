@@ -14,7 +14,7 @@ export type TNodeList = Node[] | NodeListOf<Node> | NodeList
 /**
  * Options to be passed to IHTMLReactParserOptions
  */
-export interface IHTMLReactParserOptions {
+export type IHTMLReactParserOptions = {
     /**
      * An optional function to call over each domnode.
      *

@@ -4,7 +4,7 @@ import style from "./table.module.css"
 
 import { Button, InputGroup, Input } from "reactstrap"
 
-interface TableProps<D> extends TableState {
+type TableProps<D> = TableState & {
 
     // data itself
     columns: TableColumn<D>[] // the ordered set of columns
@@ -20,7 +20,7 @@ interface TableProps<D> extends TableState {
     per_page_selection: number[]; // available options of per-page
 }
 
-export interface TableColumn<D> {
+export type TableColumn<D> = {
     key: React.Key; // key used to uniquely identify this header amongst the other set of columns
     Header: React.ComponentType<ColumnHeaderComponentProps<D>> // component used to render the header
     Cell: React.ComponentType<CellComponentProps<D>> // component used to render cells in this column
@@ -29,15 +29,15 @@ export interface TableColumn<D> {
     tableBodyRowCellClassName?: string;
 }
 
-export interface ColumnHeaderComponentProps<D> {
+export type ColumnHeaderComponentProps<D> = {
     column: TableColumn<D>
 }
 
-export interface CellComponentProps<D> extends ColumnHeaderComponentProps<D> {
+export type CellComponentProps<D> = ColumnHeaderComponentProps<D> & {
     data: D,
 }
 
-export interface TableState {
+export type TableState = {
     per_page: number;
     page: number;
 }
@@ -123,7 +123,7 @@ export default class Table<D> extends React.Component<TableProps<D>> {
     }
 }
 
-interface TablePerPageSelectorProps extends Pick<TableProps<any>, "per_page" | "per_page_selection"> {
+type TablePerPageSelectorProps = Pick<TableProps<any>, "per_page" | "per_page_selection"> & {
     onChange: (newPerPage: number) => void;
 }
 
@@ -142,7 +142,7 @@ class TableTablePerPageSelector extends React.Component<TablePerPageSelectorProp
     }
 }
 
-interface TablePageSelectorProps extends Pick<TableProps<any>, "page" | "total_pages"> {
+type TablePageSelectorProps = Pick<TableProps<any>, "page" | "total_pages"> & {
     onChange: (newPage: number) => void;
 }
 

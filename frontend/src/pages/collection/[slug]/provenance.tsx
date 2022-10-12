@@ -6,7 +6,7 @@ import { MHDBackendClient, ResponseError } from "../../../client"
 import type { TMHDCollection } from "../../../client/rest"
 import MHDMain from "../../../components/common/MHDMain"
 
-interface AboutPageProps {
+type AboutPageProps = {
     collection: TMHDCollection,
 }
 

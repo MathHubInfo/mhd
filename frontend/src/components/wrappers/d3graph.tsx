@@ -3,12 +3,12 @@ import * as d3 from "d3"
 
 import style from "./d3graph.module.css"
 
-interface Graph {
+type Graph = {
     edges: [number, number][]
     nodes: number
 }
 
-interface D3GraphStyle {
+type D3GraphStyle = {
     width: number;
     height: number;
 
@@ -20,7 +20,7 @@ interface D3GraphStyle {
     labelClass: string;
 }
 
-interface D3ForceGraphProps {
+type D3ForceGraphProps = {
     /** graph being rendered */
     graph: Graph
 
@@ -88,17 +88,17 @@ export default class D3ForceGraph extends React.Component<D3ForceGraphProps> {
     }
 }
 
-interface D3GraphInstanceProps {
+type D3GraphInstanceProps = {
     /** graph being rendered */
     graph: Graph
     strength: number;
     style: D3GraphStyle;
 }
 
-interface D3Node extends d3.SimulationNodeDatum {
+type D3Node = d3.SimulationNodeDatum & {
     id: number;
 }
-interface D3Link extends d3.SimulationLinkDatum<D3Node> { }
+type D3Link = d3.SimulationLinkDatum<D3Node>
 
 
 class D3GraphInstance extends React.Component<D3GraphInstanceProps> {

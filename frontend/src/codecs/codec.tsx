@@ -5,11 +5,11 @@ import { isProduction } from "../controller"
 import { CopyButton } from "../components/wrappers/share"
 import type CodecExporter from "../exporters/codecs"
 import PropertyHeader from "../components/query/results/PropertyHeader"
-import { CellComponentProps, TableColumn } from "../components/query/results/table"
+import type { CellComponentProps, TableColumn } from "../components/query/results/table"
 
 type ReactComponent<T> = React.ComponentClass<T> | React.FunctionComponent<T>
 
-export interface TCellProps<CodecType extends Codec<ElementType, FilterType>, ElementType, FilterType> {
+export type TCellProps<CodecType extends Codec<ElementType, FilterType>, ElementType, FilterType> = {
     /** the value of this cell (if any) */
     value: ElementType | null,
 
@@ -46,7 +46,7 @@ export type TValidationResult = {
 }
 
 
-export interface TFilterViewerProps<CodecType extends Codec<ElementType, FilterType>, ElementType, FilterType> {
+export type TFilterViewerProps<CodecType extends Codec<ElementType, FilterType>, ElementType, FilterType> = {
     /** the codec instance used for this viewer */
     codec: CodecType
 
@@ -57,7 +57,7 @@ export interface TFilterViewerProps<CodecType extends Codec<ElementType, FilterT
     children: React.ReactChild;
 }
 
-export interface TFilterEditorProps<CodecType extends Codec<ElementType, FilterType>, ElementType, FilterType> {
+export type TFilterEditorProps<CodecType extends Codec<ElementType, FilterType>, ElementType, FilterType> = {
     /** the codec instance used for this viewer */
     codec: CodecType
 
@@ -77,7 +77,7 @@ export interface TFilterEditorProps<CodecType extends Codec<ElementType, FilterT
     onApply: () => void
 }
 
-export interface TPresenterProps<CodecType extends Codec<ElementType, FilterType>, ElementType, FilterType> extends TCellProps<CodecType, ElementType, FilterType> {
+export type TPresenterProps<CodecType extends Codec<ElementType, FilterType>, ElementType, FilterType> = TCellProps<CodecType, ElementType, FilterType> & {
     /** is there a copy button that is being rendered? */
     hasCopyButton: boolean;
 } 
@@ -214,7 +214,7 @@ class UnsupportedFilterEditor<ElementType, FilterType> extends React.Component<T
     }
 }
 
-interface RenderState<E, F> {
+type RenderState<E, F> = {
     error: boolean;
     copied: boolean;
     text: string | null;

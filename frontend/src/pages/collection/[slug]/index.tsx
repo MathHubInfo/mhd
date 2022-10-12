@@ -18,7 +18,7 @@ import QueryEditor from "../../../components/query/editor"
 import Exporters from "../../../components/query/results/Exporter"
 import type { TableState } from "../../../components/query/results/table"
 
-interface MHDCollectionSearchProps {
+type MHDCollectionSearchProps = {
     router: NextRouter;
 
     /** collection that was read */
@@ -28,7 +28,7 @@ interface MHDCollectionSearchProps {
     results_loading_delay: number;
 }
 
-interface MHDCollectionSearchState extends PageState {
+type MHDCollectionSearchState = PageState & {
     collection: ParsedMHDCollection;
 }
 

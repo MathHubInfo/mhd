@@ -8,7 +8,7 @@ import WithID from "../../wrappers/withid"
 
 import styles from "./index.module.css" // Import css modules stylesheet as styles
 
-interface ColumnEditorProps {
+type ColumnEditorProps = {
     /** the current collection */
     collection: ParsedMHDCollection;
 
@@ -74,7 +74,7 @@ export class ColumnEditor extends Component<ColumnEditorProps & { ids: [string, 
 
 export default WithID(ColumnEditor, { count: 2 })
 
-interface DroppableAreaProps {
+type DroppableAreaProps = {
     /** id of the area */
     id: string;
 
@@ -122,7 +122,7 @@ function getListStyle(isDraggingOver: boolean): CSSProperties {
     }
 }
 
-interface DraggableColumnProps {
+type DraggableColumnProps = {
     /** the index of the column */
     index: number;
 

@@ -18,7 +18,7 @@ class Cell extends React.Component<{ data: any }> {
     }
 }
 
-interface DebugTableState {
+type DebugTableState = {
     table: TableState,
     columns: TableColumn<any>[]
 }

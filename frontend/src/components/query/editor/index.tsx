@@ -11,7 +11,7 @@ import FilterSelector from "./FilterSelector"
 import styles from "./index.module.css"
 import OrderEditor from "./OrderEditor"
 
-interface QueryEditorProps {
+type QueryEditorProps = {
     /** the current collection (if any) */
     collection: ParsedMHDCollection;
 
@@ -31,7 +31,7 @@ interface QueryEditorProps {
     results_loading_delay: number;
 }
 
-interface QueryEditorState {
+type QueryEditorState = {
     /** current query + params being edited */
     query: TCollectionPredicate;
     columns: string[];

@@ -13,7 +13,7 @@ import { isProduction, Item } from "../../../controller"
 import { PropertyHeaderContext } from "./PropertyHeader"
 import NavTabs from "../../wrappers/navtabs"
 
-interface ResultsTableProps extends TableState {
+type ResultsTableProps = TableState & {
     /** the current collection */
     collection: ParsedMHDCollection;
 
@@ -33,7 +33,7 @@ interface ResultsTableProps extends TableState {
     onStateUpdate: (state: TableState) => void;
 }
 
-interface ResultsTableState {
+type ResultsTableState = {
     /** set to true whenever it is loading */
     loading: boolean;
 

@@ -9,7 +9,7 @@ import PropertyHover from "../../common/PropertyInfoButton"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faPlus, faMinus, faCheck, faPen } from "@fortawesome/free-solid-svg-icons"
 
-interface FilterSelectorProps {
+type FilterSelectorProps = {
     /** the current collection */
     collection: ParsedMHDCollection;
 
@@ -124,7 +124,7 @@ export default class FilterSelector extends React.Component<FilterSelectorProps>
     }
 }
 
-interface TSelectedFilterProps<S, T> {
+type TSelectedFilterProps<S, T> = {
     /** the schema of this filter */
     property: TMHDProperty;
 
@@ -141,7 +141,7 @@ interface TSelectedFilterProps<S, T> {
     onRemoveFilter: () => void;
 }
 
-interface TSelectedFilterState<T> {
+type TSelectedFilterState<T> = {
     /** are we in edit mode? */
     edit: boolean;
 

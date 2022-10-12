@@ -5,7 +5,7 @@ import { MHDBackendClient } from "../../../client"
 import type { ParsedMHDCollection } from "../../../client/derived"
 import { isProduction } from "../../../controller"
 
-interface CounterDisplayProps {
+type CounterDisplayProps = {
     /** the current collection (if any) */
     collection: ParsedMHDCollection;
 
@@ -16,7 +16,7 @@ interface CounterDisplayProps {
     results_loading_delay: number;
 }
 
-interface CounterDisplayState {
+type CounterDisplayState = {
     /** boolean indicating if the component is currently loading data */
     loading: boolean;
 

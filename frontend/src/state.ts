@@ -3,7 +3,7 @@ import type { TCollectionPredicate } from "./client"
 import type { TableState } from "./components/query/results/table"
 
 // TODO: pre_filter in the url
-export interface PageState extends TableState {
+export type PageState = TableState & {
     /** the query */
     query: TCollectionPredicate;
 

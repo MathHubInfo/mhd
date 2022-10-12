@@ -7,7 +7,7 @@ import type { ParsedMHDCollection } from "../../../client/derived"
 import type CollectionExporter from "../../../exporters/collection"
 import ExportButton from "../../../exporters/button"
 
-interface ExportersProps {
+type ExportersProps = {
     collection: ParsedMHDCollection,
     query: TCollectionPredicate,
     order: string,

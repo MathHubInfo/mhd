@@ -5,7 +5,7 @@ import Sortable from "../sort/sortable"
 
 import styles from "./index.module.css" // Import css modules stylesheet as styles
 
-interface OrderEditorProps {
+type OrderEditorProps = {
     /** the current collection */
     collection: ParsedMHDCollection;
 

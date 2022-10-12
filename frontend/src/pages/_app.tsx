@@ -55,7 +55,7 @@ export default function MHDApp({ Component, pageProps }: AppProps<{}>) {
 //
 
 
-interface MHDHeaderState {
+type MHDHeaderState = {
     isOpen: boolean;
 }
 

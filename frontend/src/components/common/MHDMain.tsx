@@ -4,7 +4,7 @@ import styles from "./MHDMain.module.css"
 import Head from "next/head"
 import { appTitle, isProduction } from "../../controller"
 
-interface MHDMainProps {
+type MHDMainProps = {
     /** title of the current page */
     title: React.ReactNode
 

@@ -13,11 +13,11 @@ import { isProduction, Item } from "../../../controller"
 import { CellRenderContext, RenderCodec } from "../../../codecs/codec"
 import type { ParsedMHDCollection } from "../../../client/derived"
 
-interface TemplateContext<T> {
+type TemplateContext<T> = {
     collection: ParsedMHDCollection;
     item: TMHDItem<T>;
 }
-interface MHDItemViewProps<T> {
+type MHDItemViewProps<T> = {
     collection: TMHDCollection;
     item: TMHDItem<T>;
     html?: string;
@@ -127,7 +127,7 @@ function Info({ property, collection }: { collection: ParsedMHDCollection, prope
     return <PropertyHover prop={prop} />
 }
 
-interface ManagerContext extends TemplateContext<any> {
+type ManagerContext = TemplateContext<any> & {
     args: Array<any>
 }
 

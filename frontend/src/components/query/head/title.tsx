@@ -65,7 +65,7 @@ class LargeBadge extends React.Component {
 }
 
 
-interface HoverBadgeProps {
+type HoverBadgeProps = {
     color?: string;
     title?: React.ReactNode;
     simple?: boolean;

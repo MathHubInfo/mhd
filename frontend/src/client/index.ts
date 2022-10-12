@@ -1,6 +1,6 @@
 import CodecManager from "../codecs"
 import type Codec from "../codecs/codec"
-import type { TableColumn } from "../components/wrappers/table"
+import type { TableColumn } from "../components/query/results/table"
 import ExporterManager from "../exporters/manager"
 import type { MHDFilter, ParsedMHDCollection } from "./derived"
 import type { TDRFPagedResponse, TMHDCollection, TMHDItem, TMHDPreFilter, TMHDProperty } from "./rest"
