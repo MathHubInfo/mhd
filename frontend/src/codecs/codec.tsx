@@ -1,11 +1,11 @@
 import React from "react"
 import type { TMHDProperty, TMHDItem } from "../client/rest"
 import { Badge } from "reactstrap"
-import type { TableColumn, CellComponentProps } from "../components/wrappers/table"
 import { isProduction } from "../controller"
 import { CopyButton } from "../components/wrappers/share"
 import type CodecExporter from "../exporters/codecs"
 import PropertyHeader from "../components/query/results/PropertyHeader"
+import { CellComponentProps, TableColumn } from "../components/query/results/table"
 
 type ReactComponent<T> = React.ComponentClass<T> | React.FunctionComponent<T>
 

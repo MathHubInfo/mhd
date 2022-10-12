@@ -71,8 +71,7 @@ export default class Table<D> extends React.Component<TableProps<D>> {
 
     render() {
         const { columns, data,
-            page, total_pages, per_page, per_page_selection,
-             } = this.props
+            page, total_pages, per_page, per_page_selection } = this.props
 
         const controlTable = <div className={style.Controls}>
             <div>

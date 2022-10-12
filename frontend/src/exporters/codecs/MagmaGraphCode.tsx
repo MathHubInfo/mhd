@@ -23,7 +23,7 @@ export class MagmaGraphCodeExporter extends CodecExporter<string>{
     }
 
     protected async close(acc: Array<string>, aborted: boolean): Promise<Blob> {
-        const pre = "    ";
+        const pre = "    "
         const sep = ","
         return new Blob(["export := [\n" + pre + acc.join(sep + "\n" + pre) + "\n];"], { type: "text/plain" })
     }

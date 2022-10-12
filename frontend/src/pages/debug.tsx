@@ -1,7 +1,7 @@
 import type { GetStaticProps } from "next"
 import React from "react"
-import type { CellComponentProps, TableColumn, TableState } from "../components/wrappers/table"
-import Table from "../components/wrappers/table"
+import type { CellComponentProps, TableColumn, TableState } from "../components/query/results/table"
+import Table from "../components/query/results/table"
 import { isProduction } from "../controller"
 
 // TODO: Consider making this page debug only

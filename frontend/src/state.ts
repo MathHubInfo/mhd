@@ -1,6 +1,6 @@
-import type { TableState } from "./components/wrappers/table"
 import type { MHDFilter } from "./client/derived"
 import type { TCollectionPredicate } from "./client"
+import type { TableState } from "./components/query/results/table"
 
 // TODO: pre_filter in the url
 export interface PageState extends TableState {

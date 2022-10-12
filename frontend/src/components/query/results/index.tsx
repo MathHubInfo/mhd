@@ -5,8 +5,8 @@ import type { ParsedMHDCollection } from "../../../client/derived"
 import type { TDRFPagedResponse, TMHDItem } from "../../../client/rest"
 import { Row, Col, Spinner } from "reactstrap"
 import Link from "next/link"
-import type { TableColumn, TableState } from "../../wrappers/table"
-import Table from "../../wrappers/table"
+import type { TableColumn, TableState } from "./table"
+import Table from "./table"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons"
 import { isProduction, Item } from "../../../controller"
@@ -191,13 +191,13 @@ export default class ResultsTable extends Component<ResultsTableProps, ResultsTa
                             {loading && <Spinner color="primary" />}
                         </Col>
                     </Row>
-                </PropertyHeaderContext.Provider> 
+                </PropertyHeaderContext.Provider>, 
                 },
                 {
                     id: "export",
                     title: "Export",
-                    children: <>Not implemented yet</>
-                }
+                    children: <>Not implemented yet</>,
+                },
             ]}</NavTabs>
         )
     }

@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
+import { Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap"
 
 type NavTabProps = {
     children: Array<{

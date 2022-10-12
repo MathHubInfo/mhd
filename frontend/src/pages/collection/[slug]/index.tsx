@@ -7,16 +7,16 @@ import type { TCollectionPredicate } from "../../../client"
 import { MHDBackendClient, ResponseError } from "../../../client"
 import type { ParsedMHDCollection } from "../../../client/derived"
 import type { TMHDCollection } from "../../../client/rest"
-import type { TableState } from "../../../components/wrappers/table"
 import type { PageState } from "../../../state"
 import { decodeState, encodeState } from "../../../state"
 import { CollectionIndex } from "../../../controller"
 import CollectionTitle, { CollectionFlags } from "../../../components/query/head/title"
 import CollectionInfo from "../../../components/query/head/info"
 import { MHDMainHead } from "../../../components/common/MHDMain"
-import ResultsTable from "../../../components/query/results/ResultsTable"
+import ResultsTable from "../../../components/query/results"
 import QueryEditor from "../../../components/query/editor"
 import Exporters from "../../../components/query/results/Exporter"
+import type { TableState } from "../../../components/query/results/table"
 
 interface MHDCollectionSearchProps {
     router: NextRouter;

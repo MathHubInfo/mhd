@@ -123,19 +123,12 @@ export default class QueryEditor extends React.Component<QueryEditorProps, Query
         this.applyFilters()
     }
 
-    private readonly setActiveTab = (id: string) => this.setState({ activeTab: id })
-
     render() {
         const { collection, results_loading_delay } = this.props
-        const { applied, query, columns, order, activeTab } = this.state
+        const { applied, query, columns, order } = this.state
         const { pre_filter, filters } = query
 
         const dirtyTitle = (title: string, dirty: boolean) => dirty ? `${title} (*)` : title
-
-
-        const tabs: Array<{ id: string, title: React.ReactNode, children: React.ReactNode }> = [
-
-        ]
 
         return <>
             <NavTabs className={styles.Tabs}>{[
@@ -170,7 +163,7 @@ export default class QueryEditor extends React.Component<QueryEditorProps, Query
                             order={order}
                             onOrderUpdate={this.setOrder}
                         />
-                    </Row>
+                    </Row>,
                 },
             ]}</NavTabs>
 
