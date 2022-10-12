@@ -1,8 +1,35 @@
 .ResultsTable {
 	white-space: nowrap;
 	max-width: 100%;
+	max-height: 75vh;
     overflow-y: auto;
+	overflow-x: auto;
 }
+
+.ResultsTable thead {
+	position: sticky;
+	background: white;
+	top: 0;
+}
+
+.ResultsTable thead th {
+	box-shadow: inset 1px 0px 0px 0px black;
+}
+
+.ResultsTable thead,
+.ResultsTable thead th:after {
+	z-index: 1000; /* needed to be above the math */
+}
+
+.ResultsTable thead th:after {
+  content: '';
+  position: absolute;
+  left: -1px;
+  width: 100%;
+  bottom: -1px;
+  border-bottom: 1px solid black;
+}
+
 
 .Controls {
 	margin: auto;
