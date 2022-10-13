@@ -1,7 +1,7 @@
 .ResultsTable {
 	white-space: nowrap;
 	max-width: 100%;
-	max-height: 75vh;
+	height: 75vh;
     overflow-y: auto;
 	overflow-x: auto;
 }
@@ -28,20 +28,4 @@
   width: 100%;
   bottom: -1px;
   border-bottom: 1px solid black;
-}
-
-
-.Controls {
-	margin: auto;
-	width: 100%;
-	text-align: center;
-	padding: 5px;
-}
-
-.Controls > div {
-	display: inline-block;
-	margin-left: 5px;
-}
-.Controls div, .Controls input {
-	text-align: center;
 }

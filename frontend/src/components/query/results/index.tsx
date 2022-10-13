@@ -1,19 +1,21 @@
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import Link from "next/link"
 import React, { Component } from "react"
+import { Col, Row } from "reactstrap"
 import type { TCollectionPredicate } from "../../../client"
 import { MHDBackendClient } from "../../../client"
 import type { ParsedMHDCollection } from "../../../client/derived"
 import type { TDRFPagedResponse, TMHDItem } from "../../../client/rest"
-import { Row, Col, Spinner } from "reactstrap"
-import Link from "next/link"
-import type { TableColumn, TableState } from "./table"
-import Table from "./table"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons"
 import { isProduction, Item } from "../../../controller"
-import { PropertyHeaderContext } from "./PropertyHeader"
 import NavTabs from "../../wrappers/navtabs"
+import { PropertyHeaderContext } from "./PropertyHeader"
+import type { TableColumn } from "./table"
+import Table from "./table"
+import type { ControlsState } from "./table/controls"
+import Controls from "./table/controls"
 
-type ResultsTableProps = TableState & {
+type ResultsDisplayProps = ControlsState & {
     /** the current collection */
     collection: ParsedMHDCollection;
 
@@ -30,10 +32,10 @@ type ResultsTableProps = TableState & {
     results_loading_delay: number;
 
     /** called whenever the state is updated in this component */
-    onStateUpdate: (state: TableState) => void;
+    onStateUpdate: (state: ControlsState) => void;
 }
 
-type ResultsTableState = {
+type ResultsDisplayState = {
     /** set to true whenever it is loading */
     loading: boolean;
 
@@ -57,13 +59,13 @@ type ResultsTableState = {
  * Component that displays results based on a filter input and order input. 
  * Notifies the parent whenever the page state is upated. 
  */
-export default class ResultsTable extends Component<ResultsTableProps, ResultsTableState> {
+export default class ResultsDisplay extends Component<ResultsDisplayProps, ResultsDisplayState> {
 
-    state: ResultsTableState = {
+    state: ResultsDisplayState = {
         loading: true,
 
         data: [],
-        total_pages: -1, 
+        total_pages: -1,
 
         columns: [],
 
@@ -72,7 +74,7 @@ export default class ResultsTable extends Component<ResultsTableProps, ResultsTa
     }
 
     /** called whenever the table state is updated */
-    handleTableStateUpdate = ({ page, per_page }: TableState) => {
+    handleTableStateUpdate = ({ page, per_page }: ControlsState) => {
         //notify the parent of the new state
         this.props.onStateUpdate({ page, per_page })
     }
@@ -89,7 +91,7 @@ export default class ResultsTable extends Component<ResultsTableProps, ResultsTa
         // we want to set loading to true, to display a loading indicator
         // however, to avoid flashing this indicator when loading is quick
         setTimeout(() => {
-            this.setState(({ last_update }: ResultsTableState) => {
+            this.setState(({ last_update }: ResultsDisplayState) => {
                 if (last_update >= time) return null // an update was applied
 
                 return { loading: true }
@@ -107,15 +109,15 @@ export default class ResultsTable extends Component<ResultsTableProps, ResultsTa
         }
 
         // for introducing a dummy delay of 2 seconds, uncomment the following line
-        // await new Promise((resolve) => setTimeout(resolve, 2000));
+        //  await new Promise((resolve) => setTimeout(resolve, 2000));
 
-        this.setState(({ last_update }: ResultsTableState) => {
+        this.setState(({ last_update }: ResultsDisplayState) => {
             if (last_update > time) return null // newer update was already applied
 
             // pick the appropriate columns
             const columns = this.props.columns.map(c => this.props.collection.columnMap.get(c)!)
             columns.unshift({
-                Cell: ({ data }: TMHDItem<any>) => <ItemLink collection={this.props.collection} uuid={data._id}/>,
+                Cell: ({ data }: TMHDItem<any>) => <ItemLink collection={this.props.collection} uuid={data._id} />,
                 Header: () => "",
                 width: 50,
             } as unknown as TableColumn<unknown>)
@@ -131,18 +133,18 @@ export default class ResultsTable extends Component<ResultsTableProps, ResultsTa
     }
 
     /** computes a hash of the properties that influence data fetching */
-    private static computeDataUpdateHash({ query, collection, columns, order, page, per_page }: ResultsTableProps): string {
+    private static computeDataUpdateHash({ query, collection, columns, order, page, per_page }: ResultsDisplayProps): string {
         return MHDBackendClient.hashFetchItems(collection, columns, query, order, page, per_page)
     }
 
-    private static computeResetHash({ collection, query, order }: ResultsTableProps): string {
+    private static computeResetHash({ collection, query, order }: ResultsDisplayProps): string {
         return MHDBackendClient.hashFetchItems(collection, [], query, order, 1, 1)
     }
-    
-    componentDidUpdate(prevProps: ResultsTableProps, prevState: ResultsTableState) {
+
+    componentDidUpdate(prevProps: ResultsDisplayProps, prevState: ResultsDisplayState) {
         // whenever the state drastically changed (i.e. filters changed)
         // we need to reset the page number and forcibly
-        if (ResultsTable.computeResetHash(prevProps) !== ResultsTable.computeResetHash(this.props)) {
+        if (ResultsDisplay.computeResetHash(prevProps) !== ResultsDisplay.computeResetHash(this.props)) {
             this.setState({
                 loading: true,
                 data: [],
@@ -153,7 +155,7 @@ export default class ResultsTable extends Component<ResultsTableProps, ResultsTa
         }
 
         // check if any parameters have changed or we forced an update
-        if (this.state.force_update || ResultsTable.computeDataUpdateHash(prevProps) !== ResultsTable.computeDataUpdateHash(this.props)) {
+        if (this.state.force_update || ResultsDisplay.computeDataUpdateHash(prevProps) !== ResultsDisplay.computeDataUpdateHash(this.props)) {
             // when an update was forced, reset force_update to false
             if (this.state.force_update) {
                 this.setState({ force_update: false })
@@ -176,22 +178,32 @@ export default class ResultsTable extends Component<ResultsTableProps, ResultsTa
                     id: "table",
                     title: "Table",
                     children: <PropertyHeaderContext.Provider value={{ collection, query, order }}>
-                    <Row>
-                        <Col>
-                            {!loading && <Table
-                                total_pages={total_pages}
-                                per_page_selection={[10, 25, 50, 100]}
-                                columns={columns}
-                                data={data}
-                                onStateChange={this.handleTableStateUpdate}
-                                
-                                page={this.props.page}
-                                per_page={this.props.per_page}
-                            />}
-                            {loading && <Spinner color="primary" />}
-                        </Col>
-                    </Row>
-                </PropertyHeaderContext.Provider>, 
+                        <Row>
+                            <Col>
+                                <Controls
+                                    total_pages={total_pages}
+                                    per_page_selection={[10, 25, 50, 100]}
+                                    onStateChange={this.handleTableStateUpdate}
+
+                                    page={this.props.page}
+                                    per_page={this.props.per_page}
+                                />
+                                {<Table
+                                    loading={loading}
+                                    columns={columns}
+                                    data={data}
+                                />}
+                                <Controls
+                                    total_pages={total_pages}
+                                    per_page_selection={[10, 25, 50, 100]}
+                                    onStateChange={this.handleTableStateUpdate}
+
+                                    page={this.props.page}
+                                    per_page={this.props.per_page}
+                                />
+                            </Col>
+                        </Row>
+                    </PropertyHeaderContext.Provider>,
                 },
                 {
                     id: "export",
@@ -203,13 +215,13 @@ export default class ResultsTable extends Component<ResultsTableProps, ResultsTa
     }
 }
 
-class ItemLink extends React.Component<{collection: ParsedMHDCollection, uuid: string}>{
+class ItemLink extends React.Component<{ collection: ParsedMHDCollection, uuid: string }>{
     render() {
         const { collection, uuid } = this.props
         return (
             <Link href={Item(collection.slug, uuid)}>
                 <a target="_blank">
-                    <FontAwesomeIcon icon={faInfoCircle} transform="shrink-4 up-3"/>
+                    <FontAwesomeIcon icon={faInfoCircle} transform="shrink-4 up-3" />
                 </a>
             </Link>
         )

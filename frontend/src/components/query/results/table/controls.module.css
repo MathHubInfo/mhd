@@ -1,0 +1,16 @@
+.Controls {
+    margin: auto;
+    width: 100%;
+    text-align: center;
+    padding: 5px;
+}
+
+.Controls>div {
+    display: inline-block;
+    margin-left: 5px;
+}
+
+.Controls div,
+.Controls input {
+    text-align: center;
+}

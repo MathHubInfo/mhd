@@ -13,7 +13,7 @@ import { CollectionIndex } from "../../../controller"
 import CollectionTitle, { CollectionFlags } from "../../../components/query/head/title"
 import CollectionInfo from "../../../components/query/head/info"
 import { MHDMainHead } from "../../../components/common/MHDMain"
-import ResultsTable from "../../../components/query/results"
+import ResultsDisplay from "../../../components/query/results"
 import QueryEditor from "../../../components/query/editor"
 import Exporters from "../../../components/query/results/Exporter"
 import type { TableState } from "../../../components/query/results/table"
@@ -132,7 +132,7 @@ class MHDCollectionSearch extends React.Component<MHDCollectionSearchProps, MHDC
                         }
                         {
                             (query.filters !== null) && (columns !== null) &&
-                            <ResultsTable
+                            <ResultsDisplay
                                 collection={collection}
                                 query={query}
                                 columns={columns}
