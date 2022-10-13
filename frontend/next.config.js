@@ -1,6 +1,7 @@
 const withBundleAnalyzer = require("@next/bundle-analyzer")({
   enabled: process.env.ANALYZE === "true",
 })
+const path = require("path")
 
 const singleCollection = process.env.NEXT_PUBLIC_SINGLE_COLLECTION_MODE
 
@@ -8,6 +9,26 @@ module.exports = withBundleAnalyzer({
   output: "standalone",
   eslint: {
     dirs: ["."], 
+  },
+  webpack(config, context) {
+    // read the typescript paths
+    const tspaths = require("./tsconfig.json").compilerOptions.paths
+    
+    // turn them into webpack aliases, despite them being supposedly supported
+    // as per https://nextjs.org/docs/advanced-features/module-path-aliases
+    const wpalias = {}
+    Object.entries(tspaths).forEach(([name, alias]) => {
+      if(alias.length != 1) return
+      wpalias[name] = path.resolve(context.dir, alias[0])
+    })
+
+    // and configure webpack resolve aliases
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      ...wpalias,
+    }
+
+    return config
   },
   async redirects() {
     if (singleCollection) return []

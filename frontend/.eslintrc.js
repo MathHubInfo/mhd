@@ -2,6 +2,7 @@ module.exports = {
     parser: "@typescript-eslint/parser",
     plugins: ["@typescript-eslint"],
     extends: ["next/core-web-vitals"],
+    ignorePatterns: ["vendor"],
     rules: {
         "quotes": ["error", "double", { avoidEscape: true }],
         "jsx-quotes": ["error", "prefer-double"],

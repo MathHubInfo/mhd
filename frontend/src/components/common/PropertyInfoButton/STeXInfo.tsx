@@ -5,13 +5,14 @@ import InfoButton from "./InfoButton"
 
 import styles from "./STeXInfo.module.css"
 import { displayLink, fetchFragment } from "../../../stex"
+import { mmtHTMLToReact } from "@stex-react/stex-react-renderer"
 
 
 export default class STeXInfo extends React.Component<InfoButtonFlags & { uri: string; prop: TMHDProperty }> {
     render() {
         const { uri, prop: { description }, ...rest } = this.props
         return <InfoButton href={displayLink(uri)} className={styles.Tooltip} {...rest}>
-            { description && <>{description}<hr /></>}
+            {description && <>{description}<hr /></>}
             <STeXFragment uri={uri} />
         </InfoButton>
     }
@@ -41,7 +42,7 @@ class STeXFragment extends React.Component<{ uri: string }, { fragment: string; 
         let error = false
         try {
             fragment = await fetchFragment(uri)
-        } catch(e) {
+        } catch (e) {
             error = true
         }
 
@@ -53,6 +54,6 @@ class STeXFragment extends React.Component<{ uri: string }, { fragment: string; 
         if (error) return "Failed to load"
         if (fragment === "") return "Loading"
 
-        return <div dangerouslySetInnerHTML={{ __html: fragment }} />
+        return mmtHTMLToReact(fragment)
     }
 }
