@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
+;
+[subrepo]
+	remote = https://github.com/slatex/sTeX-React.git
+	branch = main
+	commit = edf08f102bdd08d84217f38af4aed905a572da54
+	parent = 7990160659f9fb8064af1f6d2aead5b052980b0e
+	method = merge
+	cmdver = 0.4.5

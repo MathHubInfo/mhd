@@ -1,0 +1,29 @@
+.option {
+  border: 1px solid #AAA;
+  border-radius: 10px;
+  margin: 10px!important;
+  padding-right: 10px;
+  user-select: none;
+}
+
+.option_selected {
+  background-color: #999;
+  border-color: gray!important;
+  border-width: 3px!important;
+  margin: 8px!important;
+}
+
+.correct {
+  background-color: #23cb23;
+  border-color: #178717!important;
+  border-width: 3px!important;
+  margin: 8px!important;
+}
+
+
+.incorrect {
+  background-color: #eb6262;
+  border-color: #da1010!important;
+  border-width: 3px!important;
+  margin: 8px!important;
+}
