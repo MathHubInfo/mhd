@@ -1,5 +1,3 @@
-import { findElementsByTagName, innerHTML, parseHTMLNodes } from "./templates/html/dom"
-
 /**
  * This file defines STeX endpoints
  */
@@ -18,9 +16,5 @@ export function displayLink(uri: string) : string {
 export async function fetchFragment(uri: string): Promise<string> {
     if (!Enabled) return ""
 
-    const result = await fetch(FragementEndpoint + uri).then(r => r.text())
-
-    const fragment = parseHTMLNodes(result)
-    const body: ArrayLike<Node> = findElementsByTagName(fragment, "body")
-    return body.length == 1 ? innerHTML(body[0]) : innerHTML(fragment)
+    return await fetch(FragementEndpoint + uri).then(r => r.text())
 }

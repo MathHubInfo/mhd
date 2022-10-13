@@ -4,12 +4,12 @@ import MHDMain from "../components/common/MHDMain"
 import { aboutPageFilename } from "../controller"
 import { readFile } from "fs"
 import { join } from "path"
-import renderHTMLAsReact from "../templates/html"
+import HTMLReactParser from "html-react-parser"
 
 export default function MHDAboutPage({ html } : { html: string }) {
     return <MHDMain title="About">
         <Container>
-            {renderHTMLAsReact(html)}
+            {HTMLReactParser(html)}
         </Container>
     </MHDMain>
 }

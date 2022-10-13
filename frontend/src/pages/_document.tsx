@@ -3,8 +3,8 @@ import type { DocumentContext } from "next/document"
 import Document, { Html, Head, Main, NextScript } from "next/document"
 import { join } from "path"
 import { readFileSync } from "fs"
-import renderHTMLAsReact from "../templates/html"
 import { footerContentFilename } from "../controller"
+import HTMLReactParser from "html-react-parser"
 
 const path = footerContentFilename ? join(process.cwd(), footerContentFilename) : null
 const footer = path ? readFileSync(path).toString() : null
@@ -27,7 +27,7 @@ export default class MyDocument extends Document<{ footer: string | null }>{
         <body>
           <Main />
           <NextScript />
-          {footer && renderHTMLAsReact(footer)}
+          {footer && HTMLReactParser(footer)}
         </body>
       </Html>
     )
