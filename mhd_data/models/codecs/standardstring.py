@@ -4,10 +4,11 @@ from django.db import models
 
 from ..codec import Codec
 
+
 class StandardString(Codec):
-    """ Standard String Codec """
+    """Standard String Codec"""
 
     value: str = models.TextField()
 
-    operators = ('=', '!=')
+    operators = ("=", "!=")
     operator_type = (str,)

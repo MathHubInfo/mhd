@@ -6,8 +6,7 @@ import unittest
 
 import pycodestyle
 
-ignore_patterns = (
-    'venv', '.git', '__pycache__', 'migrations', 'frontend')
+ignore_patterns = ("venv", ".git", "__pycache__", "migrations", "frontend")
 
 ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", ".."))
 
@@ -29,8 +28,7 @@ class Pep8ComplianceTest(unittest.TestCase):
         for root, _, files in os.walk(ROOT):
             if self._ignore(root):
                 continue
-            python_files = [os.path.join(root, f) for f in files if
-                            f.endswith('.py')]
+            python_files = [os.path.join(root, f) for f in files if f.endswith(".py")]
             errors += style.check_files(python_files).total_errors
 
-        self.assertEqual(errors, 0, 'PEP8 style errors: {}'.format(errors))
+        self.assertEqual(errors, 0, "PEP8 style errors: {}".format(errors))

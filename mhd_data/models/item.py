@@ -18,17 +18,20 @@ if TYPE_CHECKING:
 
 
 class Item(models.Model):
-    """ Any Item in Any Collection """
+    """Any Item in Any Collection"""
 
-    id: UUID = models.UUIDField(
-        primary_key=True, default=uuid4, editable=False)
+    id: UUID = models.UUIDField(primary_key=True, default=uuid4, editable=False)
 
     collections = models.ManyToManyField(
-        Collection, through='ItemCollectionAssociation', help_text="Collection(s) each item occurs in", blank=True)
+        Collection,
+        through="ItemCollectionAssociation",
+        help_text="Collection(s) each item occurs in",
+        blank=True,
+    )
 
     def _annotate_property(self, prop: Property) -> List[Any]:
         """
-            Annotates and returns the property value of this property.
+        Annotates and returns the property value of this property.
         """
 
         from mhd_schema.query import QueryBuilder  # lazy to avoid cyclic import
@@ -38,12 +41,13 @@ class Item(models.Model):
         # recover the cell database value by filtering appropriately
         # TODO: What to do with multiple elements?
         cell = codec_model.objects.filter(
-            item_id=self.id, active=True, prop=prop).first()
+            item_id=self.id, active=True, prop=prop
+        ).first()
 
         vfields = codec_model.get_value_fields()
 
         results = [None] * len(vfields)
-        for (i, vfield) in enumerate(vfields):
+        for i, vfield in enumerate(vfields):
             value = getattr(cell, vfield.name) if (cell is not None) else None
             setattr(self, QueryBuilder._prop_value(prop, i, sql=False), value)
             results[i] = value
@@ -51,38 +55,45 @@ class Item(models.Model):
 
     def semantic(self, collection: Collection) -> OrderedDict:
         """
-            Annotates all proper ties of the given collection to the object
-            and returns an appropriate annotation.
+        Annotates all proper ties of the given collection to the object
+        and returns an appropriate annotation.
         """
 
-        properties = list(collection.property_set.order_by('id'))
+        properties = list(collection.property_set.order_by("id"))
         for p in properties:
             self._annotate_property(p)
 
         return self.semantic_result(collection, properties, False)
 
-    def semantic_result(self, collection: Collection, properties: Iterable[Property], database: bool = True) -> OrderedDict:
+    def semantic_result(
+        self,
+        collection: Collection,
+        properties: Iterable[Property],
+        database: bool = True,
+    ) -> OrderedDict:
         """
-            Returns a serialized version of this object as part of a semantic
-            result set.
-            Requires appropriatly annoted values on this object.
+        Returns a serialized version of this object as part of a semantic
+        result set.
+        Requires appropriatly annoted values on this object.
         """
 
-        return SemanticItemSerializer(collection=collection, properties=properties, database=database).to_representation(self)
+        return SemanticItemSerializer(
+            collection=collection, properties=properties, database=database
+        ).to_representation(self)
 
 
 class ItemCollectionAssociation(models.Model):
-    """ Explicit association between items and collections """
+    """Explicit association between items and collections"""
+
     class Meta:
-        unique_together = [('item', 'collection')]
+        unique_together = [("item", "collection")]
         indexes = [
-            models.Index(fields=['item']),
-            models.Index(fields=['collection']),
+            models.Index(fields=["item"]),
+            models.Index(fields=["collection"]),
         ]
 
     item: Item = models.ForeignKey(Item, on_delete=models.CASCADE)
-    collection: Collection = models.ForeignKey(
-        Collection, on_delete=models.CASCADE)
+    collection: Collection = models.ForeignKey(Collection, on_delete=models.CASCADE)
 
 
 class SemanticItemSerializer(serializers.Serializer):
@@ -91,10 +102,9 @@ class SemanticItemSerializer(serializers.Serializer):
     properties: Iterable[Property]
 
     def __init__(self, *args: Any, database: bool = True, **kwargs: Any) -> None:
-        self.collection = kwargs.pop('collection')
+        self.collection = kwargs.pop("collection")
         self.database = database
-        self.properties = sorted(kwargs.pop(
-            'properties'), key=lambda p: p.slug)
+        self.properties = sorted(kwargs.pop("properties"), key=lambda p: p.slug)
 
         super().__init__(*args, **kwargs)
 
@@ -109,9 +119,11 @@ class SemanticItemSerializer(serializers.Serializer):
                     getattr(item, QueryBuilder._prop_value(p, i, sql=False))
                     for i in range(len(p.codec_model.get_value_fields()))
                 ],
-                database=self.database
+                database=self.database,
             )
-            semantic[p.slug] = values[0] if values is not None and len(values) == 1 else values
+            semantic[p.slug] = (
+                values[0] if values is not None and len(values) == 1 else values
+            )
         return semantic
 
     def to_internal_value(self, item: Item) -> None:

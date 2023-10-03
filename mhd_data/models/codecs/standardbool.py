@@ -6,9 +6,9 @@ from ..codec import Codec
 
 
 class StandardBool(Codec):
-    """ Standard Boolean Codec """
+    """Standard Boolean Codec"""
 
     value: bool = models.BooleanField()
 
-    operators = ('=', '!=')
+    operators = ("=", "!=")
     operator_type = bool

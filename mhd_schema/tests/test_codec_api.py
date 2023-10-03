@@ -14,11 +14,10 @@ CODEC_SI_ASSET = LoadJSONAsset(CODEC_SI_PATH)
 
 
 class CodecAPITest(TestCase):
-
     def test_api_all_collections(self) -> None:
-        """ Checks that the demo collection is the only item in the list of collections """
+        """Checks that the demo collection is the only item in the list of collections"""
 
-        response = APIClient().get('/api/schema/codecs/')
+        response = APIClient().get("/api/schema/codecs/")
 
         # we got an http 200
         self.assertEqual(response.status_code, 200)
@@ -31,13 +30,14 @@ class CodecAPITest(TestCase):
             except:
                 idx = -1
             self.assertNotEqual(
-                idx, -1, "Expected that codec {} is found".format(c["name"]))
+                idx, -1, "Expected that codec {} is found".format(c["name"])
+            )
             self.assertJSONEqual(json.dumps(GOT_JSON[idx]), c)
 
     def test_api_exact_collection(self) -> None:
-        """ Checks that the demo collection can be found by slug """
+        """Checks that the demo collection can be found by slug"""
 
-        response = APIClient().get('/api/schema/codecs/StandardInt/')
+        response = APIClient().get("/api/schema/codecs/StandardInt/")
 
         self.assertEqual(response.status_code, 200)
         self.assertJSONEqual(response.content, CODEC_SI_ASSET)

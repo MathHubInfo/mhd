@@ -20,16 +20,18 @@ from django.db import connections
 from django.db.models.query import RawQuerySet
 
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from typing import Optional, Any
+
 
 class DatabaseNotSupportedException(Exception):
     pass
 
 
 class RawQuerySetPaginator(DefaultPaginator):
-    """An efficient paginator for RawQuerySets.
-    """
+    """An efficient paginator for RawQuerySets."""
+
     _count: Optional[int] = None
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
@@ -40,18 +42,25 @@ class RawQuerySetPaginator(DefaultPaginator):
     def _get_count(self) -> int:
         if self._count is None:
             cursor = self.connection.cursor()
-            count_query = """SELECT COUNT(*) FROM (%s) AS sub_query_for_count""" % self.raw_query_set.raw_query
+            count_query = (
+                """SELECT COUNT(*) FROM (%s) AS sub_query_for_count"""
+                % self.raw_query_set.raw_query
+            )
             cursor.execute(count_query, self.raw_query_set.params)
             self._count = cursor.fetchone()[0]
 
         return self._count
+
     count: int = property(_get_count)
 
     def _get_limit_offset_query(self, limit: int, offset: int) -> str:
-        """mysql, postgresql, and sqlite can all use this syntax
-        """
+        """mysql, postgresql, and sqlite can all use this syntax"""
         return """SELECT * FROM (%s) as sub_query_for_pagination
-                LIMIT %s OFFSET %s""" % (self.raw_query_set.raw_query, limit, offset)
+                LIMIT %s OFFSET %s""" % (
+            self.raw_query_set.raw_query,
+            limit,
+            offset,
+        )
 
     mysql_getquery = _get_limit_offset_query
     postgresql_getquery = _get_limit_offset_query
@@ -59,22 +68,29 @@ class RawQuerySetPaginator(DefaultPaginator):
 
     def oracle_getquery(self, limit: int, offset: int) -> str:
         """Get the oracle query, but check the version first
-           Query is only supported in oracle version >= 12.1
-           TODO:TESTING
+        Query is only supported in oracle version >= 12.1
+        TODO:TESTING
         """
         major_version, minor_version = self.connection.oracle_version[0:2]
         if major_version < 12 or (major_version == 12 and minor_version < 1):
-            raise DatabaseNotSupportedException(
-                'Oracle version must be 12.1 or higher')
+            raise DatabaseNotSupportedException("Oracle version must be 12.1 or higher")
 
         return """SELECT * FROM (%s) as sub_query_for_pagination
                   OFFSET %s ROWS FETCH NEXT %s ROWS ONLY
-               """ % (self.raw_query_set.raw_query, offset, limit)
+               """ % (
+            self.raw_query_set.raw_query,
+            offset,
+            limit,
+        )
 
     def firebird_getquery(self, limit: int, offset: int) -> str:  # TODO:TESTING
         return """SELECT FIRST %s SKIP %s *
                 FROM (%s) as sub_query_for_pagination
-               """ % (limit, offset, self.raw_query_set.raw_query)
+               """ % (
+            limit,
+            offset,
+            self.raw_query_set.raw_query,
+        )
 
     def page(self, number: int) -> Page:
         number = self.validate_number(number)
@@ -85,20 +101,30 @@ class RawQuerySetPaginator(DefaultPaginator):
 
         database_vendor = self.connection.vendor
         try:
-            query_with_limit = getattr(
-                self, '%s_getquery' % database_vendor)(limit, offset)
+            query_with_limit = getattr(self, "%s_getquery" % database_vendor)(
+                limit, offset
+            )
         except AttributeError:
             raise DatabaseNotSupportedException(
-                '%s is not supported by RawQuerySetPaginator' % database_vendor)
+                "%s is not supported by RawQuerySetPaginator" % database_vendor
+            )
 
-        data = list(self.raw_query_set.model.objects.raw(
-            query_with_limit, self.raw_query_set.params))
+        data = list(
+            self.raw_query_set.model.objects.raw(
+                query_with_limit, self.raw_query_set.params
+            )
+        )
         return Page(data, number, self)
 
 
 class Paginator(object):
-    def __new__(cls, object_list: RawQuerySet, per_page: int, *args: Any, **kwargs: Any) -> DefaultPaginator:
-        cls = (RawQuerySetPaginator if isinstance(
-            object_list, RawQuerySet) else DefaultPaginator)
+    def __new__(
+        cls, object_list: RawQuerySet, per_page: int, *args: Any, **kwargs: Any
+    ) -> DefaultPaginator:
+        cls = (
+            RawQuerySetPaginator
+            if isinstance(object_list, RawQuerySet)
+            else DefaultPaginator
+        )
         instance = cls(object_list, per_page, *args, **kwargs)
         return instance

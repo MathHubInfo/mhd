@@ -18,13 +18,13 @@ SECRET_KEY = os.environ.setdefault("DJANGO_SECRET_KEY", "")
 
 # Passwords
 DATABASES = {
-    'default': {
-        'ENGINE': os.environ.setdefault("DJANGO_DB_ENGINE", ""),
-        'NAME': os.environ.setdefault("DJANGO_DB_NAME", ""),
-        'USER': os.environ.setdefault("DJANGO_DB_USER", ""),
-        'PASSWORD': os.environ.setdefault("DJANGO_DB_PASSWORD", ""),
-        'HOST': os.environ.setdefault("DJANGO_DB_HOST", ""),
-        'PORT': os.environ.setdefault("DJANGO_DB_PORT", ""),
+    "default": {
+        "ENGINE": os.environ.setdefault("DJANGO_DB_ENGINE", ""),
+        "NAME": os.environ.setdefault("DJANGO_DB_NAME", ""),
+        "USER": os.environ.setdefault("DJANGO_DB_USER", ""),
+        "PASSWORD": os.environ.setdefault("DJANGO_DB_PASSWORD", ""),
+        "HOST": os.environ.setdefault("DJANGO_DB_HOST", ""),
+        "PORT": os.environ.setdefault("DJANGO_DB_PORT", ""),
     }
 }
 

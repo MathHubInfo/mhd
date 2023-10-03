@@ -4,4 +4,4 @@ from django.apps import AppConfig
 
 
 class MddlCatalogConfig(AppConfig):
-    name = 'mddl_catalog'
+    name = "mddl_catalog"

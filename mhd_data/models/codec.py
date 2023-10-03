@@ -14,7 +14,17 @@ from functools import lru_cache
 
 from mhd.utils import get_standard_serializer_field
 
-from typing import TYPE_CHECKING, TypeAlias, Iterable, Type, Optional, Any, List, Union, Tuple
+from typing import (
+    TYPE_CHECKING,
+    TypeAlias,
+    Iterable,
+    Type,
+    Optional,
+    Any,
+    List,
+    Union,
+    Tuple,
+)
 
 if TYPE_CHECKING:
     from django.db.models import Field
@@ -28,19 +38,20 @@ if TYPE_CHECKING:
 
 
 class CodecManager(models.Manager):
-
     @staticmethod
     @lru_cache(maxsize=None)
     def find_all_codecs() -> Iterable[Type[Codec]]:
-        """ Returns a tuple of all known codecs """
+        """Returns a tuple of all known codecs"""
 
         # we return a tuple here, because those are not mutable
         # and can hence be safely returned by lru_cache()
         return tuple(filter(lambda clz: issubclass(clz, Codec), apps.get_models()))
 
     @staticmethod
-    def collect_operators(codecs: Optional[Iterable[Type[Codec]]] = None) -> Iterable[str]:
-        """ Returns a set containing all know operators """
+    def collect_operators(
+        codecs: Optional[Iterable[Type[Codec]]] = None,
+    ) -> Iterable[str]:
+        """Returns a set containing all know operators"""
 
         if codecs is None:
             codecs = CodecManager.find_all_codecs()
@@ -54,7 +65,7 @@ class CodecManager(models.Manager):
     @staticmethod
     @lru_cache(maxsize=None)
     def find_codec(name: str) -> Optional[Type[Codec]]:
-        """ Finds a Codec By Name """
+        """Finds a Codec By Name"""
 
         # And find a codec with that name
         for c in CodecManager.find_all_codecs():
@@ -65,14 +76,15 @@ class CodecManager(models.Manager):
 
 
 class Codec(models.Model):
-    """ An abstract class for each codec """
+    """An abstract class for each codec"""
+
     class Meta:
         abstract = True
-        unique_together = (('item', 'prop', 'superseeded_by'))
+        unique_together = ("item", "prop", "superseeded_by")
         indexes = [
-            models.Index(fields=['item']),
-            models.Index(fields=['prop']),
-            models.Index(fields=['active'])
+            models.Index(fields=["item"]),
+            models.Index(fields=["prop"]),
+            models.Index(fields=["active"]),
         ]
 
     objects: CodecManager = CodecManager()
@@ -80,15 +92,15 @@ class Codec(models.Model):
     @classmethod
     @memoized_method(maxsize=None)
     def get_codec_name(cls) -> str:
-        """ Gets the name of this codec """
+        """Gets the name of this codec"""
         return cls.__name__
 
     # Name of database fields containing the values
-    value_fields = ['value']
+    value_fields = ["value"]
 
     @classmethod
     def get_value_fields(cls) -> List[Field]:
-        """ gets the value field of this model """
+        """gets the value field of this model"""
         return [cls._meta.get_field(n) for n in cls.value_fields]
 
     # A DRF serializer field (if any) corresponding to the value object
@@ -98,7 +110,7 @@ class Codec(models.Model):
 
     @classmethod
     def get_serializer_fields(cls: Type[Codec]) -> SerializerField:
-        """ Gets the serializer field of a class """
+        """Gets the serializer field of a class"""
 
         # if the user defined one, return it
         if cls._serializer_fields is not None:
@@ -112,8 +124,8 @@ class Codec(models.Model):
     @classmethod
     def populate_values(cls: Type[Codec], *values: List[Optional[Any]]) -> List[Any]:
         """
-            Called to turn a serialized value (usually from the importer)
-            into a python object to be assigned to a property.
+        Called to turn a serialized value (usually from the importer)
+        into a python object to be assigned to a property.
         """
 
         sfields = cls.get_serializer_fields()
@@ -124,10 +136,12 @@ class Codec(models.Model):
         ]
 
     @classmethod
-    def serialize_values(cls: Type[Codec], *values: List[Any], database: bool = True) -> Optional[List[Any]]:
+    def serialize_values(
+        cls: Type[Codec], *values: List[Any], database: bool = True
+    ) -> Optional[List[Any]]:
         """
-            Called by the data serializer to turn a database or python
-            value of this codec into a json-serialized value of this codec.
+        Called by the data serializer to turn a database or python
+        value of this codec into a json-serialized value of this codec.
         """
 
         vfields = cls.get_value_fields()
@@ -135,16 +149,15 @@ class Codec(models.Model):
         results = [None] * len(vfields)
 
         defined = False
-        for (i, (vfield, sfield, value)) in enumerate(zip(vfields, sfields, values)):
+        for i, (vfield, sfield, value) in enumerate(zip(vfields, sfields, values)):
             if value is None:
                 continue
             defined = True
 
             # if the value field has a 'from_db_value' we should call it first
             # because our value was not yet parsed
-            if database and hasattr(vfield, 'from_db_value'):
-                value = vfield.from_db_value(
-                    value, None, connection=connection)
+            if database and hasattr(vfield, "from_db_value"):
+                value = vfield.from_db_value(value, None, connection=connection)
 
             # call the default serializer field with .to_representation
             results[i] = sfield.to_representation(value)
@@ -156,10 +169,11 @@ class Codec(models.Model):
         return results
 
     @classmethod
-    def serialize_value(cls: Type[Codec], value: List[Any], database: bool = True) -> Optional[Any]:
+    def serialize_value(
+        cls: Type[Codec], value: List[Any], database: bool = True
+    ) -> Optional[Any]:
         if len(cls.get_value_fields()) != 1:
-            raise Exception(
-                'cannot call serialize_value: more than one value field')
+            raise Exception("cannot call serialize_value: more than one value field")
 
         values = cls.serialize_values(value, database=database)
         return values[0] if values is not None else None
@@ -175,13 +189,17 @@ class Codec(models.Model):
 
     @classmethod
     def is_valid_operand(cls: Type[Codec], literal: Any) -> bool:
-        """ Checks if the provided literal is a valid argument to operator (left || right) """
+        """Checks if the provided literal is a valid argument to operator (left || right)"""
         if cls.operator_type is None:
             return True
         if len(cls.get_value_fields()) != 1:
             from mhd_schema.query import FilterBuilderError
+
             raise FilterBuilderError(
-                "is_valid_operand not supported for codec {}: More than one value column".format(cls.get_codec_name()))
+                "is_valid_operand not supported for codec {}: More than one value column".format(
+                    cls.get_codec_name()
+                )
+            )
         try:
             return isinstance(cls.populate_values(literal)[0], cls.operator_type)
         except ValidationError:
@@ -191,20 +209,22 @@ class Codec(models.Model):
     @classmethod
     def order_clause(cls: Type[Codec], prop: Property, mode: str) -> str:
         """
-            Called to generate an SQL ORDER BY clause for the given property.
-            mode indicates ascending ('+'), descending ('-') or default ('').
+        Called to generate an SQL ORDER BY clause for the given property.
+        mode indicates ascending ('+'), descending ('-') or default ('').
         """
 
         from mhd_schema.query import QueryBuilder
 
         SQL = []
         for index in range(len(cls.value_fields)):
-            SQL.append('{} {}'.format(
-                QueryBuilder._prop_value(prop, index),
-                'DESC' if mode == '-' else 'ASC',
-            ))
+            SQL.append(
+                "{} {}".format(
+                    QueryBuilder._prop_value(prop, index),
+                    "DESC" if mode == "-" else "ASC",
+                )
+            )
 
-        return ', '.join(SQL)
+        return ", ".join(SQL)
 
     # Next, the implementation of operating on codec values. There are three supported
     # kind of operations, operating with a literal (constant) on the left, the right and
@@ -219,59 +239,83 @@ class Codec(models.Model):
     # user controlled.
 
     @classmethod
-    def operate_left(cls: Type[Codec], literal: Any, operator: str, db_columns: List[str]) -> SQLWithParams:
-        """ Implements literal <operator> db_column """
+    def operate_left(
+        cls: Type[Codec], literal: Any, operator: str, db_columns: List[str]
+    ) -> SQLWithParams:
+        """Implements literal <operator> db_column"""
 
         if len(db_columns) != 1:
             from mhd_schema.query import FilterBuilderError
+
             raise FilterBuilderError(
-                "operate_left not supported for codec {}: More than one value column".format(cls.get_codec_name()))
+                "operate_left not supported for codec {}: More than one value column".format(
+                    cls.get_codec_name()
+                )
+            )
         db_column = db_columns[0]
 
         serialized = cls.serialize_value(cls.populate_values(literal)[0])
         return "%s {} {}".format(operator, db_column), [serialized]
 
     @classmethod
-    def operate_right(cls: Type[Codec], db_columns: List[str], operator: str, literal: Any) -> SQLWithParams:
-        """ Implements db_column <operator> literal """
+    def operate_right(
+        cls: Type[Codec], db_columns: List[str], operator: str, literal: Any
+    ) -> SQLWithParams:
+        """Implements db_column <operator> literal"""
 
         if len(db_columns) != 1:
             from mhd_schema.query import FilterBuilderError
+
             raise FilterBuilderError(
-                "operate_right not supported for codec {}: More than one value column".format(cls.get_codec_name()))
+                "operate_right not supported for codec {}: More than one value column".format(
+                    cls.get_codec_name()
+                )
+            )
         db_column = db_columns[0]
 
         serialized = cls.serialize_value(cls.populate_values(literal)[0])
         return "{} {} %s".format(db_column, operator), [serialized]
 
     @classmethod
-    def operate_both(cls: Type[Codec], db_columns1: List[str], operator: str, db_columns2: List[str]) -> SQLWithParams:
-        """ Implements db_column1 <operator> db_column2 """
+    def operate_both(
+        cls: Type[Codec], db_columns1: List[str], operator: str, db_columns2: List[str]
+    ) -> SQLWithParams:
+        """Implements db_column1 <operator> db_column2"""
 
         if len(db_columns1) != 1 or len(db_columns2) != 1:
             from mhd_schema.query import FilterBuilderError
+
             raise FilterBuilderError(
-                "operate_both not supported for codec {}: More than one value column".format(cls.get_codec_name()))
+                "operate_both not supported for codec {}: More than one value column".format(
+                    cls.get_codec_name()
+                )
+            )
         db_column1 = db_columns1[0]
         db_column2 = db_columns2[0]
 
         return "{} {} {}".format(db_column1, operator, db_column2), []
 
-    id: UUID = models.UUIDField(
-        primary_key=True, default=uuid4, editable=False)
+    id: UUID = models.UUIDField(primary_key=True, default=uuid4, editable=False)
 
     item: Item = models.ForeignKey(
-        Item, on_delete=models.CASCADE, help_text="Item this this cell represents")
+        Item, on_delete=models.CASCADE, help_text="Item this this cell represents"
+    )
     prop: Property = models.ForeignKey(
-        Property, on_delete=models.CASCADE, help_text="Property this cell represents")
+        Property, on_delete=models.CASCADE, help_text="Property this cell represents"
+    )
 
     provenance: Provenance = models.ForeignKey(
-        Provenance, on_delete=models.CASCADE, help_text="Provenance of this cell")
+        Provenance, on_delete=models.CASCADE, help_text="Provenance of this cell"
+    )
 
-    active: bool = models.BooleanField(
-        default=True, help_text="Is this item active")
-    superseeded_by: Optional[Codec] = models.ForeignKey('self', on_delete=models.SET_NULL,
-                                                        null=True, blank=True, help_text="Cell this value is superseeded by")
+    active: bool = models.BooleanField(default=True, help_text="Is this item active")
+    superseeded_by: Optional[Codec] = models.ForeignKey(
+        "self",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        help_text="Cell this value is superseeded by",
+    )
 
 
 __all__ = ["Codec", "CodecManager"]

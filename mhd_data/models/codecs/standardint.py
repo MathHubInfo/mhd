@@ -8,21 +8,24 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from typing import Any
 
+
 class StandardInt(Codec):
-    """ Standard Integer Codec """
+    """Standard Integer Codec"""
 
     value: int = models.IntegerField()
     _serializer_field = serializers.IntegerField()
 
-    operators = ('=', '<', '<=', '>', '>=', '!=')
+    operators = ("=", "<", "<=", ">", ">=", "!=")
+
     @classmethod
     def is_valid_operand(cls, literal: Any) -> bool:
-        """ Checks that the argument is a valid operand """
+        """Checks that the argument is a valid operand"""
         try:
-            literal =  cls.populate_values(literal)[0]
+            literal = cls.populate_values(literal)[0]
         except ValidationError:
             return False
 

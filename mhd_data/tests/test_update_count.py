@@ -17,13 +17,14 @@ JANE_PROVENANCE_PATH = AssetPath(__file__, "res", "jane_provenance.json")
 
 class UpdateCountTest(TestCase):
     def setUp(self) -> None:
-        """ Creates the demo collection using the upsert command """
+        """Creates the demo collection using the upsert command"""
 
         self.collection = insert_testing_data(
-            JANE_COLLECTION_PATH, JANE_DATA_PATH, JANE_PROVENANCE_PATH, reset=True)
+            JANE_COLLECTION_PATH, JANE_DATA_PATH, JANE_PROVENANCE_PATH, reset=True
+        )
 
     def test_update_count(self) -> None:
-        """ Checks that delete_collection actually deletes a collection """
+        """Checks that delete_collection actually deletes a collection"""
         self.collection.count_frozen = False
         self.collection.save()
 

@@ -13,6 +13,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mhd.settings')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mhd.settings")
 
 application = get_wsgi_application()

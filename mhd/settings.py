@@ -18,6 +18,7 @@ from typing import List
 
 try:
     from psycopg2cffi import compat
+
     compat.register()
 except ImportError:
     pass
@@ -25,13 +26,13 @@ except ImportError:
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'o0_0r&@$9=!)#^78dao^f4rd^kxiw1db&navvk27q8hest#_fb'
+SECRET_KEY = "o0_0r&@$9=!)#^78dao^f4rd^kxiw1db&navvk27q8hest#_fb"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -42,73 +43,73 @@ ALLOWED_HOSTS: List[str] = []
 # Application definition
 
 INSTALLED_APPS = [
-    'mhd_schema',
-    'mhd_data',
-    'mhd_provenance',
-    'mddl_catalog',
-    'rest_framework',
-    'mviews',
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'corsheaders',
+    "mhd_schema",
+    "mhd_data",
+    "mhd_provenance",
+    "mddl_catalog",
+    "rest_framework",
+    "mviews",
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "corsheaders",
 ]
 
 USE_TEST_APP = True  # set this to true to add the test app to installed apps
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = 'mhd.urls'
+ROOT_URLCONF = "mhd.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'mhd.wsgi.application'
+WSGI_APPLICATION = "mhd.wsgi.application"
 
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
     }
 }
 
 # Django Rest Framework
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'mhd.utils.DefaultPaginator',
-    'PAGE_SIZE': 50,
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    "DEFAULT_PAGINATION_CLASS": "mhd.utils.DefaultPaginator",
+    "PAGE_SIZE": 50,
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticatedOrReadOnly",
     ],
-    'TEST_REQUEST_DEFAULT_FORMAT': 'json'
+    "TEST_REQUEST_DEFAULT_FORMAT": "json",
 }
 
 # CORS
@@ -121,16 +122,16 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -138,9 +139,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
@@ -153,52 +154,45 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 # we only have static files for the admin site
-STATIC_URL = '/api/admin/static/'
+STATIC_URL = "/api/admin/static/"
 
 # buildpath used (only used in development)
-WEBPACK_BUILD_PATH = os.path.join(BASE_DIR, 'frontend', 'build')
+WEBPACK_BUILD_PATH = os.path.join(BASE_DIR, "frontend", "build")
 
 # Log everything of info and above to STDOUT at all times
 LOGGING = {
-    'version': 1,
-    'filters': {
-        'require_log_queries': {
-            '()': 'mhd.logging.RequireLogQueries'
-        }
-    },
-    'formatters': {
-        'default': {
-            'format': '[{levelname} - {asctime}] {name}: {message}',
-            'style': '{',
+    "version": 1,
+    "filters": {"require_log_queries": {"()": "mhd.logging.RequireLogQueries"}},
+    "formatters": {
+        "default": {
+            "format": "[{levelname} - {asctime}] {name}: {message}",
+            "style": "{",
         },
-        'plain': {
-            'format': '{message}',
-            'style': '{',
+        "plain": {
+            "format": "{message}",
+            "style": "{",
         },
     },
-    'handlers': {
-        'console': {
-            'level': 'INFO',
-            'class': 'logging.StreamHandler',
-            'formatter': 'default'
+    "handlers": {
+        "console": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+            "formatter": "default",
         },
-        'debugconsole': {
-            'level': 'DEBUG',
-            'filters': ['require_log_queries'],
-            'class': 'logging.StreamHandler',
-            'formatter': 'plain'
-        }
+        "debugconsole": {
+            "level": "DEBUG",
+            "filters": ["require_log_queries"],
+            "class": "logging.StreamHandler",
+            "formatter": "plain",
+        },
     },
-    'loggers': {
-        'mhd': {
-            'level': 'DEBUG',
-            'handlers': ['console']
+    "loggers": {
+        "mhd": {"level": "DEBUG", "handlers": ["console"]},
+        "django.db.backends": {
+            "level": "DEBUG",
+            "handlers": ["debugconsole"],
         },
-        'django.db.backends': {
-            'level': 'DEBUG',
-            'handlers': ['debugconsole'],
-        }
-    }
+    },
 }
 
 # try and import local_settings if they exist
@@ -209,4 +203,4 @@ except ImportError:
 
 # when set to true, enable the test app
 if USE_TEST_APP:
-    INSTALLED_APPS.append('mhd_tests')
+    INSTALLED_APPS.append("mhd_tests")

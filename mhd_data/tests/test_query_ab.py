@@ -19,20 +19,26 @@ AB_PROVENANCE_PATH = AssetPath(__file__, "res", "ab_provenance.json")
 AB_ALL_PATH = AssetPath(__file__, "res", "ab_all.json")
 AB_ALL_ASSET = LoadJSONAsset(AB_ALL_PATH)
 
+
 class ABCollectionTest(TestCase):
     """
-        Tests that the demo 'AB' collection can be inserted
-        and queryied from the database.
-        The AB collection is mathematically meaningful.
+    Tests that the demo 'AB' collection can be inserted
+    and queryied from the database.
+    The AB collection is mathematically meaningful.
     """
+
     def setUp(self) -> None:
         self.collection = insert_testing_data(
-            AB_COLLECTION_PATH, AB_DATA_PATH, AB_PROVENANCE_PATH, reset=True)
+            AB_COLLECTION_PATH, AB_DATA_PATH, AB_PROVENANCE_PATH, reset=True
+        )
 
     def test_data_exists(self) -> None:
         GOT_QUERY_ALL = self.collection.semantic()
-        self.assertJSONEqual(json.dumps(list(GOT_QUERY_ALL)), AB_ALL_ASSET,
-                             "check that the query for all properties returns all properties")
+        self.assertJSONEqual(
+            json.dumps(list(GOT_QUERY_ALL)),
+            AB_ALL_ASSET,
+            "check that the query for all properties returns all properties",
+        )
 
     def test_query_item_semantics(self) -> None:
         for jitem in AB_ALL_ASSET:

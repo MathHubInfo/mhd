@@ -11,8 +11,11 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
     from typing import Callable, Optional
 
-def AdminLink(original: Callable[..., Optional[models.Model]]) -> Callable[..., Optional[str]]:
-    """ Decorator that makes a Django admin ForeignKey clickable """
+
+def AdminLink(
+    original: Callable[..., Optional[models.Model]]
+) -> Callable[..., Optional[str]]:
+    """Decorator that makes a Django admin ForeignKey clickable"""
 
     @functools.wraps(original)
     def wrapper(*args: Any, **kwargs: Any) -> Optional[str]:
@@ -20,7 +23,9 @@ def AdminLink(original: Callable[..., Optional[models.Model]]) -> Callable[..., 
         if o is None:
             return None
 
-        url = reverse('admin:%s_%s_change' % (o._meta.app_label,
-                                              o._meta.model_name), args=[o.id])
+        url = reverse(
+            "admin:%s_%s_change" % (o._meta.app_label, o._meta.model_name), args=[o.id]
+        )
         return format_html("<a href='{}'>{}</a>", url, o)
+
     return wrapper

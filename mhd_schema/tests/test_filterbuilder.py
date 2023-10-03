@@ -7,15 +7,22 @@ from mhd_data.tests.collection import insert_testing_data
 
 from mhd_tests.utils import AssetPath
 
-Z3Z_COLLECTION_PATH = AssetPath(__file__, "..", "..", "mhd_data", "tests", "res", "z3z_collection.json")
-Z3Z_PROVENANCE_PATH = AssetPath(__file__, "..", "..", "mhd_data", "tests", "res", "z3z_provenance.json")
-Z3Z_DATA_PATH = AssetPath(__file__, "..", "..", "mhd_data", "tests", "res", "z3z_data.json")
+Z3Z_COLLECTION_PATH = AssetPath(
+    __file__, "..", "..", "mhd_data", "tests", "res", "z3z_collection.json"
+)
+Z3Z_PROVENANCE_PATH = AssetPath(
+    __file__, "..", "..", "mhd_data", "tests", "res", "z3z_provenance.json"
+)
+Z3Z_DATA_PATH = AssetPath(
+    __file__, "..", "..", "mhd_data", "tests", "res", "z3z_data.json"
+)
 
 
 class FilterBuilderTest(TestCase):
     def setUp(self) -> None:
         self.collection = insert_testing_data(
-            Z3Z_COLLECTION_PATH, Z3Z_DATA_PATH, Z3Z_PROVENANCE_PATH, reset=True)
+            Z3Z_COLLECTION_PATH, Z3Z_DATA_PATH, Z3Z_PROVENANCE_PATH, reset=True
+        )
 
     def test_build_filters(self) -> None:
         # create a filter builder
@@ -40,12 +47,16 @@ class FilterBuilderTest(TestCase):
 
         # logical and
         q4sql, q4args = fb("f1 >= 0 && f1 <= 10")
-        self.assertEqual(q4sql, '("property_value_f1_0" >= %s) AND ("property_value_f1_0" <= %s)')
+        self.assertEqual(
+            q4sql, '("property_value_f1_0" >= %s) AND ("property_value_f1_0" <= %s)'
+        )
         self.assertListEqual(q4args, [0, 10])
 
         # logical or
         q5sql, q5args = fb("f1 >= 1 || f1 <= 2")
-        self.assertEqual(q5sql, '("property_value_f1_0" >= %s) OR ("property_value_f1_0" <= %s)')
+        self.assertEqual(
+            q5sql, '("property_value_f1_0" >= %s) OR ("property_value_f1_0" <= %s)'
+        )
         self.assertListEqual(q5args, [1, 2])
 
         # logical not
@@ -56,5 +67,7 @@ class FilterBuilderTest(TestCase):
         # big combination
         q7sql, q7args = fb("!(!(f1 = 1) || f2 = 0)")
         self.assertEqual(
-            q7sql, 'NOT((NOT("property_value_f1_0" = %s)) OR ("property_value_f2_0" = %s))')
+            q7sql,
+            'NOT((NOT("property_value_f1_0" = %s)) OR ("property_value_f2_0" = %s))',
+        )
         self.assertListEqual(q7args, [1, 0])

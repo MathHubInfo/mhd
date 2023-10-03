@@ -16,13 +16,13 @@ class NDArraySuiteTwo(StorageSuite):
         # not a list
         self._assert_notstores(True)
         self._assert_notstores(12)
-        self._assert_notstores('hello world')
-        self._assert_notstores({'a': 5})
+        self._assert_notstores("hello world")
+        self._assert_notstores({"a": 5})
 
         # list but wrong type
-        self._assert_notstores(['hello world'])
-        self._assert_notstores([{'a': 5}])
-        self._assert_notstores([12, 'hello world'])
+        self._assert_notstores(["hello world"])
+        self._assert_notstores([{"a": 5}])
+        self._assert_notstores([12, "hello world"])
 
         # wrong dimension
         self._assert_notstores([1])
@@ -30,12 +30,12 @@ class NDArraySuiteTwo(StorageSuite):
 
 
 class DumbNDArraySuiteTwoTest(NDArraySuiteTwo, TestCase):
-    """ Tests for 2-dimensional DumbNDArray backed element """
+    """Tests for 2-dimensional DumbNDArray backed element"""
 
     storage_model = DumbNDArrayTwoModel
 
 
 class SmartNDArraySuiteTwoTest(NDArraySuiteTwo, TestCase):
-    """ Tests for 2-dimensional SmartNDArray backed element """
+    """Tests for 2-dimensional SmartNDArray backed element"""
 
     storage_model = SmartNDArrayTwoModel

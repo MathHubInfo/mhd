@@ -24,39 +24,42 @@ Z3Z_ALL_ASSET = LoadJSONAsset(Z3Z_ALL_PATH)
 
 class LoadCollectionTest(TestCase):
     def test_no_simulate_arg(self) -> None:
-        """ Checks that calling 'load_collection' without a simulate argument works """
+        """Checks that calling 'load_collection' without a simulate argument works"""
 
         uuid4_mock_reset()
-        with mock.patch.object(uuid, 'uuid4', uuid4_mock):
+        with mock.patch.object(uuid, "uuid4", uuid4_mock):
             call_command(
-                'load_collection',
+                "load_collection",
                 Z3Z_COLLECTION_PATH,  # schema
                 Z3Z_DATA_PATH,  # data
                 Z3Z_PROVENANCE_PATH,  # provenance
                 quiet=True,
                 simulate=False,
-                batch_size=None
+                batch_size=None,
             )
 
         # check that the collection objects were inserted
         GOT_QUERY_ALL = Collection.objects.first().semantic()
-        self.assertJSONEqual(json.dumps(list(GOT_QUERY_ALL)), Z3Z_ALL_ASSET,
-                             "check that the query inserted all entries")
+        self.assertJSONEqual(
+            json.dumps(list(GOT_QUERY_ALL)),
+            Z3Z_ALL_ASSET,
+            "check that the query inserted all entries",
+        )
 
     def test_simulate_arg(self) -> None:
-        """ Checks that calling 'load_collection' without a simulate argument does not load any data """
+        """Checks that calling 'load_collection' without a simulate argument does not load any data"""
 
         with transaction.atomic():
             uuid4_mock_reset()
-            with mock.patch.object(uuid, 'uuid4', uuid4_mock):
+            with mock.patch.object(uuid, "uuid4", uuid4_mock):
                 call_command(
-                    'load_collection',
+                    "load_collection",
                     Z3Z_COLLECTION_PATH,  # schema
                     Z3Z_DATA_PATH,  # data
                     Z3Z_PROVENANCE_PATH,  # provenance
                     quiet=True,
                     simulate=True,
-                    batch_size=None
+                    batch_size=None,
                 )
 
         # check that the collection objects were inserted

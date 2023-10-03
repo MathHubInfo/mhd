@@ -22,10 +22,11 @@ Z3Z_ALL_ASSET = LoadJSONAsset(Z3Z_ALL_PATH)
 class ItemTest(TestCase):
     def setUp(self) -> None:
         self.collection = insert_testing_data(
-            Z3Z_COLLECTION_PATH, Z3Z_DATA_PATH, Z3Z_PROVENANCE_PATH, reset=True)
+            Z3Z_COLLECTION_PATH, Z3Z_DATA_PATH, Z3Z_PROVENANCE_PATH, reset=True
+        )
 
     def test_annotate_property(self) -> None:
-        """ Tests that we can annotate a property correctly """
+        """Tests that we can annotate a property correctly"""
 
         # annotating a single property correctly
         item = Item.objects.get(id="00000000-0000-4000-a000-000000000000")

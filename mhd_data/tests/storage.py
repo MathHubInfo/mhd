@@ -3,14 +3,17 @@ from __future__ import annotations
 import json
 
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from typing import Type, Optional, Any
     from django.db.models import Model
 
+
 class StorageSuite:
     storage_model: Type[Model] = None
-    def _assert_stores(self, data: Any, message: Optional[str]=None) -> None:
-        """ Asserts that data can be stored and retrieved"""
+
+    def _assert_stores(self, data: Any, message: Optional[str] = None) -> None:
+        """Asserts that data can be stored and retrieved"""
 
         # store and retrieve the data
         instance = self.storage_model(data=data)
@@ -25,6 +28,6 @@ class StorageSuite:
         # and assert equality
         return self.assertEqual(js, ejs, message)
 
-    def _assert_notstores(self, data: Any, message: Optional[str]=None) -> None:
+    def _assert_notstores(self, data: Any, message: Optional[str] = None) -> None:
         with self.assertRaises(Exception):
             self._store_and_retrieve(data)

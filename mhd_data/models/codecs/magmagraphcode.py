@@ -4,8 +4,9 @@ from django.db import models
 
 from ..codec import Codec
 
+
 class MagmaGraphCode(Codec):
-    """ Magma Graph Code """
+    """Magma Graph Code"""
 
     value: str = models.TextField()
 
