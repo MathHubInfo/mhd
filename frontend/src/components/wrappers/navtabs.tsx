@@ -3,7 +3,7 @@ import { Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap"
 
 type NavTabProps = {
     children: Array<{
-        id: React.Key;
+        id: string | number;
         title: React.ReactNode | React.ReactNode[];
         children: React.ReactNode | React.ReactNode[];
     }>,
