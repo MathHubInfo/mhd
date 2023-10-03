@@ -10,7 +10,8 @@ import os
 DEBUG = False
 
 # we allow only the internal host, as we are proxied via NextJS
-ALLOWED_HOSTS = ["127.0.0.1"]
+ALLOWED_HOSTS = ["*"]
+HTTP_X_FORWARDED_HOST = True
 
 # all our sessions be safe
 SECRET_KEY = os.environ.setdefault("DJANGO_SECRET_KEY", "")
