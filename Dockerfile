@@ -1,5 +1,5 @@
 # Add all the dependencies
-FROM python:3.10-alpine as base
+FROM python:3.11-alpine as base
 
 # Add requirements and install dependencies
 WORKDIR /app/
